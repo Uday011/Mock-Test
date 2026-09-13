@@ -332,22 +332,22 @@ Explanation: Newton's First Law defines inertia: an object remains in its state 
   };
 
   return (
-    <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-10 space-y-8">
+    <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-10 space-y-6 sm:space-y-8">
       {/* Wizard Steps Navigation */}
-      <div className="bg-white rounded-2xl border border-slate-200 p-4 shadow-sm">
-        <div className="flex items-center justify-between max-w-3xl mx-auto">
+      <div className="bg-white rounded-2xl border border-slate-200 p-3 sm:p-4 shadow-2xs">
+        <div className="flex items-center justify-between max-w-3xl mx-auto overflow-x-auto no-scrollbar py-1 gap-2">
           <div
             onClick={() => setCurrentStep(1)}
-            className={`flex items-center gap-2 cursor-pointer transition-colors ${
-              currentStep === 1 ? 'text-indigo-600 font-bold' : 'text-slate-500 hover:text-slate-800'
+            className={`flex items-center gap-2 cursor-pointer transition-colors shrink-0 ${
+              currentStep === 1 ? 'text-slate-900 font-bold' : 'text-slate-500 hover:text-slate-800'
             }`}
           >
             <div
-              className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold ${
+              className={`w-7 h-7 sm:w-8 sm:h-8 rounded-full flex items-center justify-center text-xs font-bold ${
                 currentStep === 1
-                  ? 'bg-indigo-600 text-white'
+                  ? 'bg-slate-900 text-white'
                   : currentStep > 1
-                  ? 'bg-emerald-500 text-white'
+                  ? 'bg-emerald-600 text-white'
                   : 'bg-slate-100 text-slate-600'
               }`}
             >
@@ -356,22 +356,22 @@ Explanation: Newton's First Law defines inertia: an object remains in its state 
             <span className="text-xs sm:text-sm">1. Upload Files</span>
           </div>
 
-          <div className="w-8 sm:w-16 h-0.5 bg-slate-200" />
+          <div className="w-4 sm:w-16 h-0.5 bg-slate-200 shrink-0" />
 
           <div
             onClick={() => questions.length > 0 && setCurrentStep(2)}
-            className={`flex items-center gap-2 ${
+            className={`flex items-center gap-2 shrink-0 ${
               questions.length > 0 ? 'cursor-pointer' : 'opacity-50 cursor-not-allowed'
             } transition-colors ${
-              currentStep === 2 ? 'text-indigo-600 font-bold' : 'text-slate-500 hover:text-slate-800'
+              currentStep === 2 ? 'text-slate-900 font-bold' : 'text-slate-500 hover:text-slate-800'
             }`}
           >
             <div
-              className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold ${
+              className={`w-7 h-7 sm:w-8 sm:h-8 rounded-full flex items-center justify-center text-xs font-bold ${
                 currentStep === 2
-                  ? 'bg-indigo-600 text-white'
+                  ? 'bg-slate-900 text-white'
                   : currentStep > 2
-                  ? 'bg-emerald-500 text-white'
+                  ? 'bg-emerald-600 text-white'
                   : 'bg-slate-100 text-slate-600'
               }`}
             >
@@ -380,19 +380,19 @@ Explanation: Newton's First Law defines inertia: an object remains in its state 
             <span className="text-xs sm:text-sm">2. Review & Correct</span>
           </div>
 
-          <div className="w-8 sm:w-16 h-0.5 bg-slate-200" />
+          <div className="w-4 sm:w-16 h-0.5 bg-slate-200 shrink-0" />
 
           <div
             onClick={() => questions.length > 0 && setCurrentStep(3)}
-            className={`flex items-center gap-2 ${
+            className={`flex items-center gap-2 shrink-0 ${
               questions.length > 0 ? 'cursor-pointer' : 'opacity-50 cursor-not-allowed'
             } transition-colors ${
-              currentStep === 3 ? 'text-indigo-600 font-bold' : 'text-slate-500 hover:text-slate-800'
+              currentStep === 3 ? 'text-slate-900 font-bold' : 'text-slate-500 hover:text-slate-800'
             }`}
           >
             <div
-              className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold ${
-                currentStep === 3 ? 'bg-indigo-600 text-white' : 'bg-slate-100 text-slate-600'
+              className={`w-7 h-7 sm:w-8 sm:h-8 rounded-full flex items-center justify-center text-xs font-bold ${
+                currentStep === 3 ? 'bg-slate-900 text-white' : 'bg-slate-100 text-slate-600'
               }`}
             >
               3
@@ -407,7 +407,7 @@ Explanation: Newton's First Law defines inertia: an object remains in its state 
         <div className="space-y-6">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div>
-              <h2 className="text-2xl font-black text-slate-900 tracking-tight">Upload Mock Paper & Answer Key</h2>
+              <h2 className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight">Upload Mock Paper & Answer Key</h2>
               <p className="text-xs text-slate-500 mt-1">
                 Supported formats: PDF, Microsoft Word (.docx), and Plain Text (.txt)
               </p>
@@ -415,9 +415,9 @@ Explanation: Newton's First Law defines inertia: an object remains in its state 
             <button
               onClick={handleLoadSampleData}
               type="button"
-              className="px-4 py-2 bg-indigo-50 hover:bg-indigo-100 text-indigo-700 font-bold rounded-xl text-xs flex items-center gap-1.5 transition-colors border border-indigo-200 self-start sm:self-auto"
+              className="w-full sm:w-auto px-4 py-2.5 min-h-[44px] bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold rounded-xl text-xs flex items-center justify-center gap-1.5 transition-colors border border-slate-300 self-start sm:self-auto"
             >
-              <Zap className="w-4 h-4 text-indigo-600" />
+              <Zap className="w-4 h-4 text-blue-600" />
               Load Pre-Filled Sample Paper
             </button>
           </div>
@@ -429,18 +429,18 @@ Explanation: Newton's First Law defines inertia: an object remains in its state 
             </div>
           )}
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
             {/* Box 1: Question Paper */}
-            <div className="bg-white rounded-2xl border border-slate-200 p-6 space-y-4 shadow-sm">
+            <div className="bg-white rounded-2xl border border-slate-200 p-4 sm:p-6 space-y-4 shadow-2xs">
               <div className="flex items-center justify-between">
                 <span className="text-sm font-bold text-slate-900 flex items-center gap-2">
-                  <FileText className="w-4 h-4 text-indigo-600" />
+                  <FileText className="w-4 h-4 text-blue-600" />
                   1. Question Paper File
                 </span>
-                <span className="text-[11px] text-slate-400 font-semibold uppercase tracking-wider">Required</span>
+                <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider bg-slate-100 px-2 py-0.5 rounded">Required</span>
               </div>
 
-              <div className="border-2 border-dashed border-slate-300 hover:border-indigo-400 rounded-xl p-6 text-center transition-colors">
+              <div className="border-2 border-dashed border-slate-300 hover:border-blue-500 rounded-xl p-6 text-center transition-colors bg-slate-50/50">
                 <input
                   type="file"
                   id="paper-upload"
@@ -448,9 +448,9 @@ Explanation: Newton's First Law defines inertia: an object remains in its state 
                   onChange={(e) => setPaperFile(e.target.files?.[0] || null)}
                   className="hidden"
                 />
-                <label htmlFor="paper-upload" className="cursor-pointer block">
-                  <UploadCloud className="w-8 h-8 text-indigo-500 mx-auto mb-2" />
-                  <span className="text-xs font-bold text-indigo-600 hover:underline block">
+                <label htmlFor="paper-upload" className="cursor-pointer block min-h-[44px]">
+                  <UploadCloud className="w-8 h-8 text-blue-500 mx-auto mb-2" />
+                  <span className="text-xs font-bold text-blue-600 hover:underline block">
                     {paperFile ? paperFile.name : 'Click to select Question Paper'}
                   </span>
                   <span className="text-[11px] text-slate-400 mt-1 block">
@@ -468,22 +468,22 @@ Explanation: Newton's First Law defines inertia: an object remains in its state 
                   value={paperText}
                   onChange={(e) => setPaperText(e.target.value)}
                   placeholder="Question 1. What is the capital of France?&#10;A. Berlin&#10;B. Madrid&#10;C. Paris&#10;D. Rome"
-                  className="w-full p-3 border border-slate-200 rounded-xl text-xs font-mono focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                  className="w-full p-3 border border-slate-300 rounded-xl text-xs font-mono focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
               </div>
             </div>
 
             {/* Box 2: Answer Key */}
-            <div className="bg-white rounded-2xl border border-slate-200 p-6 space-y-4 shadow-sm">
+            <div className="bg-white rounded-2xl border border-slate-200 p-4 sm:p-6 space-y-4 shadow-2xs">
               <div className="flex items-center justify-between">
                 <span className="text-sm font-bold text-slate-900 flex items-center gap-2">
                   <FileCheck className="w-4 h-4 text-emerald-600" />
                   2. Answer Key / Sheet
                 </span>
-                <span className="text-[11px] text-slate-400 font-semibold uppercase tracking-wider">Required</span>
+                <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider bg-slate-100 px-2 py-0.5 rounded">Required</span>
               </div>
 
-              <div className="border-2 border-dashed border-slate-300 hover:border-emerald-400 rounded-xl p-6 text-center transition-colors">
+              <div className="border-2 border-dashed border-slate-300 hover:border-emerald-500 rounded-xl p-6 text-center transition-colors bg-slate-50/50">
                 <input
                   type="file"
                   id="key-upload"
@@ -491,7 +491,7 @@ Explanation: Newton's First Law defines inertia: an object remains in its state 
                   onChange={(e) => setKeyFile(e.target.files?.[0] || null)}
                   className="hidden"
                 />
-                <label htmlFor="key-upload" className="cursor-pointer block">
+                <label htmlFor="key-upload" className="cursor-pointer block min-h-[44px]">
                   <UploadCloud className="w-8 h-8 text-emerald-500 mx-auto mb-2" />
                   <span className="text-xs font-bold text-emerald-600 hover:underline block">
                     {keyFile ? keyFile.name : 'Click to select Answer Key'}
@@ -511,17 +511,17 @@ Explanation: Newton's First Law defines inertia: an object remains in its state 
                   value={keyText}
                   onChange={(e) => setKeyText(e.target.value)}
                   placeholder="1. C&#10;2. A&#10;3. D&#10;4. B"
-                  className="w-full p-3 border border-slate-200 rounded-xl text-xs font-mono focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                  className="w-full p-3 border border-slate-300 rounded-xl text-xs font-mono focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
               </div>
             </div>
           </div>
 
           {/* Gemini AI PDF & Paper Parser Toggle Card */}
-          <div className="bg-gradient-to-r from-amber-50/90 via-indigo-50/80 to-purple-50/90 rounded-2xl border border-amber-200/90 p-4 sm:p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4 shadow-2xs">
+          <div className="bg-gradient-to-r from-slate-50 to-blue-50/60 rounded-2xl border border-slate-200 p-4 sm:p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4 shadow-2xs">
             <div className="flex items-start sm:items-center gap-3">
-              <div className="w-10 h-10 rounded-xl bg-amber-500 text-white flex items-center justify-center shrink-0 shadow-md shadow-amber-200">
-                <Sparkles className="w-5 h-5 text-white" />
+              <div className="w-10 h-10 rounded-xl bg-slate-900 text-white flex items-center justify-center shrink-0 shadow-sm">
+                <Sparkles className="w-5 h-5 text-amber-400" />
               </div>
               <div>
                 <div className="flex items-center gap-2">
@@ -544,15 +544,15 @@ Explanation: Newton's First Law defines inertia: an object remains in its state 
                 onChange={(e) => setUseGemini(e.target.checked)}
                 className="sr-only peer"
               />
-              <div className="w-11 h-6 bg-slate-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-indigo-600"></div>
+              <div className="w-11 h-6 bg-slate-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-slate-900"></div>
             </label>
           </div>
 
-          <div className="flex justify-end pt-4">
+          <div className="flex justify-end pt-2">
             <button
               onClick={handleUploadAndParse}
               disabled={uploadLoading}
-              className="px-8 py-3.5 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-xl text-sm shadow-md hover:shadow-lg transition-all flex items-center gap-2"
+              className="w-full sm:w-auto px-8 py-3.5 min-h-[48px] bg-slate-900 hover:bg-slate-800 text-white font-bold rounded-xl text-sm shadow-sm hover:shadow transition-all flex items-center justify-center gap-2"
             >
               {uploadLoading ? (
                 <>
@@ -575,22 +575,22 @@ Explanation: Newton's First Law defines inertia: an object remains in its state 
         <div className="space-y-6">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div>
-              <h2 className="text-2xl font-black text-slate-900 tracking-tight">Review & Correct Parsed Questions</h2>
+              <h2 className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight">Review & Correct Parsed Questions</h2>
               <p className="text-xs text-slate-500 mt-1">
                 Verify parsed questions and correct answers before publishing. Never publish unverified questions.
               </p>
             </div>
-            <div className="flex items-center gap-3">
+            <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2.5 w-full sm:w-auto">
               <button
                 onClick={addNewQuestion}
-                className="px-3.5 py-2 bg-slate-100 hover:bg-slate-200 text-slate-800 rounded-xl text-xs font-bold flex items-center gap-1.5 transition-colors"
+                className="px-4 py-2.5 min-h-[44px] bg-slate-100 hover:bg-slate-200 text-slate-800 rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 transition-colors border border-slate-300"
               >
-                <Plus className="w-4 h-4 text-indigo-600" />
+                <Plus className="w-4 h-4 text-blue-600" />
                 Add Question
               </button>
               <button
                 onClick={() => setCurrentStep(3)}
-                className="px-5 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-xs font-bold shadow-sm flex items-center gap-1.5 transition-colors"
+                className="px-5 py-2.5 min-h-[44px] bg-slate-900 hover:bg-slate-800 text-white rounded-xl text-xs font-bold shadow-sm flex items-center justify-center gap-1.5 transition-colors"
               >
                 Configure Exam Settings
                 <ArrowRight className="w-4 h-4" />
@@ -615,12 +615,12 @@ Explanation: Newton's First Law defines inertia: an object remains in its state 
                   Extraction Health: {linter.overallConfidence}% Confidence ({questions.length} Questions Extracted)
                 </span>
                 {extractionMethod === 'gemini-ai' ? (
-                  <span className="px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-purple-100 text-purple-900 border border-purple-300 flex items-center gap-1 self-start sm:self-auto">
-                    <Sparkles className="w-3.5 h-3.5 text-amber-500" />
+                  <span className="px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-slate-900 text-white flex items-center gap-1 self-start sm:self-auto">
+                    <Sparkles className="w-3.5 h-3.5 text-amber-400" />
                     Parsed by Gemini 3.6 Flash AI • Full Context Preserved
                   </span>
                 ) : (
-                  <span className="px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-indigo-50 text-indigo-800 border border-indigo-200 self-start sm:self-auto">
+                  <span className="px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-slate-100 text-slate-800 border border-slate-200 self-start sm:self-auto">
                     Parsed by Enhanced Heuristic Regex Engine
                   </span>
                 )}
@@ -643,14 +643,14 @@ Explanation: Newton's First Law defines inertia: an object remains in its state 
           )}
 
           {/* Question Navigator Bar */}
-          <div className="bg-white rounded-2xl border border-slate-200 p-4 shadow-sm">
+          <div className="bg-white rounded-2xl border border-slate-200 p-4 shadow-2xs">
             <div className="flex items-center justify-between text-xs font-bold text-slate-700 mb-2">
               <span>Select Question to Edit:</span>
-              <span className="font-mono text-indigo-600">
+              <span className="font-mono text-slate-900">
                 Editing Question {activeQuestionIdx + 1} of {questions.length}
               </span>
             </div>
-            <div className="flex flex-wrap gap-2 max-h-32 overflow-y-auto p-1">
+            <div className="flex flex-wrap gap-2 max-h-36 overflow-y-auto p-1">
               {questions.map((q, idx) => {
                 const isSelected = activeQuestionIdx === idx;
                 const hasWarning = !q.correct_answer || !q.options || q.options.length < 2;
@@ -659,11 +659,11 @@ Explanation: Newton's First Law defines inertia: an object remains in its state 
                     key={idx}
                     type="button"
                     onClick={() => setActiveQuestionIdx(idx)}
-                    className={`w-9 h-9 rounded-xl text-xs font-bold transition-all relative ${
+                    className={`w-9 h-9 min-h-[36px] min-w-[36px] rounded-xl text-xs font-bold transition-all relative flex items-center justify-center ${
                       isSelected
-                        ? 'bg-indigo-600 text-white shadow-md ring-2 ring-indigo-300'
+                        ? 'bg-slate-900 text-white shadow-sm ring-2 ring-slate-400'
                         : hasWarning
-                        ? 'bg-amber-100 text-amber-800 border border-amber-300'
+                        ? 'bg-amber-100 text-amber-900 border border-amber-300'
                         : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
                     }`}
                   >
@@ -679,10 +679,10 @@ Explanation: Newton's First Law defines inertia: an object remains in its state 
 
           {/* Active Question Editor Card */}
           {questions[activeQuestionIdx] && (
-            <div className="bg-white rounded-2xl border border-slate-200 p-6 space-y-6 shadow-sm">
+            <div className="bg-white rounded-2xl border border-slate-200 p-4 sm:p-6 space-y-6 shadow-2xs">
               <div className="flex items-center justify-between border-b border-slate-100 pb-4">
                 <div className="flex items-center gap-3">
-                  <span className="px-3 py-1 bg-indigo-50 text-indigo-700 font-bold text-sm rounded-lg border border-indigo-200">
+                  <span className="px-3 py-1 bg-slate-100 text-slate-900 font-bold text-sm rounded-lg border border-slate-200">
                     Question #{questions[activeQuestionIdx].question_number}
                   </span>
                   {(!questions[activeQuestionIdx].correct_answer ||
@@ -693,12 +693,12 @@ Explanation: Newton's First Law defines inertia: an object remains in its state 
                   )}
                 </div>
 
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-1.5">
                   <button
                     onClick={() => moveQuestion(activeQuestionIdx, 'up')}
                     disabled={activeQuestionIdx === 0}
                     title="Move Up"
-                    className="p-2 text-slate-500 hover:bg-slate-100 rounded-lg disabled:opacity-30"
+                    className="p-2 min-h-[36px] min-w-[36px] flex items-center justify-center text-slate-500 hover:bg-slate-100 rounded-lg disabled:opacity-30"
                   >
                     <ChevronUp className="w-4 h-4" />
                   </button>
@@ -706,14 +706,14 @@ Explanation: Newton's First Law defines inertia: an object remains in its state 
                     onClick={() => moveQuestion(activeQuestionIdx, 'down')}
                     disabled={activeQuestionIdx === questions.length - 1}
                     title="Move Down"
-                    className="p-2 text-slate-500 hover:bg-slate-100 rounded-lg disabled:opacity-30"
+                    className="p-2 min-h-[36px] min-w-[36px] flex items-center justify-center text-slate-500 hover:bg-slate-100 rounded-lg disabled:opacity-30"
                   >
                     <ChevronDown className="w-4 h-4" />
                   </button>
                   <button
                     onClick={() => deleteQuestion(activeQuestionIdx)}
                     title="Delete Question"
-                    className="p-2 text-rose-500 hover:bg-rose-50 rounded-lg"
+                    className="p-2 min-h-[36px] min-w-[36px] flex items-center justify-center text-rose-500 hover:bg-rose-50 rounded-lg"
                   >
                     <Trash2 className="w-4 h-4" />
                   </button>
@@ -727,7 +727,7 @@ Explanation: Newton's First Law defines inertia: an object remains in its state 
                   rows={3}
                   value={questions[activeQuestionIdx].question_text}
                   onChange={(e) => updateQuestionText(activeQuestionIdx, e.target.value)}
-                  className="w-full p-3.5 border border-slate-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 font-medium leading-relaxed"
+                  className="w-full p-3.5 border border-slate-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 font-medium leading-relaxed"
                 />
               </div>
 
@@ -738,7 +738,7 @@ Explanation: Newton's First Law defines inertia: an object remains in its state 
                   <button
                     type="button"
                     onClick={() => addOption(activeQuestionIdx)}
-                    className="text-xs text-indigo-600 font-bold hover:underline flex items-center gap-1"
+                    className="text-xs text-blue-600 font-bold hover:underline flex items-center gap-1 min-h-[36px]"
                   >
                     <Plus className="w-3.5 h-3.5" /> Add Option
                   </button>
@@ -757,7 +757,7 @@ Explanation: Newton's First Law defines inertia: an object remains in its state 
                         }`}
                       >
                         {/* Radio select for correct answer */}
-                        <label className="flex items-center gap-2 cursor-pointer">
+                        <label className="flex items-center gap-2 cursor-pointer min-h-[40px]">
                           <input
                             type="radio"
                             name={`correct-${activeQuestionIdx}`}
@@ -766,7 +766,7 @@ Explanation: Newton's First Law defines inertia: an object remains in its state 
                             className="w-4 h-4 text-emerald-600 focus:ring-emerald-500"
                           />
                           <span
-                            className={`w-6 h-6 rounded-lg text-xs font-bold flex items-center justify-center ${
+                            className={`w-7 h-7 rounded-lg text-xs font-bold flex items-center justify-center ${
                               isCorrect
                                 ? 'bg-emerald-600 text-white'
                                 : 'bg-slate-100 text-slate-600'
@@ -782,15 +782,15 @@ Explanation: Newton's First Law defines inertia: an object remains in its state 
                           value={opt.text}
                           onChange={(e) => updateOptionText(activeQuestionIdx, optIdx, e.target.value)}
                           placeholder={`Option ${opt.label} text...`}
-                          className="flex-1 px-3 py-1.5 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                          className="flex-1 px-3 py-2 min-h-[40px] border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                         />
 
                         <button
                           type="button"
                           onClick={() => removeOption(activeQuestionIdx, optIdx)}
-                          className="text-slate-400 hover:text-rose-600 p-1.5 transition-colors"
+                          className="text-slate-400 hover:text-rose-600 p-2 min-h-[40px] min-w-[40px] flex items-center justify-center transition-colors"
                         >
-                          <Trash2 className="w-3.5 h-3.5" />
+                          <Trash2 className="w-4 h-4" />
                         </button>
                       </div>
                     );
@@ -813,7 +813,7 @@ Explanation: Newton's First Law defines inertia: an object remains in its state 
                         questions[activeQuestionIdx].negative_marks ?? 1
                       )
                     }
-                    className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm"
+                    className="w-full px-3.5 py-2.5 min-h-[40px] border border-slate-300 rounded-lg text-sm"
                   />
                 </div>
 
@@ -830,7 +830,7 @@ Explanation: Newton's First Law defines inertia: an object remains in its state 
                         parseFloat(e.target.value) || 0
                       )
                     }
-                    className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm"
+                    className="w-full px-3.5 py-2.5 min-h-[40px] border border-slate-300 rounded-lg text-sm"
                   />
                 </div>
 
@@ -843,7 +843,7 @@ Explanation: Newton's First Law defines inertia: an object remains in its state 
                     value={questions[activeQuestionIdx].explanation || ''}
                     onChange={(e) => updateExplanation(activeQuestionIdx, e.target.value)}
                     placeholder="Provide detailed explanation to help students understand the answer..."
-                    className="w-full p-2.5 border border-slate-300 rounded-lg text-xs"
+                    className="w-full p-3 border border-slate-300 rounded-lg text-xs"
                   />
                 </div>
               </div>
@@ -854,7 +854,7 @@ Explanation: Newton's First Law defines inertia: an object remains in its state 
                   type="button"
                   onClick={() => setActiveQuestionIdx(Math.max(0, activeQuestionIdx - 1))}
                   disabled={activeQuestionIdx === 0}
-                  className="px-4 py-2 border border-slate-200 text-slate-700 rounded-xl text-xs font-bold disabled:opacity-40"
+                  className="px-4 py-2.5 min-h-[40px] border border-slate-200 text-slate-700 rounded-xl text-xs font-bold disabled:opacity-40"
                 >
                   &larr; Previous Question
                 </button>
@@ -865,7 +865,7 @@ Explanation: Newton's First Law defines inertia: an object remains in its state 
                     setActiveQuestionIdx(Math.min(questions.length - 1, activeQuestionIdx + 1))
                   }
                   disabled={activeQuestionIdx === questions.length - 1}
-                  className="px-4 py-2 bg-slate-900 text-white rounded-xl text-xs font-bold disabled:opacity-40"
+                  className="px-4 py-2.5 min-h-[40px] bg-slate-900 hover:bg-slate-800 text-white rounded-xl text-xs font-bold disabled:opacity-40"
                 >
                   Next Question &rarr;
                 </button>
@@ -873,16 +873,16 @@ Explanation: Newton's First Law defines inertia: an object remains in its state 
             </div>
           )}
 
-          <div className="flex justify-between pt-4">
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 pt-4">
             <button
               onClick={() => setCurrentStep(1)}
-              className="px-6 py-3 border border-slate-200 text-slate-700 font-bold rounded-xl text-xs flex items-center gap-1.5"
+              className="px-6 py-3 min-h-[44px] border border-slate-200 text-slate-700 font-bold rounded-xl text-xs flex items-center justify-center gap-1.5"
             >
               <ArrowLeft className="w-4 h-4" /> Back to Upload
             </button>
             <button
               onClick={() => setCurrentStep(3)}
-              className="px-8 py-3 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-xl text-sm shadow-md flex items-center gap-2"
+              className="px-8 py-3.5 min-h-[48px] bg-slate-900 hover:bg-slate-800 text-white font-bold rounded-xl text-sm shadow-sm flex items-center justify-center gap-2"
             >
               Proceed to Exam Settings
               <ArrowRight className="w-4 h-4" />
@@ -895,7 +895,7 @@ Explanation: Newton's First Law defines inertia: an object remains in its state 
       {currentStep === 3 && (
         <div className="space-y-6">
           <div>
-            <h2 className="text-2xl font-black text-slate-900 tracking-tight">Configure Exam Settings</h2>
+            <h2 className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight">Configure Exam Settings</h2>
             <p className="text-xs text-slate-500 mt-1">
               Customize test title, duration, global or per-question marking schemes, and exam behaviors
             </p>
@@ -908,11 +908,11 @@ Explanation: Newton's First Law defines inertia: an object remains in its state 
             </div>
           )}
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
             {/* Box 1: Basic Information */}
-            <div className="bg-white rounded-2xl border border-slate-200 p-6 space-y-4 shadow-sm">
+            <div className="bg-white rounded-2xl border border-slate-200 p-4 sm:p-6 space-y-4 shadow-2xs">
               <h3 className="text-sm font-bold text-slate-900 flex items-center gap-2">
-                <FileText className="w-4 h-4 text-indigo-600" />
+                <FileText className="w-4 h-4 text-blue-600" />
                 Basic Test Information
               </h3>
 
@@ -924,7 +924,7 @@ Explanation: Newton's First Law defines inertia: an object remains in its state 
                   value={title}
                   onChange={(e) => setTitle(e.target.value)}
                   placeholder="e.g. Physics Entrance Examination Mock 2026"
-                  className="w-full px-3.5 py-2.5 border border-slate-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 font-medium"
+                  className="w-full px-3.5 py-2.5 min-h-[40px] border border-slate-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 font-medium"
                 />
               </div>
 
@@ -935,7 +935,7 @@ Explanation: Newton's First Law defines inertia: an object remains in its state 
                   value={subject}
                   onChange={(e) => setSubject(e.target.value)}
                   placeholder="e.g. Physics, Biology, General Knowledge"
-                  className="w-full px-3.5 py-2.5 border border-slate-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                  className="w-full px-3.5 py-2.5 min-h-[40px] border border-slate-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
               </div>
 
@@ -946,13 +946,13 @@ Explanation: Newton's First Law defines inertia: an object remains in its state 
                   value={description}
                   onChange={(e) => setDescription(e.target.value)}
                   placeholder="Additional guidelines or syllabus covered..."
-                  className="w-full p-3 border border-slate-300 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                  className="w-full p-3 border border-slate-300 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
               </div>
             </div>
 
             {/* Box 2: Timer Configuration */}
-            <div className="bg-white rounded-2xl border border-slate-200 p-6 space-y-4 shadow-sm">
+            <div className="bg-white rounded-2xl border border-slate-200 p-4 sm:p-6 space-y-4 shadow-2xs">
               <h3 className="text-sm font-bold text-slate-900 flex items-center gap-2">
                 <Clock className="w-4 h-4 text-emerald-600" />
                 Exam Timer Configuration
@@ -962,20 +962,20 @@ Explanation: Newton's First Law defines inertia: an object remains in its state 
                 <button
                   type="button"
                   onClick={() => setTimerMode('preset')}
-                  className={`py-2 text-xs font-bold rounded-xl border transition-all ${
+                  className={`py-2.5 min-h-[40px] text-xs font-bold rounded-xl border transition-all ${
                     timerMode === 'preset'
-                      ? 'border-indigo-600 bg-indigo-50 text-indigo-700'
+                      ? 'border-slate-900 bg-slate-900 text-white'
                       : 'border-slate-200 text-slate-600 hover:bg-slate-50'
                   }`}
                 >
-                  Standard Presets
+                  Presets
                 </button>
                 <button
                   type="button"
                   onClick={() => setTimerMode('custom')}
-                  className={`py-2 text-xs font-bold rounded-xl border transition-all ${
+                  className={`py-2.5 min-h-[40px] text-xs font-bold rounded-xl border transition-all ${
                     timerMode === 'custom'
-                      ? 'border-indigo-600 bg-indigo-50 text-indigo-700'
+                      ? 'border-slate-900 bg-slate-900 text-white'
                       : 'border-slate-200 text-slate-600 hover:bg-slate-50'
                   }`}
                 >
@@ -984,13 +984,13 @@ Explanation: Newton's First Law defines inertia: an object remains in its state 
                 <button
                   type="button"
                   onClick={() => setTimerMode('none')}
-                  className={`py-2 text-xs font-bold rounded-xl border transition-all ${
+                  className={`py-2.5 min-h-[40px] text-xs font-bold rounded-xl border transition-all ${
                     timerMode === 'none'
-                      ? 'border-indigo-600 bg-indigo-50 text-indigo-700'
+                      ? 'border-slate-900 bg-slate-900 text-white'
                       : 'border-slate-200 text-slate-600 hover:bg-slate-50'
                   }`}
                 >
-                  No Time Limit
+                  No Limit
                 </button>
               </div>
 
@@ -1006,9 +1006,9 @@ Explanation: Newton's First Law defines inertia: an object remains in its state 
                       key={preset.sec}
                       type="button"
                       onClick={() => setPresetDuration(preset.sec)}
-                      className={`p-3 rounded-xl border text-xs font-bold transition-all ${
+                      className={`p-3 min-h-[44px] rounded-xl border text-xs font-bold transition-all ${
                         presetDuration === preset.sec
-                          ? 'bg-indigo-600 text-white shadow-sm'
+                          ? 'bg-slate-900 text-white shadow-xs'
                           : 'bg-white border-slate-200 text-slate-700 hover:bg-slate-50'
                       }`}
                     >
@@ -1028,7 +1028,7 @@ Explanation: Newton's First Law defines inertia: an object remains in its state 
                       max={24}
                       value={customHours}
                       onChange={(e) => setCustomHours(parseInt(e.target.value) || 0)}
-                      className="w-full p-2 border border-slate-300 rounded-lg text-sm text-center font-bold"
+                      className="w-full p-2.5 min-h-[40px] border border-slate-300 rounded-lg text-sm text-center font-bold"
                     />
                   </div>
                   <div>
@@ -1039,7 +1039,7 @@ Explanation: Newton's First Law defines inertia: an object remains in its state 
                       max={59}
                       value={customMinutes}
                       onChange={(e) => setCustomMinutes(parseInt(e.target.value) || 0)}
-                      className="w-full p-2 border border-slate-300 rounded-lg text-sm text-center font-bold"
+                      className="w-full p-2.5 min-h-[40px] border border-slate-300 rounded-lg text-sm text-center font-bold"
                     />
                   </div>
                   <div>
@@ -1050,7 +1050,7 @@ Explanation: Newton's First Law defines inertia: an object remains in its state 
                       max={59}
                       value={customSeconds}
                       onChange={(e) => setCustomSeconds(parseInt(e.target.value) || 0)}
-                      className="w-full p-2 border border-slate-300 rounded-lg text-sm text-center font-bold"
+                      className="w-full p-2.5 min-h-[40px] border border-slate-300 rounded-lg text-sm text-center font-bold"
                     />
                   </div>
                 </div>
@@ -1064,9 +1064,9 @@ Explanation: Newton's First Law defines inertia: an object remains in its state 
             </div>
 
             {/* Box 3: Marking Scheme */}
-            <div className="bg-white rounded-2xl border border-slate-200 p-6 space-y-4 shadow-sm">
+            <div className="bg-white rounded-2xl border border-slate-200 p-4 sm:p-6 space-y-4 shadow-2xs">
               <h3 className="text-sm font-bold text-slate-900 flex items-center gap-2">
-                <Sliders className="w-4 h-4 text-purple-600" />
+                <Sliders className="w-4 h-4 text-blue-600" />
                 Marking Scheme
               </h3>
 
@@ -1074,24 +1074,24 @@ Explanation: Newton's First Law defines inertia: an object remains in its state 
                 <button
                   type="button"
                   onClick={() => setMarkingSchemeType('standard')}
-                  className={`py-2 text-xs font-bold rounded-xl border transition-all ${
+                  className={`py-2.5 min-h-[40px] text-xs font-bold rounded-xl border transition-all ${
                     markingSchemeType === 'standard'
-                      ? 'border-indigo-600 bg-indigo-50 text-indigo-700'
+                      ? 'border-slate-900 bg-slate-900 text-white'
                       : 'border-slate-200 text-slate-600 hover:bg-slate-50'
                   }`}
                 >
-                  Option A: Global Scheme
+                  Standard Global
                 </button>
                 <button
                   type="button"
                   onClick={() => setMarkingSchemeType('custom')}
-                  className={`py-2 text-xs font-bold rounded-xl border transition-all ${
+                  className={`py-2.5 min-h-[40px] text-xs font-bold rounded-xl border transition-all ${
                     markingSchemeType === 'custom'
-                      ? 'border-indigo-600 bg-indigo-50 text-indigo-700'
+                      ? 'border-slate-900 bg-slate-900 text-white'
                       : 'border-slate-200 text-slate-600 hover:bg-slate-50'
                   }`}
                 >
-                  Option B: Custom Per Question
+                  Custom Per Question
                 </button>
               </div>
 
@@ -1103,7 +1103,7 @@ Explanation: Newton's First Law defines inertia: an object remains in its state 
                     step="0.25"
                     value={defaultCorrectMarks}
                     onChange={(e) => setDefaultCorrectMarks(parseFloat(e.target.value) || 0)}
-                    className="w-full p-2.5 border border-slate-300 rounded-xl text-sm font-bold text-emerald-600"
+                    className="w-full p-2.5 min-h-[40px] border border-slate-300 rounded-xl text-sm font-bold text-emerald-600"
                   />
                 </div>
                 <div>
@@ -1113,7 +1113,7 @@ Explanation: Newton's First Law defines inertia: an object remains in its state 
                     step="0.25"
                     value={defaultNegativeMarks}
                     onChange={(e) => setDefaultNegativeMarks(parseFloat(e.target.value) || 0)}
-                    className="w-full p-2.5 border border-slate-300 rounded-xl text-sm font-bold text-rose-600"
+                    className="w-full p-2.5 min-h-[40px] border border-slate-300 rounded-xl text-sm font-bold text-rose-600"
                   />
                 </div>
                 <div>
@@ -1123,84 +1123,84 @@ Explanation: Newton's First Law defines inertia: an object remains in its state 
                     step="0.25"
                     value={defaultUnansweredMarks}
                     onChange={(e) => setDefaultUnansweredMarks(parseFloat(e.target.value) || 0)}
-                    className="w-full p-2.5 border border-slate-300 rounded-xl text-sm font-bold text-slate-700"
+                    className="w-full p-2.5 min-h-[40px] border border-slate-300 rounded-xl text-sm font-bold text-slate-700"
                   />
                 </div>
               </div>
             </div>
 
             {/* Box 4: Exam Behaviors */}
-            <div className="bg-white rounded-2xl border border-slate-200 p-6 space-y-4 shadow-sm">
+            <div className="bg-white rounded-2xl border border-slate-200 p-4 sm:p-6 space-y-4 shadow-2xs">
               <h3 className="text-sm font-bold text-slate-900 flex items-center gap-2">
-                <Layers className="w-4 h-4 text-amber-600" />
+                <Layers className="w-4 h-4 text-slate-700" />
                 Exam Behaviors & Display
               </h3>
 
-              <div className="space-y-2.5 text-xs text-slate-700">
-                <label className="flex items-center justify-between p-2 rounded-lg hover:bg-slate-50 cursor-pointer">
+              <div className="space-y-2 text-xs text-slate-700">
+                <label className="flex items-center justify-between p-2 rounded-lg hover:bg-slate-50 cursor-pointer min-h-[36px]">
                   <span>Shuffle Questions</span>
                   <input
                     type="checkbox"
                     checked={shuffleQuestions}
                     onChange={(e) => setShuffleQuestions(e.target.checked)}
-                    className="w-4 h-4 text-indigo-600 rounded"
+                    className="w-4 h-4 text-blue-600 rounded"
                   />
                 </label>
 
-                <label className="flex items-center justify-between p-2 rounded-lg hover:bg-slate-50 cursor-pointer">
+                <label className="flex items-center justify-between p-2 rounded-lg hover:bg-slate-50 cursor-pointer min-h-[36px]">
                   <span>Shuffle Options</span>
                   <input
                     type="checkbox"
                     checked={shuffleOptions}
                     onChange={(e) => setShuffleOptions(e.target.checked)}
-                    className="w-4 h-4 text-indigo-600 rounded"
+                    className="w-4 h-4 text-blue-600 rounded"
                   />
                 </label>
 
-                <label className="flex items-center justify-between p-2 rounded-lg hover:bg-slate-50 cursor-pointer">
+                <label className="flex items-center justify-between p-2 rounded-lg hover:bg-slate-50 cursor-pointer min-h-[36px]">
                   <span>Show 5-State Question Palette</span>
                   <input
                     type="checkbox"
                     checked={showPalette}
                     onChange={(e) => setShowPalette(e.target.checked)}
-                    className="w-4 h-4 text-indigo-600 rounded"
+                    className="w-4 h-4 text-blue-600 rounded"
                   />
                 </label>
 
-                <label className="flex items-center justify-between p-2 rounded-lg hover:bg-slate-50 cursor-pointer">
+                <label className="flex items-center justify-between p-2 rounded-lg hover:bg-slate-50 cursor-pointer min-h-[36px]">
                   <span>Allow Marking Questions for Review</span>
                   <input
                     type="checkbox"
                     checked={allowReviewMarking}
                     onChange={(e) => setAllowReviewMarking(e.target.checked)}
-                    className="w-4 h-4 text-indigo-600 rounded"
+                    className="w-4 h-4 text-blue-600 rounded"
                   />
                 </label>
 
-                <label className="flex items-center justify-between p-2 rounded-lg hover:bg-slate-50 cursor-pointer">
+                <label className="flex items-center justify-between p-2 rounded-lg hover:bg-slate-50 cursor-pointer min-h-[36px]">
                   <span>Show Results Immediately on Submission</span>
                   <input
                     type="checkbox"
                     checked={showImmediateResults}
                     onChange={(e) => setShowImmediateResults(e.target.checked)}
-                    className="w-4 h-4 text-indigo-600 rounded"
+                    className="w-4 h-4 text-blue-600 rounded"
                   />
                 </label>
               </div>
             </div>
           </div>
 
-          <div className="flex justify-between pt-6 border-t border-slate-200">
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 pt-6 border-t border-slate-200">
             <button
               onClick={() => setCurrentStep(2)}
-              className="px-6 py-3 border border-slate-200 text-slate-700 font-bold rounded-xl text-xs flex items-center gap-1.5"
+              className="px-6 py-3 min-h-[44px] border border-slate-200 text-slate-700 font-bold rounded-xl text-xs flex items-center justify-center gap-1.5"
             >
               <ArrowLeft className="w-4 h-4" /> Back to Review Questions
             </button>
             <button
               onClick={handlePublishTest}
               disabled={saveLoading}
-              className="px-8 py-3.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl text-sm shadow-md hover:shadow-lg transition-all flex items-center gap-2"
+              className="px-8 py-3.5 min-h-[48px] bg-slate-900 hover:bg-slate-800 text-white font-bold rounded-xl text-sm shadow-sm transition-all flex items-center justify-center gap-2"
             >
               {saveLoading ? (
                 <>
@@ -1210,7 +1210,7 @@ Explanation: Newton's First Law defines inertia: an object remains in its state 
               ) : (
                 <>
                   Publish & Start Mock Exam
-                  <ArrowRight className="w-4 h-4" />
+                  <ArrowRight className="w-4 h-4 text-blue-400" />
                 </>
               )}
             </button>

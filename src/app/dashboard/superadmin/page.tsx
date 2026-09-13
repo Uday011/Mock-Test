@@ -323,10 +323,10 @@ export default function SuperadminDashboardPage() {
           </p>
         </div>
 
-        <div className="flex items-center gap-2.5">
+        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2.5 w-full sm:w-auto">
           <button
             onClick={() => setShowAddSectionModal(true)}
-            className="inline-flex items-center gap-2 px-4 py-2.5 bg-purple-700 hover:bg-purple-800 text-white font-bold rounded-xl shadow-sm hover:shadow transition-all text-xs"
+            className="inline-flex items-center justify-center gap-2 px-4 py-2.5 min-h-[44px] bg-purple-700 hover:bg-purple-800 text-white font-bold rounded-xl shadow-sm hover:shadow transition-all text-xs"
           >
             <FolderPlus className="w-4 h-4" />
             New Exam Section
@@ -334,9 +334,9 @@ export default function SuperadminDashboardPage() {
 
           <Link
             href="/tests/create"
-            className="inline-flex items-center gap-2 px-4 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-xl shadow-sm hover:shadow transition-all text-xs"
+            className="inline-flex items-center justify-center gap-2 px-4 py-2.5 min-h-[44px] bg-slate-900 hover:bg-slate-800 text-white font-bold rounded-xl shadow-sm hover:shadow transition-all text-xs"
           >
-            <PlusCircle className="w-4 h-4" />
+            <PlusCircle className="w-4 h-4 text-blue-400" />
             Upload Test
           </Link>
         </div>
@@ -350,18 +350,18 @@ export default function SuperadminDashboardPage() {
           </div>
           <div>
             <p className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Total Users</p>
-            <div className="flex items-baseline gap-2">
+            <div className="flex flex-col sm:flex-row sm:items-baseline sm:gap-2">
               <p className="text-xl sm:text-2xl font-black text-slate-900 mt-0.5">{users.length}</p>
-              <span className="text-[11px] text-purple-700 font-bold">
-                {adminUsersCount} Admins / {studentUsersCount} Students
+              <span className="text-[10px] sm:text-[11px] text-purple-700 font-bold">
+                {adminUsersCount} Admins • {studentUsersCount} Students
               </span>
             </div>
           </div>
         </div>
 
         <div className="bg-white rounded-2xl p-4 sm:p-5 border border-slate-200 shadow-2xs flex items-center gap-3 sm:gap-4">
-          <div className="w-11 h-11 rounded-xl bg-indigo-50 text-indigo-700 flex items-center justify-center shrink-0">
-            <Layers className="w-5 h-5 sm:w-6 sm:h-6" />
+          <div className="w-11 h-11 rounded-xl bg-slate-100 text-slate-700 flex items-center justify-center shrink-0">
+            <Layers className="w-5 h-5 sm:w-6 sm:h-6 text-slate-700" />
           </div>
           <div>
             <p className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">All Mock Tests</p>
@@ -392,10 +392,10 @@ export default function SuperadminDashboardPage() {
 
       {/* Tabs Navigation */}
       <div className="space-y-6">
-        <div className="flex border-b border-slate-200 gap-6 overflow-x-auto pb-1 sm:pb-0">
+        <div className="flex border-b border-slate-200 gap-4 sm:gap-6 overflow-x-auto no-scrollbar py-1">
           <button
             onClick={() => setActiveTab('users')}
-            className={`pb-3 text-xs sm:text-sm font-bold flex items-center gap-2 border-b-2 transition-all shrink-0 ${
+            className={`pb-3 text-xs sm:text-sm font-bold flex items-center gap-2 border-b-2 transition-all shrink-0 min-h-[44px] ${
               activeTab === 'users'
                 ? 'border-purple-600 text-purple-900'
                 : 'border-transparent text-slate-500 hover:text-slate-800'
@@ -407,7 +407,7 @@ export default function SuperadminDashboardPage() {
 
           <button
             onClick={() => setActiveTab('sections')}
-            className={`pb-3 text-xs sm:text-sm font-bold flex items-center gap-2 border-b-2 transition-all shrink-0 ${
+            className={`pb-3 text-xs sm:text-sm font-bold flex items-center gap-2 border-b-2 transition-all shrink-0 min-h-[44px] ${
               activeTab === 'sections'
                 ? 'border-purple-600 text-purple-900'
                 : 'border-transparent text-slate-500 hover:text-slate-800'
@@ -419,7 +419,7 @@ export default function SuperadminDashboardPage() {
 
           <button
             onClick={() => setActiveTab('tests')}
-            className={`pb-3 text-xs sm:text-sm font-bold flex items-center gap-2 border-b-2 transition-all shrink-0 ${
+            className={`pb-3 text-xs sm:text-sm font-bold flex items-center gap-2 border-b-2 transition-all shrink-0 min-h-[44px] ${
               activeTab === 'tests'
                 ? 'border-purple-600 text-purple-900'
                 : 'border-transparent text-slate-500 hover:text-slate-800'
@@ -431,7 +431,7 @@ export default function SuperadminDashboardPage() {
 
           <button
             onClick={() => setActiveTab('system')}
-            className={`pb-3 text-xs sm:text-sm font-bold flex items-center gap-2 border-b-2 transition-all shrink-0 ${
+            className={`pb-3 text-xs sm:text-sm font-bold flex items-center gap-2 border-b-2 transition-all shrink-0 min-h-[44px] ${
               activeTab === 'system'
                 ? 'border-purple-600 text-purple-900'
                 : 'border-transparent text-slate-500 hover:text-slate-800'
@@ -446,22 +446,22 @@ export default function SuperadminDashboardPage() {
         {activeTab === 'users' && (
           <div className="space-y-4">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-              <div className="flex items-center gap-2">
-                <div className="relative">
+              <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 w-full sm:w-auto">
+                <div className="relative flex-1 sm:flex-none">
                   <input
                     type="text"
                     placeholder="Search users by name, email, or institute..."
                     value={userSearch}
                     onChange={(e) => setUserSearch(e.target.value)}
-                    className="pl-8 pr-3 py-1.5 border border-slate-300 rounded-xl text-xs w-64 sm:w-80 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                    className="w-full sm:w-80 pl-8 pr-3 py-2 min-h-[40px] border border-slate-300 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-purple-500 font-medium"
                   />
-                  <Search className="w-3.5 h-3.5 text-slate-400 absolute left-2.5 top-2.5" />
+                  <Search className="w-3.5 h-3.5 text-slate-400 absolute left-2.5 top-3" />
                 </div>
 
                 <select
                   value={roleFilter}
                   onChange={(e) => setRoleFilter(e.target.value as any)}
-                  className="px-2.5 py-1.5 border border-slate-300 rounded-xl text-xs text-slate-700 bg-white focus:outline-none focus:ring-2 focus:ring-purple-500 font-medium"
+                  className="px-3 py-2 min-h-[40px] border border-slate-300 rounded-xl text-xs text-slate-700 bg-white focus:outline-none focus:ring-2 focus:ring-purple-500 font-medium"
                 >
                   <option value="all">All Roles</option>
                   <option value="student">Students</option>
@@ -472,7 +472,7 @@ export default function SuperadminDashboardPage() {
 
               <button
                 onClick={fetchUsers}
-                className="p-1.5 text-slate-500 hover:text-purple-700 hover:bg-slate-100 rounded-lg text-xs flex items-center gap-1 self-start sm:self-auto"
+                className="p-2 min-h-[40px] text-slate-500 hover:text-purple-700 hover:bg-slate-100 rounded-xl text-xs flex items-center justify-center gap-1 self-start sm:self-auto border border-slate-200 sm:border-transparent"
               >
                 <RefreshCw className="w-3.5 h-3.5" />
                 Refresh
@@ -582,7 +582,7 @@ export default function SuperadminDashboardPage() {
                                   setEditPassword('');
                                 }}
                                 title="Edit User or Reset Password"
-                                className="p-1.5 border border-slate-200 text-slate-600 hover:bg-slate-100 rounded-lg text-xs transition-colors"
+                                className="p-2 min-h-[36px] min-w-[36px] flex items-center justify-center border border-slate-200 text-slate-600 hover:bg-slate-100 rounded-lg text-xs transition-colors"
                               >
                                 <Edit className="w-3.5 h-3.5" />
                               </button>
@@ -591,7 +591,7 @@ export default function SuperadminDashboardPage() {
                                 <button
                                   onClick={() => handleDeleteUser(u.id)}
                                   title="Delete User"
-                                  className="p-1.5 border border-slate-200 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg text-xs transition-colors"
+                                  className="p-2 min-h-[36px] min-w-[36px] flex items-center justify-center border border-slate-200 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg text-xs transition-colors"
                                 >
                                   <Trash2 className="w-3.5 h-3.5" />
                                 </button>
@@ -621,7 +621,7 @@ export default function SuperadminDashboardPage() {
 
               <button
                 onClick={() => setShowAddSectionModal(true)}
-                className="inline-flex items-center gap-2 px-4 py-2 bg-purple-700 hover:bg-purple-800 text-white font-bold rounded-xl text-xs shadow-sm self-start sm:self-auto"
+                className="inline-flex items-center justify-center gap-2 px-4 py-2.5 min-h-[44px] bg-purple-700 hover:bg-purple-800 text-white font-bold rounded-xl text-xs shadow-sm self-start sm:self-auto"
               >
                 <FolderPlus className="w-4 h-4" />
                 Add New Section
@@ -638,7 +638,7 @@ export default function SuperadminDashboardPage() {
                 {sections.map((sec) => (
                   <div
                     key={sec.id}
-                    className="bg-white rounded-2xl border border-slate-200 p-5 shadow-2xs space-y-3 flex flex-col justify-between"
+                    className="bg-white rounded-2xl border border-slate-200 p-4 sm:p-5 shadow-2xs space-y-3 flex flex-col justify-between"
                   >
                     <div>
                       <div className="flex items-center justify-between mb-2">
@@ -647,7 +647,7 @@ export default function SuperadminDashboardPage() {
                         </span>
                         <button
                           onClick={() => handleToggleSection(sec)}
-                          className={`px-2 py-0.5 rounded text-[10px] font-bold border transition-colors ${
+                          className={`px-2.5 py-1 rounded-lg text-[10px] font-bold border transition-colors ${
                             sec.is_active
                               ? 'bg-emerald-50 text-emerald-700 border-emerald-200'
                               : 'bg-slate-100 text-slate-500 border-slate-200'
@@ -669,10 +669,10 @@ export default function SuperadminDashboardPage() {
                       </span>
                       <button
                         onClick={() => handleDeleteSection(sec.id)}
-                        className="p-1 text-slate-400 hover:text-rose-600 rounded transition-colors"
+                        className="p-2 min-h-[36px] min-w-[36px] flex items-center justify-center text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition-colors"
                         title="Delete section"
                       >
-                        <Trash2 className="w-3.5 h-3.5" />
+                        <Trash2 className="w-4 h-4" />
                       </button>
                     </div>
                   </div>
@@ -686,18 +686,18 @@ export default function SuperadminDashboardPage() {
         {activeTab === 'tests' && (
           <div className="space-y-4">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-              <div className="relative">
+              <div className="relative flex-1 sm:flex-none">
                 <input
                   type="text"
                   placeholder="Search across all tests and creators..."
                   value={testSearch}
                   onChange={(e) => setTestSearch(e.target.value)}
-                  className="pl-8 pr-3 py-1.5 border border-slate-300 rounded-xl text-xs w-64 sm:w-80 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                  className="w-full sm:w-80 pl-8 pr-3 py-2 min-h-[40px] border border-slate-300 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-purple-500 font-medium"
                 />
-                <Search className="w-3.5 h-3.5 text-slate-400 absolute left-2.5 top-2.5" />
+                <Search className="w-3.5 h-3.5 text-slate-400 absolute left-2.5 top-3" />
               </div>
 
-              <span className="text-xs font-bold text-slate-500">
+              <span className="text-xs font-bold text-slate-500 self-start sm:self-auto">
                 {filteredTests.length} Total Mock Tests in System
               </span>
             </div>
@@ -706,11 +706,11 @@ export default function SuperadminDashboardPage() {
               {filteredTests.map((test) => (
                 <div
                   key={test.id}
-                  className="bg-white rounded-2xl border border-slate-200 p-5 shadow-2xs hover:shadow-md transition-all flex flex-col sm:flex-row sm:items-center justify-between gap-4"
+                  className="bg-white rounded-2xl border border-slate-200 p-4 sm:p-5 shadow-2xs hover:shadow-md transition-all flex flex-col lg:flex-row lg:items-center justify-between gap-4"
                 >
                   <div className="space-y-1.5 flex-1">
                     <div className="flex flex-wrap items-center gap-2">
-                      <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-indigo-50 text-indigo-700 border border-indigo-200">
+                      <span className="px-2.5 py-0.5 rounded text-[10px] font-bold bg-slate-100 text-slate-800 border border-slate-200">
                         {test.subject || 'General'}
                       </span>
                       <span className="text-xs text-slate-400 font-mono">
@@ -718,9 +718,9 @@ export default function SuperadminDashboardPage() {
                       </span>
                     </div>
                     <h4 className="text-base font-bold text-slate-900">{test.title}</h4>
-                    <div className="flex flex-wrap items-center gap-4 text-xs text-slate-600">
+                    <div className="flex flex-wrap items-center gap-3 sm:gap-4 text-xs text-slate-600">
                       <span className="flex items-center gap-1 font-semibold">
-                        <Layers className="w-3.5 h-3.5 text-indigo-500" />
+                        <Layers className="w-3.5 h-3.5 text-slate-500" />
                         {test.question_count} Questions
                       </span>
                       <span className="flex items-center gap-1 font-semibold">
@@ -734,17 +734,17 @@ export default function SuperadminDashboardPage() {
                     </div>
                   </div>
 
-                  <div className="flex items-center gap-2 pt-2 sm:pt-0 border-t sm:border-t-0 border-slate-100">
+                  <div className="flex flex-wrap items-center gap-2 pt-2 lg:pt-0 border-t lg:border-t-0 border-slate-100">
                     <Link
                       href={`/tests/${test.id}/start`}
-                      className="px-3.5 py-2 bg-purple-700 hover:bg-purple-800 text-white font-bold rounded-xl text-xs flex items-center gap-1.5 shadow-2xs"
+                      className="flex-1 sm:flex-none justify-center px-4 py-2.5 min-h-[44px] bg-purple-700 hover:bg-purple-800 text-white font-bold rounded-xl text-xs flex items-center gap-1.5 shadow-2xs"
                     >
                       <Play className="w-3.5 h-3.5 fill-white" />
                       Take Test
                     </Link>
                     <Link
                       href={`/tests/${test.id}`}
-                      className="p-2 border border-slate-200 hover:bg-slate-50 text-slate-600 rounded-xl text-xs transition-colors"
+                      className="p-2.5 min-h-[44px] min-w-[44px] flex items-center justify-center border border-slate-200 hover:bg-slate-50 text-slate-600 rounded-xl text-xs transition-colors"
                       title="Inspect paper"
                     >
                       <Eye className="w-4 h-4" />
@@ -759,57 +759,57 @@ export default function SuperadminDashboardPage() {
         {/* TAB 4: System & AI Engine Health */}
         {activeTab === 'system' && (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div className="bg-white rounded-2xl border border-slate-200 p-6 shadow-2xs space-y-4">
+            <div className="bg-white rounded-2xl border border-slate-200 p-5 sm:p-6 shadow-2xs space-y-4">
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center">
+                <div className="w-10 h-10 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center shrink-0">
                   <Sparkles className="w-5 h-5" />
                 </div>
                 <div>
-                  <h4 className="font-bold text-slate-900">Google Gemini AI Engine</h4>
+                  <h4 className="font-bold text-slate-900 text-sm sm:text-base">Google Gemini AI Engine</h4>
                   <p className="text-xs text-slate-500">Autonomous performance analysis & parser</p>
                 </div>
               </div>
 
               <div className="space-y-2.5 text-xs">
-                <div className="flex items-center justify-between p-2.5 bg-slate-50 rounded-xl">
+                <div className="flex items-center justify-between p-3 bg-slate-50 rounded-xl">
                   <span className="text-slate-600 font-semibold">Target Model:</span>
-                  <span className="font-mono font-bold text-indigo-700">gemini-3.6-flash</span>
+                  <span className="font-mono font-bold text-slate-900">gemini-3.6-flash</span>
                 </div>
-                <div className="flex items-center justify-between p-2.5 bg-slate-50 rounded-xl">
+                <div className="flex items-center justify-between p-3 bg-slate-50 rounded-xl">
                   <span className="text-slate-600 font-semibold">Status:</span>
                   <span className="font-bold text-emerald-700 flex items-center gap-1">
                     <CheckCircle className="w-3.5 h-3.5" />
                     Verified & Operational
                   </span>
                 </div>
-                <div className="flex items-center justify-between p-2.5 bg-slate-50 rounded-xl">
+                <div className="flex items-center justify-between p-3 bg-slate-50 rounded-xl">
                   <span className="text-slate-600 font-semibold">Key Storage:</span>
                   <span className="text-slate-800 font-mono text-[11px]">Server Environment (.env.local)</span>
                 </div>
               </div>
             </div>
 
-            <div className="bg-white rounded-2xl border border-slate-200 p-6 shadow-2xs space-y-4">
+            <div className="bg-white rounded-2xl border border-slate-200 p-5 sm:p-6 shadow-2xs space-y-4">
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center">
+                <div className="w-10 h-10 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center shrink-0">
                   <Database className="w-5 h-5" />
                 </div>
                 <div>
-                  <h4 className="font-bold text-slate-900">Database & Persistence</h4>
+                  <h4 className="font-bold text-slate-900 text-sm sm:text-base">Database & Persistence</h4>
                   <p className="text-xs text-slate-500">Local High-Performance SQLite storage</p>
                 </div>
               </div>
 
               <div className="space-y-2.5 text-xs">
-                <div className="flex items-center justify-between p-2.5 bg-slate-50 rounded-xl">
+                <div className="flex items-center justify-between p-3 bg-slate-50 rounded-xl">
                   <span className="text-slate-600 font-semibold">Database Engine:</span>
                   <span className="font-bold text-slate-900">better-sqlite3 (WAL Mode)</span>
                 </div>
-                <div className="flex items-center justify-between p-2.5 bg-slate-50 rounded-xl">
+                <div className="flex items-center justify-between p-3 bg-slate-50 rounded-xl">
                   <span className="text-slate-600 font-semibold">Storage Location:</span>
                   <span className="font-mono text-slate-800 text-[11px]">./data/mocktest.db</span>
                 </div>
-                <div className="flex items-center justify-between p-2.5 bg-slate-50 rounded-xl">
+                <div className="flex items-center justify-between p-3 bg-slate-50 rounded-xl">
                   <span className="text-slate-600 font-semibold">Active Roles:</span>
                   <span className="font-bold text-purple-700">student, admin, superadmin</span>
                 </div>
@@ -821,18 +821,18 @@ export default function SuperadminDashboardPage() {
 
       {/* Add Exam Section Modal */}
       {showAddSectionModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/40 backdrop-blur-sm p-4">
-          <div className="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl border border-slate-200">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 backdrop-blur-sm p-4">
+          <div className="bg-white rounded-2xl max-w-md w-full p-5 sm:p-6 shadow-2xl border border-slate-200">
             <div className="flex items-center justify-between mb-4">
               <div className="flex items-center gap-2">
                 <div className="w-8 h-8 rounded-lg bg-purple-50 text-purple-700 flex items-center justify-center">
                   <FolderPlus className="w-4 h-4" />
                 </div>
-                <h3 className="font-bold text-slate-900 text-lg">Create Exam Section</h3>
+                <h3 className="font-bold text-slate-900 text-base sm:text-lg">Create Exam Section</h3>
               </div>
               <button
                 onClick={() => setShowAddSectionModal(false)}
-                className="text-slate-400 hover:text-slate-600 text-xl font-semibold"
+                className="text-slate-400 hover:text-slate-600 p-2 min-h-[40px] min-w-[40px] flex items-center justify-center text-xl font-semibold"
               >
                 &times;
               </button>
@@ -846,7 +846,7 @@ export default function SuperadminDashboardPage() {
                   placeholder="e.g. UPSC Civil Services, Banking PO, NEET"
                   value={newSectionName}
                   onChange={(e) => setNewSectionName(e.target.value)}
-                  className="w-full px-3.5 py-2 border border-slate-300 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-purple-500 font-medium"
+                  className="w-full px-3.5 py-2.5 min-h-[40px] border border-slate-300 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-purple-500 font-medium"
                   required
                 />
               </div>
@@ -857,7 +857,7 @@ export default function SuperadminDashboardPage() {
                   placeholder="Brief summary of syllabus or target audience..."
                   value={newSectionDescription}
                   onChange={(e) => setNewSectionDescription(e.target.value)}
-                  className="w-full px-3.5 py-2 border border-slate-300 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-purple-500 font-medium"
+                  className="w-full px-3.5 py-2.5 border border-slate-300 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-purple-500 font-medium"
                   rows={3}
                 />
               </div>
@@ -866,14 +866,14 @@ export default function SuperadminDashboardPage() {
                 <button
                   type="button"
                   onClick={() => setShowAddSectionModal(false)}
-                  className="px-4 py-2 text-xs font-semibold text-slate-600 hover:bg-slate-100 rounded-xl"
+                  className="px-4 py-2 min-h-[40px] text-xs font-semibold text-slate-600 hover:bg-slate-100 rounded-xl"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={creatingSection}
-                  className="px-4 py-2 bg-purple-700 hover:bg-purple-800 text-white rounded-xl text-xs font-bold shadow-sm"
+                  className="px-4 py-2 min-h-[40px] bg-purple-700 hover:bg-purple-800 text-white rounded-xl text-xs font-bold shadow-sm"
                 >
                   {creatingSection ? 'Creating...' : 'Create Section'}
                 </button>
@@ -885,18 +885,18 @@ export default function SuperadminDashboardPage() {
 
       {/* Edit User Modal */}
       {editingUser && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/40 backdrop-blur-sm p-4">
-          <div className="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl border border-slate-200">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 backdrop-blur-sm p-4">
+          <div className="bg-white rounded-2xl max-w-md w-full p-5 sm:p-6 shadow-2xl border border-slate-200">
             <div className="flex items-center justify-between mb-4">
               <div className="flex items-center gap-2">
                 <div className="w-8 h-8 rounded-lg bg-purple-50 text-purple-700 flex items-center justify-center">
                   <Edit className="w-4 h-4" />
                 </div>
-                <h3 className="font-bold text-slate-900 text-lg">Modify User Account</h3>
+                <h3 className="font-bold text-slate-900 text-base sm:text-lg">Modify User Account</h3>
               </div>
               <button
                 onClick={() => setEditingUser(null)}
-                className="text-slate-400 hover:text-slate-600 text-xl font-semibold"
+                className="text-slate-400 hover:text-slate-600 p-2 min-h-[40px] min-w-[40px] flex items-center justify-center text-xl font-semibold"
               >
                 &times;
               </button>
@@ -909,7 +909,7 @@ export default function SuperadminDashboardPage() {
                   type="text"
                   value={editName}
                   onChange={(e) => setEditName(e.target.value)}
-                  className="w-full px-3.5 py-2 border border-slate-300 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-purple-500 font-medium"
+                  className="w-full px-3.5 py-2.5 min-h-[40px] border border-slate-300 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-purple-500 font-medium"
                   required
                 />
               </div>
@@ -920,7 +920,7 @@ export default function SuperadminDashboardPage() {
                   type="email"
                   value={editEmail}
                   onChange={(e) => setEditEmail(e.target.value)}
-                  className="w-full px-3.5 py-2 border border-slate-300 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-purple-500 font-medium"
+                  className="w-full px-3.5 py-2.5 min-h-[40px] border border-slate-300 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-purple-500 font-medium"
                   required
                 />
               </div>
@@ -930,7 +930,7 @@ export default function SuperadminDashboardPage() {
                 <select
                   value={editRole}
                   onChange={(e) => setEditRole(e.target.value as UserRole)}
-                  className="w-full px-3.5 py-2 border border-slate-300 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-purple-500 font-medium"
+                  className="w-full px-3.5 py-2.5 min-h-[40px] border border-slate-300 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-purple-500 font-medium"
                 >
                   <option value="student">🎓 Student</option>
                   <option value="admin">🏫 Administrator</option>
@@ -945,7 +945,7 @@ export default function SuperadminDashboardPage() {
                   placeholder="e.g. Apex Institute (optional)"
                   value={editInstitute}
                   onChange={(e) => setEditInstitute(e.target.value)}
-                  className="w-full px-3.5 py-2 border border-slate-300 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-purple-500 font-medium"
+                  className="w-full px-3.5 py-2.5 min-h-[40px] border border-slate-300 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-purple-500 font-medium"
                 />
               </div>
 
@@ -958,7 +958,7 @@ export default function SuperadminDashboardPage() {
                   placeholder="Leave empty to keep unchanged"
                   value={editPassword}
                   onChange={(e) => setEditPassword(e.target.value)}
-                  className="w-full px-3.5 py-2 border border-slate-300 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-purple-500 font-medium"
+                  className="w-full px-3.5 py-2.5 min-h-[40px] border border-slate-300 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-purple-500 font-medium"
                 />
               </div>
 
@@ -966,14 +966,14 @@ export default function SuperadminDashboardPage() {
                 <button
                   type="button"
                   onClick={() => setEditingUser(null)}
-                  className="px-4 py-2 text-xs font-semibold text-slate-600 hover:bg-slate-100 rounded-xl"
+                  className="px-4 py-2 min-h-[40px] text-xs font-semibold text-slate-600 hover:bg-slate-100 rounded-xl"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={updatingUser}
-                  className="px-4 py-2 bg-purple-700 hover:bg-purple-800 text-white rounded-xl text-xs font-bold shadow-sm"
+                  className="px-4 py-2 min-h-[40px] bg-purple-700 hover:bg-purple-800 text-white rounded-xl text-xs font-bold shadow-sm"
                 >
                   {updatingUser ? 'Saving...' : 'Save Changes'}
                 </button>

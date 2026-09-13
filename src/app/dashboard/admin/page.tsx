@@ -281,7 +281,7 @@ export default function AdminDashboardPage() {
         <div>
           <div className="flex items-center gap-2 mb-1.5">
             <span className="px-2.5 py-0.5 rounded-full text-xs font-bold bg-amber-100 text-amber-900 border border-amber-300 flex items-center gap-1">
-              <Building2 className="w-3.5 h-3.5 text-amber-600" />
+              <Building2 className="w-3.5 h-3.5 text-amber-700" />
               Administrator & Coaching Hub
             </span>
             <span className="text-xs text-slate-500 font-medium">
@@ -296,10 +296,10 @@ export default function AdminDashboardPage() {
           </p>
         </div>
 
-        <div className="flex items-center gap-2.5">
+        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2.5 w-full sm:w-auto">
           <button
             onClick={() => setShowAddModal(true)}
-            className="inline-flex items-center gap-2 px-4 py-2.5 bg-amber-600 hover:bg-amber-700 text-white font-bold rounded-xl shadow-sm hover:shadow transition-all text-xs"
+            className="inline-flex items-center justify-center gap-2 px-4 py-2.5 min-h-[44px] bg-amber-600 hover:bg-amber-700 text-white font-bold rounded-xl shadow-sm hover:shadow transition-all text-xs"
           >
             <UserPlus className="w-4 h-4" />
             Add Student
@@ -307,9 +307,9 @@ export default function AdminDashboardPage() {
 
           <Link
             href="/tests/create"
-            className="inline-flex items-center gap-2 px-4 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-xl shadow-sm hover:shadow transition-all text-xs"
+            className="inline-flex items-center justify-center gap-2 px-4 py-2.5 min-h-[44px] bg-slate-900 hover:bg-slate-800 text-white font-bold rounded-xl shadow-sm hover:shadow transition-all text-xs"
           >
-            <PlusCircle className="w-4 h-4" />
+            <PlusCircle className="w-4 h-4 text-blue-400" />
             Create Official Mock
           </Link>
         </div>
@@ -328,8 +328,8 @@ export default function AdminDashboardPage() {
         </div>
 
         <div className="bg-white rounded-2xl p-4 sm:p-5 border border-slate-200 shadow-2xs flex items-center gap-3 sm:gap-4">
-          <div className="w-11 h-11 rounded-xl bg-indigo-50 text-indigo-700 flex items-center justify-center shrink-0">
-            <Layers className="w-5 h-5 sm:w-6 sm:h-6" />
+          <div className="w-11 h-11 rounded-xl bg-slate-100 text-slate-700 flex items-center justify-center shrink-0">
+            <Layers className="w-5 h-5 sm:w-6 sm:h-6 text-slate-700" />
           </div>
           <div>
             <p className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Institute Mocks</p>
@@ -360,12 +360,12 @@ export default function AdminDashboardPage() {
 
       {/* Tabs Navigation */}
       <div className="space-y-6">
-        <div className="flex border-b border-slate-200 gap-6">
+        <div className="flex border-b border-slate-200 gap-4 sm:gap-6 overflow-x-auto no-scrollbar py-1">
           <button
             onClick={() => setActiveTab('students')}
-            className={`pb-3 text-xs sm:text-sm font-bold flex items-center gap-2 border-b-2 transition-all ${
+            className={`pb-3 text-xs sm:text-sm font-bold flex items-center gap-2 border-b-2 transition-all shrink-0 min-h-[44px] ${
               activeTab === 'students'
-                ? 'border-amber-600 text-amber-800'
+                ? 'border-amber-600 text-amber-900'
                 : 'border-transparent text-slate-500 hover:text-slate-800'
             }`}
           >
@@ -375,9 +375,9 @@ export default function AdminDashboardPage() {
 
           <button
             onClick={() => setActiveTab('tests')}
-            className={`pb-3 text-xs sm:text-sm font-bold flex items-center gap-2 border-b-2 transition-all ${
+            className={`pb-3 text-xs sm:text-sm font-bold flex items-center gap-2 border-b-2 transition-all shrink-0 min-h-[44px] ${
               activeTab === 'tests'
-                ? 'border-amber-600 text-amber-800'
+                ? 'border-amber-600 text-amber-900'
                 : 'border-transparent text-slate-500 hover:text-slate-800'
             }`}
           >
@@ -387,9 +387,9 @@ export default function AdminDashboardPage() {
 
           <button
             onClick={() => setActiveTab('submissions')}
-            className={`pb-3 text-xs sm:text-sm font-bold flex items-center gap-2 border-b-2 transition-all ${
+            className={`pb-3 text-xs sm:text-sm font-bold flex items-center gap-2 border-b-2 transition-all shrink-0 min-h-[44px] ${
               activeTab === 'submissions'
-                ? 'border-amber-600 text-amber-800'
+                ? 'border-amber-600 text-amber-900'
                 : 'border-transparent text-slate-500 hover:text-slate-800'
             }`}
           >
@@ -403,22 +403,22 @@ export default function AdminDashboardPage() {
           <div className="space-y-4">
             {/* Filter Bar */}
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-              <div className="flex items-center gap-2">
-                <div className="relative">
+              <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 w-full sm:w-auto">
+                <div className="relative flex-1 sm:flex-none">
                   <input
                     type="text"
                     placeholder="Search students by name or email..."
                     value={studentSearch}
                     onChange={(e) => setStudentSearch(e.target.value)}
-                    className="pl-8 pr-3 py-1.5 border border-slate-300 rounded-xl text-xs w-60 sm:w-72 focus:outline-none focus:ring-2 focus:ring-amber-500"
+                    className="w-full sm:w-72 pl-8 pr-3 py-2 min-h-[40px] border border-slate-300 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-amber-500 font-medium"
                   />
-                  <Search className="w-3.5 h-3.5 text-slate-400 absolute left-2.5 top-2.5" />
+                  <Search className="w-3.5 h-3.5 text-slate-400 absolute left-2.5 top-3" />
                 </div>
 
                 <select
                   value={statusFilter}
                   onChange={(e) => setStatusFilter(e.target.value as any)}
-                  className="px-2.5 py-1.5 border border-slate-300 rounded-xl text-xs text-slate-700 bg-white focus:outline-none focus:ring-2 focus:ring-amber-500 font-medium"
+                  className="px-3 py-2 min-h-[40px] border border-slate-300 rounded-xl text-xs text-slate-700 bg-white focus:outline-none focus:ring-2 focus:ring-amber-500 font-medium"
                 >
                   <option value="all">All Statuses</option>
                   <option value="active">Active Only</option>
@@ -428,7 +428,7 @@ export default function AdminDashboardPage() {
 
               <button
                 onClick={fetchStudents}
-                className="p-1.5 text-slate-500 hover:text-amber-700 hover:bg-slate-100 rounded-lg text-xs flex items-center gap-1 self-start sm:self-auto"
+                className="p-2 min-h-[40px] text-slate-500 hover:text-amber-700 hover:bg-slate-100 rounded-xl text-xs flex items-center justify-center gap-1 self-start sm:self-auto border border-slate-200 sm:border-transparent"
                 title="Refresh student list"
               >
                 <RefreshCw className="w-3.5 h-3.5" />
@@ -508,7 +508,7 @@ export default function AdminDashboardPage() {
                           <td className="px-4 py-3.5 font-bold text-emerald-700">
                             {s.avg_score != null ? `${s.avg_score}%` : '—'}
                           </td>
-                          <td className="px-4 py-3.5 font-bold text-indigo-700">
+                          <td className="px-4 py-3.5 font-bold text-slate-900">
                             {s.best_score != null ? `${s.best_score}%` : '—'}
                           </td>
                           <td className="px-4 py-3.5 text-slate-400 font-mono text-[11px]">
@@ -519,7 +519,7 @@ export default function AdminDashboardPage() {
                               <button
                                 onClick={() => handleToggleStatus(s)}
                                 title={s.status === 'active' ? 'Suspend Account' : 'Activate Account'}
-                                className={`p-1.5 rounded-lg border text-xs font-semibold transition-colors ${
+                                className={`p-2 min-h-[36px] min-w-[36px] rounded-lg border text-xs font-semibold transition-colors flex items-center justify-center ${
                                   s.status === 'active'
                                     ? 'border-rose-200 text-rose-600 hover:bg-rose-50'
                                     : 'border-emerald-200 text-emerald-600 hover:bg-emerald-50'
@@ -535,7 +535,7 @@ export default function AdminDashboardPage() {
                                   setEditPassword('');
                                 }}
                                 title="Edit Student or Reset Password"
-                                className="p-1.5 border border-slate-200 text-slate-600 hover:bg-slate-100 rounded-lg text-xs transition-colors"
+                                className="p-2 min-h-[36px] min-w-[36px] border border-slate-200 text-slate-600 hover:bg-slate-100 rounded-lg text-xs transition-colors flex items-center justify-center"
                               >
                                 <Edit className="w-3.5 h-3.5" />
                               </button>
@@ -543,7 +543,7 @@ export default function AdminDashboardPage() {
                               <button
                                 onClick={() => handleDeleteStudent(s.id)}
                                 title="Remove Student"
-                                className="p-1.5 border border-slate-200 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg text-xs transition-colors"
+                                className="p-2 min-h-[36px] min-w-[36px] border border-slate-200 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg text-xs transition-colors flex items-center justify-center"
                               >
                                 <Trash2 className="w-3.5 h-3.5" />
                               </button>
@@ -563,22 +563,22 @@ export default function AdminDashboardPage() {
         {activeTab === 'tests' && (
           <div className="space-y-4">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-              <div className="relative">
+              <div className="relative flex-1 sm:flex-none">
                 <input
                   type="text"
                   placeholder="Search mock tests..."
                   value={testSearch}
                   onChange={(e) => setTestSearch(e.target.value)}
-                  className="pl-8 pr-3 py-1.5 border border-slate-300 rounded-xl text-xs w-60 sm:w-72 focus:outline-none focus:ring-2 focus:ring-amber-500"
+                  className="w-full sm:w-72 pl-8 pr-3 py-2 min-h-[40px] border border-slate-300 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-amber-500 font-medium"
                 />
-                <Search className="w-3.5 h-3.5 text-slate-400 absolute left-2.5 top-2.5" />
+                <Search className="w-3.5 h-3.5 text-slate-400 absolute left-2.5 top-3" />
               </div>
 
               <Link
                 href="/tests/create"
-                className="inline-flex items-center gap-2 px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-xl text-xs shadow-sm"
+                className="inline-flex items-center justify-center gap-2 px-4 py-2.5 min-h-[44px] bg-slate-900 hover:bg-slate-800 text-white font-bold rounded-xl text-xs shadow-sm transition-colors"
               >
-                <PlusCircle className="w-4 h-4" />
+                <PlusCircle className="w-4 h-4 text-blue-400" />
                 Upload New Mock Paper
               </Link>
             </div>
@@ -589,9 +589,9 @@ export default function AdminDashboardPage() {
                 Loading tests...
               </div>
             ) : filteredTests.length === 0 ? (
-              <div className="bg-white rounded-3xl p-12 text-center border border-dashed border-slate-300 space-y-4">
-                <div className="w-14 h-14 rounded-2xl bg-indigo-50 text-indigo-600 flex items-center justify-center mx-auto">
-                  <Layers className="w-7 h-7" />
+              <div className="bg-white rounded-3xl p-8 sm:p-12 text-center border border-dashed border-slate-300 space-y-4">
+                <div className="w-14 h-14 rounded-2xl bg-slate-100 text-slate-700 flex items-center justify-center mx-auto">
+                  <Layers className="w-7 h-7 text-slate-700" />
                 </div>
                 <h3 className="text-lg font-bold text-slate-900">No mock tests published yet</h3>
                 <p className="text-xs text-slate-500 max-w-sm mx-auto">
@@ -599,9 +599,9 @@ export default function AdminDashboardPage() {
                 </p>
                 <Link
                   href="/tests/create"
-                  className="inline-flex items-center gap-2 px-4 py-2 bg-indigo-600 text-white rounded-xl text-xs font-bold shadow-sm"
+                  className="inline-flex items-center justify-center gap-2 px-5 py-2.5 min-h-[44px] bg-slate-900 text-white rounded-xl text-xs font-bold shadow-sm"
                 >
-                  <PlusCircle className="w-4 h-4" />
+                  <PlusCircle className="w-4 h-4 text-blue-400" />
                   Create First Mock
                 </Link>
               </div>
@@ -610,11 +610,11 @@ export default function AdminDashboardPage() {
                 {filteredTests.map((test) => (
                   <div
                     key={test.id}
-                    className="bg-white rounded-2xl border border-amber-200/80 p-5 shadow-2xs hover:shadow-md transition-all flex flex-col sm:flex-row sm:items-center justify-between gap-4"
+                    className="bg-white rounded-2xl border border-amber-300/80 p-4 sm:p-5 shadow-2xs hover:shadow-md transition-all flex flex-col lg:flex-row lg:items-center justify-between gap-4"
                   >
                     <div className="space-y-1.5 flex-1">
-                      <div className="flex items-center gap-2">
-                        <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-amber-50 text-amber-800 border border-amber-200">
+                      <div className="flex flex-wrap items-center gap-2">
+                        <span className="px-2.5 py-0.5 rounded text-[10px] font-bold bg-amber-100 text-amber-900 border border-amber-300">
                           {test.subject || 'General'}
                         </span>
                         <span className="text-xs text-slate-400 font-mono">
@@ -622,9 +622,9 @@ export default function AdminDashboardPage() {
                         </span>
                       </div>
                       <h4 className="text-base font-bold text-slate-900">{test.title}</h4>
-                      <div className="flex flex-wrap items-center gap-4 text-xs text-slate-600">
+                      <div className="flex flex-wrap items-center gap-3 sm:gap-4 text-xs text-slate-600">
                         <span className="flex items-center gap-1 font-semibold">
-                          <Layers className="w-3.5 h-3.5 text-indigo-500" />
+                          <Layers className="w-3.5 h-3.5 text-slate-500" />
                           {test.question_count} Questions
                         </span>
                         <span className="flex items-center gap-1 font-semibold">
@@ -635,24 +635,24 @@ export default function AdminDashboardPage() {
                           <Sliders className="w-3.5 h-3.5 text-slate-400" />
                           +{test.default_correct_marks} / -{test.default_negative_marks} marks
                         </span>
-                        <span className="flex items-center gap-1 font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded">
+                        <span className="flex items-center gap-1 font-bold text-emerald-800 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200">
                           <Users className="w-3.5 h-3.5 text-emerald-600" />
                           {test.attempts_count} Student Attempts
                         </span>
                       </div>
                     </div>
 
-                    <div className="flex items-center gap-2 pt-2 sm:pt-0 border-t sm:border-t-0 border-slate-100">
+                    <div className="flex flex-wrap items-center gap-2 pt-2 lg:pt-0 border-t lg:border-t-0 border-slate-100">
                       <Link
                         href={`/tests/${test.id}/start`}
-                        className="px-3.5 py-2 bg-amber-600 hover:bg-amber-700 text-white font-bold rounded-xl text-xs flex items-center gap-1.5 shadow-2xs"
+                        className="flex-1 sm:flex-none justify-center px-4 py-2.5 min-h-[44px] bg-amber-600 hover:bg-amber-700 text-white font-bold rounded-xl text-xs flex items-center gap-1.5 shadow-2xs"
                       >
                         <Play className="w-3.5 h-3.5 fill-white" />
                         Preview Exam
                       </Link>
                       <Link
                         href={`/tests/${test.id}`}
-                        className="p-2 border border-slate-200 hover:bg-slate-50 text-slate-600 rounded-xl text-xs transition-colors"
+                        className="p-2.5 min-h-[44px] min-w-[44px] flex items-center justify-center border border-slate-200 hover:bg-slate-50 text-slate-600 rounded-xl text-xs transition-colors"
                         title="View Details & Questions"
                       >
                         <History className="w-4 h-4" />
@@ -669,14 +669,14 @@ export default function AdminDashboardPage() {
         {activeTab === 'submissions' && (
           <div className="space-y-4">
             <div className="bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-2xs">
-              <div className="p-4 bg-slate-50/80 border-b border-slate-200 flex items-center justify-between">
+              <div className="p-4 bg-slate-50/90 border-b border-slate-200 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
                 <div>
                   <h3 className="text-sm font-bold text-slate-900">Student Attempts Gradebook</h3>
                   <p className="text-[11px] text-slate-500">
                     Review each student's exam responses, marks, accuracy, and Gemini AI coaching insights.
                   </p>
                 </div>
-                <span className="text-xs font-bold text-slate-600 bg-white px-2.5 py-1 rounded-lg border border-slate-200">
+                <span className="text-xs font-bold text-slate-600 bg-white px-2.5 py-1 rounded-lg border border-slate-200 self-start sm:self-auto">
                   {allSubmissions.length} Total Submissions
                 </span>
               </div>
@@ -695,7 +695,7 @@ export default function AdminDashboardPage() {
                       <div className="space-y-1">
                         <div className="flex items-center gap-2">
                           <span className="font-bold text-slate-900 text-sm">{att.student_name || 'Student'}</span>
-                          <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-indigo-50 text-indigo-700 border border-indigo-200">
+                          <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-slate-100 text-slate-800 border border-slate-200">
                             {att.testSubject || 'General'}
                           </span>
                         </div>
@@ -705,8 +705,8 @@ export default function AdminDashboardPage() {
                         </p>
                       </div>
 
-                      <div className="flex items-center gap-4">
-                        <div className="text-right">
+                      <div className="flex items-center justify-between sm:justify-end gap-4 pt-2 sm:pt-0 border-t sm:border-t-0 border-slate-100">
+                        <div className="text-left sm:text-right">
                           <span className="text-lg font-black text-slate-900">
                             {att.final_score} / {att.maximum_marks}
                           </span>
@@ -715,7 +715,7 @@ export default function AdminDashboardPage() {
 
                         <Link
                           href={`/exam/${att.id}/result`}
-                          className="px-3.5 py-2 bg-indigo-50 hover:bg-indigo-100 text-indigo-700 font-bold rounded-xl text-xs border border-indigo-200 transition-colors flex items-center gap-1.5"
+                          className="px-4 py-2.5 min-h-[44px] bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold rounded-xl text-xs border border-slate-300 transition-colors flex items-center justify-center gap-1.5"
                         >
                           <Sparkles className="w-3.5 h-3.5 text-amber-500" />
                           Review Paper
@@ -733,18 +733,18 @@ export default function AdminDashboardPage() {
 
       {/* Add Student Modal */}
       {showAddModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/40 backdrop-blur-sm p-4">
-          <div className="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl border border-slate-200">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 backdrop-blur-sm p-4">
+          <div className="bg-white rounded-2xl max-w-md w-full p-5 sm:p-6 shadow-2xl border border-slate-200">
             <div className="flex items-center justify-between mb-4">
               <div className="flex items-center gap-2">
                 <div className="w-8 h-8 rounded-lg bg-amber-50 text-amber-600 flex items-center justify-center">
                   <UserPlus className="w-4 h-4" />
                 </div>
-                <h3 className="font-bold text-slate-900 text-lg">Enroll New Student</h3>
+                <h3 className="font-bold text-slate-900 text-base sm:text-lg">Enroll New Student</h3>
               </div>
               <button
                 onClick={() => setShowAddModal(false)}
-                className="text-slate-400 hover:text-slate-600 text-xl font-semibold"
+                className="text-slate-400 hover:text-slate-600 p-2 min-h-[40px] min-w-[40px] flex items-center justify-center text-xl font-semibold"
               >
                 &times;
               </button>
@@ -764,7 +764,7 @@ export default function AdminDashboardPage() {
                   placeholder="e.g. Rahul Sharma"
                   value={newStudentName}
                   onChange={(e) => setNewStudentName(e.target.value)}
-                  className="w-full px-3.5 py-2 border border-slate-300 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-amber-500 font-medium"
+                  className="w-full px-3.5 py-2.5 min-h-[40px] border border-slate-300 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-amber-500 font-medium"
                   required
                 />
               </div>
@@ -776,7 +776,7 @@ export default function AdminDashboardPage() {
                   placeholder="student@coaching.com"
                   value={newStudentEmail}
                   onChange={(e) => setNewStudentEmail(e.target.value)}
-                  className="w-full px-3.5 py-2 border border-slate-300 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-amber-500 font-medium"
+                  className="w-full px-3.5 py-2.5 min-h-[40px] border border-slate-300 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-amber-500 font-medium"
                   required
                 />
               </div>
@@ -788,7 +788,7 @@ export default function AdminDashboardPage() {
                   placeholder="At least 6 characters"
                   value={newStudentPassword}
                   onChange={(e) => setNewStudentPassword(e.target.value)}
-                  className="w-full px-3.5 py-2 border border-slate-300 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-amber-500 font-medium"
+                  className="w-full px-3.5 py-2.5 min-h-[40px] border border-slate-300 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-amber-500 font-medium"
                   required
                 />
               </div>
@@ -797,14 +797,14 @@ export default function AdminDashboardPage() {
                 <button
                   type="button"
                   onClick={() => setShowAddModal(false)}
-                  className="px-4 py-2 text-xs font-semibold text-slate-600 hover:bg-slate-100 rounded-xl"
+                  className="px-4 py-2 min-h-[40px] text-xs font-semibold text-slate-600 hover:bg-slate-100 rounded-xl"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={creatingStudent}
-                  className="px-4 py-2 bg-amber-600 hover:bg-amber-700 text-white rounded-xl text-xs font-bold shadow-sm"
+                  className="px-4 py-2 min-h-[40px] bg-amber-600 hover:bg-amber-700 text-white rounded-xl text-xs font-bold shadow-sm"
                 >
                   {creatingStudent ? 'Enrolling...' : 'Enroll Student'}
                 </button>
@@ -816,18 +816,18 @@ export default function AdminDashboardPage() {
 
       {/* Edit Student / Password Modal */}
       {editingStudent && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/40 backdrop-blur-sm p-4">
-          <div className="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl border border-slate-200">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 backdrop-blur-sm p-4">
+          <div className="bg-white rounded-2xl max-w-md w-full p-5 sm:p-6 shadow-2xl border border-slate-200">
             <div className="flex items-center justify-between mb-4">
               <div className="flex items-center gap-2">
-                <div className="w-8 h-8 rounded-lg bg-indigo-50 text-indigo-600 flex items-center justify-center">
+                <div className="w-8 h-8 rounded-lg bg-slate-100 text-slate-700 flex items-center justify-center">
                   <Edit className="w-4 h-4" />
                 </div>
-                <h3 className="font-bold text-slate-900 text-lg">Edit Student Account</h3>
+                <h3 className="font-bold text-slate-900 text-base sm:text-lg">Edit Student Account</h3>
               </div>
               <button
                 onClick={() => setEditingStudent(null)}
-                className="text-slate-400 hover:text-slate-600 text-xl font-semibold"
+                className="text-slate-400 hover:text-slate-600 p-2 min-h-[40px] min-w-[40px] flex items-center justify-center text-xl font-semibold"
               >
                 &times;
               </button>
@@ -840,7 +840,7 @@ export default function AdminDashboardPage() {
                   type="text"
                   value={editName}
                   onChange={(e) => setEditName(e.target.value)}
-                  className="w-full px-3.5 py-2 border border-slate-300 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-indigo-500 font-medium"
+                  className="w-full px-3.5 py-2.5 min-h-[40px] border border-slate-300 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-blue-500 font-medium"
                   required
                 />
               </div>
@@ -854,7 +854,7 @@ export default function AdminDashboardPage() {
                   placeholder="New password"
                   value={editPassword}
                   onChange={(e) => setEditPassword(e.target.value)}
-                  className="w-full px-3.5 py-2 border border-slate-300 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-indigo-500 font-medium"
+                  className="w-full px-3.5 py-2.5 min-h-[40px] border border-slate-300 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-blue-500 font-medium"
                 />
               </div>
 
@@ -862,14 +862,14 @@ export default function AdminDashboardPage() {
                 <button
                   type="button"
                   onClick={() => setEditingStudent(null)}
-                  className="px-4 py-2 text-xs font-semibold text-slate-600 hover:bg-slate-100 rounded-xl"
+                  className="px-4 py-2 min-h-[40px] text-xs font-semibold text-slate-600 hover:bg-slate-100 rounded-xl"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={updatingStudent}
-                  className="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-xs font-bold shadow-sm"
+                  className="px-4 py-2 min-h-[40px] bg-slate-900 hover:bg-slate-800 text-white rounded-xl text-xs font-bold shadow-sm"
                 >
                   {updatingStudent ? 'Saving...' : 'Update Account'}
                 </button>

@@ -92,14 +92,14 @@ export default function LoginPage() {
 
   return (
     <div className="min-h-[85vh] flex items-center justify-center px-4 py-10">
-      <div className="max-w-md w-full space-y-6 bg-white p-7 sm:p-9 rounded-3xl border border-slate-200 shadow-xl">
+      <div className="max-w-md w-full space-y-6 bg-white p-6 sm:p-9 rounded-3xl border border-slate-200 shadow-xl">
         <div className="text-center">
-          <div className="w-12 h-12 rounded-2xl bg-gradient-to-tr from-indigo-600 to-violet-600 text-white flex items-center justify-center mx-auto shadow-md shadow-indigo-100 mb-3">
-            <BookOpen className="w-6 h-6" />
+          <div className="w-12 h-12 rounded-2xl bg-slate-900 text-white flex items-center justify-center mx-auto shadow-md border border-slate-800 mb-3">
+            <BookOpen className="w-6 h-6 text-blue-400" />
           </div>
           <h2 className="text-2xl font-black text-slate-900 tracking-tight">Sign in to ExamCraft</h2>
           <p className="text-xs text-slate-500 mt-1">
-            Choose your role or sign in with your email credentials
+            Choose your persona or sign in with your email credentials
           </p>
         </div>
 
@@ -112,7 +112,7 @@ export default function LoginPage() {
 
         {/* 1-Click Role Personas */}
         <div className="space-y-2">
-          <p className="text-[11px] font-bold text-slate-400 uppercase tracking-wider text-center">
+          <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider text-center">
             1-Click Instant Persona Sign-In
           </p>
           <div className="grid grid-cols-3 gap-2">
@@ -120,7 +120,7 @@ export default function LoginPage() {
               type="button"
               onClick={() => handleDemoLogin('student')}
               disabled={Boolean(demoRoleLoading)}
-              className="p-2.5 rounded-xl border border-emerald-200 bg-emerald-50/70 hover:bg-emerald-100/80 text-emerald-900 text-left transition-all group flex flex-col items-center text-center"
+              className="p-2.5 rounded-xl border border-emerald-200 bg-emerald-50/70 hover:bg-emerald-100/80 text-emerald-900 text-left transition-all group flex flex-col items-center text-center min-h-[48px]"
             >
               <div className="w-7 h-7 rounded-lg bg-emerald-200 text-emerald-800 flex items-center justify-center mb-1">
                 <GraduationCap className="w-4 h-4" />
@@ -133,7 +133,7 @@ export default function LoginPage() {
               type="button"
               onClick={() => handleDemoLogin('admin')}
               disabled={Boolean(demoRoleLoading)}
-              className="p-2.5 rounded-xl border border-amber-200 bg-amber-50/70 hover:bg-amber-100/80 text-amber-900 text-left transition-all group flex flex-col items-center text-center"
+              className="p-2.5 rounded-xl border border-amber-200 bg-amber-50/70 hover:bg-amber-100/80 text-amber-900 text-left transition-all group flex flex-col items-center text-center min-h-[48px]"
             >
               <div className="w-7 h-7 rounded-lg bg-amber-200 text-amber-800 flex items-center justify-center mb-1">
                 <Building2 className="w-4 h-4" />
@@ -146,13 +146,13 @@ export default function LoginPage() {
               type="button"
               onClick={() => handleDemoLogin('superadmin')}
               disabled={Boolean(demoRoleLoading)}
-              className="p-2.5 rounded-xl border border-purple-200 bg-purple-50/70 hover:bg-purple-100/80 text-purple-900 text-left transition-all group flex flex-col items-center text-center"
+              className="p-2.5 rounded-xl border border-blue-200 bg-blue-50/70 hover:bg-blue-100/80 text-blue-900 text-left transition-all group flex flex-col items-center text-center min-h-[48px]"
             >
-              <div className="w-7 h-7 rounded-lg bg-purple-200 text-purple-800 flex items-center justify-center mb-1">
+              <div className="w-7 h-7 rounded-lg bg-blue-200 text-blue-800 flex items-center justify-center mb-1">
                 <Crown className="w-4 h-4" />
               </div>
               <span className="text-xs font-bold leading-tight">Super Admin</span>
-              <span className="text-[9px] text-purple-700 mt-0.5">Master Control</span>
+              <span className="text-[9px] text-blue-700 mt-0.5">Master Control</span>
             </button>
           </div>
         </div>
@@ -174,9 +174,9 @@ export default function LoginPage() {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="superadmin@examcraft.platform"
-                className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-slate-300 text-xs focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-all font-medium"
+                className="w-full min-h-[44px] pl-10 pr-4 py-2.5 rounded-xl border border-slate-300 text-xs focus:outline-none focus:ring-2 focus:ring-blue-600 transition-all font-medium"
               />
-              <User className="w-4 h-4 text-slate-400 absolute left-3.5 top-3" />
+              <User className="w-4 h-4 text-slate-400 absolute left-3.5 top-3.5" />
             </div>
           </div>
 
@@ -191,16 +191,16 @@ export default function LoginPage() {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="••••••••"
-                className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-slate-300 text-xs focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-all font-medium"
+                className="w-full min-h-[44px] pl-10 pr-4 py-2.5 rounded-xl border border-slate-300 text-xs focus:outline-none focus:ring-2 focus:ring-blue-600 transition-all font-medium"
               />
-              <Lock className="w-4 h-4 text-slate-400 absolute left-3.5 top-3" />
+              <Lock className="w-4 h-4 text-slate-400 absolute left-3.5 top-3.5" />
             </div>
           </div>
 
           <button
             type="submit"
             disabled={loading}
-            className="w-full py-2.5 px-4 bg-slate-900 hover:bg-slate-800 text-white font-bold rounded-xl text-xs shadow-md transition-all flex items-center justify-center gap-2"
+            className="w-full min-h-[44px] py-2.5 px-4 bg-slate-900 hover:bg-slate-800 text-white font-bold rounded-xl text-xs shadow-md transition-all flex items-center justify-center gap-2"
           >
             {loading ? 'Authenticating...' : 'Sign In with Email'}
             <ArrowRight className="w-4 h-4" />
@@ -218,7 +218,7 @@ export default function LoginPage() {
 
         <p className="text-center text-xs text-slate-500">
           Don&apos;t have an account?{' '}
-          <Link href="/signup" className="font-bold text-indigo-600 hover:underline">
+          <Link href="/signup" className="font-bold text-blue-600 hover:underline">
             Create an account
           </Link>
         </p>

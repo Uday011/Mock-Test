@@ -139,11 +139,11 @@ export default function ExamResultPage() {
   const isPassing = percentage >= 50;
 
   return (
-    <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-10 space-y-8">
+    <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-10 space-y-6 sm:space-y-8">
       {/* Top Banner & Quick Navigation */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <span className="text-xs font-bold uppercase tracking-wider text-indigo-600">Exam Performance Summary</span>
+          <span className="text-[11px] font-bold uppercase tracking-wider text-blue-700">Exam Performance Report</span>
           <h1 className="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight mt-0.5">
             {attempt.test_title}
           </h1>
@@ -152,18 +152,18 @@ export default function ExamResultPage() {
           </p>
         </div>
 
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2 sm:gap-3">
           <Link
             href="/dashboard"
-            className="px-4 py-2.5 border border-slate-200 hover:bg-slate-50 text-slate-700 font-bold rounded-xl text-xs transition-colors flex items-center gap-1.5 shadow-xs"
+            className="flex-1 sm:flex-none justify-center px-4 py-2.5 border border-slate-200 hover:bg-slate-50 text-slate-700 font-bold rounded-xl text-xs transition-colors flex items-center gap-1.5 shadow-xs"
           >
-            <LayoutDashboard className="w-4 h-4" />
+            <LayoutDashboard className="w-4 h-4 text-blue-600" />
             Dashboard
           </Link>
           <button
             onClick={handleRetakeTest}
             disabled={retaking}
-            className="px-5 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-xl text-xs shadow-md shadow-indigo-100 hover:shadow-lg transition-all flex items-center gap-1.5"
+            className="flex-1 sm:flex-none justify-center px-5 py-2.5 bg-slate-900 hover:bg-slate-800 text-white font-bold rounded-xl text-xs shadow-xs transition-all flex items-center gap-1.5"
           >
             <RotateCcw className="w-4 h-4" />
             {retaking ? 'Preparing...' : 'Retake Exam'}
@@ -172,9 +172,9 @@ export default function ExamResultPage() {
       </div>
 
       {/* Hero Score Gauge & Primary Metrics Card */}
-      <div className="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200 shadow-sm grid grid-cols-1 md:grid-cols-3 gap-6 items-center">
+      <div className="bg-white rounded-2xl sm:rounded-3xl p-5 sm:p-8 border border-slate-200/90 shadow-sm grid grid-cols-1 md:grid-cols-3 gap-6 items-center">
         {/* Left: Overall Score Card */}
-        <div className="md:col-span-1 bg-gradient-to-br from-indigo-50 via-slate-50 to-violet-50 rounded-2xl p-6 text-center border border-indigo-100/80 space-y-3">
+        <div className="md:col-span-1 bg-slate-50 rounded-2xl p-6 text-center border border-slate-200 space-y-3">
           <span className="text-xs font-bold uppercase tracking-wider text-slate-500 block">Final Score</span>
           <div className="flex items-baseline justify-center gap-1">
             <span className="text-4xl sm:text-5xl font-black text-slate-900 font-mono">
@@ -185,7 +185,7 @@ export default function ExamResultPage() {
             </span>
           </div>
 
-          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-white border shadow-xs">
+          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-white border border-slate-200 shadow-2xs">
             <span
               className={`w-2 h-2 rounded-full ${isPassing ? 'bg-emerald-500' : 'bg-rose-500'}`}
             />
@@ -195,34 +195,34 @@ export default function ExamResultPage() {
           </div>
 
           <p className="text-[11px] text-slate-500">
-            {isPassing ? '🎉 Great job! You passed this mock test.' : 'Keep practicing to improve accuracy and speed.'}
+            {isPassing ? '🎉 Great job! You passed this mock examination.' : 'Keep practicing to improve accuracy and speed.'}
           </p>
         </div>
 
         {/* Right: Detailed Metric Cards (Span 2) */}
-        <div className="md:col-span-2 grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4">
-          <div className="p-4 rounded-2xl bg-emerald-50/70 border border-emerald-200 text-center space-y-1">
+        <div className="md:col-span-2 grid grid-cols-2 sm:grid-cols-4 gap-2.5 sm:gap-4">
+          <div className="p-3.5 sm:p-4 rounded-xl sm:rounded-2xl bg-emerald-50/70 border border-emerald-200 text-center space-y-1">
             <span className="text-[11px] font-bold text-emerald-800 uppercase tracking-wider block">Correct</span>
             <p className="text-2xl font-black text-emerald-600 font-mono">{attempt.correct_answers}</p>
             <span className="text-[10px] font-bold text-emerald-700">+{attempt.positive_marks} Marks</span>
           </div>
 
-          <div className="p-4 rounded-2xl bg-rose-50/70 border border-rose-200 text-center space-y-1">
+          <div className="p-3.5 sm:p-4 rounded-xl sm:rounded-2xl bg-rose-50/70 border border-rose-200 text-center space-y-1">
             <span className="text-[11px] font-bold text-rose-800 uppercase tracking-wider block">Incorrect</span>
             <p className="text-2xl font-black text-rose-600 font-mono">{attempt.incorrect_answers}</p>
             <span className="text-[10px] font-bold text-rose-700">-{attempt.negative_marks} Marks</span>
           </div>
 
-          <div className="p-4 rounded-2xl bg-amber-50/70 border border-amber-200 text-center space-y-1">
+          <div className="p-3.5 sm:p-4 rounded-xl sm:rounded-2xl bg-amber-50/70 border border-amber-200 text-center space-y-1">
             <span className="text-[11px] font-bold text-amber-800 uppercase tracking-wider block">Unanswered</span>
             <p className="text-2xl font-black text-amber-600 font-mono">{attempt.unanswered_questions}</p>
             <span className="text-[10px] font-bold text-amber-700">0 Deducted</span>
           </div>
 
-          <div className="p-4 rounded-2xl bg-indigo-50/70 border border-indigo-200 text-center space-y-1">
-            <span className="text-[11px] font-bold text-indigo-800 uppercase tracking-wider block">Accuracy</span>
-            <p className="text-2xl font-black text-indigo-700 font-mono">{attempt.accuracy}%</p>
-            <span className="text-[10px] font-bold text-indigo-600">
+          <div className="p-3.5 sm:p-4 rounded-xl sm:rounded-2xl bg-blue-50/70 border border-blue-200 text-center space-y-1">
+            <span className="text-[11px] font-bold text-blue-800 uppercase tracking-wider block">Accuracy</span>
+            <p className="text-2xl font-black text-blue-700 font-mono">{attempt.accuracy}%</p>
+            <span className="text-[10px] font-bold text-blue-600">
               {formatSeconds(attempt.time_taken_seconds)}
             </span>
           </div>
@@ -230,7 +230,7 @@ export default function ExamResultPage() {
       </div>
 
       {/* AI-POWERED PERFORMANCE COACH & INSIGHTS CARD */}
-      <div className="bg-gradient-to-br from-indigo-900 via-indigo-950 to-slate-900 rounded-3xl p-6 sm:p-8 text-white shadow-xl border border-indigo-800 space-y-6">
+      <div className="bg-slate-900 rounded-2xl sm:rounded-3xl p-6 sm:p-8 text-white shadow-xl border border-slate-800 space-y-6">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div className="space-y-1">
             <div className="flex items-center gap-2">
@@ -375,8 +375,8 @@ export default function ExamResultPage() {
                 onClick={() => setFilterType(f.id as any)}
                 className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-colors ${
                   filterType === f.id
-                    ? 'bg-indigo-600 text-white shadow-xs'
-                    : 'bg-white text-slate-600 hover:bg-slate-100 border border-slate-200'
+                    ? 'bg-slate-900 text-white shadow-xs'
+                    : 'bg-white text-slate-700 hover:bg-slate-100 border border-slate-300'
                 }`}
               >
                 {f.label}
