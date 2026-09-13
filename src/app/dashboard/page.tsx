@@ -89,8 +89,13 @@ export default function StudentDashboardPage() {
     }
   };
 
+  const [showSavedBanner, setShowSavedBanner] = useState(false);
+
   useEffect(() => {
     fetchDashboardData();
+    if (typeof window !== 'undefined' && window.location.search.includes('saved=true')) {
+      setShowSavedBanner(true);
+    }
   }, []);
 
   const handleOpenRename = (test: any) => {
@@ -218,6 +223,30 @@ export default function StudentDashboardPage() {
           </div>
         </div>
       ) : null}
+
+      {/* Test Saved Confirmation Banner */}
+      {showSavedBanner && (
+        <div className="p-4 rounded-2xl bg-emerald-50 border border-emerald-200 text-emerald-900 flex items-center justify-between shadow-xs">
+          <div className="flex items-center gap-3">
+            <div className="w-9 h-9 rounded-xl bg-emerald-100 text-emerald-700 flex items-center justify-center shrink-0">
+              <CheckCircle className="w-5 h-5" />
+            </div>
+            <div>
+              <p className="text-xs font-bold">Practice Test Saved Successfully!</p>
+              <p className="text-[11px] text-emerald-700 mt-0.5">
+                Your test paper has been saved to your dashboard below. You can attempt it anytime at your own pace.
+              </p>
+            </div>
+          </div>
+          <button
+            onClick={() => setShowSavedBanner(false)}
+            className="text-emerald-700 hover:text-emerald-950 text-base font-bold px-2 py-1"
+            aria-label="Dismiss banner"
+          >
+            &times;
+          </button>
+        </div>
+      )}
 
       {/* Hero Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">

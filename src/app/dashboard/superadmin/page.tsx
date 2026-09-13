@@ -135,11 +135,16 @@ export default function SuperadminDashboardPage() {
     }
   };
 
+  const [showSavedBanner, setShowSavedBanner] = useState(false);
+
   useEffect(() => {
     fetchCurrentUser();
     fetchUsers();
     fetchSections();
     fetchTests();
+    if (typeof window !== 'undefined' && window.location.search.includes('saved=true')) {
+      setShowSavedBanner(true);
+    }
   }, []);
 
   // Quick Role Toggle for User
@@ -305,6 +310,30 @@ export default function SuperadminDashboardPage() {
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-10 space-y-8">
+      {/* Test Saved / Published Confirmation Banner */}
+      {showSavedBanner && (
+        <div className="p-4 rounded-2xl bg-emerald-50 border border-emerald-200 text-emerald-900 flex items-center justify-between shadow-xs">
+          <div className="flex items-center gap-3">
+            <div className="w-9 h-9 rounded-xl bg-emerald-100 text-emerald-700 flex items-center justify-center shrink-0">
+              <CheckCircle className="w-5 h-5" />
+            </div>
+            <div>
+              <p className="text-xs font-bold">Platform Mock Test Saved & Published!</p>
+              <p className="text-[11px] text-emerald-700 mt-0.5">
+                The test paper has been stored in the Global Platform Mock Library and is now available across all institutes and student dashboards.
+              </p>
+            </div>
+          </div>
+          <button
+            onClick={() => setShowSavedBanner(false)}
+            className="text-emerald-700 hover:text-emerald-950 text-base font-bold px-2 py-1"
+            aria-label="Dismiss banner"
+          >
+            &times;
+          </button>
+        </div>
+      )}
+
       {/* Superadmin Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>

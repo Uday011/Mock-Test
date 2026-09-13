@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import {
   UploadCloud,
@@ -20,8 +20,14 @@ import {
   HelpCircle,
   FileCheck,
   Zap,
+  Save,
+  BookmarkCheck,
+  Play,
+  Crown,
+  Building2,
+  GraduationCap,
 } from 'lucide-react';
-import { ExtractedQuestion, QuestionOption } from '@/lib/types';
+import { ExtractedQuestion, QuestionOption, UserRole } from '@/lib/types';
 import { LintResult } from '@/lib/parser/linter';
 
 export default function CreateTestPage() {
@@ -67,8 +73,20 @@ export default function CreateTestPage() {
   const [allowReviewMarking, setAllowReviewMarking] = useState(true);
   const [showImmediateResults, setShowImmediateResults] = useState(true);
 
-  const [saveLoading, setSaveLoading] = useState(false);
+  const [currentUser, setCurrentUser] = useState<{ id: string; name: string; email: string; role: UserRole } | null>(null);
+  const [savingAction, setSavingAction] = useState<'start' | 'save_later' | null>(null);
   const [saveError, setSaveError] = useState('');
+
+  useEffect(() => {
+    fetch('/api/auth/me')
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.user) setCurrentUser(data.user);
+      })
+      .catch(() => {});
+  }, []);
+
+  const role = currentUser?.role || 'student';
 
   // Sample data loader for instant 1-click test
   const handleLoadSampleData = () => {
@@ -276,8 +294,8 @@ Explanation: Newton's First Law defines inertia: an object remains in its state 
     setActiveQuestionIdx(targetIdx);
   };
 
-  // Step 3: Publish Test
-  const handlePublishTest = async () => {
+  // Step 3: Save / Publish Test
+  const handleSaveTest = async (action: 'start' | 'save_later') => {
     setSaveError('');
     if (!title.trim()) {
       setSaveError('Please provide a title for the test.');
@@ -291,7 +309,7 @@ Explanation: Newton's First Law defines inertia: an object remains in its state 
       calculatedDuration = customHours * 3600 + customMinutes * 60 + customSeconds;
     }
 
-    setSaveLoading(true);
+    setSavingAction(action);
 
     try {
       const payload = {
@@ -323,11 +341,22 @@ Explanation: Newton's First Law defines inertia: an object remains in its state 
         throw new Error(data.error || 'Failed to save test');
       }
 
-      router.push(`/tests/${data.testId}/start`);
+      if (action === 'start') {
+        router.push(`/tests/${data.testId}/start`);
+      } else {
+        // Save and attempt later / return to respective dashboard
+        if (role === 'superadmin') {
+          router.push('/dashboard/superadmin?saved=true');
+        } else if (role === 'admin') {
+          router.push('/dashboard/admin?saved=true');
+        } else {
+          router.push('/dashboard?saved=true');
+        }
+      }
     } catch (err: any) {
       setSaveError(err.message);
     } finally {
-      setSaveLoading(false);
+      setSavingAction(null);
     }
   };
 
@@ -876,15 +905,15 @@ Explanation: Newton's First Law defines inertia: an object remains in its state 
           <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 pt-4">
             <button
               onClick={() => setCurrentStep(1)}
-              className="px-6 py-3 min-h-[44px] border border-slate-200 text-slate-700 font-bold rounded-xl text-xs flex items-center justify-center gap-1.5"
+              className="px-6 py-3 min-h-[44px] border border-slate-200 text-slate-700 font-bold rounded-xl text-xs flex items-center justify-center gap-1.5 hover:bg-slate-50 transition-colors"
             >
               <ArrowLeft className="w-4 h-4" /> Back to Upload
             </button>
             <button
               onClick={() => setCurrentStep(3)}
-              className="px-8 py-3.5 min-h-[48px] bg-slate-900 hover:bg-slate-800 text-white font-bold rounded-xl text-sm shadow-sm flex items-center justify-center gap-2"
+              className="px-8 py-3.5 min-h-[48px] bg-slate-900 hover:bg-slate-800 text-white font-bold rounded-xl text-sm shadow-sm flex items-center justify-center gap-2 transition-colors"
             >
-              Proceed to Exam Settings
+              Proceed to Exam Settings & Save
               <ArrowRight className="w-4 h-4" />
             </button>
           </div>
@@ -894,11 +923,39 @@ Explanation: Newton's First Law defines inertia: an object remains in its state 
       {/* STEP 3: EXAM SETTINGS */}
       {currentStep === 3 && (
         <div className="space-y-6">
-          <div>
+          <div className="space-y-2">
             <h2 className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight">Configure Exam Settings</h2>
-            <p className="text-xs text-slate-500 mt-1">
+            <p className="text-xs text-slate-500">
               Customize test title, duration, global or per-question marking schemes, and exam behaviors
             </p>
+
+            {/* Role Context Pill */}
+            <div className="flex flex-wrap items-center justify-between gap-2 p-3 bg-slate-50 border border-slate-200 rounded-xl text-xs mt-3">
+              <div className="flex items-center gap-2">
+                {role === 'superadmin' ? (
+                  <>
+                    <span className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-blue-50 text-blue-800 font-bold border border-blue-200 shrink-0">
+                      <Crown className="w-3.5 h-3.5 text-blue-600" /> Platform Super Administrator
+                    </span>
+                    <span className="text-slate-600">You can save this test directly to the platform library, or test-run the exam engine.</span>
+                  </>
+                ) : role === 'admin' ? (
+                  <>
+                    <span className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-amber-50 text-amber-800 font-bold border border-amber-200 shrink-0">
+                      <Building2 className="w-3.5 h-3.5 text-amber-600" /> Institute Administrator
+                    </span>
+                    <span className="text-slate-600">You can save this test directly for your enrolled students, or test-run the exam engine.</span>
+                  </>
+                ) : (
+                  <>
+                    <span className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-emerald-50 text-emerald-800 font-bold border border-emerald-200 shrink-0">
+                      <GraduationCap className="w-3.5 h-3.5 text-emerald-600" /> Student Practice Mode
+                    </span>
+                    <span className="text-slate-600">You can start this exam right now, or save it to your dashboard to practice later.</span>
+                  </>
+                )}
+              </div>
+            </div>
           </div>
 
           {saveError && (
@@ -1193,27 +1250,136 @@ Explanation: Newton's First Law defines inertia: an object remains in its state 
           <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 pt-6 border-t border-slate-200">
             <button
               onClick={() => setCurrentStep(2)}
-              className="px-6 py-3 min-h-[44px] border border-slate-200 text-slate-700 font-bold rounded-xl text-xs flex items-center justify-center gap-1.5"
+              className="px-6 py-3 min-h-[44px] border border-slate-200 text-slate-700 font-bold rounded-xl text-xs flex items-center justify-center gap-1.5 hover:bg-slate-50 transition-colors"
             >
               <ArrowLeft className="w-4 h-4" /> Back to Review Questions
             </button>
-            <button
-              onClick={handlePublishTest}
-              disabled={saveLoading}
-              className="px-8 py-3.5 min-h-[48px] bg-slate-900 hover:bg-slate-800 text-white font-bold rounded-xl text-sm shadow-sm transition-all flex items-center justify-center gap-2"
-            >
-              {saveLoading ? (
+
+            <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2.5">
+              {/* Role-tailored Actions */}
+              {role === 'superadmin' ? (
                 <>
-                  <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                  Publishing Test...
+                  <button
+                    type="button"
+                    onClick={() => handleSaveTest('start')}
+                    disabled={Boolean(savingAction)}
+                    className="px-5 py-3 min-h-[48px] bg-white hover:bg-slate-50 text-slate-800 font-bold rounded-xl text-xs sm:text-sm border border-slate-300 shadow-2xs transition-all flex items-center justify-center gap-2"
+                  >
+                    {savingAction === 'start' ? (
+                      <>
+                        <div className="w-4 h-4 border-2 border-slate-800 border-t-transparent rounded-full animate-spin" />
+                        Preparing Exam...
+                      </>
+                    ) : (
+                      <>
+                        <Play className="w-4 h-4 text-blue-600" />
+                        Save & Test-Run Exam
+                      </>
+                    )}
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => handleSaveTest('save_later')}
+                    disabled={Boolean(savingAction)}
+                    className="px-7 py-3.5 min-h-[48px] bg-slate-900 hover:bg-slate-800 text-white font-bold rounded-xl text-xs sm:text-sm shadow-md transition-all flex items-center justify-center gap-2"
+                  >
+                    {savingAction === 'save_later' ? (
+                      <>
+                        <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                        Saving to Platform...
+                      </>
+                    ) : (
+                      <>
+                        <Save className="w-4 h-4 text-emerald-400" />
+                        Save Test (Publish to Platform)
+                      </>
+                    )}
+                  </button>
+                </>
+              ) : role === 'admin' ? (
+                <>
+                  <button
+                    type="button"
+                    onClick={() => handleSaveTest('start')}
+                    disabled={Boolean(savingAction)}
+                    className="px-5 py-3 min-h-[48px] bg-white hover:bg-slate-50 text-slate-800 font-bold rounded-xl text-xs sm:text-sm border border-slate-300 shadow-2xs transition-all flex items-center justify-center gap-2"
+                  >
+                    {savingAction === 'start' ? (
+                      <>
+                        <div className="w-4 h-4 border-2 border-slate-800 border-t-transparent rounded-full animate-spin" />
+                        Preparing Exam...
+                      </>
+                    ) : (
+                      <>
+                        <Play className="w-4 h-4 text-amber-600" />
+                        Save & Test-Run Exam
+                      </>
+                    )}
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => handleSaveTest('save_later')}
+                    disabled={Boolean(savingAction)}
+                    className="px-7 py-3.5 min-h-[48px] bg-slate-900 hover:bg-slate-800 text-white font-bold rounded-xl text-xs sm:text-sm shadow-md transition-all flex items-center justify-center gap-2"
+                  >
+                    {savingAction === 'save_later' ? (
+                      <>
+                        <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                        Publishing to Institute...
+                      </>
+                    ) : (
+                      <>
+                        <Save className="w-4 h-4 text-emerald-400" />
+                        Save Test (Publish for Students)
+                      </>
+                    )}
+                  </button>
                 </>
               ) : (
+                /* Student Role: Save & Attempt Later vs Start Mock Exam Now */
                 <>
-                  Publish & Start Mock Exam
-                  <ArrowRight className="w-4 h-4 text-blue-400" />
+                  <button
+                    type="button"
+                    onClick={() => handleSaveTest('save_later')}
+                    disabled={Boolean(savingAction)}
+                    className="px-5 py-3 min-h-[48px] bg-white hover:bg-slate-50 text-slate-800 font-bold rounded-xl text-xs sm:text-sm border border-slate-300 shadow-2xs transition-all flex items-center justify-center gap-2"
+                  >
+                    {savingAction === 'save_later' ? (
+                      <>
+                        <div className="w-4 h-4 border-2 border-slate-800 border-t-transparent rounded-full animate-spin" />
+                        Saving to Dashboard...
+                      </>
+                    ) : (
+                      <>
+                        <BookmarkCheck className="w-4 h-4 text-blue-600" />
+                        Save & Attempt Later
+                      </>
+                    )}
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => handleSaveTest('start')}
+                    disabled={Boolean(savingAction)}
+                    className="px-7 py-3.5 min-h-[48px] bg-slate-900 hover:bg-slate-800 text-white font-bold rounded-xl text-xs sm:text-sm shadow-md transition-all flex items-center justify-center gap-2"
+                  >
+                    {savingAction === 'start' ? (
+                      <>
+                        <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                        Launching Exam...
+                      </>
+                    ) : (
+                      <>
+                        Start Mock Exam Now
+                        <ArrowRight className="w-4 h-4 text-blue-400" />
+                      </>
+                    )}
+                  </button>
                 </>
               )}
-            </button>
+            </div>
           </div>
         </div>
       )}
