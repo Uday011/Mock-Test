@@ -17,11 +17,10 @@ export async function POST(
   req: NextRequest,
   { params }: { params: Promise<{ action: string }> }
 ) {
-  const { action } = await params;
-  const db = getDb();
-  seedInitialData();
-
   try {
+    const { action } = await params;
+    const db = getDb();
+    seedInitialData();
     if (action === 'demo') {
       const url = new URL(req.url);
       const queryRole = url.searchParams.get('role') as UserRole || 'student';
@@ -141,16 +140,21 @@ export async function GET(
   req: NextRequest,
   { params }: { params: Promise<{ action: string }> }
 ) {
-  const { action } = await params;
-  seedInitialData();
+  try {
+    const { action } = await params;
+    seedInitialData();
 
-  if (action === 'me') {
-    const user = await getCurrentUser();
-    if (!user) {
-      return NextResponse.json({ user: null });
+    if (action === 'me') {
+      const user = await getCurrentUser();
+      if (!user) {
+        return NextResponse.json({ user: null });
+      }
+      return NextResponse.json({ user });
     }
-    return NextResponse.json({ user });
-  }
 
-  return NextResponse.json({ error: 'Not found' }, { status: 404 });
+    return NextResponse.json({ error: 'Not found' }, { status: 404 });
+  } catch (err: any) {
+    console.error('[Auth GET Error]:', err);
+    return NextResponse.json({ error: err?.message || 'Server error' }, { status: 500 });
+  }
 }

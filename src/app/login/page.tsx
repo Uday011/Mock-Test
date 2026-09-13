@@ -36,7 +36,14 @@ export default function LoginPage() {
         body: JSON.stringify({ email, password }),
       });
 
-      const data = await res.json();
+      const resText = await res.text();
+      let data: any = {};
+      try {
+        data = resText ? JSON.parse(resText) : {};
+      } catch {
+        throw new Error(`Server response error (${res.status}): ${resText.slice(0, 120) || res.statusText || 'Empty response'}`);
+      }
+
       if (!res.ok) {
         throw new Error(data.error || 'Failed to sign in');
       }
@@ -60,7 +67,13 @@ export default function LoginPage() {
     setError('');
     try {
       const res = await fetch(`/api/auth/demo?role=${role}`, { method: 'POST' });
-      const data = await res.json();
+      const resText = await res.text();
+      let data: any = {};
+      try {
+        data = resText ? JSON.parse(resText) : {};
+      } catch {
+        throw new Error(`Server response error (${res.status}): ${resText.slice(0, 120) || res.statusText || 'Empty response'}`);
+      }
       if (!res.ok) throw new Error(data.error || 'Demo login failed');
 
       if (role === 'superadmin') {

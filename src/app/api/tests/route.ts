@@ -5,15 +5,14 @@ import { getCurrentUser, getOrCreateDemoUser } from '@/lib/auth';
 import crypto from 'crypto';
 
 export async function GET(req: NextRequest) {
-  const db = getDb();
-  seedInitialData();
-
-  let user = await getCurrentUser();
-  if (!user) {
-    user = getOrCreateDemoUser();
-  }
-
   try {
+    const db = getDb();
+    seedInitialData();
+
+    let user = await getCurrentUser();
+    if (!user) {
+      user = getOrCreateDemoUser();
+    }
     let testsQuery = '';
     let params: any[] = [];
 
@@ -164,15 +163,14 @@ export async function GET(req: NextRequest) {
 }
 
 export async function POST(req: NextRequest) {
-  const db = getDb();
-  seedInitialData();
-
-  let user = await getCurrentUser();
-  if (!user) {
-    user = getOrCreateDemoUser();
-  }
-
   try {
+    const db = getDb();
+    seedInitialData();
+
+    let user = await getCurrentUser();
+    if (!user) {
+      user = getOrCreateDemoUser();
+    }
     const body = await req.json();
     const {
       title,

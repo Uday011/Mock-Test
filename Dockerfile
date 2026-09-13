@@ -24,14 +24,12 @@ ENV PORT=3000
 ENV HOSTNAME="0.0.0.0"
 
 # Create data directory for SQLite database persistence
-RUN mkdir -p /app/data && chown -R node:node /app/data
+RUN mkdir -p /app/data && chmod 777 /app/data
 
 COPY --from=builder /app/public ./public
 COPY --from=builder /app/.next ./.next
 COPY --from=builder /app/node_modules ./node_modules
 COPY --from=builder /app/package.json ./package.json
-
-USER node
 
 EXPOSE 3000
 

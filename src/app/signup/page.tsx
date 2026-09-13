@@ -26,7 +26,14 @@ export default function SignUpPage() {
         body: JSON.stringify({ name, email, password, role }),
       });
 
-      const data = await res.json();
+      const resText = await res.text();
+      let data: any = {};
+      try {
+        data = resText ? JSON.parse(resText) : {};
+      } catch {
+        throw new Error(`Server response error (${res.status}): ${resText.slice(0, 120) || res.statusText || 'Empty response'}`);
+      }
+
       if (!res.ok) {
         throw new Error(data.error || 'Registration failed');
       }
@@ -42,7 +49,8 @@ export default function SignUpPage() {
   const handleDemoLogin = async () => {
     try {
       const res = await fetch('/api/auth/demo', { method: 'POST' });
-      const data = await res.json();
+      const resText = await res.text();
+      const data = resText ? JSON.parse(resText) : {};
       if (data.success) {
         router.push('/dashboard');
       }

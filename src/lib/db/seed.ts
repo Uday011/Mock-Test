@@ -2,28 +2,34 @@ import { getDb } from './index';
 import { hashPassword, getOrCreateRoleDemoUser } from '../auth';
 import crypto from 'crypto';
 
+let hasSeeded = false;
+
 export function seedInitialData(): void {
-  const db = getDb();
+  if (hasSeeded) return;
+  hasSeeded = true;
 
-  // 1. Seed Superadmin, Admin, and Student users
-  const superAdmin = getOrCreateRoleDemoUser('superadmin');
-  const instituteAdmin = getOrCreateRoleDemoUser('admin');
-  const student = getOrCreateRoleDemoUser('student');
+  try {
+    const db = getDb();
 
-  // 2. Seed Default Sections/Categories
-  const sectionCountStmt = db.prepare('SELECT COUNT(*) as count FROM sections');
-  const sectionCount = (sectionCountStmt.get() as any)?.count || 0;
+    // 1. Seed Superadmin, Admin, and Student users
+    const superAdmin = getOrCreateRoleDemoUser('superadmin');
+    const instituteAdmin = getOrCreateRoleDemoUser('admin');
+    const student = getOrCreateRoleDemoUser('student');
 
-  if (sectionCount === 0) {
-    const insertSection = db.prepare(
-      'INSERT INTO sections (id, name, description, icon, is_active, created_at) VALUES (?, ?, ?, ?, 1, ?)'
-    );
-    const now = new Date().toISOString();
-    insertSection.run('sec-medical', 'Medical Entrance (NEET)', 'Physics, Chemistry, and Biology mock papers designed for pre-medical aspirants.', 'Stethoscope', now);
-    insertSection.run('sec-engineering', 'Engineering Entrance (JEE)', 'Advanced Mathematics, Mechanics, and Physical Sciences for engineering mock exams.', 'Cpu', now);
-    insertSection.run('sec-civil', 'Civil Services & UPSC', 'General Studies, Reasoning, Quantitative Aptitude, and Indian Polity.', 'Award', now);
-    insertSection.run('sec-general', 'Science & Computing', 'Foundational Computer Science, General Science, and Logical Aptitude.', 'Layers', now);
-  }
+    // 2. Seed Default Sections/Categories
+    const sectionCountStmt = db.prepare('SELECT COUNT(*) as count FROM sections');
+    const sectionCount = (sectionCountStmt.get() as any)?.count || 0;
+
+    if (sectionCount === 0) {
+      const insertSection = db.prepare(
+        'INSERT OR IGNORE INTO sections (id, name, description, icon, is_active, created_at) VALUES (?, ?, ?, ?, 1, ?)'
+      );
+      const now = new Date().toISOString();
+      insertSection.run('sec-medical', 'Medical Entrance (NEET)', 'Physics, Chemistry, and Biology mock papers designed for pre-medical aspirants.', 'Stethoscope', now);
+      insertSection.run('sec-engineering', 'Engineering Entrance (JEE)', 'Advanced Mathematics, Mechanics, and Physical Sciences for engineering mock exams.', 'Cpu', now);
+      insertSection.run('sec-civil', 'Civil Services & UPSC', 'General Studies, Reasoning, Quantitative Aptitude, and Indian Polity.', 'Award', now);
+      insertSection.run('sec-general', 'Science & Computing', 'Foundational Computer Science, General Science, and Logical Aptitude.', 'Layers', now);
+    }
 
   // 3. Check if tests already exist for the institute admin or demo user
   const countStmt = db.prepare('SELECT COUNT(*) as count FROM tests WHERE user_id = ?');
@@ -245,4 +251,7 @@ export function seedInitialData(): void {
     85.71,
     new Date(Date.now() - 2400000).toISOString()
   );
+  } catch (err) {
+    console.warn('[Seed initial data error]:', err);
+  }
 }

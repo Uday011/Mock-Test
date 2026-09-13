@@ -5,22 +5,47 @@ import fs from 'fs';
 // Maintain a singleton database connection across Next.js API calls
 let dbInstance: DatabaseSync | null = null;
 
+function resolveDataDirectory(): string {
+  const customDir = process.env.DB_DIR;
+  const preferred = customDir || path.join(process.cwd(), 'data');
+  try {
+    if (!fs.existsSync(preferred)) {
+      fs.mkdirSync(preferred, { recursive: true });
+    }
+    const testFile = path.join(preferred, `.write-probe-${Date.now()}`);
+    fs.writeFileSync(testFile, 'test');
+    fs.unlinkSync(testFile);
+    return preferred;
+  } catch (err) {
+    console.warn(`[Database] Directory ${preferred} not writable (${err}), using /tmp/data fallback.`);
+    const fallback = path.join('/tmp', 'examcraft-data');
+    if (!fs.existsSync(fallback)) {
+      fs.mkdirSync(fallback, { recursive: true });
+    }
+    return fallback;
+  }
+}
+
 export function getDb(): DatabaseSync {
   if (dbInstance) {
     return dbInstance;
   }
 
-  const dataDir = path.join(process.cwd(), 'data');
-  if (!fs.existsSync(dataDir)) {
-    fs.mkdirSync(dataDir, { recursive: true });
-  }
-
+  const dataDir = resolveDataDirectory();
   const dbPath = path.join(dataDir, 'mocktest.db');
   const db = new DatabaseSync(dbPath);
 
   // Enable WAL and foreign keys
-  db.exec('PRAGMA journal_mode = WAL;');
-  db.exec('PRAGMA foreign_keys = ON;');
+  try {
+    db.exec('PRAGMA journal_mode = WAL;');
+  } catch (e) {
+    console.warn('[Database] WAL mode setting warning:', e);
+  }
+  try {
+    db.exec('PRAGMA foreign_keys = ON;');
+  } catch (e) {
+    console.warn('[Database] Foreign keys setting warning:', e);
+  }
 
   // Initialize schema
   db.exec(`
