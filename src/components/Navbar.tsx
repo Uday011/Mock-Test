@@ -71,6 +71,24 @@ export default function Navbar() {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, [pathname]);
 
+  // Close mobile menu whenever the route changes
+  useEffect(() => {
+    setMobileMenuOpen(false);
+    setShowRoleMenu(false);
+  }, [pathname]);
+
+  // Lock background scroll when mobile drawer is open
+  useEffect(() => {
+    if (mobileMenuOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, [mobileMenuOpen]);
+
   const handleLogout = async () => {
     await fetch('/api/auth/logout', { method: 'POST' });
     setUser(null);
@@ -116,7 +134,7 @@ export default function Navbar() {
 
   return (
     <>
-      <header className="sticky top-0 z-40 w-full border-b border-slate-200/80 bg-white/95 backdrop-blur-md">
+      <header className="sticky top-0 z-50 w-full border-b border-slate-200/80 bg-white/95 backdrop-blur-md">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
           {/* Logo & Brand */}
           <div className="flex items-center gap-6 lg:gap-8">
@@ -357,167 +375,214 @@ export default function Navbar() {
             </button>
           </div>
         </div>
+      </header>
 
-        {/* Mobile Slide-Out Drawer Menu */}
-        {mobileMenuOpen && (
-          <div className="md:hidden fixed inset-x-0 top-16 bottom-0 z-50 bg-slate-900/50 backdrop-blur-xs flex flex-col justify-start animate-fade-in">
-            <div className="bg-white border-b border-slate-200 p-4 shadow-2xl space-y-4 max-h-[85dvh] overflow-y-auto">
-              {/* User Info on Mobile */}
-              {user ? (
-                <div className="flex items-center justify-between p-3 rounded-2xl bg-slate-50 border border-slate-200">
-                  <div className="flex items-center gap-3">
-                    <div className="w-9 h-9 rounded-full bg-slate-900 text-white font-bold text-xs flex items-center justify-center">
-                      {user.name.charAt(0).toUpperCase()}
-                    </div>
-                    <div>
-                      <div className="text-xs font-bold text-slate-900">{user.name}</div>
-                      <div className="text-[10px] text-slate-500">{user.email}</div>
-                    </div>
+      {/* Mobile Slide-Out Drawer Menu - High z-index (z-[100]) outside header to eliminate any clipping or backdrop-blur nesting issues */}
+      {mobileMenuOpen && (
+        <div className="md:hidden fixed inset-0 z-[100] flex flex-col bg-slate-950/60 backdrop-blur-xs animate-fade-in">
+          {/* Backdrop Tap to Close */}
+          <div
+            className="absolute inset-0 -z-10"
+            onClick={() => setMobileMenuOpen(false)}
+            aria-hidden="true"
+          />
+
+          {/* Drawer Top Navigation Bar */}
+          <div className="h-16 px-4 flex items-center justify-between bg-white border-b border-slate-200 shrink-0 shadow-xs">
+            <Link
+              href="/"
+              onClick={() => setMobileMenuOpen(false)}
+              className="flex items-center gap-2.5"
+            >
+              <div className="w-9 h-9 rounded-xl bg-slate-900 border border-slate-800 flex items-center justify-center text-white shadow-xs">
+                <BookOpen className="w-4 h-4 text-blue-400" />
+              </div>
+              <span className="font-extrabold text-base text-slate-900 tracking-tight flex items-center gap-1.5">
+                ExamCraft{' '}
+                <span className="text-[10px] px-1.5 py-0.5 rounded font-bold bg-slate-100 text-slate-700 border border-slate-300 uppercase tracking-wider">
+                  PRO
+                </span>
+              </span>
+            </Link>
+
+            <button
+              onClick={() => setMobileMenuOpen(false)}
+              className="w-10 h-10 rounded-xl flex items-center justify-center text-slate-700 hover:bg-slate-100 border border-slate-200 transition-colors"
+              aria-label="Close Navigation Menu"
+            >
+              <X className="w-5 h-5" />
+            </button>
+          </div>
+
+          {/* Drawer Scrollable Content */}
+          <div className="flex-1 bg-white p-4 sm:p-5 space-y-4 overflow-y-auto pb-safe">
+            {/* User Info on Mobile */}
+            {user ? (
+              <div className="flex items-center justify-between p-3.5 rounded-2xl bg-slate-50 border border-slate-200">
+                <div className="flex items-center gap-3">
+                  <div className="w-9 h-9 rounded-full bg-slate-900 text-white font-bold text-xs flex items-center justify-center">
+                    {user.name.charAt(0).toUpperCase()}
                   </div>
-                  <button
-                    onClick={handleLogout}
-                    className="px-2.5 py-1.5 rounded-lg text-[11px] font-bold text-rose-600 hover:bg-rose-50 border border-rose-200 flex items-center gap-1"
-                  >
-                    <LogOut className="w-3.5 h-3.5" />
-                    Logout
-                  </button>
+                  <div>
+                    <div className="text-xs font-bold text-slate-900">{user.name}</div>
+                    <div className="text-[10px] text-slate-500">{user.email}</div>
+                  </div>
                 </div>
-              ) : (
-                <div className="grid grid-cols-2 gap-2">
-                  <button
-                    onClick={() => {
-                      setMobileMenuOpen(false);
-                      handleSwitchRole('student');
-                    }}
-                    className="py-2.5 rounded-xl bg-slate-100 text-slate-800 text-xs font-bold text-center border border-slate-200"
-                  >
-                    Try Demo
-                  </button>
-                  <Link
-                    href="/login"
-                    onClick={() => setMobileMenuOpen(false)}
-                    className="py-2.5 rounded-xl bg-slate-900 text-white text-xs font-bold text-center shadow-xs"
-                  >
-                    Sign In
-                  </Link>
-                </div>
+                <button
+                  onClick={() => {
+                    setMobileMenuOpen(false);
+                    handleLogout();
+                  }}
+                  className="px-3 py-1.5 rounded-lg text-xs font-bold text-rose-600 hover:bg-rose-50 border border-rose-200 flex items-center gap-1 min-h-[36px]"
+                >
+                  <LogOut className="w-3.5 h-3.5" />
+                  Logout
+                </button>
+              </div>
+            ) : (
+              <div className="grid grid-cols-2 gap-2">
+                <button
+                  onClick={() => {
+                    setMobileMenuOpen(false);
+                    handleSwitchRole('student');
+                  }}
+                  className="min-h-[44px] py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-800 text-xs font-bold text-center border border-slate-200 transition-colors flex items-center justify-center"
+                >
+                  Try Demo
+                </button>
+                <Link
+                  href="/login"
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="min-h-[44px] py-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold text-center shadow-xs transition-colors flex items-center justify-center"
+                >
+                  Sign In
+                </Link>
+              </div>
+            )}
+
+            {/* 1-Click Role Switcher on Mobile */}
+            <div>
+              <p className="text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-2">
+                Active Persona (Tap to Switch)
+              </p>
+              <div className="grid grid-cols-3 gap-2">
+                <button
+                  onClick={() => {
+                    setMobileMenuOpen(false);
+                    handleSwitchRole('student');
+                  }}
+                  className={`p-2.5 rounded-xl border text-center transition-all flex flex-col items-center min-h-[48px] ${
+                    role === 'student'
+                      ? 'border-emerald-600 bg-emerald-50 text-emerald-900 font-bold shadow-xs'
+                      : 'border-slate-200 text-slate-600 hover:bg-slate-50'
+                  }`}
+                >
+                  <GraduationCap className="w-4 h-4 text-emerald-600 mb-1" />
+                  <span className="text-[11px] font-bold leading-tight">Student</span>
+                </button>
+
+                <button
+                  onClick={() => {
+                    setMobileMenuOpen(false);
+                    handleSwitchRole('admin');
+                  }}
+                  className={`p-2.5 rounded-xl border text-center transition-all flex flex-col items-center min-h-[48px] ${
+                    role === 'admin'
+                      ? 'border-amber-600 bg-amber-50 text-amber-900 font-bold shadow-xs'
+                      : 'border-slate-200 text-slate-600 hover:bg-slate-50'
+                  }`}
+                >
+                  <Building2 className="w-4 h-4 text-amber-600 mb-1" />
+                  <span className="text-[11px] font-bold leading-tight">Admin</span>
+                </button>
+
+                <button
+                  onClick={() => {
+                    setMobileMenuOpen(false);
+                    handleSwitchRole('superadmin');
+                  }}
+                  className={`p-2.5 rounded-xl border text-center transition-all flex flex-col items-center min-h-[48px] ${
+                    role === 'superadmin'
+                      ? 'border-blue-600 bg-blue-50 text-blue-900 font-bold shadow-xs'
+                      : 'border-slate-200 text-slate-600 hover:bg-slate-50'
+                  }`}
+                >
+                  <Crown className="w-4 h-4 text-blue-600 mb-1" />
+                  <span className="text-[11px] font-bold leading-tight">Super Admin</span>
+                </button>
+              </div>
+            </div>
+
+            {/* Mobile Navigation Links */}
+            <div className="space-y-1.5 pt-2 border-t border-slate-100">
+              <Link
+                href="/dashboard"
+                onClick={() => setMobileMenuOpen(false)}
+                className={`flex items-center gap-2.5 px-3.5 py-3 rounded-xl text-xs font-semibold min-h-[44px] transition-colors ${
+                  pathname === '/dashboard' ? 'bg-slate-900 text-white font-bold' : 'text-slate-700 hover:bg-slate-50'
+                }`}
+              >
+                <LayoutDashboard className="w-4 h-4 text-blue-500" />
+                {role === 'student' ? 'Student Dashboard' : 'Student View'}
+              </Link>
+
+              <Link
+                href="/tests/create"
+                onClick={() => setMobileMenuOpen(false)}
+                className={`flex items-center gap-2.5 px-3.5 py-3 rounded-xl text-xs font-semibold min-h-[44px] transition-colors ${
+                  pathname === '/tests/create' ? 'bg-blue-600 text-white font-bold' : 'text-slate-700 hover:bg-slate-50'
+                }`}
+              >
+                <PlusCircle className="w-4 h-4" />
+                Create New Test
+              </Link>
+
+              {(role === 'admin' || role === 'superadmin') && (
+                <Link
+                  href="/dashboard/admin"
+                  onClick={() => setMobileMenuOpen(false)}
+                  className={`flex items-center gap-2.5 px-3.5 py-3 rounded-xl text-xs font-semibold min-h-[44px] transition-colors ${
+                    pathname === '/dashboard/admin' ? 'bg-slate-900 text-white font-bold' : 'text-slate-700 hover:bg-slate-50'
+                  }`}
+                >
+                  <Building2 className="w-4 h-4 text-amber-500" />
+                  Institute Admin Hub
+                </Link>
               )}
 
-              {/* 1-Click Role Switcher on Mobile */}
-              <div>
-                <p className="text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-2">
-                  Active Persona (Tap to Switch)
-                </p>
-                <div className="grid grid-cols-3 gap-2">
-                  <button
-                    onClick={() => handleSwitchRole('student')}
-                    className={`p-2.5 rounded-xl border text-center transition-all flex flex-col items-center ${
-                      role === 'student'
-                        ? 'border-emerald-600 bg-emerald-50 text-emerald-900 font-bold'
-                        : 'border-slate-200 text-slate-600 hover:bg-slate-50'
-                    }`}
-                  >
-                    <GraduationCap className="w-4 h-4 text-emerald-600 mb-1" />
-                    <span className="text-[11px] font-bold leading-tight">Student</span>
-                  </button>
-
-                  <button
-                    onClick={() => handleSwitchRole('admin')}
-                    className={`p-2.5 rounded-xl border text-center transition-all flex flex-col items-center ${
-                      role === 'admin'
-                        ? 'border-amber-600 bg-amber-50 text-amber-900 font-bold'
-                        : 'border-slate-200 text-slate-600 hover:bg-slate-50'
-                    }`}
-                  >
-                    <Building2 className="w-4 h-4 text-amber-600 mb-1" />
-                    <span className="text-[11px] font-bold leading-tight">Admin</span>
-                  </button>
-
-                  <button
-                    onClick={() => handleSwitchRole('superadmin')}
-                    className={`p-2.5 rounded-xl border text-center transition-all flex flex-col items-center ${
-                      role === 'superadmin'
-                        ? 'border-slate-900 bg-slate-900 text-white font-bold'
-                        : 'border-slate-200 text-slate-600 hover:bg-slate-50'
-                    }`}
-                  >
-                    <Crown className="w-4 h-4 text-purple-400 mb-1" />
-                    <span className="text-[11px] font-bold leading-tight">Super Admin</span>
-                  </button>
-                </div>
-              </div>
-
-              {/* Mobile Navigation Links */}
-              <div className="space-y-1 pt-2 border-t border-slate-100">
+              {role === 'superadmin' && (
                 <Link
-                  href="/dashboard"
+                  href="/dashboard/superadmin"
                   onClick={() => setMobileMenuOpen(false)}
-                  className={`flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-xs font-semibold ${
-                    pathname === '/dashboard' ? 'bg-slate-900 text-white font-bold' : 'text-slate-700 hover:bg-slate-50'
+                  className={`flex items-center gap-2.5 px-3.5 py-3 rounded-xl text-xs font-semibold min-h-[44px] transition-colors ${
+                    pathname === '/dashboard/superadmin' ? 'bg-slate-900 text-white font-bold' : 'text-slate-700 hover:bg-slate-50'
                   }`}
                 >
-                  <LayoutDashboard className="w-4 h-4" />
-                  {role === 'student' ? 'Student Dashboard' : 'Student View'}
+                  <Crown className="w-4 h-4 text-blue-400" />
+                  Master Superadmin Control
                 </Link>
-
-                <Link
-                  href="/tests/create"
-                  onClick={() => setMobileMenuOpen(false)}
-                  className={`flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-xs font-semibold ${
-                    pathname === '/tests/create' ? 'bg-blue-600 text-white font-bold' : 'text-slate-700 hover:bg-slate-50'
-                  }`}
-                >
-                  <PlusCircle className="w-4 h-4" />
-                  Create New Test
-                </Link>
-
-                {(role === 'admin' || role === 'superadmin') && (
-                  <Link
-                    href="/dashboard/admin"
-                    onClick={() => setMobileMenuOpen(false)}
-                    className={`flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-xs font-semibold ${
-                      pathname === '/dashboard/admin' ? 'bg-slate-900 text-white font-bold' : 'text-slate-700 hover:bg-slate-50'
-                    }`}
-                  >
-                    <Building2 className="w-4 h-4" />
-                    Institute Admin Hub
-                  </Link>
-                )}
-
-                {role === 'superadmin' && (
-                  <Link
-                    href="/dashboard/superadmin"
-                    onClick={() => setMobileMenuOpen(false)}
-                    className={`flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-xs font-semibold ${
-                      pathname === '/dashboard/superadmin' ? 'bg-slate-900 text-white font-bold' : 'text-slate-700 hover:bg-slate-50'
-                    }`}
-                  >
-                    <Crown className="w-4 h-4" />
-                    Master Superadmin Control
-                  </Link>
-                )}
-              </div>
-
-              {/* AI Status on Mobile */}
-              <button
-                onClick={() => {
-                  setMobileMenuOpen(false);
-                  setShowSettings(true);
-                }}
-                className="w-full flex items-center justify-between p-3 rounded-xl bg-slate-50 border border-slate-200 text-xs font-semibold text-slate-700"
-              >
-                <div className="flex items-center gap-2">
-                  <Sparkles className="w-4 h-4 text-amber-500" />
-                  <span>Gemini AI Coach & Parser Status</span>
-                </div>
-                <span className="text-[10px] font-bold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200">
-                  Active
-                </span>
-              </button>
+              )}
             </div>
+
+            {/* AI Status on Mobile */}
+            <button
+              onClick={() => {
+                setMobileMenuOpen(false);
+                setShowSettings(true);
+              }}
+              className="w-full flex items-center justify-between p-3.5 rounded-xl bg-slate-50 hover:bg-slate-100 border border-slate-200 text-xs font-semibold text-slate-700 min-h-[44px] transition-colors"
+            >
+              <div className="flex items-center gap-2">
+                <Sparkles className="w-4 h-4 text-amber-500" />
+                <span>Gemini AI Coach & Parser Status</span>
+              </div>
+              <span className="text-[10px] font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200">
+                Active
+              </span>
+            </button>
           </div>
-        )}
-      </header>
+        </div>
+      )}
 
       {/* AI Settings Modal */}
       {showSettings && (
