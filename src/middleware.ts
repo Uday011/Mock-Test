@@ -12,7 +12,6 @@ export function middleware(req: NextRequest) {
     '/mistakes',
     '/performance',
     '/question-bank',
-    '/library',
     '/settings',
     '/onboarding',
   ];
@@ -38,7 +37,6 @@ export const config = {
     '/mistakes/:path*',
     '/performance/:path*',
     '/question-bank/:path*',
-    '/library/:path*',
     '/settings/:path*',
     '/onboarding/:path*',
   ],

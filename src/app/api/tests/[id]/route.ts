@@ -10,9 +10,28 @@ export async function GET(
   const { id } = await params;
   const db = getDb();
 
+  let user = await getCurrentUser();
+  if (!user) user = getOrCreateDemoUser();
+
   try {
-    const testStmt = db.prepare('SELECT * FROM tests WHERE id = ?');
-    const test = testStmt.get(id) as any;
+    const testStmt = db.prepare(`
+      SELECT 
+        t.*,
+        u.name as creator_name,
+        u.role as creator_role,
+        ep.headline as creator_headline,
+        ep.institute_name as creator_institute,
+        ep.verification_status as creator_verification,
+        ep.followers_count as creator_followers_count,
+        CASE WHEN st.id IS NOT NULL THEN 1 ELSE 0 END as is_bookmarked,
+        (SELECT COUNT(*) FROM test_attempts WHERE test_id = t.id AND status = 'completed') as total_attempts_count
+      FROM tests t
+      LEFT JOIN users u ON u.id = t.user_id
+      LEFT JOIN educator_profiles ep ON ep.user_id = t.user_id
+      LEFT JOIN saved_tests st ON st.test_id = t.id AND st.user_id = ?
+      WHERE t.id = ?
+    `);
+    const test = testStmt.get(user.id, id) as any;
 
     if (!test) {
       return NextResponse.json({ error: 'Test not found' }, { status: 404 });
@@ -36,6 +55,11 @@ export async function GET(
     return NextResponse.json({
       test: {
         ...test,
+        is_bookmarked: Boolean(test.is_bookmarked),
+        is_paid: Boolean(test.is_paid),
+        trust_label: test.trust_label || 'Community Created',
+        rating: test.rating || 4.8,
+        total_attempts_count: test.total_attempts_count || 0,
         shuffle_questions: Boolean(test.shuffle_questions),
         shuffle_options: Boolean(test.shuffle_options),
         allow_navigation: Boolean(test.allow_navigation),

@@ -380,6 +380,40 @@ export function getDb(): DatabaseSync {
       FOREIGN KEY (topic_id) REFERENCES syllabus_nodes(id) ON DELETE CASCADE
     );
 
+    CREATE TABLE IF NOT EXISTS test_reports (
+      id TEXT PRIMARY KEY,
+      test_id TEXT NOT NULL,
+      user_id TEXT NOT NULL,
+      question_id TEXT,
+      category TEXT NOT NULL,
+      description TEXT NOT NULL,
+      status TEXT NOT NULL DEFAULT 'pending',
+      admin_notes TEXT,
+      created_at TEXT NOT NULL,
+      FOREIGN KEY (test_id) REFERENCES tests(id) ON DELETE CASCADE,
+      FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+    );
+
+    CREATE TABLE IF NOT EXISTS saved_tests (
+      id TEXT PRIMARY KEY,
+      user_id TEXT NOT NULL,
+      test_id TEXT NOT NULL,
+      created_at TEXT NOT NULL,
+      UNIQUE(user_id, test_id),
+      FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+      FOREIGN KEY (test_id) REFERENCES tests(id) ON DELETE CASCADE
+    );
+
+    CREATE TABLE IF NOT EXISTS creator_follows (
+      id TEXT PRIMARY KEY,
+      follower_id TEXT NOT NULL,
+      creator_id TEXT NOT NULL,
+      created_at TEXT NOT NULL,
+      UNIQUE(follower_id, creator_id),
+      FOREIGN KEY (follower_id) REFERENCES users(id) ON DELETE CASCADE,
+      FOREIGN KEY (creator_id) REFERENCES users(id) ON DELETE CASCADE
+    );
+
     CREATE INDEX IF NOT EXISTS idx_tests_user_id ON tests(user_id);
     CREATE INDEX IF NOT EXISTS idx_questions_test_id ON questions(test_id);
     CREATE INDEX IF NOT EXISTS idx_test_attempts_test_id ON test_attempts(test_id);
@@ -392,6 +426,9 @@ export function getDb(): DatabaseSync {
     CREATE INDEX IF NOT EXISTS idx_enrollments_user ON user_exam_enrollments(user_id);
     CREATE INDEX IF NOT EXISTS idx_mistakes_user ON mistake_records(user_id);
     CREATE INDEX IF NOT EXISTS idx_exam_stages_exam ON exam_stages(exam_id);
+    CREATE INDEX IF NOT EXISTS idx_test_reports_test ON test_reports(test_id);
+    CREATE INDEX IF NOT EXISTS idx_saved_tests_user ON saved_tests(user_id);
+    CREATE INDEX IF NOT EXISTS idx_creator_follows_creator ON creator_follows(creator_id);
   `);
 
   // Safe schema migrations for existing database files
@@ -443,6 +480,10 @@ export function getDb(): DatabaseSync {
   try { db.exec('ALTER TABLE question_bank ADD COLUMN subtopic_id TEXT;'); } catch {}
   try { db.exec('ALTER TABLE question_bank ADD COLUMN used_in_tests_json TEXT NOT NULL DEFAULT "[]";'); } catch {}
   try { db.exec('ALTER TABLE question_bank ADD COLUMN correctness_status TEXT NOT NULL DEFAULT "verified";'); } catch {}
+  try { db.exec('ALTER TABLE tests ADD COLUMN trust_label TEXT NOT NULL DEFAULT "Community Created";'); } catch {}
+  try { db.exec('ALTER TABLE tests ADD COLUMN rating REAL NOT NULL DEFAULT 4.8;'); } catch {}
+  try { db.exec('ALTER TABLE tests ADD COLUMN ratings_count INTEGER NOT NULL DEFAULT 0;'); } catch {}
+  try { db.exec('ALTER TABLE educator_profiles ADD COLUMN followers_count INTEGER NOT NULL DEFAULT 0;'); } catch {}
 
   dbInstance = db;
   return dbInstance;

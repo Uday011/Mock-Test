@@ -142,6 +142,9 @@ export function seedInitialData(): void {
     // 7. Seed Reusable Question Bank Repository
     seedQuestionBank(db, instituteAdmin, now);
 
+    // 8. Seed Public Test Series & Trust Labels
+    seedTestSeriesAndTrustLabels(db, instituteAdmin, now);
+
   } catch (err) {
     console.warn('[Seed initial data error]:', err);
   }
@@ -1187,3 +1190,103 @@ function seedQuestionBank(db: any, instituteAdmin: any, now: string): void {
     );
   }
 }
+
+function seedTestSeriesAndTrustLabels(db: any, instituteAdmin: any, now: string): void {
+  // 1. Update official trust labels and ratings for admin created tests
+  try {
+    db.prepare(`
+      UPDATE tests 
+      SET trust_label = 'Nalanda Official', rating = 4.9, ratings_count = 142
+      WHERE user_id IN (SELECT id FROM users WHERE role IN ('admin', 'superadmin'))
+        AND (trust_label IS NULL OR trust_label = 'Community Created')
+    `).run();
+  } catch (err) {
+    console.warn('Trust label update notice:', err);
+  }
+
+  // 2. Seed Test Series if empty
+  const tsCountStmt = db.prepare('SELECT COUNT(*) as count FROM test_series');
+  const tsCount = (tsCountStmt.get() as any)?.count || 0;
+  if (tsCount > 0) return;
+
+  const insertTS = db.prepare(`
+    INSERT INTO test_series (
+      id, creator_id, exam_id, title, description, target_year, total_tests,
+      is_paid, price_inr, rating, enrolled_count, status, created_at
+    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+  `);
+
+  const series = [
+    {
+      id: 'ts-1',
+      creator_id: instituteAdmin.id,
+      exam_id: 'exam-ssc-cgl-2026',
+      title: 'SSC CGL 2026 Tier-I All India Master Mock Series',
+      description: 'Ten full-length computer-based diagnostic mock exams adhering strictly to current TCS testing cadence, section balance, and negative marking constraints.',
+      target_year: 2026,
+      total_tests: 10,
+      is_paid: 0,
+      price_inr: 0.0,
+      rating: 4.95,
+      enrolled_count: 1480,
+    },
+    {
+      id: 'ts-2',
+      creator_id: instituteAdmin.id,
+      exam_id: 'exam-ssc-cgl-2026',
+      title: 'SSC CGL Advanced Mathematics & Geometry Sprint Pack',
+      description: 'Topic-specific high-density speed drills targeting Intersecting Chords, Apollonius Theorem, Symmetric Polynomials, and Mensuration 3D.',
+      target_year: 2026,
+      total_tests: 6,
+      is_paid: 0,
+      price_inr: 0.0,
+      rating: 4.92,
+      enrolled_count: 820,
+    },
+    {
+      id: 'ts-3',
+      creator_id: instituteAdmin.id,
+      exam_id: 'exam-neet-2026',
+      title: 'NEET UG 2026 Complete Biology High-Yield Diagnostics',
+      description: 'Systematic NCERT line-by-line statement and diagram questions covering Human Physiology, Genetics, and Ecology.',
+      target_year: 2026,
+      total_tests: 12,
+      is_paid: 0,
+      price_inr: 0.0,
+      rating: 4.97,
+      enrolled_count: 2350,
+    },
+    {
+      id: 'ts-4',
+      creator_id: instituteAdmin.id,
+      exam_id: 'exam-upsc-prelims',
+      title: 'UPSC CSE Prelims 2026 GS Paper-I Comprehensive Series',
+      description: 'Multi-statement analytical mock papers covering Indian Polity, Modern History, Environmental Conventions, and Economic Surveys.',
+      target_year: 2026,
+      total_tests: 8,
+      is_paid: 0,
+      price_inr: 0.0,
+      rating: 4.88,
+      enrolled_count: 1120,
+    },
+  ];
+
+  for (const s of series) {
+    insertTS.run(
+      s.id,
+      s.creator_id,
+      s.exam_id,
+      s.title,
+      s.description,
+      s.target_year,
+      s.total_tests,
+      s.is_paid,
+      s.price_inr,
+      s.rating,
+      s.enrolled_count,
+      'published',
+      now
+    );
+  }
+}
+
