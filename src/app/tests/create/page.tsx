@@ -81,7 +81,7 @@ function FormattedMathText({ text }: { text: string }) {
           return (
             <span
               key={i}
-              className="inline-block font-mono text-[0.88em] bg-amber-500/10 text-amber-300 px-1.5 py-0.5 rounded border border-amber-500/20 mx-0.5 font-medium"
+              className="inline-block font-mono text-[0.88em] bg-amber-50 text-amber-900 px-1.5 py-0.5 rounded border border-amber-200 mx-0.5 font-semibold"
             >
               {formula}
             </span>
@@ -113,7 +113,7 @@ export default function CreateTestPage() {
 
   // AI-Assisted Draft Modal state
   const [isAiModalOpen, setIsAiModalOpen] = useState(false);
-  const [aiExamId, setAiExamId] = useState('exam-ssc-cgl');
+  const [aiExamId, setAiExamId] = useState('exam-ssc-cgl-2026');
   const [aiSubject, setAiSubject] = useState('Quantitative Aptitude');
   const [aiTopic, setAiTopic] = useState('Percentages, Profit & Loss');
   const [aiCount, setAiCount] = useState(5);
@@ -143,7 +143,7 @@ export default function CreateTestPage() {
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [instructions, setInstructions] = useState(
-    '1. The exam contains multiple-choice questions with single correct answers.\n2. Do not refresh or close the browser window during the test.\n3. Rough sheets are permitted for rough work.'
+    '1. The exam contains multiple-choice questions with single correct answers.\n2. Do not refresh or close the browser window during the test.\n3. Rough sheets are permitted for calculations.'
   );
   const [subject, setSubject] = useState('Quantitative Aptitude');
   const [testType, setTestType] = useState('full_mock');
@@ -157,8 +157,6 @@ export default function CreateTestPage() {
   // Duration
   const [timerMode, setTimerMode] = useState<'preset' | 'custom'>('preset');
   const [presetDuration, setPresetDuration] = useState<number>(1800); // 30 mins
-  const [customHours, setCustomHours] = useState<number>(0);
-  const [customMinutes, setCustomMinutes] = useState<number>(30);
 
   // Marking Scheme
   const [markingSchemeType, setMarkingSchemeType] = useState<'standard' | 'ssc' | 'custom'>('standard');
@@ -351,53 +349,111 @@ Explanation: Binary search halves the search space at every comparison, giving $
       }
       setCurrentStep(2);
     } catch (err: any) {
-      setUploadError(err.message || 'Error processing document');
+      setUploadError(err.message || 'Error parsing document.');
     } finally {
       setUploadLoading(false);
     }
   };
 
-  // Pathway 1: Manual Authoring initiation
+  // Manual Creation
   const handleStartManual = () => {
+    setActivePathway('manual');
     if (questions.length === 0) {
       setQuestions([
         {
           question_number: 1,
-          question_text: 'What is the value of $x$ in the equation $3x + 15 = 45$?',
+          question_text: 'What is the sum of angles in a standard planar triangle?',
           question_type: 'single',
           options: [
-            { label: 'A', text: '$x = 8$' },
-            { label: 'B', text: '$x = 10$' },
-            { label: 'C', text: '$x = 12$' },
-            { label: 'D', text: '$x = 15$' },
+            { label: 'A', text: '90°' },
+            { label: 'B', text: '180°' },
+            { label: 'C', text: '270°' },
+            { label: 'D', text: '360°' },
           ],
           correct_answer: 'B',
-          explanation: 'Subtracting 15 from both sides: $3x = 30 \\implies x = 10$.',
-          confidence: 1.0,
+          explanation: 'In Euclidean geometry, the sum of internal angles in any triangle is exactly 180°.',
           difficulty: 'easy',
-          correct_marks: 2.0,
-          negative_marks: 0.5,
+          correct_marks: 4.0,
+          negative_marks: 1.0,
           estimated_seconds: 45,
-          source: 'Nalanda Studio',
-          tags: ['Algebra', 'Linear Equations'],
+          source: 'Manual Studio Draft',
+          tags: ['Geometry'],
         },
       ]);
+      setActiveQuestionIdx(0);
     }
-    setActiveQuestionIdx(0);
-    if (!title) setTitle('Curated Mock Practice Test');
     setCurrentStep(2);
   };
 
-  // Pathway 4: Fetch Tests for Duplicate
+  // Question Bank Modal & Selection
+  const handleOpenQbModal = async () => {
+    setIsQbModalOpen(true);
+    setQbLoading(true);
+    try {
+      const res = await fetch('/api/question-bank?status=active');
+      const data = await res.json();
+      if (data.success) {
+        setQbQuestions(data.questions || []);
+      }
+    } catch (err) {
+      console.error('Failed to fetch question bank:', err);
+    } finally {
+      setQbLoading(false);
+    }
+  };
+
+  const handleImportSelectedFromQb = () => {
+    const selected = qbQuestions.filter((q) => qbSelectedIds.has(q.id));
+    if (selected.length === 0) return;
+
+    const newQuestions: StudioQuestion[] = selected.map((q, i) => {
+      let parsedOptions = [];
+      try {
+        parsedOptions = JSON.parse(q.options_json || '[]');
+      } catch {
+        parsedOptions = [];
+      }
+
+      return {
+        question_number: questions.length + i + 1,
+        question_text: q.question_text,
+        question_type: q.question_type || 'single',
+        options: parsedOptions,
+        correct_answer: q.correct_answer,
+        explanation: q.explanation,
+        difficulty: q.difficulty || 'medium',
+        correct_marks: q.marks || 4.0,
+        negative_marks: q.negative_marks || 1.0,
+        estimated_seconds: q.estimated_seconds || 60,
+        source: 'Question Bank Repository',
+        tags: (() => {
+          try {
+            return JSON.parse(q.tags_json || '[]');
+          } catch {
+            return [];
+          }
+        })(),
+      };
+    });
+
+    setQuestions([...questions, ...newQuestions]);
+    setIsQbModalOpen(false);
+    setQbSelectedIds(new Set());
+    if (currentStep === 1) setCurrentStep(2);
+  };
+
+  // Duplicate Test Modal
   const handleOpenDuplicateModal = async () => {
     setIsDuplicateModalOpen(true);
     setLoadingTests(true);
     try {
       const res = await fetch('/api/tests');
       const data = await res.json();
-      setAvailableTests(data.tests || []);
+      if (data.tests) {
+        setAvailableTests(data.tests);
+      }
     } catch (err) {
-      console.error(err);
+      console.error('Failed to load tests for duplication:', err);
     } finally {
       setLoadingTests(false);
     }
@@ -408,108 +464,47 @@ Explanation: Binary search halves the search space at every comparison, giving $
     try {
       const res = await fetch(`/api/tests/${testId}`);
       const data = await res.json();
-      if (!res.ok) throw new Error(data.error || 'Failed to fetch test details');
+      if (data.test) {
+        const t = data.test;
+        setTitle(`${t.title} (Custom Draft)`);
+        setDescription(t.description || '');
+        setSubject(t.subject || 'Quantitative Aptitude');
+        setDefaultCorrectMarks(t.default_correct_marks || 4.0);
+        setDefaultNegativeMarks(t.default_negative_marks || 1.0);
+        setPresetDuration(t.duration_seconds || 1800);
 
-      const t = data.test;
-      setTitle(`[Copy] ${t.title}`);
-      setDescription(t.description || '');
-      setSubject(t.subject || 'Quantitative Aptitude');
-      setPresetDuration(t.duration_seconds || 1800);
-      setDefaultCorrectMarks(t.default_correct_marks || 4.0);
-      setDefaultNegativeMarks(t.default_negative_marks || 1.0);
-      setTestType(t.test_type || 'full_mock');
-
-      const clonedQuestions: StudioQuestion[] = (t.questions || []).map((q: any, i: number) => {
-        let opts = q.options;
-        if (typeof opts === 'string') {
-          try {
-            opts = JSON.parse(opts);
-          } catch {
-            opts = [];
-          }
+        if (Array.isArray(t.questions) && t.questions.length > 0) {
+          const formatted: StudioQuestion[] = t.questions.map((q: any, i: number) => ({
+            question_number: i + 1,
+            question_text: q.question_text || '',
+            question_type: q.question_type || 'single',
+            options: q.options || [],
+            correct_answer: q.correct_answer || 'A',
+            explanation: q.explanation || '',
+            difficulty: 'medium',
+            correct_marks: q.correct_marks || t.default_correct_marks || 4.0,
+            negative_marks: q.negative_marks || t.default_negative_marks || 1.0,
+            estimated_seconds: 60,
+            source: `Cloned from ${t.title}`,
+          }));
+          setQuestions(formatted);
+          setActiveQuestionIdx(0);
         }
-        return {
-          question_number: i + 1,
-          question_text: q.question_text || '',
-          question_type: q.question_type || 'single',
-          options: (opts || []).map((o: any, oIdx: number) => {
-            if (typeof o === 'string') return { label: String.fromCharCode(65 + oIdx), text: o };
-            return { label: o.label || String.fromCharCode(65 + oIdx), text: o.text || '' };
-          }),
-          correct_answer: (q.correct_answer || 'A').toUpperCase().trim(),
-          explanation: q.explanation || '',
-          difficulty: q.difficulty || 'medium',
-          correct_marks: q.correct_marks || 4.0,
-          negative_marks: q.negative_marks || 1.0,
-          estimated_seconds: q.estimated_seconds || 60,
-          source: t.title,
-          tags: ['Cloned Test'],
-        };
-      });
 
-      setQuestions(clonedQuestions);
-      setActiveQuestionIdx(0);
-      setIsDuplicateModalOpen(false);
-      setCurrentStep(2);
-    } catch (err: any) {
-      alert(err.message || 'Error duplicating test');
+        setIsDuplicateModalOpen(false);
+        setCurrentStep(2);
+      }
+    } catch (err) {
+      console.error('Failed to clone test:', err);
     } finally {
       setDuplicatingTestId(null);
     }
   };
 
-  // Pathway 3: Question Bank Import
-  const handleOpenQbModal = async () => {
-    setIsQbModalOpen(true);
-    setQbLoading(true);
-    try {
-      const res = await fetch('/api/question-bank?status=active');
-      const data = await res.json();
-      setQbQuestions(data.questions || []);
-    } catch (err) {
-      console.error(err);
-    } finally {
-      setQbLoading(false);
-    }
-  };
-
-  const handleImportSelectedFromQb = () => {
-    const selected = qbQuestions.filter((q) => qbSelectedIds.has(q.id));
-    if (selected.length === 0) return;
-
-    const startNum = questions.length;
-    const imported: StudioQuestion[] = selected.map((q, idx) => ({
-      question_number: startNum + idx + 1,
-      question_text: q.question_text,
-      question_type: q.question_type || 'single',
-      options: (q.options || []).map((optText: string, oIdx: number) => ({
-        label: String.fromCharCode(65 + oIdx),
-        text: optText,
-      })),
-      correct_answer: (q.correct_answer || 'A').toUpperCase().trim(),
-      explanation: q.explanation || '',
-      difficulty: q.difficulty || 'medium',
-      correct_marks: q.marks || 2.0,
-      negative_marks: q.negative_marks || 0.5,
-      estimated_seconds: q.estimated_seconds || 60,
-      source: q.source_reference || 'Question Bank',
-      tags: q.tags || [],
-    }));
-
-    setQuestions([...questions, ...imported]);
-    setActiveQuestionIdx(startNum);
-    setIsQbModalOpen(false);
-    setQbSelectedIds(new Set());
-    if (currentStep === 1) {
-      if (!title) setTitle('Assembled Question Bank Test');
-      setCurrentStep(2);
-    }
-  };
-
-  // Pathway 5: AI-Assisted Draft
+  // AI-Assisted Draft Synthesis
   const handleGenerateAiDraft = async () => {
-    setAiGenerating(true);
     setAiError('');
+    setAiGenerating(true);
     try {
       const res = await fetch('/api/tests/ai-draft', {
         method: 'POST',
@@ -518,55 +513,104 @@ Explanation: Binary search halves the search space at every comparison, giving $
           exam_id: aiExamId,
           subject: aiSubject,
           topic: aiTopic,
-          question_count: Number(aiCount),
+          count: aiCount,
           difficulty: aiDifficulty,
         }),
       });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error || 'Failed to generate draft');
 
-      const aiQuestions: StudioQuestion[] = (data.draft?.questions || []).map(
-        (q: any, i: number) => ({
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Failed to generate AI draft');
+
+      if (Array.isArray(data.questions) && data.questions.length > 0) {
+        const newQuestions: StudioQuestion[] = data.questions.map((q: any, i: number) => ({
           question_number: questions.length + i + 1,
           question_text: q.question_text,
           question_type: 'single',
-          options: (q.options || []).map((optText: string, oIdx: number) => ({
-            label: String.fromCharCode(65 + oIdx),
-            text: optText,
-          })),
-          correct_answer: (q.correct_answer || 'A').toUpperCase().trim(),
+          options: q.options || [],
+          correct_answer: q.correct_answer || 'A',
           explanation: q.explanation || '',
-          difficulty: q.difficulty || aiDifficulty,
-          correct_marks: 2.0,
-          negative_marks: 0.5,
+          difficulty: aiDifficulty as any,
+          correct_marks: 4.0,
+          negative_marks: 1.0,
           estimated_seconds: 60,
-          source: 'AI Draft Generator',
-          tags: [aiTopic, 'AI Generated'],
-        })
-      );
+          source: 'AI Assisted Draft',
+          tags: [aiSubject, aiTopic],
+        }));
 
-      setQuestions([...questions, ...aiQuestions]);
-      if (!title) setTitle(`${aiTopic} AI Mastery Drill`);
-      if (data.draft?.description) setDescription(data.draft.description);
-      setIsAiModalOpen(false);
-      setCurrentStep(2);
+        setQuestions([...questions, ...newQuestions]);
+        if (!title) {
+          setTitle(`${aiSubject} - ${aiTopic} (AI High-Yield Draft)`);
+        }
+        setSubject(aiSubject);
+        setIsAiModalOpen(false);
+        if (currentStep === 1) setCurrentStep(2);
+      }
     } catch (err: any) {
-      setAiError(err.message || 'Error generating AI questions');
+      setAiError(err.message || 'Failed to synthesize draft questions');
     } finally {
       setAiGenerating(false);
     }
   };
 
-  // Split-Screen Question Mutators
-  const updateCurrentQuestionText = (text: string) => {
+  // Split-Screen Question Operations
+  const addNewQuestion = () => {
+    const nextNum = questions.length + 1;
+    const newQ: StudioQuestion = {
+      question_number: nextNum,
+      question_text: '',
+      question_type: 'single',
+      options: [
+        { label: 'A', text: '' },
+        { label: 'B', text: '' },
+        { label: 'C', text: '' },
+        { label: 'D', text: '' },
+      ],
+      correct_answer: 'A',
+      explanation: '',
+      difficulty: 'medium',
+      correct_marks: defaultCorrectMarks,
+      negative_marks: defaultNegativeMarks,
+      estimated_seconds: 60,
+      source: 'Author Draft',
+    };
+    setQuestions([...questions, newQ]);
+    setActiveQuestionIdx(questions.length);
+  };
+
+  const deleteQuestion = (indexToDelete: number) => {
+    if (questions.length <= 1) return;
+    const updated = questions
+      .filter((_, idx) => idx !== indexToDelete)
+      .map((q, idx) => ({ ...q, question_number: idx + 1 }));
+    setQuestions(updated);
+    if (activeQuestionIdx >= updated.length) {
+      setActiveQuestionIdx(Math.max(0, updated.length - 1));
+    }
+  };
+
+  const moveQuestion = (fromIdx: number, direction: 'up' | 'down') => {
+    const toIdx = direction === 'up' ? fromIdx - 1 : fromIdx + 1;
+    if (toIdx < 0 || toIdx >= questions.length) return;
+    const copy = [...questions];
+    const temp = copy[fromIdx];
+    copy[fromIdx] = copy[toIdx];
+    copy[toIdx] = temp;
+    const renumbered = copy.map((q, i) => ({ ...q, question_number: i + 1 }));
+    setQuestions(renumbered);
+    setActiveQuestionIdx(toIdx);
+  };
+
+  const updateCurrentQuestionText = (val: string) => {
     const next = [...questions];
-    next[activeQuestionIdx].question_text = text;
+    next[activeQuestionIdx].question_text = val;
     setQuestions(next);
   };
 
-  const updateCurrentOptionText = (optIdx: number, text: string) => {
+  const updateCurrentOptionText = (optIdx: number, val: string) => {
     const next = [...questions];
-    next[activeQuestionIdx].options[optIdx].text = text;
+    const opts = [...next[activeQuestionIdx].options];
+    opts[optIdx] = { ...opts[optIdx], text: val };
+    next[activeQuestionIdx].options = opts;
     setQuestions(next);
   };
 
@@ -576,143 +620,97 @@ Explanation: Binary search halves the search space at every comparison, giving $
     setQuestions(next);
   };
 
-  const updateCurrentExplanation = (text: string) => {
-    const next = [...questions];
-    next[activeQuestionIdx].explanation = text;
-    setQuestions(next);
-  };
-
   const addOptionToCurrent = () => {
     const next = [...questions];
-    const opts = next[activeQuestionIdx].options;
-    const label = String.fromCharCode(65 + opts.length);
-    opts.push({ label, text: '' });
+    const opts = [...next[activeQuestionIdx].options];
+    const nextLabel = String.fromCharCode(65 + opts.length);
+    opts.push({ label: nextLabel, text: '' });
+    next[activeQuestionIdx].options = opts;
     setQuestions(next);
   };
 
   const removeOptionFromCurrent = (optIdx: number) => {
     const next = [...questions];
-    next[activeQuestionIdx].options.splice(optIdx, 1);
+    const opts = next[activeQuestionIdx].options.filter((_, idx) => idx !== optIdx);
+    // Renumber labels A, B, C...
+    const relabeled = opts.map((o, idx) => ({ ...o, label: String.fromCharCode(65 + idx) }));
+    next[activeQuestionIdx].options = relabeled;
+    if (!relabeled.some((o) => o.label === next[activeQuestionIdx].correct_answer)) {
+      next[activeQuestionIdx].correct_answer = 'A';
+    }
     setQuestions(next);
   };
 
-  const addNewQuestion = () => {
-    const newNum = questions.length + 1;
-    const newQ: StudioQuestion = {
-      question_number: newNum,
-      question_text: `Question statement ${newNum}`,
-      question_type: 'single',
-      options: [
-        { label: 'A', text: 'Option A' },
-        { label: 'B', text: 'Option B' },
-        { label: 'C', text: 'Option C' },
-        { label: 'D', text: 'Option D' },
-      ],
-      correct_answer: 'A',
-      explanation: '',
-      difficulty: 'medium',
-      correct_marks: defaultCorrectMarks,
-      negative_marks: defaultNegativeMarks,
-      estimated_seconds: 60,
-      source: 'Nalanda Studio',
-      tags: [],
-    };
-    setQuestions([...questions, newQ]);
-    setActiveQuestionIdx(questions.length);
+  const updateCurrentExplanation = (val: string) => {
+    const next = [...questions];
+    next[activeQuestionIdx].explanation = val;
+    setQuestions(next);
   };
 
-  const deleteQuestion = (idx: number) => {
-    if (questions.length <= 1) {
-      alert('At least one question is required.');
-      return;
-    }
-    const updated = questions.filter((_, i) => i !== idx).map((q, i) => ({
-      ...q,
-      question_number: i + 1,
-    }));
-    setQuestions(updated);
-    if (activeQuestionIdx >= updated.length) {
-      setActiveQuestionIdx(updated.length - 1);
-    }
-  };
-
-  const moveQuestion = (idx: number, direction: 'up' | 'down') => {
-    if ((direction === 'up' && idx === 0) || (direction === 'down' && idx === questions.length - 1)) {
-      return;
-    }
-    const targetIdx = direction === 'up' ? idx - 1 : idx + 1;
-    const updated = [...questions];
-    const temp = updated[idx];
-    updated[idx] = updated[targetIdx];
-    updated[targetIdx] = temp;
-    const reindexed = updated.map((q, i) => ({ ...q, question_number: i + 1 }));
-    setQuestions(reindexed);
-    setActiveQuestionIdx(targetIdx);
-  };
-
-  // Step 3: Save Test (Draft vs Published vs Save & Attempt)
+  // Final Test Submission / Publishing
   const handleSaveTest = async (action: 'draft' | 'publish' | 'attempt') => {
     setSaveError('');
     if (!title.trim()) {
-      setSaveError('Please provide a title for the test.');
+      setSaveError('Please enter a test title.');
       return;
     }
     if (questions.length === 0) {
-      setSaveError('At least 1 question is required.');
+      setSaveError('The test must have at least one question.');
       return;
     }
 
     if (action === 'publish' && criticalIssuesCount > 0) {
-      if (!confirm(`There are ${criticalIssuesCount} critical question error(s). Are you sure you want to publish now?`)) {
-        return;
-      }
-    }
-
-    let calculatedDuration = 1800;
-    if (timerMode === 'preset') {
-      calculatedDuration = presetDuration;
-    } else {
-      calculatedDuration = customHours * 3600 + customMinutes * 60;
+      setSaveError(`Please resolve all ${criticalIssuesCount} critical linter issue(s) before publishing.`);
+      return;
     }
 
     setSavingAction(action);
     try {
+      const finalStatus = action === 'draft' ? 'draft' : 'published';
+      const parsedTags = tagsStr
+        .split(',')
+        .map((t) => t.trim())
+        .filter(Boolean);
+
+      const durationSec = timerMode === 'preset' ? presetDuration : 1800;
+
       const payload = {
         title: title.trim(),
         description: description.trim(),
         instructions: instructions.trim(),
-        subject: subject.trim(),
-        duration_seconds: calculatedDuration,
-        marking_scheme_type: markingSchemeType,
-        default_correct_marks: Number(defaultCorrectMarks),
-        default_negative_marks: Number(defaultNegativeMarks),
-        default_unanswered_marks: Number(defaultUnansweredMarks),
-        shuffle_questions: shuffleQuestions,
-        shuffle_options: shuffleOptions,
-        allow_navigation: allowNavigation,
-        show_palette: showPalette,
-        allow_review_marking: allowReviewMarking,
-        show_immediate_results: showImmediateResults,
+        subject,
         test_type: testType,
         difficulty,
         visibility,
-        status: action === 'draft' ? 'draft' : 'published',
+        status: finalStatus,
         result_availability: resultAvailability,
-        tags: tagsStr.split(',').map((t) => t.trim()).filter(Boolean),
+        tags: parsedTags,
+        duration_seconds: durationSec,
+        marking_scheme_type: markingSchemeType,
+        default_correct_marks: defaultCorrectMarks,
+        default_negative_marks: defaultNegativeMarks,
+        default_unanswered_marks: defaultUnansweredMarks,
+        shuffle_questions: shuffleQuestions ? 1 : 0,
+        shuffle_options: shuffleOptions ? 1 : 0,
+        allow_navigation: allowNavigation ? 1 : 0,
+        show_palette: showPalette ? 1 : 0,
+        allow_review_marking: allowReviewMarking ? 1 : 0,
+        show_immediate_results: showImmediateResults ? 1 : 0,
         save_to_question_bank: saveToQuestionBank,
-        questions: questions.map((q, idx) => ({
-          question_number: idx + 1,
+        questions: questions.map((q) => ({
+          question_number: q.question_number,
           question_text: q.question_text,
-          question_type: q.question_type || 'single',
-          options: (q.options || []).map((o) => o.text),
+          question_type: q.question_type,
+          options: q.options,
           correct_answer: q.correct_answer,
-          explanation: q.explanation || null,
           correct_marks: q.correct_marks || defaultCorrectMarks,
           negative_marks: q.negative_marks || defaultNegativeMarks,
+          unanswered_marks: defaultUnansweredMarks,
+          explanation: q.explanation || '',
+          confidence: q.confidence || 1.0,
           difficulty: q.difficulty || difficulty,
-          topic_id: q.topic_id || null,
-          subtopic_id: q.subtopic_id || null,
-          source: q.source || 'Test Studio',
+          estimated_seconds: q.estimated_seconds || 60,
+          source: q.source || 'Studio Test Authoring',
           tags: q.tags || [],
         })),
       };
@@ -729,18 +727,21 @@ Explanation: Binary search halves the search space at every comparison, giving $
       if (action === 'attempt') {
         router.push(`/tests/${data.testId}/start`);
       } else {
-        router.push('/tests?created=true');
+        router.push(`/tests/${data.testId}`);
       }
     } catch (err: any) {
-      setSaveError(err.message || 'Error saving test');
+      setSaveError(err.message || 'Failed to save test.');
     } finally {
       setSavingAction(null);
     }
   };
 
-  // CBE Simulation Helpers
+  // Live CBE Preview handlers
   const handleSelectOptionInPreview = (qNum: number, label: string) => {
-    setPreviewSelectedAnswers((prev) => ({ ...prev, [qNum]: label }));
+    setPreviewSelectedAnswers((prev) => ({
+      ...prev,
+      [qNum]: label,
+    }));
   };
 
   const handleToggleReviewInPreview = (qNum: number) => {
@@ -778,13 +779,13 @@ Explanation: Binary search halves the search space at every comparison, giving $
                   setPreviewActiveIdx(0);
                   setIsCbePreviewOpen(true);
                 }}
-                icon={<Eye className="w-4 h-4 text-brand-400" />}
+                icon={<Eye className="w-4 h-4 text-amber-700" />}
               >
                 Preview CBE Experience
               </Button>
             )}
             <Link href="/question-bank">
-              <Button variant="ghost" size="sm" icon={<Database className="w-4 h-4" />}>
+              <Button variant="outline" size="sm" icon={<Database className="w-4 h-4" />}>
                 Question Bank
               </Button>
             </Link>
@@ -793,36 +794,44 @@ Explanation: Binary search halves the search space at every comparison, giving $
       />
 
       {/* Stepper Wizard Bar */}
-      <div className="bg-zinc-900/80 border border-zinc-800 rounded-xl p-3 mb-6 flex items-center justify-between overflow-x-auto gap-4">
+      <div className="bg-white border border-stone-200 rounded-2xl p-3 mb-6 flex items-center justify-between overflow-x-auto gap-4 shadow-2xs">
         <div className="flex items-center gap-3">
           <button
             onClick={() => setCurrentStep(1)}
-            className={`flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${
+            className={`flex items-center gap-2 px-3 py-1.5 rounded-xl text-xs font-bold transition-all ${
               currentStep === 1
-                ? 'bg-brand-500/20 text-brand-300 border border-brand-500/40'
-                : 'text-zinc-400 hover:text-zinc-200'
+                ? 'bg-stone-900 text-white shadow-2xs'
+                : 'bg-stone-50 border border-stone-200 text-stone-700 hover:bg-stone-100'
             }`}
           >
-            <span className="w-5 h-5 rounded-full bg-zinc-800 flex items-center justify-center text-[10px]">
+            <span
+              className={`w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-bold ${
+                currentStep === 1 ? 'bg-white/20 text-white' : 'bg-stone-200 text-stone-700'
+              }`}
+            >
               1
             </span>
             <span>Creation Pathway</span>
           </button>
 
-          <ArrowRight className="w-3.5 h-3.5 text-zinc-600" />
+          <ArrowRight className="w-3.5 h-3.5 text-stone-400" />
 
           <button
             onClick={() => questions.length > 0 && setCurrentStep(2)}
             disabled={questions.length === 0}
-            className={`flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${
+            className={`flex items-center gap-2 px-3 py-1.5 rounded-xl text-xs font-bold transition-all ${
               currentStep === 2
-                ? 'bg-brand-500/20 text-brand-300 border border-brand-500/40'
+                ? 'bg-stone-900 text-white shadow-2xs'
                 : questions.length > 0
-                ? 'text-zinc-400 hover:text-zinc-200'
-                : 'text-zinc-600 cursor-not-allowed'
+                ? 'bg-stone-50 border border-stone-200 text-stone-700 hover:bg-stone-100'
+                : 'bg-stone-50/50 text-stone-400 border border-stone-100 cursor-not-allowed'
             }`}
           >
-            <span className="w-5 h-5 rounded-full bg-zinc-800 flex items-center justify-center text-[10px]">
+            <span
+              className={`w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-bold ${
+                currentStep === 2 ? 'bg-white/20 text-white' : 'bg-stone-200 text-stone-700'
+              }`}
+            >
               2
             </span>
             <span>Split-Screen Editor ({questions.length})</span>
@@ -831,20 +840,24 @@ Explanation: Binary search halves the search space at every comparison, giving $
             )}
           </button>
 
-          <ArrowRight className="w-3.5 h-3.5 text-zinc-600" />
+          <ArrowRight className="w-3.5 h-3.5 text-stone-400" />
 
           <button
             onClick={() => questions.length > 0 && setCurrentStep(3)}
             disabled={questions.length === 0}
-            className={`flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${
+            className={`flex items-center gap-2 px-3 py-1.5 rounded-xl text-xs font-bold transition-all ${
               currentStep === 3
-                ? 'bg-brand-500/20 text-brand-300 border border-brand-500/40'
+                ? 'bg-stone-900 text-white shadow-2xs'
                 : questions.length > 0
-                ? 'text-zinc-400 hover:text-zinc-200'
-                : 'text-zinc-600 cursor-not-allowed'
+                ? 'bg-stone-50 border border-stone-200 text-stone-700 hover:bg-stone-100'
+                : 'bg-stone-50/50 text-stone-400 border border-stone-100 cursor-not-allowed'
             }`}
           >
-            <span className="w-5 h-5 rounded-full bg-zinc-800 flex items-center justify-center text-[10px]">
+            <span
+              className={`w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-bold ${
+                currentStep === 3 ? 'bg-white/20 text-white' : 'bg-stone-200 text-stone-700'
+              }`}
+            >
               3
             </span>
             <span>Test Settings & Publish</span>
@@ -852,18 +865,18 @@ Explanation: Binary search halves the search space at every comparison, giving $
         </div>
 
         {questions.length > 0 && (
-          <div className="flex items-center gap-3 text-xs text-zinc-400 pr-2">
+          <div className="flex items-center gap-3 text-xs text-stone-600 pr-2">
             <span className="flex items-center gap-1">
-              <span className="font-semibold text-zinc-200">{questions.length}</span> questions
+              <span className="font-bold text-stone-900 font-mono">{questions.length}</span> questions
             </span>
             {criticalIssuesCount > 0 ? (
-              <span className="flex items-center gap-1 text-rose-400 font-medium bg-rose-500/10 px-2 py-0.5 rounded border border-rose-500/20">
-                <AlertTriangle className="w-3 h-3" />
+              <span className="flex items-center gap-1 text-rose-800 font-bold bg-rose-50 px-2 py-0.5 rounded border border-rose-200">
+                <AlertTriangle className="w-3 h-3 text-rose-600" />
                 {criticalIssuesCount} errors
               </span>
             ) : (
-              <span className="flex items-center gap-1 text-emerald-400 font-medium bg-emerald-500/10 px-2 py-0.5 rounded border border-emerald-500/20">
-                <CheckCircle2 className="w-3 h-3" />
+              <span className="flex items-center gap-1 text-emerald-800 font-bold bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200">
+                <CheckCircle2 className="w-3 h-3 text-emerald-600" />
                 Linter Passed
               </span>
             )}
@@ -876,115 +889,115 @@ Explanation: Binary search halves the search space at every comparison, giving $
         <div className="space-y-6">
           <div className="grid grid-cols-1 md:grid-cols-5 gap-3.5">
             {/* Pathway 1: Upload Document */}
-            <Card
-              className={`p-4 cursor-pointer transition-all hover:border-brand-500/60 ${
+            <div
+              className={`p-5 rounded-2xl border cursor-pointer transition-all shadow-2xs ${
                 activePathway === 'upload'
-                  ? 'border-brand-500 bg-brand-950/20 ring-1 ring-brand-500/30'
-                  : 'bg-zinc-900/50'
+                  ? 'border-amber-600 bg-amber-50/40 ring-1 ring-amber-500/20'
+                  : 'border-stone-200 bg-white hover:border-stone-300 hover:bg-stone-50/50'
               }`}
               onClick={() => setActivePathway('upload')}
             >
-              <div className="w-9 h-9 rounded-lg bg-brand-500/20 text-brand-400 flex items-center justify-center mb-2.5">
+              <div className="w-10 h-10 rounded-xl bg-amber-50 border border-amber-200 text-amber-800 flex items-center justify-center mb-3">
                 <UploadCloud className="w-5 h-5" />
               </div>
-              <h3 className="text-sm font-semibold text-zinc-100">Document Upload</h3>
-              <p className="text-xs text-zinc-400 mt-1 leading-relaxed">
+              <h3 className="text-sm font-serif font-bold text-stone-900">Document Upload</h3>
+              <p className="text-xs text-stone-500 mt-1 leading-relaxed">
                 Import PDF, DOCX, TXT, CSV, or spreadsheet mock papers.
               </p>
-            </Card>
+            </div>
 
             {/* Pathway 2: Manual Authoring */}
-            <Card
-              className={`p-4 cursor-pointer transition-all hover:border-brand-500/60 ${
+            <div
+              className={`p-5 rounded-2xl border cursor-pointer transition-all shadow-2xs ${
                 activePathway === 'manual'
-                  ? 'border-brand-500 bg-brand-950/20 ring-1 ring-brand-500/30'
-                  : 'bg-zinc-900/50'
+                  ? 'border-amber-600 bg-amber-50/40 ring-1 ring-amber-500/20'
+                  : 'border-stone-200 bg-white hover:border-stone-300 hover:bg-stone-50/50'
               }`}
               onClick={handleStartManual}
             >
-              <div className="w-9 h-9 rounded-lg bg-emerald-500/20 text-emerald-400 flex items-center justify-center mb-2.5">
+              <div className="w-10 h-10 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-800 flex items-center justify-center mb-3">
                 <Plus className="w-5 h-5" />
               </div>
-              <h3 className="text-sm font-semibold text-zinc-100">Manual Authoring</h3>
-              <p className="text-xs text-zinc-400 mt-1 leading-relaxed">
+              <h3 className="text-sm font-serif font-bold text-stone-900">Manual Authoring</h3>
+              <p className="text-xs text-stone-500 mt-1 leading-relaxed">
                 Draft questions from scratch in the split-screen editor.
               </p>
-            </Card>
+            </div>
 
             {/* Pathway 3: Question Bank Import */}
-            <Card
-              className={`p-4 cursor-pointer transition-all hover:border-brand-500/60 ${
+            <div
+              className={`p-5 rounded-2xl border cursor-pointer transition-all shadow-2xs ${
                 activePathway === 'qb'
-                  ? 'border-brand-500 bg-brand-950/20 ring-1 ring-brand-500/30'
-                  : 'bg-zinc-900/50'
+                  ? 'border-amber-600 bg-amber-50/40 ring-1 ring-amber-500/20'
+                  : 'border-stone-200 bg-white hover:border-stone-300 hover:bg-stone-50/50'
               }`}
               onClick={() => {
                 setActivePathway('qb');
                 handleOpenQbModal();
               }}
             >
-              <div className="w-9 h-9 rounded-lg bg-indigo-500/20 text-indigo-400 flex items-center justify-center mb-2.5">
+              <div className="w-10 h-10 rounded-xl bg-indigo-50 border border-indigo-200 text-indigo-800 flex items-center justify-center mb-3">
                 <Database className="w-5 h-5" />
               </div>
-              <h3 className="text-sm font-semibold text-zinc-100">Question Bank</h3>
-              <p className="text-xs text-zinc-400 mt-1 leading-relaxed">
+              <h3 className="text-sm font-serif font-bold text-stone-900">Question Bank</h3>
+              <p className="text-xs text-stone-500 mt-1 leading-relaxed">
                 Pick from hundreds of peer-reviewed repository questions.
               </p>
-            </Card>
+            </div>
 
             {/* Pathway 4: Duplicate Test */}
-            <Card
-              className={`p-4 cursor-pointer transition-all hover:border-brand-500/60 ${
+            <div
+              className={`p-5 rounded-2xl border cursor-pointer transition-all shadow-2xs ${
                 activePathway === 'duplicate'
-                  ? 'border-brand-500 bg-brand-950/20 ring-1 ring-brand-500/30'
-                  : 'bg-zinc-900/50'
+                  ? 'border-amber-600 bg-amber-50/40 ring-1 ring-amber-500/20'
+                  : 'border-stone-200 bg-white hover:border-stone-300 hover:bg-stone-50/50'
               }`}
               onClick={() => {
                 setActivePathway('duplicate');
                 handleOpenDuplicateModal();
               }}
             >
-              <div className="w-9 h-9 rounded-lg bg-amber-500/20 text-amber-400 flex items-center justify-center mb-2.5">
+              <div className="w-10 h-10 rounded-xl bg-purple-50 border border-purple-200 text-purple-800 flex items-center justify-center mb-3">
                 <Copy className="w-5 h-5" />
               </div>
-              <h3 className="text-sm font-semibold text-zinc-100">Duplicate Test</h3>
-              <p className="text-xs text-zinc-400 mt-1 leading-relaxed">
+              <h3 className="text-sm font-serif font-bold text-stone-900">Duplicate Test</h3>
+              <p className="text-xs text-stone-500 mt-1 leading-relaxed">
                 Clone an existing test to customize questions or schemes.
               </p>
-            </Card>
+            </div>
 
             {/* Pathway 5: AI-Assisted Draft */}
-            <Card
-              className={`p-4 cursor-pointer transition-all hover:border-brand-500/60 ${
+            <div
+              className={`p-5 rounded-2xl border cursor-pointer transition-all shadow-2xs ${
                 activePathway === 'ai'
-                  ? 'border-brand-500 bg-brand-950/20 ring-1 ring-brand-500/30'
-                  : 'bg-zinc-900/50'
+                  ? 'border-amber-600 bg-amber-50/40 ring-1 ring-amber-500/20'
+                  : 'border-stone-200 bg-white hover:border-stone-300 hover:bg-stone-50/50'
               }`}
               onClick={() => {
                 setActivePathway('ai');
                 setIsAiModalOpen(true);
               }}
             >
-              <div className="w-9 h-9 rounded-lg bg-purple-500/20 text-purple-400 flex items-center justify-center mb-2.5">
+              <div className="w-10 h-10 rounded-xl bg-blue-50 border border-blue-200 text-blue-800 flex items-center justify-center mb-3">
                 <Sparkles className="w-5 h-5" />
               </div>
-              <h3 className="text-sm font-semibold text-zinc-100">AI-Assisted Draft</h3>
-              <p className="text-xs text-zinc-400 mt-1 leading-relaxed">
+              <h3 className="text-sm font-serif font-bold text-stone-900">AI-Assisted Draft</h3>
+              <p className="text-xs text-stone-500 mt-1 leading-relaxed">
                 Generate high-yield questions with proofs on any syllabus topic.
               </p>
-            </Card>
+            </div>
           </div>
 
           {/* Active Pathway Details: Document Upload Area */}
           {activePathway === 'upload' && (
-            <Card className="p-6">
-              <div className="flex flex-col md:flex-row md:items-center justify-between pb-4 border-b border-zinc-800 mb-6 gap-3">
+            <div className="bg-white rounded-2xl border border-stone-200 p-6 shadow-2xs space-y-6">
+              <div className="flex flex-col md:flex-row md:items-center justify-between pb-4 border-b border-stone-100 gap-3">
                 <div>
-                  <h3 className="text-base font-semibold text-zinc-100 flex items-center gap-2">
-                    <FileText className="w-4 h-4 text-brand-400" />
+                  <h3 className="text-base font-serif font-bold text-stone-900 flex items-center gap-2">
+                    <FileText className="w-4 h-4 text-amber-700" />
                     Document Ingestion & Parsing
                   </h3>
-                  <p className="text-xs text-zinc-400 mt-0.5">
+                  <p className="text-xs text-stone-500 mt-0.5">
                     Upload official PDF/DOCX question papers, or paste raw text. The parser will extract statements, options, answer keys, and LaTeX formulas.
                   </p>
                 </div>
@@ -996,8 +1009,8 @@ Explanation: Binary search halves the search space at every comparison, giving $
               </div>
 
               {uploadError && (
-                <div className="mb-6 p-3 rounded-lg bg-rose-950/30 border border-rose-500/30 text-xs text-rose-300 flex items-center gap-2">
-                  <AlertTriangle className="w-4 h-4 text-rose-400 flex-shrink-0" />
+                <div className="p-3 rounded-xl bg-rose-50 border border-rose-200 text-xs text-rose-800 flex items-center gap-2">
+                  <AlertTriangle className="w-4 h-4 text-rose-600 flex-shrink-0" />
                   <span>{uploadError}</span>
                 </div>
               )}
@@ -1006,10 +1019,10 @@ Explanation: Binary search halves the search space at every comparison, giving $
                 {/* File Upload Box */}
                 <div className="space-y-4">
                   <div>
-                    <label className="block text-xs font-semibold text-zinc-300 mb-1.5">
+                    <label className="block text-xs font-bold text-stone-800 mb-1.5">
                       Question Paper File (PDF, DOCX, TXT, CSV)
                     </label>
-                    <div className="border-2 border-dashed border-zinc-700 hover:border-brand-500/60 rounded-xl p-5 text-center bg-zinc-950/40 transition-colors">
+                    <div className="border-2 border-dashed border-stone-300 hover:border-amber-600 rounded-2xl p-6 text-center bg-stone-50/60 hover:bg-stone-50 transition-colors">
                       <input
                         type="file"
                         id="paper-file-input"
@@ -1018,11 +1031,11 @@ Explanation: Binary search halves the search space at every comparison, giving $
                         className="hidden"
                       />
                       <label htmlFor="paper-file-input" className="cursor-pointer">
-                        <UploadCloud className="w-8 h-8 text-zinc-500 mx-auto mb-2" />
-                        <span className="text-xs font-medium text-brand-400 hover:underline">
+                        <UploadCloud className="w-8 h-8 text-stone-400 mx-auto mb-2" />
+                        <span className="text-xs font-bold text-stone-900 hover:underline">
                           {paperFile ? paperFile.name : 'Click to select question paper file'}
                         </span>
-                        <p className="text-[11px] text-zinc-500 mt-1">
+                        <p className="text-[11px] text-stone-500 mt-1">
                           Supports multi-column test layouts, tables, and formula extracts.
                         </p>
                       </label>
@@ -1030,30 +1043,28 @@ Explanation: Binary search halves the search space at every comparison, giving $
                   </div>
 
                   <div>
-                    <label className="block text-xs font-semibold text-zinc-300 mb-1.5">
+                    <label className="block text-xs font-bold text-stone-800 mb-1.5">
                       Separate Answer Key File (Optional)
                     </label>
                     <input
                       type="file"
                       accept=".pdf,.docx,.txt,.csv"
                       onChange={(e) => setKeyFile(e.target.files?.[0] || null)}
-                      className="w-full text-xs text-zinc-400 file:mr-3 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-medium file:bg-zinc-800 file:text-zinc-200 hover:file:bg-zinc-700 cursor-pointer"
+                      className="w-full text-xs text-stone-600 file:mr-3 file:py-2 file:px-3 file:rounded-xl file:border file:border-stone-200 file:text-xs file:font-bold file:bg-white file:text-stone-800 hover:file:bg-stone-50 cursor-pointer"
                     />
                   </div>
 
-                  <div className="p-3 bg-zinc-950/60 rounded-lg border border-zinc-800 text-xs text-zinc-400 space-y-2">
-                    <label className="flex items-center gap-2 cursor-pointer">
+                  <div className="p-3.5 bg-stone-50 rounded-xl border border-stone-200 text-xs text-stone-700 space-y-1.5">
+                    <label className="flex items-center gap-2 cursor-pointer font-bold text-stone-900">
                       <input
                         type="checkbox"
                         checked={useGemini}
                         onChange={(e) => setUseGemini(e.target.checked)}
-                        className="rounded border-zinc-700 text-brand-500 focus:ring-brand-500"
+                        className="rounded border-stone-300 text-stone-900 focus:ring-stone-900"
                       />
-                      <span className="text-zinc-200 font-medium">
-                        Enable High-Accuracy Gemini AI OCR & Formula Extraction
-                      </span>
+                      <span>Enable High-Accuracy Gemini AI OCR & Formula Extraction</span>
                     </label>
-                    <p className="text-[11px] text-zinc-500 pl-6">
+                    <p className="text-[11px] text-stone-500 pl-6">
                       Extracts complex mathematical expressions, diagram descriptions, and ambiguous option letters with high precision.
                     </p>
                   </div>
@@ -1062,7 +1073,7 @@ Explanation: Binary search halves the search space at every comparison, giving $
                 {/* Paste Text Alternative */}
                 <div className="space-y-4">
                   <div>
-                    <label className="block text-xs font-semibold text-zinc-300 mb-1.5">
+                    <label className="block text-xs font-bold text-stone-800 mb-1.5">
                       Or Paste Question Paper Text
                     </label>
                     <textarea
@@ -1070,12 +1081,12 @@ Explanation: Binary search halves the search space at every comparison, giving $
                       value={paperText}
                       onChange={(e) => setPaperText(e.target.value)}
                       placeholder="Paste questions here with options (A, B, C, D) and explanations..."
-                      className="w-full p-3 rounded-xl bg-zinc-950/60 border border-zinc-800 text-xs text-zinc-200 focus:border-brand-500 focus:outline-none font-mono"
+                      className="w-full p-3 rounded-xl bg-white border border-stone-300 text-xs text-stone-900 placeholder-stone-400 focus:border-stone-900 focus:ring-1 focus:ring-stone-900 focus:outline-none font-mono"
                     />
                   </div>
 
                   <div>
-                    <label className="block text-xs font-semibold text-zinc-300 mb-1.5">
+                    <label className="block text-xs font-bold text-stone-800 mb-1.5">
                       Or Paste Answer Key Text (Optional)
                     </label>
                     <textarea
@@ -1083,14 +1094,14 @@ Explanation: Binary search halves the search space at every comparison, giving $
                       value={keyText}
                       onChange={(e) => setKeyText(e.target.value)}
                       placeholder="e.g. 1. A, 2. B, 3. C, 4. D..."
-                      className="w-full p-3 rounded-xl bg-zinc-950/60 border border-zinc-800 text-xs text-zinc-200 focus:border-brand-500 focus:outline-none font-mono"
+                      className="w-full p-3 rounded-xl bg-white border border-stone-300 text-xs text-stone-900 placeholder-stone-400 focus:border-stone-900 focus:ring-1 focus:ring-stone-900 focus:outline-none font-mono"
                     />
                   </div>
                 </div>
               </div>
 
-              <div className="mt-6 pt-4 border-t border-zinc-800 flex items-center justify-between">
-                <span className="text-xs text-zinc-500">
+              <div className="pt-4 border-t border-stone-100 flex items-center justify-between">
+                <span className="text-xs text-stone-500">
                   Document will be parsed into individual questions and passed to the Quality Control Linter.
                 </span>
                 <Button
@@ -1102,7 +1113,7 @@ Explanation: Binary search halves the search space at every comparison, giving $
                   {uploadLoading ? 'Parsing & Linting...' : 'Parse Document to Editor'}
                 </Button>
               </div>
-            </Card>
+            </div>
           )}
         </div>
       )}
@@ -1111,29 +1122,29 @@ Explanation: Binary search halves the search space at every comparison, giving $
       {currentStep === 2 && (
         <div className="space-y-4">
           {/* Quality Control Linter Bar */}
-          <div className="p-3 rounded-xl bg-zinc-900 border border-zinc-800 flex flex-col md:flex-row md:items-center justify-between gap-3 text-xs">
+          <div className="p-4 rounded-2xl bg-white border border-stone-200 shadow-2xs flex flex-col md:flex-row md:items-center justify-between gap-3 text-xs">
             <div className="flex items-center gap-3">
-              <span className="font-semibold text-zinc-200 flex items-center gap-1.5">
-                <FileCheck className="w-4 h-4 text-brand-400" />
+              <span className="font-bold text-stone-900 flex items-center gap-1.5">
+                <FileCheck className="w-4 h-4 text-amber-700" />
                 Quality Control Linter
               </span>
-              <span className="text-zinc-500">|</span>
+              <span className="text-stone-300">|</span>
               {criticalIssuesCount === 0 && warningIssuesCount === 0 ? (
-                <span className="text-emerald-400 font-semibold flex items-center gap-1">
-                  <CheckCircle2 className="w-3.5 h-3.5" />
+                <span className="text-emerald-800 font-bold flex items-center gap-1 bg-emerald-50 px-2.5 py-1 rounded-lg border border-emerald-200">
+                  <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
                   All {questions.length} questions are verified and ready
                 </span>
               ) : (
                 <div className="flex items-center gap-2">
                   {criticalIssuesCount > 0 && (
-                    <span className="text-rose-400 font-semibold flex items-center gap-1 bg-rose-500/10 px-2 py-0.5 rounded border border-rose-500/20">
-                      <AlertTriangle className="w-3 h-3" />
+                    <span className="text-rose-800 font-bold flex items-center gap-1 bg-rose-50 px-2.5 py-1 rounded-lg border border-rose-200">
+                      <AlertTriangle className="w-3 h-3 text-rose-600" />
                       {criticalIssuesCount} Critical Issue{criticalIssuesCount > 1 ? 's' : ''}
                     </span>
                   )}
                   {warningIssuesCount > 0 && (
-                    <span className="text-amber-400 font-semibold flex items-center gap-1 bg-amber-500/10 px-2 py-0.5 rounded border border-amber-500/20">
-                      <Info className="w-3 h-3" />
+                    <span className="text-amber-800 font-bold flex items-center gap-1 bg-amber-50 px-2.5 py-1 rounded-lg border border-amber-200">
+                      <Info className="w-3 h-3 text-amber-600" />
                       {warningIssuesCount} Warning{warningIssuesCount > 1 ? 's' : ''}
                     </span>
                   )}
@@ -1173,12 +1184,12 @@ Explanation: Binary search halves the search space at every comparison, giving $
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 items-start">
             {/* Left Column: Questions Navigator (4 Cols) */}
             <div className="lg:col-span-4 space-y-2">
-              <div className="flex items-center justify-between px-1 text-xs text-zinc-400 font-semibold">
+              <div className="flex items-center justify-between px-1 text-xs text-stone-500 font-bold">
                 <span>Questions List ({questions.length})</span>
                 <span>Click to Edit</span>
               </div>
 
-              <div className="space-y-1.5 max-h-[720px] overflow-y-auto pr-1">
+              <div className="space-y-2 max-h-[720px] overflow-y-auto pr-1">
                 {questions.map((q, idx) => {
                   const isActive = idx === activeQuestionIdx;
                   const hasCrit = !q.correct_answer || !q.question_text || (q.options || []).length < 2;
@@ -1188,10 +1199,10 @@ Explanation: Binary search halves the search space at every comparison, giving $
                     <div
                       key={idx}
                       onClick={() => setActiveQuestionIdx(idx)}
-                      className={`p-3 rounded-xl border text-xs cursor-pointer transition-all ${
+                      className={`p-3.5 rounded-xl border text-xs cursor-pointer transition-all shadow-2xs ${
                         isActive
-                          ? 'bg-zinc-900 border-brand-500 shadow-md shadow-brand-500/5 ring-1 ring-brand-500/40'
-                          : 'bg-zinc-900/60 border-zinc-800/80 hover:border-zinc-700 text-zinc-400'
+                          ? 'bg-amber-50/60 border-amber-600 ring-1 ring-amber-500/20 text-stone-900'
+                          : 'bg-white border-stone-200 hover:border-stone-300 text-stone-700 hover:bg-stone-50/50'
                       }`}
                     >
                       <div className="flex items-center justify-between mb-1.5">
@@ -1199,28 +1210,28 @@ Explanation: Binary search halves the search space at every comparison, giving $
                           <span
                             className={`w-6 h-6 rounded-full flex items-center justify-center font-bold text-[11px] ${
                               isActive
-                                ? 'bg-brand-500 text-black'
-                                : 'bg-zinc-800 text-zinc-300'
+                                ? 'bg-amber-600 text-white shadow-2xs'
+                                : 'bg-stone-100 text-stone-700'
                             }`}
                           >
                             {idx + 1}
                           </span>
-                          <span className="font-semibold text-zinc-200">
+                          <span className="font-bold text-stone-900 font-mono">
                             Key: {q.correct_answer || 'None'}
                           </span>
                         </div>
 
                         <div className="flex items-center gap-1.5">
                           {hasCrit ? (
-                            <span className="text-rose-400 text-[10px] font-bold px-1.5 py-0.5 rounded bg-rose-500/10 border border-rose-500/20">
+                            <span className="text-rose-800 text-[10px] font-bold px-1.5 py-0.5 rounded bg-rose-50 border border-rose-200">
                               Error
                             </span>
                           ) : hasWarn ? (
-                            <span className="text-amber-400 text-[10px] font-bold px-1.5 py-0.5 rounded bg-amber-500/10 border border-amber-500/20">
+                            <span className="text-amber-800 text-[10px] font-bold px-1.5 py-0.5 rounded bg-amber-50 border border-amber-200">
                               Warning
                             </span>
                           ) : (
-                            <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" />
+                            <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
                           )}
 
                           {/* Reorder Buttons */}
@@ -1230,7 +1241,7 @@ Explanation: Binary search halves the search space at every comparison, giving $
                               moveQuestion(idx, 'up');
                             }}
                             disabled={idx === 0}
-                            className="p-1 hover:text-zinc-200 disabled:opacity-30"
+                            className="p-1 text-stone-400 hover:text-stone-700 disabled:opacity-30"
                             title="Move up"
                           >
                             <ChevronUp className="w-3.5 h-3.5" />
@@ -1241,7 +1252,7 @@ Explanation: Binary search halves the search space at every comparison, giving $
                               moveQuestion(idx, 'down');
                             }}
                             disabled={idx === questions.length - 1}
-                            className="p-1 hover:text-zinc-200 disabled:opacity-30"
+                            className="p-1 text-stone-400 hover:text-stone-700 disabled:opacity-30"
                             title="Move down"
                           >
                             <ChevronDown className="w-3.5 h-3.5" />
@@ -1251,7 +1262,7 @@ Explanation: Binary search halves the search space at every comparison, giving $
                               e.stopPropagation();
                               deleteQuestion(idx);
                             }}
-                            className="p-1 hover:text-rose-400"
+                            className="p-1 text-stone-400 hover:text-rose-600"
                             title="Delete question"
                           >
                             <Trash2 className="w-3.5 h-3.5" />
@@ -1259,7 +1270,7 @@ Explanation: Binary search halves the search space at every comparison, giving $
                         </div>
                       </div>
 
-                      <p className="text-zinc-300 line-clamp-2 leading-relaxed">
+                      <p className="text-stone-600 line-clamp-2 leading-relaxed">
                         {q.question_text || 'Empty statement'}
                       </p>
                     </div>
@@ -1271,16 +1282,16 @@ Explanation: Binary search halves the search space at every comparison, giving $
             {/* Right Column: Split-Screen Editor & Student Preview (8 Cols) */}
             {currentQ && (
               <div className="lg:col-span-8 space-y-4">
-                <Card className="p-5">
-                  <div className="flex items-center justify-between pb-3 border-b border-zinc-800 mb-4 text-xs">
+                <div className="bg-white rounded-2xl border border-stone-200 p-6 shadow-2xs space-y-4">
+                  <div className="flex items-center justify-between pb-3 border-b border-stone-100 text-xs">
                     <div className="flex items-center gap-2">
-                      <span className="font-semibold text-zinc-100 text-sm">
+                      <span className="font-serif font-bold text-stone-900 text-base">
                         Editing Question #{activeQuestionIdx + 1}
                       </span>
                       <Badge variant="stone">{currentQ.difficulty || 'medium'}</Badge>
                     </div>
 
-                    <div className="flex items-center gap-3 text-zinc-400">
+                    <div className="flex items-center gap-3 text-stone-500 font-mono">
                       <span>Options: {currentQ.options?.length || 0}</span>
                       <span>Key: {currentQ.correct_answer || 'Not Set'}</span>
                     </div>
@@ -1290,31 +1301,31 @@ Explanation: Binary search halves the search space at every comparison, giving $
                   <div className="space-y-4">
                     <div>
                       <div className="flex items-center justify-between mb-1.5">
-                        <label className="text-xs font-semibold text-zinc-300">
+                        <label className="text-xs font-bold text-stone-800">
                           Question Statement (Supports $...$ for LaTeX math)
                         </label>
-                        <span className="text-[11px] text-zinc-500 font-mono">
-                          e.g. What is the derivative of $f(x) = x^3$?
+                        <span className="text-[11px] text-stone-500 font-mono">
+                          e.g. What is the value of $\int x^2 dx$?
                         </span>
                       </div>
                       <textarea
                         rows={3}
                         value={currentQ.question_text}
                         onChange={(e) => updateCurrentQuestionText(e.target.value)}
-                        className="w-full p-3 rounded-xl bg-zinc-950 border border-zinc-800 text-sm text-zinc-100 focus:border-brand-500 focus:outline-none"
+                        className="w-full p-3 rounded-xl bg-white border border-stone-300 text-sm text-stone-900 placeholder-stone-400 focus:border-stone-900 focus:ring-1 focus:ring-stone-900 focus:outline-none"
                       />
                     </div>
 
                     {/* Options Editor */}
                     <div>
                       <div className="flex items-center justify-between mb-2">
-                        <label className="text-xs font-semibold text-zinc-300">
+                        <label className="text-xs font-bold text-stone-800">
                           Options & Correct Answer Selection:
                         </label>
                         <button
                           type="button"
                           onClick={addOptionToCurrent}
-                          className="text-xs text-brand-400 hover:text-brand-300 font-medium flex items-center gap-1"
+                          className="text-xs text-amber-700 hover:text-amber-900 font-bold flex items-center gap-1"
                         >
                           <Plus className="w-3.5 h-3.5" />
                           Add Option
@@ -1329,10 +1340,10 @@ Explanation: Binary search halves the search space at every comparison, giving $
                               <button
                                 type="button"
                                 onClick={() => updateCurrentCorrectAnswer(opt.label)}
-                                className={`w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold transition-all ${
+                                className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold transition-all shrink-0 ${
                                   isCorrect
-                                    ? 'bg-emerald-500 text-black ring-2 ring-emerald-400/50'
-                                    : 'bg-zinc-800 text-zinc-400 hover:bg-zinc-700'
+                                    ? 'bg-emerald-600 text-white shadow-2xs ring-2 ring-emerald-400/40'
+                                    : 'bg-stone-100 text-stone-700 hover:bg-stone-200 border border-stone-200'
                                 }`}
                                 title="Click to designate as correct answer"
                               >
@@ -1344,14 +1355,18 @@ Explanation: Binary search halves the search space at every comparison, giving $
                                 value={opt.text}
                                 onChange={(e) => updateCurrentOptionText(optIdx, e.target.value)}
                                 placeholder={`Option ${opt.label} text`}
-                                className="flex-1 px-3 py-2 rounded-lg bg-zinc-950 border border-zinc-800 text-xs text-zinc-200 focus:border-brand-500 focus:outline-none"
+                                className={`flex-1 px-3 py-2 rounded-xl border text-xs text-stone-900 focus:outline-none focus:ring-1 focus:ring-stone-900 ${
+                                  isCorrect
+                                    ? 'bg-emerald-50/50 border-emerald-300 font-medium'
+                                    : 'bg-white border-stone-300 focus:border-stone-900'
+                                }`}
                               />
 
                               {(currentQ.options || []).length > 2 && (
                                 <button
                                   type="button"
                                   onClick={() => removeOptionFromCurrent(optIdx)}
-                                  className="text-zinc-500 hover:text-rose-400 p-1"
+                                  className="text-stone-400 hover:text-rose-600 p-1.5 rounded-lg hover:bg-stone-50"
                                 >
                                   <Trash2 className="w-4 h-4" />
                                 </button>
@@ -1364,7 +1379,7 @@ Explanation: Binary search halves the search space at every comparison, giving $
 
                     {/* Detailed Explanation */}
                     <div>
-                      <label className="block text-xs font-semibold text-zinc-300 mb-1.5">
+                      <label className="block text-xs font-bold text-stone-800 mb-1.5">
                         Detailed Solution & Pedagogical Explanation
                       </label>
                       <textarea
@@ -1372,14 +1387,14 @@ Explanation: Binary search halves the search space at every comparison, giving $
                         value={currentQ.explanation || ''}
                         onChange={(e) => updateCurrentExplanation(e.target.value)}
                         placeholder="Provide step-by-step reasoning, mathematical proofs, or references..."
-                        className="w-full p-3 rounded-xl bg-zinc-950 border border-zinc-800 text-xs text-zinc-200 focus:border-brand-500 focus:outline-none"
+                        className="w-full p-3 rounded-xl bg-white border border-stone-300 text-xs text-stone-900 placeholder-stone-400 focus:border-stone-900 focus:ring-1 focus:ring-stone-900 focus:outline-none"
                       />
                     </div>
 
                     {/* Meta tags & Pedagogical Info */}
                     <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-2">
                       <div>
-                        <label className="block text-[11px] font-semibold text-zinc-400 mb-1">
+                        <label className="block text-[11px] font-bold text-stone-500 mb-1">
                           Difficulty
                         </label>
                         <select
@@ -1389,7 +1404,7 @@ Explanation: Binary search halves the search space at every comparison, giving $
                             next[activeQuestionIdx].difficulty = e.target.value as any;
                             setQuestions(next);
                           }}
-                          className="w-full px-2.5 py-1.5 rounded-lg bg-zinc-900 border border-zinc-800 text-xs text-zinc-200"
+                          className="w-full px-2.5 py-1.5 rounded-lg bg-white border border-stone-300 text-xs text-stone-900"
                         >
                           <option value="easy">Easy</option>
                           <option value="medium">Medium</option>
@@ -1398,7 +1413,7 @@ Explanation: Binary search halves the search space at every comparison, giving $
                       </div>
 
                       <div>
-                        <label className="block text-[11px] font-semibold text-zinc-400 mb-1">
+                        <label className="block text-[11px] font-bold text-stone-500 mb-1">
                           Marks (+)
                         </label>
                         <input
@@ -1410,12 +1425,12 @@ Explanation: Binary search halves the search space at every comparison, giving $
                             next[activeQuestionIdx].correct_marks = Number(e.target.value);
                             setQuestions(next);
                           }}
-                          className="w-full px-2.5 py-1.5 rounded-lg bg-zinc-900 border border-zinc-800 text-xs text-zinc-200"
+                          className="w-full px-2.5 py-1.5 rounded-lg bg-white border border-stone-300 text-xs text-stone-900"
                         />
                       </div>
 
                       <div>
-                        <label className="block text-[11px] font-semibold text-zinc-400 mb-1">
+                        <label className="block text-[11px] font-bold text-stone-500 mb-1">
                           Penalty (-)
                         </label>
                         <input
@@ -1427,12 +1442,12 @@ Explanation: Binary search halves the search space at every comparison, giving $
                             next[activeQuestionIdx].negative_marks = Number(e.target.value);
                             setQuestions(next);
                           }}
-                          className="w-full px-2.5 py-1.5 rounded-lg bg-zinc-900 border border-zinc-800 text-xs text-zinc-200"
+                          className="w-full px-2.5 py-1.5 rounded-lg bg-white border border-stone-300 text-xs text-stone-900"
                         />
                       </div>
 
                       <div>
-                        <label className="block text-[11px] font-semibold text-zinc-400 mb-1">
+                        <label className="block text-[11px] font-bold text-stone-500 mb-1">
                           Est. Secs
                         </label>
                         <input
@@ -1443,26 +1458,26 @@ Explanation: Binary search halves the search space at every comparison, giving $
                             next[activeQuestionIdx].estimated_seconds = Number(e.target.value);
                             setQuestions(next);
                           }}
-                          className="w-full px-2.5 py-1.5 rounded-lg bg-zinc-900 border border-zinc-800 text-xs text-zinc-200"
+                          className="w-full px-2.5 py-1.5 rounded-lg bg-white border border-stone-300 text-xs text-stone-900"
                         />
                       </div>
                     </div>
                   </div>
-                </Card>
+                </div>
 
                 {/* Real-time Student Live Preview Card */}
-                <Card className="p-4 bg-zinc-950/60 border border-zinc-800/80">
-                  <div className="flex items-center justify-between pb-2 border-b border-zinc-800 text-xs text-zinc-400 mb-3">
-                    <span className="font-semibold text-brand-400 flex items-center gap-1.5">
-                      <Sparkles className="w-3.5 h-3.5" />
+                <div className="bg-stone-50/80 rounded-2xl border border-stone-200 p-5 shadow-2xs space-y-3">
+                  <div className="flex items-center justify-between pb-2 border-b border-stone-200 text-xs text-stone-500">
+                    <span className="font-bold text-stone-800 flex items-center gap-1.5">
+                      <Sparkles className="w-3.5 h-3.5 text-amber-600" />
                       Candidate View Simulation
                     </span>
-                    <span>
+                    <span className="font-mono">
                       Question {activeQuestionIdx + 1} of {questions.length}
                     </span>
                   </div>
 
-                  <div className="text-sm text-zinc-100 font-medium mb-3 leading-relaxed">
+                  <div className="text-sm text-stone-900 font-medium mb-3 leading-relaxed">
                     <FormattedMathText text={currentQ.question_text} />
                   </div>
 
@@ -1472,15 +1487,15 @@ Explanation: Binary search halves the search space at every comparison, giving $
                       return (
                         <div
                           key={i}
-                          className={`p-2.5 rounded-lg text-xs border flex items-start gap-2 ${
+                          className={`p-2.5 rounded-xl text-xs border flex items-start gap-2 ${
                             isCorrect
-                              ? 'bg-emerald-950/20 border-emerald-500/40 text-emerald-200'
-                              : 'bg-zinc-900 border-zinc-800 text-zinc-300'
+                              ? 'bg-emerald-50 border-emerald-300 text-emerald-900 font-bold'
+                              : 'bg-white border-stone-200 text-stone-700'
                           }`}
                         >
                           <span
-                            className={`w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-bold ${
-                              isCorrect ? 'bg-emerald-500 text-black' : 'bg-zinc-800 text-zinc-400'
+                            className={`w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-bold shrink-0 ${
+                              isCorrect ? 'bg-emerald-600 text-white' : 'bg-stone-100 text-stone-600'
                             }`}
                           >
                             {opt.label}
@@ -1489,13 +1504,20 @@ Explanation: Binary search halves the search space at every comparison, giving $
                             <FormattedMathText text={opt.text} />
                           </div>
                           {isCorrect && (
-                            <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400 ml-auto flex-shrink-0" />
+                            <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 ml-auto flex-shrink-0" />
                           )}
                         </div>
                       );
                     })}
                   </div>
-                </Card>
+
+                  {currentQ.explanation && (
+                    <div className="p-3 rounded-xl bg-amber-50/50 border border-amber-200 text-amber-950 text-xs mt-2">
+                      <strong className="block text-stone-900 font-bold mb-0.5">Pedagogical Explanation:</strong>
+                      <FormattedMathText text={currentQ.explanation} />
+                    </div>
+                  )}
+                </div>
               </div>
             )}
           </div>
@@ -1504,20 +1526,20 @@ Explanation: Binary search halves the search space at every comparison, giving $
 
       {/* STEP 3: TEST CONFIGURATION & PUBLICATION */}
       {currentStep === 3 && (
-        <Card className="p-6 space-y-6">
-          <div className="pb-4 border-b border-zinc-800">
-            <h3 className="text-base font-semibold text-zinc-100 flex items-center gap-2">
-              <Settings className="w-4 h-4 text-brand-400" />
+        <div className="bg-white rounded-2xl border border-stone-200 p-6 shadow-2xs space-y-6">
+          <div className="pb-4 border-b border-stone-100">
+            <h3 className="text-base font-serif font-bold text-stone-900 flex items-center gap-2">
+              <Settings className="w-4 h-4 text-amber-700" />
               Test Configuration & Delivery Settings
             </h3>
-            <p className="text-xs text-zinc-400 mt-1">
+            <p className="text-xs text-stone-500 mt-1">
               Configure exam type, duration, marking scheme, randomization rules, and release policy.
             </p>
           </div>
 
           {saveError && (
-            <div className="p-3 rounded-lg bg-rose-950/30 border border-rose-500/30 text-xs text-rose-300 flex items-center gap-2">
-              <AlertTriangle className="w-4 h-4 text-rose-400 flex-shrink-0" />
+            <div className="p-3 rounded-xl bg-rose-50 border border-rose-200 text-xs text-rose-800 flex items-center gap-2">
+              <AlertTriangle className="w-4 h-4 text-rose-600 flex-shrink-0" />
               <span>{saveError}</span>
             </div>
           )}
@@ -1526,29 +1548,29 @@ Explanation: Binary search halves the search space at every comparison, giving $
             {/* Left: General Info & Type */}
             <div className="space-y-4">
               <div>
-                <label className="block text-xs font-semibold text-zinc-300 mb-1">Test Title</label>
+                <label className="block text-xs font-bold text-stone-800 mb-1">Test Title</label>
                 <input
                   type="text"
                   value={title}
                   onChange={(e) => setTitle(e.target.value)}
                   placeholder="e.g. SSC CGL 2026 Tier-I Full Mock Examination 01"
-                  className="w-full px-3 py-2 rounded-lg bg-zinc-950 border border-zinc-800 text-sm text-zinc-100 focus:border-brand-500 focus:outline-none"
+                  className="w-full px-3 py-2 rounded-xl bg-white border border-stone-300 text-sm text-stone-900 focus:border-stone-900 focus:outline-none focus:ring-1 focus:ring-stone-900"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-zinc-300 mb-1">Description</label>
+                <label className="block text-xs font-bold text-stone-800 mb-1">Description</label>
                 <textarea
                   rows={2}
                   value={description}
                   onChange={(e) => setDescription(e.target.value)}
                   placeholder="Overview of syllabus covered, target candidates, or difficulty notes..."
-                  className="w-full px-3 py-2 rounded-lg bg-zinc-950 border border-zinc-800 text-xs text-zinc-200 focus:border-brand-500 focus:outline-none"
+                  className="w-full px-3 py-2 rounded-xl bg-white border border-stone-300 text-xs text-stone-900 focus:border-stone-900 focus:outline-none focus:ring-1 focus:ring-stone-900"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-zinc-300 mb-1">
+                <label className="block text-xs font-bold text-stone-800 mb-1">
                   Candidate Exam Instructions
                 </label>
                 <textarea
@@ -1556,17 +1578,17 @@ Explanation: Binary search halves the search space at every comparison, giving $
                   value={instructions}
                   onChange={(e) => setInstructions(e.target.value)}
                   placeholder="Standard test conduct guidelines displayed before candidate starts..."
-                  className="w-full px-3 py-2 rounded-lg bg-zinc-950 border border-zinc-800 text-xs text-zinc-200 focus:border-brand-500 focus:outline-none font-mono"
+                  className="w-full px-3 py-2 rounded-xl bg-white border border-stone-300 text-xs text-stone-900 focus:border-stone-900 focus:outline-none focus:ring-1 focus:ring-stone-900 font-mono"
                 />
               </div>
 
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-xs font-semibold text-zinc-300 mb-1">Test Type (12 Types)</label>
+                  <label className="block text-xs font-bold text-stone-800 mb-1">Test Type (12 Types)</label>
                   <select
                     value={testType}
                     onChange={(e) => setTestType(e.target.value)}
-                    className="w-full px-3 py-2 rounded-lg bg-zinc-950 border border-zinc-800 text-xs text-zinc-200"
+                    className="w-full px-3 py-2 rounded-xl bg-white border border-stone-300 text-xs text-stone-900"
                   >
                     <option value="topic_test">Topic Test</option>
                     <option value="subtopic_test">Subtopic Test</option>
@@ -1584,11 +1606,11 @@ Explanation: Binary search halves the search space at every comparison, giving $
                 </div>
 
                 <div>
-                  <label className="block text-xs font-semibold text-zinc-300 mb-1">Subject</label>
+                  <label className="block text-xs font-bold text-stone-800 mb-1">Subject</label>
                   <select
                     value={subject}
                     onChange={(e) => setSubject(e.target.value)}
-                    className="w-full px-3 py-2 rounded-lg bg-zinc-950 border border-zinc-800 text-xs text-zinc-200"
+                    className="w-full px-3 py-2 rounded-xl bg-white border border-stone-300 text-xs text-stone-900"
                   >
                     <option value="Quantitative Aptitude">Quantitative Aptitude</option>
                     <option value="General Intelligence & Reasoning">General Intelligence & Reasoning</option>
@@ -1604,14 +1626,14 @@ Explanation: Binary search halves the search space at every comparison, giving $
             <div className="space-y-4">
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-xs font-semibold text-zinc-300 mb-1">Duration Preset</label>
+                  <label className="block text-xs font-bold text-stone-800 mb-1">Duration Preset</label>
                   <select
                     value={presetDuration}
                     onChange={(e) => {
                       setTimerMode('preset');
                       setPresetDuration(Number(e.target.value));
                     }}
-                    className="w-full px-3 py-2 rounded-lg bg-zinc-950 border border-zinc-800 text-xs text-zinc-200"
+                    className="w-full px-3 py-2 rounded-xl bg-white border border-stone-300 text-xs text-stone-900"
                   >
                     <option value={900}>15 Minutes (Speed Drill)</option>
                     <option value={1800}>30 Minutes (Sectional)</option>
@@ -1622,7 +1644,7 @@ Explanation: Binary search halves the search space at every comparison, giving $
                 </div>
 
                 <div>
-                  <label className="block text-xs font-semibold text-zinc-300 mb-1">Marking Scheme</label>
+                  <label className="block text-xs font-bold text-stone-800 mb-1">Marking Scheme</label>
                   <select
                     value={markingSchemeType}
                     onChange={(e) => {
@@ -1636,7 +1658,7 @@ Explanation: Binary search halves the search space at every comparison, giving $
                         setDefaultNegativeMarks(1.0);
                       }
                     }}
-                    className="w-full px-3 py-2 rounded-lg bg-zinc-950 border border-zinc-800 text-xs text-zinc-200"
+                    className="w-full px-3 py-2 rounded-xl bg-white border border-stone-300 text-xs text-stone-900"
                   >
                     <option value="standard">Standard (+4.0 / -1.0)</option>
                     <option value="ssc">SSC CGL (+2.0 / -0.5)</option>
@@ -1647,31 +1669,31 @@ Explanation: Binary search halves the search space at every comparison, giving $
 
               <div className="grid grid-cols-3 gap-2">
                 <div>
-                  <label className="block text-xs font-semibold text-zinc-400 mb-1">Correct Marks</label>
+                  <label className="block text-xs font-bold text-stone-500 mb-1">Correct Marks</label>
                   <input
                     type="number"
                     step="0.5"
                     value={defaultCorrectMarks}
                     onChange={(e) => setDefaultCorrectMarks(Number(e.target.value))}
-                    className="w-full px-3 py-1.5 rounded-lg bg-zinc-950 border border-zinc-800 text-xs text-zinc-200"
+                    className="w-full px-3 py-1.5 rounded-xl bg-white border border-stone-300 text-xs text-stone-900"
                   />
                 </div>
                 <div>
-                  <label className="block text-xs font-semibold text-zinc-400 mb-1">Negative Penalty</label>
+                  <label className="block text-xs font-bold text-stone-500 mb-1">Negative Penalty</label>
                   <input
                     type="number"
                     step="0.25"
                     value={defaultNegativeMarks}
                     onChange={(e) => setDefaultNegativeMarks(Number(e.target.value))}
-                    className="w-full px-3 py-1.5 rounded-lg bg-zinc-950 border border-zinc-800 text-xs text-zinc-200"
+                    className="w-full px-3 py-1.5 rounded-xl bg-white border border-stone-300 text-xs text-stone-900"
                   />
                 </div>
                 <div>
-                  <label className="block text-xs font-semibold text-zinc-400 mb-1">Result Release</label>
+                  <label className="block text-xs font-bold text-stone-500 mb-1">Result Release</label>
                   <select
                     value={resultAvailability}
                     onChange={(e) => setResultAvailability(e.target.value)}
-                    className="w-full px-2 py-1.5 rounded-lg bg-zinc-950 border border-zinc-800 text-xs text-zinc-200"
+                    className="w-full px-2 py-1.5 rounded-xl bg-white border border-stone-300 text-xs text-stone-900"
                   >
                     <option value="immediate">Immediate</option>
                     <option value="after_window">After Window</option>
@@ -1681,55 +1703,53 @@ Explanation: Binary search halves the search space at every comparison, giving $
               </div>
 
               {/* Delivery Security Toggles */}
-              <div className="p-3 bg-zinc-950/60 rounded-xl border border-zinc-800 space-y-2 text-xs">
-                <label className="flex items-center gap-2 cursor-pointer">
+              <div className="p-3.5 bg-stone-50 rounded-xl border border-stone-200 space-y-2 text-xs">
+                <label className="flex items-center gap-2 cursor-pointer font-medium text-stone-800">
                   <input
                     type="checkbox"
                     checked={shuffleQuestions}
                     onChange={(e) => setShuffleQuestions(e.target.checked)}
-                    className="rounded border-zinc-700 text-brand-500 focus:ring-brand-500"
+                    className="rounded border-stone-300 text-stone-900 focus:ring-stone-900"
                   />
-                  <span className="text-zinc-200 font-medium">Shuffle questions for candidates</span>
+                  <span>Shuffle questions for candidates</span>
                 </label>
 
-                <label className="flex items-center gap-2 cursor-pointer">
+                <label className="flex items-center gap-2 cursor-pointer font-medium text-stone-800">
                   <input
                     type="checkbox"
                     checked={shuffleOptions}
                     onChange={(e) => setShuffleOptions(e.target.checked)}
-                    className="rounded border-zinc-700 text-brand-500 focus:ring-brand-500"
+                    className="rounded border-stone-300 text-stone-900 focus:ring-stone-900"
                   />
-                  <span className="text-zinc-200 font-medium">Shuffle option orders per question</span>
+                  <span>Shuffle option orders per question</span>
                 </label>
 
-                <label className="flex items-center gap-2 cursor-pointer">
+                <label className="flex items-center gap-2 cursor-pointer font-bold text-amber-900">
                   <input
                     type="checkbox"
                     checked={saveToQuestionBank}
                     onChange={(e) => setSaveToQuestionBank(e.target.checked)}
-                    className="rounded border-zinc-700 text-brand-500 focus:ring-brand-500"
+                    className="rounded border-stone-300 text-amber-600 focus:ring-amber-500"
                   />
-                  <span className="text-brand-300 font-medium">
-                    Save all questions to Nalanda Question Bank repository
-                  </span>
+                  <span>Save all questions to Nalanda Question Bank repository</span>
                 </label>
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-zinc-300 mb-1">Tags (comma separated)</label>
+                <label className="block text-xs font-bold text-stone-800 mb-1">Tags (comma separated)</label>
                 <input
                   type="text"
                   value={tagsStr}
                   onChange={(e) => setTagsStr(e.target.value)}
                   placeholder="e.g. Tier-1, TCS Pattern, 2026"
-                  className="w-full px-3 py-1.5 rounded-lg bg-zinc-950 border border-zinc-800 text-xs text-zinc-200"
+                  className="w-full px-3 py-2 rounded-xl bg-white border border-stone-300 text-xs text-stone-900"
                 />
               </div>
             </div>
           </div>
 
           {/* Action Buttons */}
-          <div className="pt-6 border-t border-zinc-800 flex flex-col sm:flex-row items-center justify-between gap-4">
+          <div className="pt-6 border-t border-stone-100 flex flex-col sm:flex-row items-center justify-between gap-4">
             <Button variant="secondary" onClick={() => setCurrentStep(2)} icon={<ArrowLeft className="w-4 h-4" />}>
               Back to Question Editor
             </Button>
@@ -1754,17 +1774,16 @@ Explanation: Binary search halves the search space at every comparison, giving $
               </Button>
 
               <Button
-                variant="primary"
+                variant="saffron"
                 onClick={() => handleSaveTest('attempt')}
                 disabled={savingAction !== null}
-                icon={<Play className="w-4 h-4" />}
-                className="bg-emerald-600 hover:bg-emerald-500 text-white"
+                icon={<Play className="w-4 h-4 fill-current" />}
               >
                 {savingAction === 'attempt' ? 'Launching...' : 'Publish & Attempt'}
               </Button>
             </div>
           </div>
-        </Card>
+        </div>
       )}
 
       {/* MODAL: AI-Assisted Draft Generator */}
@@ -1792,31 +1811,31 @@ Explanation: Binary search halves the search space at every comparison, giving $
       >
         <div className="space-y-4 text-xs">
           {aiError && (
-            <div className="p-3 rounded-lg bg-rose-950/30 border border-rose-500/30 text-rose-300">
+            <div className="p-3 rounded-xl bg-rose-50 border border-rose-200 text-rose-800">
               {aiError}
             </div>
           )}
 
           <div>
-            <label className="block font-semibold text-zinc-300 mb-1">Target Examination</label>
+            <label className="block font-bold text-stone-800 mb-1">Target Examination</label>
             <select
               value={aiExamId}
               onChange={(e) => setAiExamId(e.target.value)}
-              className="w-full px-3 py-2 rounded-lg bg-zinc-900 border border-zinc-800 text-zinc-200"
+              className="w-full px-3 py-2 rounded-xl bg-white border border-stone-300 text-stone-900"
             >
-              <option value="exam-ssc-cgl">SSC CGL 2026 (Combined Graduate Level)</option>
-              <option value="exam-neet-2026">NEET UG 2026 (Medical Entrance)</option>
-              <option value="exam-upsc-prelims">UPSC CSE Prelims 2026</option>
+              <option value="exam-ssc-cgl-2026">SSC CGL 2026 (Combined Graduate Level)</option>
+              <option value="exam-neet-ug-2026">NEET UG 2026 (Medical Entrance)</option>
+              <option value="exam-upsc-cse-2026">UPSC CSE Prelims 2026</option>
             </select>
           </div>
 
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="block font-semibold text-zinc-300 mb-1">Subject</label>
+              <label className="block font-bold text-stone-800 mb-1">Subject</label>
               <select
                 value={aiSubject}
                 onChange={(e) => setAiSubject(e.target.value)}
-                className="w-full px-3 py-2 rounded-lg bg-zinc-900 border border-zinc-800 text-zinc-200"
+                className="w-full px-3 py-2 rounded-xl bg-white border border-stone-300 text-stone-900"
               >
                 <option value="Quantitative Aptitude">Quantitative Aptitude</option>
                 <option value="General Intelligence & Reasoning">Reasoning</option>
@@ -1826,11 +1845,11 @@ Explanation: Binary search halves the search space at every comparison, giving $
             </div>
 
             <div>
-              <label className="block font-semibold text-zinc-300 mb-1">Difficulty</label>
+              <label className="block font-bold text-stone-800 mb-1">Difficulty</label>
               <select
                 value={aiDifficulty}
                 onChange={(e) => setAiDifficulty(e.target.value)}
-                className="w-full px-3 py-2 rounded-lg bg-zinc-900 border border-zinc-800 text-zinc-200"
+                className="w-full px-3 py-2 rounded-xl bg-white border border-stone-300 text-stone-900"
               >
                 <option value="easy">Easy (Foundational)</option>
                 <option value="medium">Medium (Standard Exam)</option>
@@ -1840,28 +1859,28 @@ Explanation: Binary search halves the search space at every comparison, giving $
           </div>
 
           <div>
-            <label className="block font-semibold text-zinc-300 mb-1">Syllabus Topic</label>
+            <label className="block font-bold text-stone-800 mb-1">Syllabus Topic</label>
             <input
               type="text"
               value={aiTopic}
               onChange={(e) => setAiTopic(e.target.value)}
               placeholder="e.g. Triangles, Circles & Geometry"
-              className="w-full px-3 py-2 rounded-lg bg-zinc-900 border border-zinc-800 text-zinc-200"
+              className="w-full px-3 py-2 rounded-xl bg-white border border-stone-300 text-stone-900"
             />
           </div>
 
           <div>
-            <label className="block font-semibold text-zinc-300 mb-1">Question Count</label>
+            <label className="block font-bold text-stone-800 mb-1">Question Count</label>
             <div className="flex items-center gap-3">
               {[5, 10, 15, 20].map((cnt) => (
                 <button
                   key={cnt}
                   type="button"
                   onClick={() => setAiCount(cnt)}
-                  className={`px-3 py-1.5 rounded-lg border text-xs font-semibold ${
+                  className={`px-3.5 py-1.5 rounded-xl border text-xs font-bold transition-colors ${
                     aiCount === cnt
-                      ? 'bg-purple-500/20 text-purple-300 border-purple-500/40'
-                      : 'bg-zinc-900 border-zinc-800 text-zinc-400'
+                      ? 'bg-stone-900 text-white border-stone-900'
+                      : 'bg-white border-stone-300 text-stone-700 hover:bg-stone-50'
                   }`}
                 >
                   {cnt} Questions
@@ -1881,7 +1900,7 @@ Explanation: Binary search halves the search space at every comparison, giving $
         size="xl"
         footer={
           <div className="flex items-center justify-between w-full">
-            <span className="text-xs text-zinc-400">
+            <span className="text-xs text-stone-500 font-mono">
               {qbSelectedIds.size} question(s) selected
             </span>
             <div className="flex items-center gap-3">
@@ -1903,19 +1922,19 @@ Explanation: Binary search halves the search space at every comparison, giving $
         <div className="space-y-3 max-h-[60vh] overflow-y-auto pr-1">
           <div className="flex items-center gap-3">
             <div className="relative flex-1">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-400" />
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-stone-400" />
               <input
                 type="text"
                 value={qbSearch}
                 onChange={(e) => setQbSearch(e.target.value)}
                 placeholder="Filter by concept, topic, or keyword..."
-                className="w-full pl-9 pr-3 py-1.5 rounded-lg bg-zinc-900 border border-zinc-800 text-xs text-zinc-200"
+                className="w-full pl-9 pr-3 py-2 rounded-xl bg-white border border-stone-300 text-xs text-stone-900 placeholder-stone-400"
               />
             </div>
             <select
               value={qbSubjectFilter}
               onChange={(e) => setQbSubjectFilter(e.target.value)}
-              className="px-3 py-1.5 rounded-lg bg-zinc-900 border border-zinc-800 text-xs text-zinc-200"
+              className="px-3 py-2 rounded-xl bg-white border border-stone-300 text-xs text-stone-900"
             >
               <option value="all">All Subjects</option>
               <option value="Quantitative Aptitude">Quantitative</option>
@@ -1926,7 +1945,7 @@ Explanation: Binary search halves the search space at every comparison, giving $
           </div>
 
           {qbLoading ? (
-            <div className="py-8 text-center text-xs text-zinc-500">Loading Question Bank...</div>
+            <div className="py-8 text-center text-xs text-stone-500">Loading Question Bank...</div>
           ) : (
             <div className="space-y-2 pt-2">
               {qbQuestions
@@ -1952,10 +1971,10 @@ Explanation: Binary search halves the search space at every comparison, giving $
                         else next.add(q.id);
                         setQbSelectedIds(next);
                       }}
-                      className={`p-3 rounded-lg border text-xs cursor-pointer transition-all ${
+                      className={`p-3.5 rounded-xl border text-xs cursor-pointer transition-all ${
                         isSelected
-                          ? 'bg-brand-950/20 border-brand-500 text-zinc-100'
-                          : 'bg-zinc-900/60 border-zinc-800 text-zinc-400 hover:border-zinc-700'
+                          ? 'bg-amber-50/60 border-amber-600 ring-1 ring-amber-500/20 text-stone-900'
+                          : 'bg-white border-stone-200 text-stone-700 hover:border-stone-300'
                       }`}
                     >
                       <div className="flex items-center justify-between mb-1">
@@ -1963,22 +1982,22 @@ Explanation: Binary search halves the search space at every comparison, giving $
                           <span
                             className={`w-4 h-4 rounded flex items-center justify-center border text-[10px] ${
                               isSelected
-                                ? 'bg-brand-500 border-brand-500 text-black font-bold'
-                                : 'border-zinc-700'
+                                ? 'bg-amber-600 border-amber-600 text-white font-bold'
+                                : 'border-stone-300 bg-white'
                             }`}
                           >
                             {isSelected ? '✓' : ''}
                           </span>
-                          <span className="font-semibold text-zinc-200">
+                          <span className="font-bold text-stone-900">
                             {q.subject_id || 'General'}
                           </span>
-                          {q.topic_id && <span className="text-zinc-500">• {q.topic_id}</span>}
+                          {q.topic_id && <span className="text-stone-500">• {q.topic_id}</span>}
                         </div>
                         <Badge variant={q.difficulty === 'hard' ? 'danger' : 'saffron'}>
                           {q.difficulty}
                         </Badge>
                       </div>
-                      <p className="line-clamp-2 text-zinc-300">
+                      <p className="line-clamp-2 text-stone-600">
                         <FormattedMathText text={q.question_text} />
                       </p>
                     </div>
@@ -2006,16 +2025,16 @@ Explanation: Binary search halves the search space at every comparison, giving $
       >
         <div className="space-y-2 max-h-[50vh] overflow-y-auto pr-1">
           {loadingTests ? (
-            <div className="py-8 text-center text-xs text-zinc-500">Loading tests...</div>
+            <div className="py-8 text-center text-xs text-stone-500">Loading tests...</div>
           ) : (
             availableTests.map((t) => (
               <div
                 key={t.id}
-                className="p-3 rounded-lg bg-zinc-900 border border-zinc-800 hover:border-brand-500/50 flex items-center justify-between transition-all"
+                className="p-3.5 rounded-xl bg-white border border-stone-200 hover:border-amber-600 flex items-center justify-between transition-all"
               >
                 <div>
-                  <h4 className="text-xs font-semibold text-zinc-200">{t.title}</h4>
-                  <div className="flex items-center gap-2 text-[11px] text-zinc-400 mt-0.5">
+                  <h4 className="text-xs font-bold text-stone-900">{t.title}</h4>
+                  <div className="flex items-center gap-2 text-[11px] text-stone-500 mt-0.5">
                     <span>{t.subject || 'General'}</span>
                     <span>•</span>
                     <span>{t.question_count || 0} Questions</span>
@@ -2047,7 +2066,7 @@ Explanation: Binary search halves the search space at every comparison, giving $
         size="xl"
         footer={
           <div className="flex items-center justify-between w-full">
-            <span className="text-xs text-zinc-400">
+            <span className="text-xs text-stone-500">
               Interactive Test Mode: Candidate answers are not permanently saved.
             </span>
             <Button variant="primary" onClick={() => setIsCbePreviewOpen(false)}>
@@ -2060,27 +2079,27 @@ Explanation: Binary search halves the search space at every comparison, giving $
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 max-h-[70vh] overflow-y-auto pr-1">
             {/* Main Question Interface (8 cols) */}
             <div className="lg:col-span-8 space-y-4">
-              <div className="p-4 rounded-xl bg-zinc-950 border border-zinc-800 space-y-4">
+              <div className="p-5 rounded-2xl bg-white border border-stone-200 shadow-2xs space-y-4">
                 {/* Header */}
-                <div className="flex items-center justify-between pb-3 border-b border-zinc-800 text-xs text-zinc-400">
+                <div className="flex items-center justify-between pb-3 border-b border-stone-100 text-xs text-stone-600">
                   <div className="flex items-center gap-2">
-                    <span className="font-bold text-zinc-200 text-sm">
+                    <span className="font-serif font-bold text-stone-900 text-sm">
                       Question #{previewActiveIdx + 1}
                     </span>
                     <Badge variant="stone">Single Choice</Badge>
                   </div>
-                  <div className="flex items-center gap-3">
-                    <span className="text-emerald-400 font-semibold">
+                  <div className="flex items-center gap-3 font-mono">
+                    <span className="text-emerald-700 font-bold">
                       +{questions[previewActiveIdx]?.correct_marks || defaultCorrectMarks}
                     </span>
-                    <span className="text-rose-400 font-semibold">
+                    <span className="text-rose-700 font-bold">
                       -{questions[previewActiveIdx]?.negative_marks || defaultNegativeMarks}
                     </span>
                   </div>
                 </div>
 
                 {/* Statement */}
-                <div className="text-sm text-zinc-100 font-medium leading-relaxed min-h-[60px]">
+                <div className="text-sm text-stone-900 font-medium leading-relaxed min-h-[60px]">
                   <FormattedMathText text={questions[previewActiveIdx]?.question_text} />
                 </div>
 
@@ -2093,15 +2112,15 @@ Explanation: Binary search halves the search space at every comparison, giving $
                       <div
                         key={oIdx}
                         onClick={() => handleSelectOptionInPreview(previewActiveIdx + 1, opt.label)}
-                        className={`p-3 rounded-lg border text-xs cursor-pointer flex items-start gap-3 transition-all ${
+                        className={`p-3 rounded-xl border text-xs cursor-pointer flex items-start gap-3 transition-all ${
                           isSelected
-                            ? 'bg-brand-950/20 border-brand-500 text-zinc-100 ring-1 ring-brand-500/30'
-                            : 'bg-zinc-900 border-zinc-800 text-zinc-300 hover:border-zinc-700'
+                            ? 'bg-amber-50/70 border-amber-600 text-stone-900 ring-1 ring-amber-500/20 font-medium'
+                            : 'bg-white border-stone-200 text-stone-700 hover:border-stone-300 hover:bg-stone-50/50'
                         }`}
                       >
                         <span
-                          className={`w-5 h-5 rounded-full flex items-center justify-center text-[11px] font-bold ${
-                            isSelected ? 'bg-brand-500 text-black' : 'bg-zinc-800 text-zinc-400'
+                          className={`w-6 h-6 rounded-full flex items-center justify-center text-[11px] font-bold shrink-0 ${
+                            isSelected ? 'bg-amber-600 text-white' : 'bg-stone-100 text-stone-600'
                           }`}
                         >
                           {opt.label}
@@ -2115,14 +2134,14 @@ Explanation: Binary search halves the search space at every comparison, giving $
                 </div>
 
                 {/* Action Bar */}
-                <div className="pt-3 border-t border-zinc-800 flex items-center justify-between text-xs">
+                <div className="pt-4 border-t border-stone-100 flex items-center justify-between text-xs">
                   <div className="flex items-center gap-2">
                     <button
                       onClick={() => handleToggleReviewInPreview(previewActiveIdx + 1)}
-                      className={`px-3 py-1.5 rounded-lg border text-xs font-semibold ${
+                      className={`px-3 py-1.5 rounded-xl border text-xs font-bold transition-colors ${
                         previewMarkedForReview.has(previewActiveIdx + 1)
-                          ? 'bg-purple-500/20 text-purple-300 border-purple-500/40'
-                          : 'bg-zinc-900 border-zinc-800 text-zinc-400 hover:text-zinc-200'
+                          ? 'bg-purple-50 text-purple-800 border-purple-300'
+                          : 'bg-white border-stone-200 text-stone-600 hover:bg-stone-50'
                       }`}
                     >
                       {previewMarkedForReview.has(previewActiveIdx + 1)
@@ -2131,7 +2150,7 @@ Explanation: Binary search halves the search space at every comparison, giving $
                     </button>
                     <button
                       onClick={() => handleClearPreviewAnswer(previewActiveIdx + 1)}
-                      className="text-zinc-500 hover:text-zinc-300 px-2 py-1"
+                      className="text-stone-500 hover:text-stone-800 px-2 py-1 font-medium"
                     >
                       Clear Response
                     </button>
@@ -2162,8 +2181,8 @@ Explanation: Binary search halves the search space at every comparison, giving $
             </div>
 
             {/* Question Palette Sidebar (4 cols) */}
-            <div className="lg:col-span-4 p-4 rounded-xl bg-zinc-950 border border-zinc-800 space-y-4">
-              <div className="text-xs font-semibold text-zinc-300 pb-2 border-b border-zinc-800">
+            <div className="lg:col-span-4 p-5 rounded-2xl bg-white border border-stone-200 shadow-2xs space-y-4">
+              <div className="text-xs font-bold text-stone-800 pb-2 border-b border-stone-100">
                 Question Palette ({questions.length})
               </div>
 
@@ -2174,21 +2193,21 @@ Explanation: Binary search halves the search space at every comparison, giving $
                   const isReview = previewMarkedForReview.has(qNum);
                   const isCurrent = previewActiveIdx === i;
 
-                  let badgeColor = 'bg-zinc-800 text-zinc-400 border-zinc-700';
+                  let badgeColor = 'bg-stone-100 text-stone-700 border-stone-200';
                   if (isReview && isAnswered) {
-                    badgeColor = 'bg-purple-600 text-white border-purple-400';
+                    badgeColor = 'bg-purple-600 text-white border-purple-600';
                   } else if (isReview) {
-                    badgeColor = 'bg-purple-900/60 text-purple-300 border-purple-500';
+                    badgeColor = 'bg-purple-100 text-purple-800 border-purple-300';
                   } else if (isAnswered) {
-                    badgeColor = 'bg-emerald-600 text-white border-emerald-400';
+                    badgeColor = 'bg-emerald-600 text-white border-emerald-600';
                   }
 
                   return (
                     <button
                       key={i}
                       onClick={() => setPreviewActiveIdx(i)}
-                      className={`h-9 rounded-lg border text-xs font-bold transition-all flex items-center justify-center ${badgeColor} ${
-                        isCurrent ? 'ring-2 ring-brand-400 scale-105' : ''
+                      className={`h-9 rounded-xl border text-xs font-bold transition-all flex items-center justify-center ${badgeColor} ${
+                        isCurrent ? 'ring-2 ring-stone-900 scale-105' : ''
                       }`}
                     >
                       {qNum}
@@ -2198,17 +2217,17 @@ Explanation: Binary search halves the search space at every comparison, giving $
               </div>
 
               {/* Legend */}
-              <div className="pt-3 border-t border-zinc-800 text-[11px] space-y-1.5 text-zinc-400">
+              <div className="pt-3 border-t border-stone-100 text-[11px] space-y-1.5 text-stone-600 font-medium">
                 <div className="flex items-center gap-2">
                   <span className="w-3 h-3 rounded bg-emerald-600" />
                   <span>Answered</span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <span className="w-3 h-3 rounded bg-zinc-800 border border-zinc-700" />
+                  <span className="w-3 h-3 rounded bg-stone-100 border border-stone-300" />
                   <span>Not Answered</span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <span className="w-3 h-3 rounded bg-purple-900 border border-purple-500" />
+                  <span className="w-3 h-3 rounded bg-purple-600" />
                   <span>Marked for Review</span>
                 </div>
               </div>

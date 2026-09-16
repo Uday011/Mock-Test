@@ -104,7 +104,7 @@ export function ReportModal({
           </div>
         ) : (
           <div className="flex items-center justify-between w-full">
-            <span className="text-xs text-zinc-500">
+            <span className="text-xs text-stone-500">
               Reports are reviewed by academic moderators within 24h.
             </span>
             <div className="flex items-center gap-2">
@@ -125,18 +125,18 @@ export function ReportModal({
       }
     >
       {success ? (
-        <div className="p-6 text-center space-y-3 bg-emerald-950/20 border border-emerald-500/30 rounded-xl">
-          <CheckCircle2 className="w-10 h-10 text-emerald-400 mx-auto" />
-          <h4 className="font-semibold text-zinc-100 text-sm">Report Submitted Successfully</h4>
-          <p className="text-xs text-zinc-400 leading-relaxed max-w-sm mx-auto">
+        <div className="p-6 text-center space-y-3 bg-emerald-50 border border-emerald-200 rounded-xl">
+          <CheckCircle2 className="w-10 h-10 text-emerald-600 mx-auto" />
+          <h4 className="font-serif font-bold text-stone-900 text-sm">Report Submitted Successfully</h4>
+          <p className="text-xs text-stone-600 leading-relaxed max-w-sm mx-auto">
             Thank you for helping maintain rigorous academic standards in Nalanda. Our moderation team has been notified and will audit the item.
           </p>
         </div>
       ) : (
         <div className="space-y-4 text-xs">
           {error && (
-            <div className="p-2.5 rounded-lg bg-rose-950/30 border border-rose-500/30 text-rose-300 flex items-center gap-2">
-              <AlertTriangle className="w-4 h-4 text-rose-400 flex-shrink-0" />
+            <div className="p-2.5 rounded-lg bg-rose-50 border border-rose-200 text-rose-800 flex items-center gap-2">
+              <AlertTriangle className="w-4 h-4 text-rose-600 flex-shrink-0" />
               <span>{error}</span>
             </div>
           )}
@@ -144,11 +144,11 @@ export function ReportModal({
           {/* Question scope */}
           {totalQuestions > 0 && (
             <div>
-              <label className="block font-semibold text-zinc-300 mb-1">Issue Scope</label>
+              <label className="block font-semibold text-stone-800 mb-1">Issue Scope</label>
               <select
                 value={questionNum}
                 onChange={(e) => setQuestionNum(e.target.value)}
-                className="w-full px-3 py-2 rounded-lg bg-zinc-900 border border-zinc-800 text-zinc-200"
+                className="w-full px-3 py-2 rounded-lg bg-white border border-stone-300 text-stone-900 focus:outline-none focus:ring-1 focus:ring-stone-900"
               >
                 <option value="all">Entire Test / Overall Structure</option>
                 {Array.from({ length: totalQuestions }).map((_, i) => (
@@ -162,7 +162,7 @@ export function ReportModal({
 
           {/* Problem Category */}
           <div>
-            <label className="block font-semibold text-zinc-300 mb-1">Report Category</label>
+            <label className="block font-semibold text-stone-800 mb-1">Report Category</label>
             <div className="space-y-1.5 max-h-48 overflow-y-auto pr-1">
               {REPORT_CATEGORIES.map((c) => {
                 const isSelected = category === c.value;
@@ -172,21 +172,21 @@ export function ReportModal({
                     onClick={() => setCategory(c.value)}
                     className={`p-2.5 rounded-lg border cursor-pointer transition-all ${
                       isSelected
-                        ? 'bg-brand-950/20 border-brand-500 text-zinc-100 ring-1 ring-brand-500/30'
-                        : 'bg-zinc-900/60 border-zinc-800 text-zinc-400 hover:border-zinc-700'
+                        ? 'bg-amber-50/70 border-amber-600 text-stone-900 ring-1 ring-amber-500/20'
+                        : 'bg-white border-stone-200 text-stone-600 hover:border-stone-300 hover:bg-stone-50/50'
                     }`}
                   >
                     <div className="flex items-center justify-between">
-                      <span className="font-semibold text-zinc-200">{c.label}</span>
+                      <span className="font-semibold text-stone-900">{c.label}</span>
                       <span
-                        className={`w-3.5 h-3.5 rounded-full border flex items-center justify-center text-[9px] ${
-                          isSelected ? 'bg-brand-500 border-brand-500 text-black font-bold' : 'border-zinc-700'
+                        className={`w-4 h-4 rounded-full border flex items-center justify-center text-[10px] ${
+                          isSelected ? 'bg-amber-600 border-amber-600 text-white font-bold' : 'border-stone-300'
                         }`}
                       >
                         {isSelected ? '✓' : ''}
                       </span>
                     </div>
-                    <p className="text-[11px] text-zinc-500 mt-0.5">{c.desc}</p>
+                    <p className="text-[11px] text-stone-500 mt-0.5">{c.desc}</p>
                   </div>
                 );
               })}
@@ -195,7 +195,7 @@ export function ReportModal({
 
           {/* Description */}
           <div>
-            <label className="block font-semibold text-zinc-300 mb-1">
+            <label className="block font-semibold text-stone-800 mb-1">
               Specific Details & Suggested Correction
             </label>
             <textarea
@@ -203,7 +203,7 @@ export function ReportModal({
               value={description}
               onChange={(e) => setDescription(e.target.value)}
               placeholder="Explain the specific error, cite the correct formula or government key..."
-              className="w-full px-3 py-2 rounded-lg bg-zinc-900 border border-zinc-800 text-zinc-200 placeholder-zinc-500 focus:border-brand-500 focus:outline-none"
+              className="w-full px-3 py-2 rounded-lg bg-white border border-stone-300 text-stone-900 placeholder-stone-400 focus:border-stone-900 focus:outline-none focus:ring-1 focus:ring-stone-900"
             />
           </div>
         </div>

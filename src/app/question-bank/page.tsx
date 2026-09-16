@@ -74,7 +74,7 @@ function FormattedMathText({ text }: { text: string }) {
           return (
             <span
               key={i}
-              className="inline-block font-mono text-[0.88em] bg-amber-500/10 text-amber-300 px-1.5 py-0.5 rounded border border-amber-500/20 mx-0.5 font-medium"
+              className="inline-block font-mono text-[0.88em] bg-amber-50 text-amber-900 px-1.5 py-0.5 rounded border border-amber-200 mx-0.5 font-semibold"
             >
               {formula}
             </span>
@@ -102,48 +102,48 @@ export default function QuestionBankPage() {
   // Multi-select state
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
 
-  // Expanded items (for details / explanations)
-  const [expandedId, setExpandedId] = useState<string | null>(null);
-  const [activeUsagePopover, setActiveUsagePopover] = useState<string | null>(null);
-
-  // Modals
+  // In-Place Question Authoring / Edit Modal
   const [isAuthorModalOpen, setIsAuthorModalOpen] = useState(false);
-  const [isAssembleModalOpen, setIsAssembleModalOpen] = useState(false);
-  const [assembleSubmitting, setAssembleSubmitting] = useState(false);
-  const [assembleResult, setAssembleResult] = useState<{ testId: string; title: string } | null>(null);
-
-  // Question Form State (for Create / Edit / Duplicate)
   const [formMode, setFormMode] = useState<'create' | 'edit' | 'duplicate'>('create');
-  const [editingId, setEditingId] = useState<string | null>(null);
+  const [editingQuestionId, setEditingQuestionId] = useState<string | null>(null);
+
+  // Form inputs state
   const [formText, setFormText] = useState('');
-  const [formType, setFormType] = useState('single');
-  const [formOptions, setFormOptions] = useState(['', '', '', '']);
+  const [formOptions, setFormOptions] = useState<string[]>(['', '', '', '']);
   const [formCorrect, setFormCorrect] = useState('A');
   const [formExplanation, setFormExplanation] = useState('');
   const [formSubject, setFormSubject] = useState('Quantitative Aptitude');
-  const [formTopic, setFormTopic] = useState('Percentages, Profit & Loss');
+  const [formTopic, setFormTopic] = useState('');
   const [formDifficulty, setFormDifficulty] = useState<'easy' | 'medium' | 'hard'>('medium');
-  const [formMarks, setFormMarks] = useState(2.0);
-  const [formNegativeMarks, setFormNegativeMarks] = useState(0.5);
+  const [formMarks, setFormMarks] = useState(4.0);
+  const [formNegativeMarks, setFormNegativeMarks] = useState(1.0);
   const [formEstimatedSecs, setFormEstimatedSecs] = useState(60);
-  const [formSource, setFormSource] = useState('Nalanda Studio');
-  const [formTagsStr, setFormTagsStr] = useState('TCS Pattern, High Yield');
+  const [formSource, setFormSource] = useState('');
+  const [formTagsStr, setFormTagsStr] = useState('');
   const [formSaving, setFormSaving] = useState(false);
   const [formError, setFormError] = useState<string | null>(null);
 
-  // Assemble Test Form State
-  const [assembleTitle, setAssembleTitle] = useState('');
-  const [assembleDescription, setAssembleDescription] = useState('');
+  // Assemble Test Modal
+  const [isAssembleModalOpen, setIsAssembleModalOpen] = useState(false);
+  const [assembleTitle, setAssembleTitle] = useState('Custom Assembled Mock Test');
+  const [assembleDescription, setAssembleDescription] = useState('Assembled from verified Question Bank items.');
   const [assembleSubject, setAssembleSubject] = useState('Quantitative Aptitude');
   const [assembleDurationMins, setAssembleDurationMins] = useState(30);
   const [assembleMarkingType, setAssembleMarkingType] = useState('standard');
   const [assembleStatus, setAssembleStatus] = useState<'published' | 'draft'>('published');
+  const [assembleSubmitting, setAssembleSubmitting] = useState(false);
+  const [assembleResult, setAssembleResult] = useState<{ testId: string; title: string } | null>(null);
 
-  // Fetch questions from API
-  const fetchQuestions = async () => {
+  // Expandable question IDs
+  const [expandedIds, setExpandedIds] = useState<Set<string>>(new Set());
+
+  // Popover for usage list
+  const [usagePopoverId, setUsagePopoverId] = useState<string | null>(null);
+
+  // Fetch Questions
+  const loadQuestions = async () => {
+    setLoading(true);
     try {
-      setLoading(true);
-      setError(null);
       const params = new URLSearchParams();
       if (searchQuery.trim()) params.set('q', searchQuery.trim());
       if (selectedSubject !== 'all') params.set('subject', selectedSubject);
@@ -152,31 +152,24 @@ export default function QuestionBankPage() {
       if (selectedCorrectness !== 'all') params.set('correctness', selectedCorrectness);
 
       const res = await fetch(`/api/question-bank?${params.toString()}`);
-      if (!res.ok) throw new Error('Failed to load questions from Question Bank');
       const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Failed to fetch question bank');
+
       setQuestions(data.questions || []);
-      if (data.summary) {
-        setSummary(data.summary);
-      }
+      if (data.summary) setSummary(data.summary);
     } catch (err: any) {
-      console.error(err);
-      setError(err.message || 'Error fetching question bank');
+      setError(err.message || 'Error loading questions');
     } finally {
       setLoading(false);
     }
   };
 
   useEffect(() => {
-    fetchQuestions();
-  }, [selectedSubject, selectedDifficulty, selectedStatus, selectedCorrectness]);
-
-  // Debounced search
-  useEffect(() => {
     const timer = setTimeout(() => {
-      fetchQuestions();
-    }, 300);
+      loadQuestions();
+    }, 250);
     return () => clearTimeout(timer);
-  }, [searchQuery]);
+  }, [searchQuery, selectedSubject, selectedDifficulty, selectedStatus, selectedCorrectness]);
 
   // Handle Multi-Select
   const toggleSelect = (id: string) => {
@@ -194,194 +187,139 @@ export default function QuestionBankPage() {
     }
   };
 
-  // Open Authoring Modal for new question
+  const toggleExpand = (id: string) => {
+    const next = new Set(expandedIds);
+    if (next.has(id)) next.delete(id);
+    else next.add(id);
+    setExpandedIds(next);
+  };
+
+  // Open Form for Create
   const handleOpenCreate = () => {
     setFormMode('create');
-    setEditingId(null);
+    setEditingQuestionId(null);
     setFormText('');
-    setFormType('single');
-    setFormOptions(['Option A', 'Option B', 'Option C', 'Option D']);
+    setFormOptions(['', '', '', '']);
     setFormCorrect('A');
     setFormExplanation('');
     setFormSubject('Quantitative Aptitude');
-    setFormTopic('Arithmetic & Calculations');
+    setFormTopic('');
     setFormDifficulty('medium');
-    setFormMarks(2.0);
-    setFormNegativeMarks(0.5);
+    setFormMarks(4.0);
+    setFormNegativeMarks(1.0);
     setFormEstimatedSecs(60);
-    setFormSource('Nalanda Studio');
-    setFormTagsStr('Core Concept, Must-Practice');
+    setFormSource('');
+    setFormTagsStr('');
     setFormError(null);
     setIsAuthorModalOpen(true);
   };
 
-  // Open Authoring Modal for Edit
-  const handleOpenEdit = (q: QuestionBankItem) => {
-    setFormMode('edit');
-    setEditingId(q.id);
+  // Open Form for Edit / Duplicate
+  const handleOpenEdit = (q: QuestionBankItem, mode: 'edit' | 'duplicate' = 'edit') => {
+    setFormMode(mode);
+    setEditingQuestionId(mode === 'edit' ? q.id : null);
     setFormText(q.question_text);
-    setFormType(q.question_type || 'single');
-    setFormOptions(q.options.length >= 2 ? [...q.options] : ['Option A', 'Option B', 'Option C', 'Option D']);
+    setFormOptions(q.options && q.options.length ? [...q.options] : ['', '', '', '']);
     setFormCorrect(q.correct_answer || 'A');
     setFormExplanation(q.explanation || '');
     setFormSubject(q.subject_id || 'Quantitative Aptitude');
-    setFormTopic(q.topic_id || 'General');
+    setFormTopic(q.topic_id || '');
     setFormDifficulty(q.difficulty || 'medium');
-    setFormMarks(q.marks || 2.0);
-    setFormNegativeMarks(q.negative_marks || 0.5);
+    setFormMarks(q.marks || 4.0);
+    setFormNegativeMarks(q.negative_marks || 1.0);
     setFormEstimatedSecs(q.estimated_seconds || 60);
-    setFormSource(q.source_reference || 'Nalanda Studio');
-    setFormTagsStr((q.tags || []).join(', '));
+    setFormSource(q.source_reference || '');
+    setFormTagsStr(Array.isArray(q.tags) ? q.tags.join(', ') : '');
     setFormError(null);
     setIsAuthorModalOpen(true);
   };
 
-  // Open Authoring Modal for Duplicate
-  const handleOpenDuplicate = (q: QuestionBankItem) => {
-    setFormMode('duplicate');
-    setEditingId(null);
-    setFormText(`[Copy] ${q.question_text}`);
-    setFormType(q.question_type || 'single');
-    setFormOptions([...q.options]);
-    setFormCorrect(q.correct_answer || 'A');
-    setFormExplanation(q.explanation || '');
-    setFormSubject(q.subject_id || 'Quantitative Aptitude');
-    setFormTopic(q.topic_id || 'General');
-    setFormDifficulty(q.difficulty || 'medium');
-    setFormMarks(q.marks || 2.0);
-    setFormNegativeMarks(q.negative_marks || 0.5);
-    setFormEstimatedSecs(q.estimated_seconds || 60);
-    setFormSource(q.source_reference || 'Nalanda Studio');
-    setFormTagsStr((q.tags || []).join(', '));
-    setFormError(null);
-    setIsAuthorModalOpen(true);
-  };
-
-  // Save question (POST or PATCH)
+  // Save Form (Create, Edit, Duplicate)
   const handleSaveQuestion = async () => {
+    setFormError(null);
     if (!formText.trim()) {
       setFormError('Question text cannot be blank.');
       return;
     }
     const cleanOpts = formOptions.map((o) => o.trim()).filter(Boolean);
     if (cleanOpts.length < 2) {
-      setFormError('Please provide at least 2 valid option choices.');
+      setFormError('Please provide at least 2 valid options.');
       return;
     }
 
     setFormSaving(true);
-    setFormError(null);
-
-    const tags = formTagsStr
-      .split(',')
-      .map((t) => t.trim())
-      .filter(Boolean);
-
     try {
-      if (formMode === 'edit' && editingId) {
-        const res = await fetch('/api/question-bank', {
-          method: 'PATCH',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            id: editingId,
-            question_text: formText.trim(),
-            question_type: formType,
-            options: cleanOpts,
-            correct_answer: formCorrect,
-            explanation: formExplanation.trim() || null,
-            subject_id: formSubject,
-            topic_id: formTopic,
-            difficulty: formDifficulty,
-            marks: Number(formMarks),
-            negative_marks: Number(formNegativeMarks),
-            estimated_seconds: Number(formEstimatedSecs),
-            source_reference: formSource.trim(),
-            tags,
-          }),
-        });
-        if (!res.ok) throw new Error('Failed to update question');
-      } else {
-        const res = await fetch('/api/question-bank', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            question_text: formText.trim(),
-            question_type: formType,
-            options: cleanOpts,
-            correct_answer: formCorrect,
-            explanation: formExplanation.trim() || null,
-            subject_id: formSubject,
-            topic_id: formTopic,
-            difficulty: formDifficulty,
-            marks: Number(formMarks),
-            negative_marks: Number(formNegativeMarks),
-            estimated_seconds: Number(formEstimatedSecs),
-            source_reference: formSource.trim(),
-            tags,
-          }),
-        });
-        if (!res.ok) throw new Error('Failed to create question');
-      }
+      const parsedTags = formTagsStr
+        .split(',')
+        .map((t) => t.trim())
+        .filter(Boolean);
+
+      const payload = {
+        id: editingQuestionId,
+        question_text: formText.trim(),
+        options: formOptions,
+        correct_answer: formCorrect,
+        explanation: formExplanation.trim(),
+        subject_id: formSubject,
+        topic_id: formTopic.trim(),
+        difficulty: formDifficulty,
+        marks: formMarks,
+        negative_marks: formNegativeMarks,
+        estimated_seconds: formEstimatedSecs,
+        source_reference: formSource.trim(),
+        tags: parsedTags,
+        status: 'active',
+      };
+
+      const method = formMode === 'edit' ? 'PATCH' : 'POST';
+      const res = await fetch('/api/question-bank', {
+        method,
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      });
+
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Failed to save question');
 
       setIsAuthorModalOpen(false);
-      await fetchQuestions();
+      loadQuestions();
     } catch (err: any) {
-      setFormError(err.message || 'Error saving question');
+      setFormError(err.message || 'Failed to save question.');
     } finally {
       setFormSaving(false);
     }
   };
 
-  // Toggle archive status
-  const handleToggleArchive = async (q: QuestionBankItem) => {
-    const newStatus = q.status === 'archived' ? 'active' : 'archived';
+  // Batch Archive
+  const handleBatchArchive = async () => {
+    if (selectedIds.size === 0) return;
     try {
-      const res = await fetch('/api/question-bank', {
+      await fetch('/api/question-bank', {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ id: q.id, status: newStatus }),
+        body: JSON.stringify({
+          ids: Array.from(selectedIds),
+          status: 'archived',
+        }),
       });
-      if (res.ok) {
-        fetchQuestions();
-      }
-    } catch (err) {
-      console.error('Error toggling archive status:', err);
-    }
-  };
-
-  // Batch Archive Selected
-  const handleBatchArchive = async () => {
-    if (!confirm(`Archive ${selectedIds.size} selected question(s)?`)) return;
-    try {
-      await Promise.all(
-        Array.from(selectedIds).map((id) =>
-          fetch('/api/question-bank', {
-            method: 'PATCH',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ id, status: 'archived' }),
-          })
-        )
-      );
       setSelectedIds(new Set());
-      fetchQuestions();
+      loadQuestions();
     } catch (err) {
       console.error('Batch archive failed:', err);
     }
   };
 
-  // Open Assemble Modal
+  // Open Assemble Test Modal
   const handleOpenAssemble = () => {
     if (selectedIds.size === 0) return;
-    setAssembleTitle(`Custom Test (${selectedIds.size} Curated Questions)`);
-    setAssembleDescription(`Assembled directly from the Nalanda Question Bank repository.`);
-    setAssembleDurationMins(Math.max(10, selectedIds.size * 2));
+    setAssembleTitle(`Custom Test Drill (${selectedIds.size} Questions)`);
+    setAssembleDescription('Synthesized from verified items in the Nalanda Question Bank.');
     setAssembleResult(null);
     setIsAssembleModalOpen(true);
   };
 
   // Submit Assemble Test
   const handleSubmitAssemble = async () => {
-    if (!assembleTitle.trim()) return;
     setAssembleSubmitting(true);
     try {
       const res = await fetch('/api/question-bank/create-test', {
@@ -397,95 +335,110 @@ export default function QuestionBankPage() {
           status: assembleStatus,
         }),
       });
+
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || 'Failed to assemble test');
 
-      setAssembleResult({ testId: data.testId, title: assembleTitle });
+      setAssembleResult({ testId: data.testId, title: data.title });
       setSelectedIds(new Set());
-      fetchQuestions();
+      loadQuestions();
     } catch (err: any) {
-      alert(err.message || 'Error assembling test');
+      alert(err.message || 'Failed to assemble test');
     } finally {
       setAssembleSubmitting(false);
     }
   };
 
-  // Distinct subjects list
   const subjectsList = [
     'Quantitative Aptitude',
     'General Intelligence & Reasoning',
     'English Comprehension',
     'General Awareness',
+    'Science & General',
   ];
 
   return (
     <AppShell
       breadcrumbs={[
         { label: 'Studio & Repository', href: '/tests/create' },
-        { label: 'Question Bank' },
+        { label: 'Question Bank Repository', href: '/question-bank' },
       ]}
     >
       <PageHeader
         title="Question Bank Repository"
-        description="Search, filter, curate, and assemble multi-topic mock tests from thousands of vetted questions with usage tracking and quality validation."
+        description="Search, filter, tag, and assemble reusable questions across all examination syllabi with verified answer keys, mathematical LaTeX derivations, and usage tracking."
+        badge={<Badge variant="saffron" size="md">Vetted Repository</Badge>}
         actions={
-          <div className="flex items-center gap-3">
-            <Button variant="secondary" onClick={handleOpenCreate} icon={<PlusCircle className="w-4 h-4" />}>
-              Create Question
+          <div className="flex items-center gap-2.5">
+            <Button
+              variant="secondary"
+              size="sm"
+              onClick={handleOpenAssemble}
+              disabled={selectedIds.size === 0}
+              icon={<Sparkles className="w-4 h-4" />}
+            >
+              Assemble Test ({selectedIds.size})
             </Button>
-            <Link href="/tests/create">
-              <Button variant="primary" icon={<Sparkles className="w-4 h-4" />}>
-                Test Studio
-              </Button>
-            </Link>
+            <Button
+              variant="primary"
+              size="sm"
+              onClick={handleOpenCreate}
+              icon={<PlusCircle className="w-4 h-4" />}
+            >
+              Author Question
+            </Button>
           </div>
         }
       />
 
-      {/* Summary Metrics */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+      {/* Summary KPI Callouts */}
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
         <MetricCallout
-          label="Total Repository"
+          label="Total Questions"
           value={summary.total}
-          subtext="Curated questions across 4 modules"
-          icon={<Layers className="w-4 h-4 text-brand-400" />}
+          subtext="Vetted repository items"
+          accent="navy"
+          icon={<Hash className="w-4 h-4 text-slate-700" />}
         />
         <MetricCallout
-          label="Verified Status"
+          label="Verified Proofs"
           value={summary.verified}
-          subtext="Peer-reviewed with LaTeX proofs"
-          icon={<CheckCircle2 className="w-4 h-4 text-emerald-400" />}
+          subtext="LaTeX derivations audited"
+          accent="emerald"
+          icon={<CheckCircle2 className="w-4 h-4 text-emerald-600" />}
         />
         <MetricCallout
           label="Active in Circulation"
           value={summary.active}
           subtext="Live questions ready to assemble"
-          icon={<FileCheck className="w-4 h-4 text-indigo-400" />}
+          accent="saffron"
+          icon={<FileCheck className="w-4 h-4 text-amber-600" />}
         />
         <MetricCallout
           label="Avg. Reusability"
           value={`${summary.avgUsage}x`}
           subtext="Average appearances per test"
-          icon={<Award className="w-4 h-4 text-amber-400" />}
+          accent="stone"
+          icon={<Award className="w-4 h-4 text-stone-600" />}
         />
       </div>
 
       {/* Search & Multifaceted Filtering Bar */}
-      <Card className="p-4 mb-6">
-        <div className="flex flex-col md:flex-row items-center gap-4">
+      <div className="bg-white rounded-2xl border border-stone-200 p-4 mb-6 shadow-2xs space-y-3">
+        <div className="flex flex-col md:flex-row items-center gap-3">
           <div className="relative flex-1 w-full">
-            <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-400" />
+            <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-stone-400" />
             <input
               type="text"
               placeholder="Search by keywords, formulas, concepts, or tags (e.g. Profit, Article 32)..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-10 pr-4 py-2 rounded-lg bg-zinc-900/80 border border-zinc-800 text-sm text-zinc-200 placeholder-zinc-500 focus:outline-none focus:border-brand-500 focus:ring-1 focus:ring-brand-500 transition-all"
+              className="w-full pl-10 pr-4 py-2 rounded-xl bg-stone-50 border border-stone-200 text-xs sm:text-sm text-stone-900 placeholder-stone-400 focus:outline-none focus:bg-white focus:ring-1 focus:ring-stone-900 transition-all"
             />
             {searchQuery && (
               <button
                 onClick={() => setSearchQuery('')}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-400 hover:text-zinc-200"
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-stone-400 hover:text-stone-700"
               >
                 <X className="w-4 h-4" />
               </button>
@@ -497,7 +450,7 @@ export default function QuestionBankPage() {
             <select
               value={selectedSubject}
               onChange={(e) => setSelectedSubject(e.target.value)}
-              className="px-3 py-2 rounded-lg bg-zinc-900 border border-zinc-800 text-xs text-zinc-200 focus:outline-none focus:border-brand-500"
+              className="px-3 py-2 rounded-xl bg-stone-50 border border-stone-200 text-xs text-stone-700 font-medium focus:outline-none focus:bg-white focus:ring-1 focus:ring-stone-900"
             >
               <option value="all">All Subjects</option>
               {subjectsList.map((s) => (
@@ -511,7 +464,7 @@ export default function QuestionBankPage() {
             <select
               value={selectedDifficulty}
               onChange={(e) => setSelectedDifficulty(e.target.value)}
-              className="px-3 py-2 rounded-lg bg-zinc-900 border border-zinc-800 text-xs text-zinc-200 focus:outline-none focus:border-brand-500"
+              className="px-3 py-2 rounded-xl bg-stone-50 border border-stone-200 text-xs text-stone-700 font-medium focus:outline-none focus:bg-white focus:ring-1 focus:ring-stone-900"
             >
               <option value="all">All Difficulties</option>
               <option value="easy">Easy</option>
@@ -523,7 +476,7 @@ export default function QuestionBankPage() {
             <select
               value={selectedStatus}
               onChange={(e) => setSelectedStatus(e.target.value)}
-              className="px-3 py-2 rounded-lg bg-zinc-900 border border-zinc-800 text-xs text-zinc-200 focus:outline-none focus:border-brand-500"
+              className="px-3 py-2 rounded-xl bg-stone-50 border border-stone-200 text-xs text-stone-700 font-medium focus:outline-none focus:bg-white focus:ring-1 focus:ring-stone-900"
             >
               <option value="all">All Statuses</option>
               <option value="active">Active</option>
@@ -534,7 +487,7 @@ export default function QuestionBankPage() {
             <select
               value={selectedCorrectness}
               onChange={(e) => setSelectedCorrectness(e.target.value)}
-              className="px-3 py-2 rounded-lg bg-zinc-900 border border-zinc-800 text-xs text-zinc-200 focus:outline-none focus:border-brand-500"
+              className="px-3 py-2 rounded-xl bg-stone-50 border border-stone-200 text-xs text-stone-700 font-medium focus:outline-none focus:bg-white focus:ring-1 focus:ring-stone-900"
             >
               <option value="all">All Quality Levels</option>
               <option value="verified">Verified Proof</option>
@@ -544,109 +497,113 @@ export default function QuestionBankPage() {
         </div>
 
         {/* Action Header row */}
-        <div className="mt-4 pt-3 border-t border-zinc-800 flex items-center justify-between text-xs text-zinc-400">
+        <div className="pt-3 border-t border-stone-100 flex items-center justify-between text-xs text-stone-500">
           <div className="flex items-center gap-2">
             <button
               onClick={selectAll}
-              className="flex items-center gap-1.5 font-medium text-zinc-300 hover:text-white transition-colors"
+              className="flex items-center gap-1.5 font-bold text-stone-800 hover:text-stone-900 transition-colors"
             >
               {selectedIds.size === questions.length && questions.length > 0 ? (
-                <CheckSquare className="w-4 h-4 text-brand-400" />
+                <CheckSquare className="w-4 h-4 text-amber-600" />
               ) : (
-                <Square className="w-4 h-4 text-zinc-500" />
+                <Square className="w-4 h-4 text-stone-400" />
               )}
               <span>Select All on Page ({questions.length})</span>
             </button>
             {selectedIds.size > 0 && (
-              <span className="text-brand-400 font-semibold ml-2">
-                ({selectedIds.size} questions selected)
+              <span className="font-mono text-amber-800 bg-amber-50 px-2 py-0.5 rounded border border-amber-200 font-bold">
+                {selectedIds.size} Selected
               </span>
             )}
           </div>
+
           <div>
-            Showing <span className="font-semibold text-zinc-200">{questions.length}</span> questions
+            Showing <span className="font-bold text-stone-900 font-mono">{questions.length}</span> questions
           </div>
         </div>
-      </Card>
+      </div>
 
       {/* Questions Listing */}
       {loading ? (
-        <div className="space-y-4">
+        <div className="space-y-3">
           {[1, 2, 3, 4].map((i) => (
             <div
               key={i}
-              className="h-32 rounded-xl bg-zinc-900/50 border border-zinc-800/80 animate-pulse"
+              className="h-32 rounded-2xl bg-stone-100 border border-stone-200 animate-pulse"
             />
           ))}
         </div>
       ) : error ? (
-        <Card className="p-8 text-center text-rose-400">
-          <AlertCircle className="w-8 h-8 mx-auto mb-2 text-rose-500" />
-          <p className="font-semibold">Error loading question bank</p>
-          <p className="text-xs text-zinc-400 mt-1">{error}</p>
-          <Button variant="secondary" size="sm" onClick={fetchQuestions} className="mt-4">
-            Retry
-          </Button>
-        </Card>
+        <div className="p-8 text-center bg-white rounded-2xl border border-rose-200 text-rose-800">
+          <AlertCircle className="w-8 h-8 mx-auto mb-2 text-rose-600" />
+          <p className="text-sm font-bold">Failed to load question bank</p>
+          <p className="text-xs text-stone-500 mt-1">{error}</p>
+        </div>
       ) : questions.length === 0 ? (
-        <Card className="p-12 text-center">
-          <Layers className="w-12 h-12 text-zinc-600 mx-auto mb-3" />
-          <h3 className="text-base font-semibold text-zinc-300">No questions match your filter</h3>
-          <p className="text-xs text-zinc-500 max-w-sm mx-auto mt-1 mb-4">
-            Try adjusting your search query, subject filter, or difficulty settings, or create a brand new question.
+        <div className="p-12 text-center bg-white rounded-2xl border border-stone-200">
+          <Layers className="w-12 h-12 text-stone-300 mx-auto mb-3" />
+          <h3 className="text-base font-serif font-bold text-stone-900">No questions match your filter</h3>
+          <p className="text-xs text-stone-500 max-w-sm mx-auto mt-1 mb-4">
+            Try adjusting search keywords or clearing filter constraints to see more questions.
           </p>
-          <Button variant="primary" onClick={handleOpenCreate} icon={<PlusCircle className="w-4 h-4" />}>
+          <Button variant="secondary" size="sm" onClick={handleOpenCreate}>
             Author First Question
           </Button>
-        </Card>
+        </div>
       ) : (
-        <div className="space-y-3.5 mb-24">
-          {questions.map((q, idx) => {
+        <div className="space-y-3">
+          {questions.map((q) => {
             const isSelected = selectedIds.has(q.id);
-            const isExpanded = expandedId === q.id;
+            const isExpanded = expandedIds.has(q.id);
+            const isUsagePopoverOpen = usagePopoverId === q.id;
 
             return (
-              <Card
+              <div
                 key={q.id}
-                className={`p-4 transition-all duration-200 ${
+                className={`p-5 rounded-2xl border transition-all shadow-2xs ${
                   isSelected
-                    ? 'border-brand-500/50 bg-brand-950/10 shadow-lg shadow-brand-500/5'
-                    : 'border-zinc-800/80 hover:border-zinc-700 bg-zinc-900/60'
+                    ? 'border-amber-600 bg-amber-50/40 ring-1 ring-amber-500/20'
+                    : 'border-stone-200 bg-white hover:border-stone-300'
                 }`}
               >
-                {/* Header info */}
-                <div className="flex flex-col md:flex-row md:items-center justify-between gap-2.5 pb-3 border-b border-zinc-800/80">
-                  <div className="flex items-center gap-2.5 flex-wrap">
-                    {/* Checkbox */}
+                {/* Card Header Row */}
+                <div className="flex flex-col md:flex-row md:items-center justify-between gap-2.5 pb-3 border-b border-stone-100">
+                  <div className="flex items-center gap-3">
                     <button
                       onClick={() => toggleSelect(q.id)}
-                      className="text-zinc-400 hover:text-zinc-200 transition-colors"
-                      title={isSelected ? 'Deselect' : 'Select question'}
+                      className="text-stone-400 hover:text-stone-700 transition-colors"
+                      title={isSelected ? 'Deselect question' : 'Select question'}
                     >
                       {isSelected ? (
-                        <CheckSquare className="w-4 h-4 text-brand-400" />
+                        <CheckSquare className="w-4 h-4 text-amber-600" />
                       ) : (
-                        <Square className="w-4 h-4 text-zinc-500 hover:text-zinc-400" />
+                        <Square className="w-4 h-4 text-stone-400 hover:text-stone-600" />
                       )}
                     </button>
 
-                    <span className="font-mono text-xs text-zinc-400 bg-zinc-800/60 px-2 py-0.5 rounded border border-zinc-700/50 font-semibold">
-                      #{idx + 1} • {q.id}
+                    <span className="font-mono text-xs text-stone-600 bg-stone-100 px-2 py-0.5 rounded border border-stone-200 font-bold">
+                      {q.id.slice(0, 8)}
                     </span>
 
-                    {/* Subject badge */}
-                    <Badge variant="stone" className="text-[11px]">
-                      {q.subject_id || 'Quantitative Aptitude'}
-                    </Badge>
+                    <span className="text-xs font-bold text-stone-900">
+                      {q.subject_id || 'General Subject'}
+                    </span>
 
-                    {/* Topic badge */}
                     {q.topic_id && (
-                      <span className="text-xs text-zinc-400 font-medium truncate max-w-[200px]">
-                        {q.topic_id}
+                      <span className="text-xs text-stone-500 font-medium truncate max-w-[200px]">
+                        • {q.topic_id}
                       </span>
                     )}
 
-                    {/* Difficulty Badge */}
+                    {q.correctness_status === 'verified' && (
+                      <span className="inline-flex items-center gap-1 text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-800 border border-emerald-200">
+                        <CheckCircle2 className="w-3 h-3 text-emerald-600" />
+                        Verified Proof
+                      </span>
+                    )}
+                  </div>
+
+                  <div className="flex items-center gap-3 text-xs text-stone-500 font-mono">
                     <Badge
                       variant={
                         q.difficulty === 'hard'
@@ -655,74 +612,54 @@ export default function QuestionBankPage() {
                           ? 'saffron'
                           : 'emerald'
                       }
-                      className="text-[10px] uppercase tracking-wider font-semibold"
                     >
                       {q.difficulty}
                     </Badge>
 
-                    {/* Correctness verification */}
-                    {q.correctness_status === 'verified' && (
-                      <span className="flex items-center gap-1 text-[11px] text-emerald-400 font-medium bg-emerald-500/10 px-2 py-0.5 rounded border border-emerald-500/20">
-                        <CheckCircle2 className="w-3 h-3" />
-                        Verified Proof
-                      </span>
-                    )}
-
-                    {/* Status badge if archived */}
-                    {q.status === 'archived' && (
-                      <Badge variant="stone" className="text-[10px] text-zinc-500">
-                        Archived
-                      </Badge>
-                    )}
-                  </div>
-
-                  {/* Usage tracker & Stats */}
-                  <div className="flex items-center gap-3 text-xs text-zinc-400">
-                    <span className="flex items-center gap-1 text-zinc-300 font-medium">
-                      <Award className="w-3.5 h-3.5 text-amber-400" />
+                    <span className="font-bold text-stone-800">
                       +{q.marks} / -{q.negative_marks}
                     </span>
-                    <span className="flex items-center gap-1">
-                      <Clock className="w-3.5 h-3.5 text-zinc-500" />
+
+                    <span className="flex items-center gap-1 text-stone-500 font-medium">
+                      <Clock className="w-3.5 h-3.5 text-stone-400" />
                       {q.estimated_seconds}s
                     </span>
 
-                    {/* Usage count badge with popover */}
+                    {/* Usage Badge with Popover */}
                     <div className="relative">
                       <button
                         onClick={() =>
-                          setActiveUsagePopover(activeUsagePopover === q.id ? null : q.id)
+                          setUsagePopoverId(isUsagePopoverOpen ? null : q.id)
                         }
-                        className="flex items-center gap-1 px-2 py-0.5 rounded bg-zinc-800 hover:bg-zinc-700 text-zinc-300 transition-colors border border-zinc-700/60"
-                        title="Click to view test appearances"
+                        className="flex items-center gap-1 px-2.5 py-0.5 rounded-lg bg-stone-50 hover:bg-stone-100 text-stone-700 transition-colors border border-stone-200 font-bold"
+                        title="Click to view tests using this question"
                       >
-                        <FileCheck className="w-3.5 h-3.5 text-brand-400" />
-                        <span className="font-semibold">{q.usage_count}</span>
-                        <span className="text-[11px] text-zinc-400">tests</span>
+                        <span>{q.usage_count}</span>
+                        <span className="text-[11px] text-stone-500">tests</span>
                       </button>
 
-                      {activeUsagePopover === q.id && (
-                        <div className="absolute right-0 top-7 z-20 w-64 p-3 bg-zinc-900 border border-zinc-700 rounded-lg shadow-xl text-xs">
-                          <div className="flex items-center justify-between pb-1.5 border-b border-zinc-800 mb-2">
-                            <span className="font-semibold text-zinc-200">Used in Tests</span>
+                      {isUsagePopoverOpen && (
+                        <div className="absolute right-0 top-7 z-20 w-64 p-3 bg-white border border-stone-200 rounded-xl shadow-xl text-xs">
+                          <div className="flex items-center justify-between pb-1.5 border-b border-stone-100 mb-2">
+                            <span className="font-bold text-stone-900">Used in Tests</span>
                             <button
-                              onClick={() => setActiveUsagePopover(null)}
-                              className="text-zinc-500 hover:text-zinc-300"
+                              onClick={() => setUsagePopoverId(null)}
+                              className="text-stone-400 hover:text-stone-700"
                             >
                               <X className="w-3.5 h-3.5" />
                             </button>
                           </div>
                           {q.used_in_tests && q.used_in_tests.length > 0 ? (
-                            <ul className="space-y-1 max-h-36 overflow-y-auto">
+                            <ul className="space-y-1 max-h-32 overflow-y-auto">
                               {q.used_in_tests.map((testTitle, i) => (
-                                <li key={i} className="text-zinc-300 truncate flex items-center gap-1.5">
-                                  <span className="w-1.5 h-1.5 rounded-full bg-brand-400 flex-shrink-0" />
-                                  <span className="truncate">{testTitle}</span>
+                                <li key={i} className="text-stone-700 truncate flex items-center gap-1.5">
+                                  <span className="w-1.5 h-1.5 rounded-full bg-amber-500" />
+                                  <span>{testTitle}</span>
                                 </li>
                               ))}
                             </ul>
                           ) : (
-                            <p className="text-zinc-500 italic">Not yet added to any mock test.</p>
+                            <p className="text-stone-400 italic">Not yet added to any mock test.</p>
                           )}
                         </div>
                       )}
@@ -730,79 +667,78 @@ export default function QuestionBankPage() {
                   </div>
                 </div>
 
-                {/* Question Body */}
-                <div className="py-3 text-sm text-zinc-100 leading-relaxed">
+                {/* Question Statement */}
+                <div className="py-3 text-sm text-stone-900 font-medium leading-relaxed">
                   <FormattedMathText text={q.question_text} />
                 </div>
 
-                {/* Options preview / expand */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 mt-1">
-                  {q.options.map((opt, i) => {
+                {/* Question Options Grid */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-1">
+                  {(q.options || []).map((opt, i) => {
                     const optKey = String.fromCharCode(65 + i);
                     const isCorrect = q.correct_answer === optKey;
 
                     return (
                       <div
                         key={i}
-                        className={`px-3 py-2 rounded-lg text-xs flex items-start gap-2 border transition-all ${
+                        className={`p-2.5 rounded-xl text-xs border flex items-start gap-2.5 transition-all ${
                           isCorrect
-                            ? 'bg-emerald-950/20 border-emerald-500/40 text-emerald-300 font-medium'
-                            : 'bg-zinc-950/40 border-zinc-800/80 text-zinc-300'
+                            ? 'bg-emerald-50 border-emerald-300 text-emerald-900 font-bold'
+                            : 'bg-stone-50/60 border-stone-200 text-stone-700'
                         }`}
                       >
                         <span
-                          className={`w-5 h-5 rounded-full flex items-center justify-center text-[11px] font-bold flex-shrink-0 ${
+                          className={`w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-bold shrink-0 ${
                             isCorrect
-                              ? 'bg-emerald-500 text-black'
-                              : 'bg-zinc-800 text-zinc-400'
+                              ? 'bg-emerald-600 text-white'
+                              : 'bg-stone-200 text-stone-700'
                           }`}
                         >
                           {optKey}
                         </span>
-                        <div className="flex-1 mt-0.5 leading-tight">
+                        <div className="flex-1 mt-0.5">
                           <FormattedMathText text={opt} />
                         </div>
                         {isCorrect && (
-                          <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400 ml-auto flex-shrink-0 mt-0.5" />
+                          <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 ml-auto flex-shrink-0" />
                         )}
                       </div>
                     );
                   })}
                 </div>
 
-                {/* Collapsible detailed explanation & tags */}
+                {/* Expanded Details: Explanation & Tags */}
                 {isExpanded && (
-                  <div className="mt-3.5 pt-3 border-t border-zinc-800/80 bg-zinc-950/40 rounded-lg p-3 text-xs space-y-2">
+                  <div className="mt-3.5 pt-3 border-t border-stone-100 bg-amber-50/40 rounded-xl p-3 text-xs space-y-2 border border-amber-200/60">
+                    <div className="flex items-center gap-1.5 font-bold text-amber-900">
+                      <FileCheck className="w-3.5 h-3.5 text-amber-700" />
+                      <span>Pedagogical Derivation & Explanation:</span>
+                    </div>
+
                     {q.explanation ? (
-                      <div>
-                        <div className="font-semibold text-emerald-400 mb-1 flex items-center gap-1.5">
-                          <Sparkles className="w-3.5 h-3.5" />
-                          Detailed Solution & Derivation:
-                        </div>
-                        <div className="text-zinc-300 leading-relaxed pl-2 border-l-2 border-emerald-500/30">
-                          <FormattedMathText text={q.explanation} />
-                        </div>
+                      <div className="text-stone-800 leading-relaxed pl-2 border-l-2 border-amber-400">
+                        <FormattedMathText text={q.explanation} />
                       </div>
                     ) : (
-                      <p className="text-zinc-500 italic">No formal explanation authored yet.</p>
+                      <p className="text-stone-400 italic">No formal explanation authored yet.</p>
                     )}
 
                     {q.source_reference && (
-                      <div className="pt-2 text-[11px] text-zinc-400 flex items-center gap-1.5">
-                        <span className="font-semibold text-zinc-500">Source:</span>
+                      <div className="pt-2 text-[11px] text-stone-500 flex items-center gap-1.5">
+                        <span className="font-bold text-stone-700">Source:</span>
                         <span>{q.source_reference}</span>
                       </div>
                     )}
 
                     {q.tags && q.tags.length > 0 && (
-                      <div className="pt-2 flex flex-wrap gap-1.5">
-                        {q.tags.map((t, i) => (
+                      <div className="flex flex-wrap items-center gap-1.5 pt-1">
+                        {q.tags.map((tag, tIdx) => (
                           <span
-                            key={i}
-                            className="bg-zinc-800/80 text-zinc-300 text-[10px] px-2 py-0.5 rounded-full border border-zinc-700/50 flex items-center gap-1"
+                            key={tIdx}
+                            className="bg-white text-stone-700 text-[10px] px-2 py-0.5 rounded-full border border-stone-200 flex items-center gap-1 font-medium"
                           >
-                            <Tag className="w-2.5 h-2.5 text-zinc-400" />
-                            {t}
+                            <Tag className="w-2.5 h-2.5 text-stone-400" />
+                            {tag}
                           </span>
                         ))}
                       </div>
@@ -810,58 +746,44 @@ export default function QuestionBankPage() {
                   </div>
                 )}
 
-                {/* Card Action footer */}
-                <div className="mt-3 pt-2.5 border-t border-zinc-800/60 flex items-center justify-between text-xs">
+                {/* Card Bottom Toolbar */}
+                <div className="mt-3 pt-2.5 border-t border-stone-100 flex items-center justify-between text-xs">
                   <button
-                    onClick={() => setExpandedId(isExpanded ? null : q.id)}
-                    className="flex items-center gap-1 text-zinc-400 hover:text-zinc-200 transition-colors"
+                    onClick={() => toggleExpand(q.id)}
+                    className="flex items-center gap-1 text-stone-500 hover:text-stone-800 font-medium transition-colors"
                   >
+                    <span>{isExpanded ? 'Hide Solution' : 'View Pedagogical Solution'}</span>
                     {isExpanded ? (
-                      <>
-                        <ChevronUp className="w-3.5 h-3.5" />
-                        <span>Hide Solution</span>
-                      </>
+                      <ChevronUp className="w-3.5 h-3.5" />
                     ) : (
-                      <>
-                        <ChevronDown className="w-3.5 h-3.5" />
-                        <span>View Solution & Tags</span>
-                      </>
+                      <ChevronDown className="w-3.5 h-3.5" />
                     )}
                   </button>
 
                   <div className="flex items-center gap-2">
                     <button
-                      onClick={() => handleOpenEdit(q)}
-                      className="px-2.5 py-1 rounded bg-zinc-800 hover:bg-zinc-700 text-zinc-300 hover:text-white transition-colors flex items-center gap-1 text-[11px]"
+                      onClick={() => handleOpenEdit(q, 'edit')}
+                      className="px-2.5 py-1 rounded-lg bg-stone-50 hover:bg-stone-100 text-stone-700 border border-stone-200 transition-colors text-[11px] font-bold"
                     >
                       Edit
                     </button>
                     <button
-                      onClick={() => handleOpenDuplicate(q)}
-                      className="px-2.5 py-1 rounded bg-zinc-800 hover:bg-zinc-700 text-zinc-300 hover:text-white transition-colors flex items-center gap-1 text-[11px]"
+                      onClick={() => handleOpenEdit(q, 'duplicate')}
+                      className="px-2.5 py-1 rounded-lg bg-stone-50 hover:bg-stone-100 text-stone-700 border border-stone-200 transition-colors flex items-center gap-1 text-[11px] font-bold"
+                      title="Duplicate into a new item"
                     >
-                      <Copy className="w-3 h-3 text-zinc-400" />
+                      <Copy className="w-3 h-3 text-stone-400" />
                       Duplicate
                     </button>
                     <button
-                      onClick={() => handleToggleArchive(q)}
-                      className="px-2.5 py-1 rounded bg-zinc-800 hover:bg-zinc-700 text-zinc-400 hover:text-rose-300 transition-colors flex items-center gap-1 text-[11px]"
+                      onClick={() => toggleSelect(q.id)}
+                      className="px-2.5 py-1 rounded-lg bg-stone-50 hover:bg-stone-100 text-stone-700 border border-stone-200 transition-colors text-[11px] font-bold"
                     >
-                      {q.status === 'archived' ? (
-                        <>
-                          <RotateCcw className="w-3 h-3" />
-                          Restore
-                        </>
-                      ) : (
-                        <>
-                          <Archive className="w-3 h-3" />
-                          Archive
-                        </>
-                      )}
+                      {isSelected ? 'Deselect' : 'Select'}
                     </button>
                   </div>
                 </div>
-              </Card>
+              </div>
             );
           })}
         </div>
@@ -869,21 +791,21 @@ export default function QuestionBankPage() {
 
       {/* Floating Batch Action Bar */}
       {selectedIds.size > 0 && (
-        <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 bg-zinc-900/95 border border-brand-500/40 backdrop-blur-md rounded-2xl px-5 py-3.5 shadow-2xl shadow-black/80 flex items-center gap-4 animate-in fade-in slide-in-from-bottom-4">
-          <div className="flex items-center gap-2 pr-2 border-r border-zinc-800">
-            <span className="w-2.5 h-2.5 rounded-full bg-brand-400 animate-pulse" />
-            <span className="text-sm font-semibold text-zinc-100">
+        <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 bg-stone-900 text-white rounded-2xl px-5 py-3.5 shadow-2xl flex items-center gap-4 animate-in fade-in slide-in-from-bottom-4">
+          <div className="flex items-center gap-2 pr-2 border-r border-stone-700 font-mono">
+            <span className="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse" />
+            <span className="text-xs font-bold text-white">
               {selectedIds.size} Selected
             </span>
           </div>
 
           <Button
-            variant="primary"
+            variant="saffron"
             size="sm"
             onClick={handleOpenAssemble}
             icon={<Sparkles className="w-4 h-4" />}
           >
-            Assemble Test from Selected
+            Assemble Test
           </Button>
 
           <Button
@@ -897,7 +819,7 @@ export default function QuestionBankPage() {
 
           <button
             onClick={() => setSelectedIds(new Set())}
-            className="text-xs text-zinc-400 hover:text-zinc-200 px-2 py-1"
+            className="text-xs text-stone-400 hover:text-white px-2 py-1"
           >
             Clear
           </button>
@@ -919,11 +841,11 @@ export default function QuestionBankPage() {
         size="xl"
         footer={
           <div className="flex items-center justify-between w-full">
-            <div className="text-xs text-zinc-500">
+            <div className="text-xs text-stone-500">
               {formError ? (
-                <span className="text-rose-400 font-medium">{formError}</span>
+                <span className="text-rose-600 font-bold">{formError}</span>
               ) : (
-                <span>Formulas inside $...$ are automatically highlighted.</span>
+                <span>Formulas inside $...$ are automatically rendered.</span>
               )}
             </div>
             <div className="flex items-center gap-3">
@@ -942,11 +864,11 @@ export default function QuestionBankPage() {
           <div className="space-y-4">
             <div className="grid grid-cols-2 gap-3">
               <div>
-                <label className="block text-xs font-semibold text-zinc-400 mb-1">Subject</label>
+                <label className="block text-xs font-bold text-stone-800 mb-1">Subject</label>
                 <select
                   value={formSubject}
                   onChange={(e) => setFormSubject(e.target.value)}
-                  className="w-full px-3 py-1.5 rounded-lg bg-zinc-900 border border-zinc-800 text-xs text-zinc-200"
+                  className="w-full px-3 py-1.5 rounded-xl bg-white border border-stone-300 text-xs text-stone-900"
                 >
                   {subjectsList.map((s) => (
                     <option key={s} value={s}>
@@ -956,11 +878,11 @@ export default function QuestionBankPage() {
                 </select>
               </div>
               <div>
-                <label className="block text-xs font-semibold text-zinc-400 mb-1">Difficulty</label>
+                <label className="block text-xs font-bold text-stone-800 mb-1">Difficulty</label>
                 <select
                   value={formDifficulty}
                   onChange={(e) => setFormDifficulty(e.target.value as any)}
-                  className="w-full px-3 py-1.5 rounded-lg bg-zinc-900 border border-zinc-800 text-xs text-zinc-200"
+                  className="w-full px-3 py-1.5 rounded-xl bg-white border border-stone-300 text-xs text-stone-900"
                 >
                   <option value="easy">Easy</option>
                   <option value="medium">Medium</option>
@@ -971,38 +893,38 @@ export default function QuestionBankPage() {
 
             <div className="grid grid-cols-3 gap-2">
               <div>
-                <label className="block text-xs font-semibold text-zinc-400 mb-1">Marks (+)</label>
+                <label className="block text-xs font-bold text-stone-500 mb-1">Marks (+)</label>
                 <input
                   type="number"
                   step="0.5"
                   value={formMarks}
                   onChange={(e) => setFormMarks(Number(e.target.value))}
-                  className="w-full px-3 py-1.5 rounded-lg bg-zinc-900 border border-zinc-800 text-xs text-zinc-200"
+                  className="w-full px-3 py-1.5 rounded-xl bg-white border border-stone-300 text-xs text-stone-900"
                 />
               </div>
               <div>
-                <label className="block text-xs font-semibold text-zinc-400 mb-1">Penalty (-)</label>
+                <label className="block text-xs font-bold text-stone-500 mb-1">Penalty (-)</label>
                 <input
                   type="number"
                   step="0.25"
                   value={formNegativeMarks}
                   onChange={(e) => setFormNegativeMarks(Number(e.target.value))}
-                  className="w-full px-3 py-1.5 rounded-lg bg-zinc-900 border border-zinc-800 text-xs text-zinc-200"
+                  className="w-full px-3 py-1.5 rounded-xl bg-white border border-stone-300 text-xs text-stone-900"
                 />
               </div>
               <div>
-                <label className="block text-xs font-semibold text-zinc-400 mb-1">Est. Secs</label>
+                <label className="block text-xs font-bold text-stone-500 mb-1">Est. Secs</label>
                 <input
                   type="number"
                   value={formEstimatedSecs}
                   onChange={(e) => setFormEstimatedSecs(Number(e.target.value))}
-                  className="w-full px-3 py-1.5 rounded-lg bg-zinc-900 border border-zinc-800 text-xs text-zinc-200"
+                  className="w-full px-3 py-1.5 rounded-xl bg-white border border-stone-300 text-xs text-stone-900"
                 />
               </div>
             </div>
 
             <div>
-              <label className="block text-xs font-semibold text-zinc-400 mb-1">
+              <label className="block text-xs font-bold text-stone-800 mb-1">
                 Question Statement (use $...$ for formulas)
               </label>
               <textarea
@@ -1010,12 +932,12 @@ export default function QuestionBankPage() {
                 value={formText}
                 onChange={(e) => setFormText(e.target.value)}
                 placeholder="e.g. A cylinder has height $h = 14$ cm and radius $r = 7$ cm. Calculate its curved surface area."
-                className="w-full px-3 py-2 rounded-lg bg-zinc-900 border border-zinc-800 text-xs text-zinc-200 focus:border-brand-500 focus:outline-none"
+                className="w-full px-3 py-2 rounded-xl bg-white border border-stone-300 text-xs text-stone-900 focus:border-stone-900 focus:ring-1 focus:ring-stone-900 focus:outline-none"
               />
             </div>
 
             <div>
-              <label className="block text-xs font-semibold text-zinc-400 mb-1.5">
+              <label className="block text-xs font-bold text-stone-800 mb-1.5">
                 Options & Correct Answer Choice:
               </label>
               <div className="space-y-2">
@@ -1027,10 +949,10 @@ export default function QuestionBankPage() {
                       <button
                         type="button"
                         onClick={() => setFormCorrect(optKey)}
-                        className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold transition-colors ${
+                        className={`w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold transition-colors ${
                           isChecked
-                            ? 'bg-emerald-500 text-black ring-2 ring-emerald-400/50'
-                            : 'bg-zinc-800 text-zinc-400 hover:bg-zinc-700'
+                            ? 'bg-emerald-600 text-white shadow-2xs ring-2 ring-emerald-400/50'
+                            : 'bg-stone-100 text-stone-700 hover:bg-stone-200 border border-stone-200'
                         }`}
                         title="Mark as correct answer"
                       >
@@ -1045,7 +967,9 @@ export default function QuestionBankPage() {
                           setFormOptions(next);
                         }}
                         placeholder={`Option ${optKey}`}
-                        className="flex-1 px-3 py-1.5 rounded-lg bg-zinc-900 border border-zinc-800 text-xs text-zinc-200 focus:border-brand-500 focus:outline-none"
+                        className={`flex-1 px-3 py-1.5 rounded-xl border text-xs text-stone-900 focus:outline-none ${
+                          isChecked ? 'border-emerald-300 bg-emerald-50/50 font-medium' : 'border-stone-300 bg-white'
+                        }`}
                       />
                     </div>
                   );
@@ -1054,7 +978,7 @@ export default function QuestionBankPage() {
             </div>
 
             <div>
-              <label className="block text-xs font-semibold text-zinc-400 mb-1">
+              <label className="block text-xs font-bold text-stone-800 mb-1">
                 Detailed Explanation / Solution Proof
               </label>
               <textarea
@@ -1062,35 +986,35 @@ export default function QuestionBankPage() {
                 value={formExplanation}
                 onChange={(e) => setFormExplanation(e.target.value)}
                 placeholder="Explain the step-by-step reasoning or mathematical derivation..."
-                className="w-full px-3 py-2 rounded-lg bg-zinc-900 border border-zinc-800 text-xs text-zinc-200 focus:border-brand-500 focus:outline-none"
+                className="w-full px-3 py-2 rounded-xl bg-white border border-stone-300 text-xs text-stone-900 focus:border-stone-900 focus:ring-1 focus:ring-stone-900 focus:outline-none"
               />
             </div>
 
             <div className="grid grid-cols-2 gap-3">
               <div>
-                <label className="block text-xs font-semibold text-zinc-400 mb-1">Topic / Subtopic</label>
+                <label className="block text-xs font-bold text-stone-800 mb-1">Topic / Subtopic</label>
                 <input
                   type="text"
                   value={formTopic}
                   onChange={(e) => setFormTopic(e.target.value)}
                   placeholder="e.g. Geometry"
-                  className="w-full px-3 py-1.5 rounded-lg bg-zinc-900 border border-zinc-800 text-xs text-zinc-200"
+                  className="w-full px-3 py-1.5 rounded-xl bg-white border border-stone-300 text-xs text-stone-900"
                 />
               </div>
               <div>
-                <label className="block text-xs font-semibold text-zinc-400 mb-1">Source Reference</label>
+                <label className="block text-xs font-bold text-stone-800 mb-1">Source Reference</label>
                 <input
                   type="text"
                   value={formSource}
                   onChange={(e) => setFormSource(e.target.value)}
                   placeholder="e.g. SSC CGL 2024 Tier-1"
-                  className="w-full px-3 py-1.5 rounded-lg bg-zinc-900 border border-zinc-800 text-xs text-zinc-200"
+                  className="w-full px-3 py-1.5 rounded-xl bg-white border border-stone-300 text-xs text-stone-900"
                 />
               </div>
             </div>
 
             <div>
-              <label className="block text-xs font-semibold text-zinc-400 mb-1">
+              <label className="block text-xs font-bold text-stone-800 mb-1">
                 Tags (comma separated)
               </label>
               <input
@@ -1098,17 +1022,17 @@ export default function QuestionBankPage() {
                 value={formTagsStr}
                 onChange={(e) => setFormTagsStr(e.target.value)}
                 placeholder="e.g. High Yield, TCS Pattern, Tier-1"
-                className="w-full px-3 py-1.5 rounded-lg bg-zinc-900 border border-zinc-800 text-xs text-zinc-200"
+                className="w-full px-3 py-1.5 rounded-xl bg-white border border-stone-300 text-xs text-stone-900"
               />
             </div>
           </div>
 
           {/* Right Column: Split-Screen Live Preview */}
-          <div className="bg-zinc-950/80 rounded-xl p-4 border border-zinc-800 flex flex-col justify-between">
+          <div className="bg-stone-50 rounded-2xl p-5 border border-stone-200 flex flex-col justify-between space-y-4">
             <div>
-              <div className="flex items-center justify-between pb-2 border-b border-zinc-800 text-xs text-zinc-400">
-                <span className="font-semibold text-brand-400 flex items-center gap-1.5">
-                  <Sparkles className="w-3.5 h-3.5" />
+              <div className="flex items-center justify-between pb-2 border-b border-stone-200 text-xs text-stone-500">
+                <span className="font-bold text-stone-900 flex items-center gap-1.5">
+                  <Sparkles className="w-3.5 h-3.5 text-amber-600" />
                   Live Student Preview
                 </span>
                 <Badge variant={formDifficulty === 'hard' ? 'danger' : formDifficulty === 'medium' ? 'saffron' : 'emerald'}>
@@ -1116,19 +1040,19 @@ export default function QuestionBankPage() {
                 </Badge>
               </div>
 
-              <div className="mt-3 text-xs text-zinc-400 flex items-center gap-2">
+              <div className="mt-3 text-xs text-stone-600 flex items-center gap-2">
                 <Badge variant="stone">{formSubject}</Badge>
-                <span>{formTopic}</span>
-                <span className="ml-auto font-medium text-emerald-400">
+                <span className="font-medium">{formTopic}</span>
+                <span className="ml-auto font-mono font-bold text-emerald-700">
                   +{formMarks} / -{formNegativeMarks}
                 </span>
               </div>
 
-              <div className="mt-3 text-sm text-zinc-100 font-medium leading-relaxed min-h-[50px]">
+              <div className="mt-3 text-sm text-stone-900 font-medium leading-relaxed min-h-[50px]">
                 {formText ? (
                   <FormattedMathText text={formText} />
                 ) : (
-                  <span className="text-zinc-600 italic">Enter question statement on the left to preview...</span>
+                  <span className="text-stone-400 italic">Enter question statement on the left to preview...</span>
                 )}
               </div>
 
@@ -1139,24 +1063,24 @@ export default function QuestionBankPage() {
                   return (
                     <div
                       key={i}
-                      className={`p-2.5 rounded-lg text-xs border flex items-start gap-2.5 ${
+                      className={`p-2.5 rounded-xl text-xs border flex items-start gap-2.5 ${
                         isCorrect
-                          ? 'bg-emerald-950/20 border-emerald-500/40 text-emerald-200'
-                          : 'bg-zinc-900/60 border-zinc-800 text-zinc-300'
+                          ? 'bg-emerald-50 border-emerald-300 text-emerald-900 font-bold'
+                          : 'bg-white border-stone-200 text-stone-700'
                       }`}
                     >
                       <span
-                        className={`w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-bold ${
-                          isCorrect ? 'bg-emerald-500 text-black' : 'bg-zinc-800 text-zinc-400'
+                        className={`w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-bold shrink-0 ${
+                          isCorrect ? 'bg-emerald-600 text-white' : 'bg-stone-100 text-stone-600'
                         }`}
                       >
                         {optKey}
                       </span>
                       <div className="flex-1 mt-0.5">
-                        {opt ? <FormattedMathText text={opt} /> : <span className="text-zinc-600 italic">Empty choice</span>}
+                        {opt ? <FormattedMathText text={opt} /> : <span className="text-stone-400 italic">Empty choice</span>}
                       </div>
                       {isCorrect && (
-                        <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400 ml-auto flex-shrink-0" />
+                        <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 ml-auto flex-shrink-0" />
                       )}
                     </div>
                   );
@@ -1164,20 +1088,20 @@ export default function QuestionBankPage() {
               </div>
 
               {formExplanation && (
-                <div className="mt-4 p-3 rounded-lg bg-zinc-900/90 border border-zinc-800 text-xs">
-                  <div className="font-semibold text-emerald-400 mb-1 flex items-center gap-1">
-                    <CheckCircle2 className="w-3.5 h-3.5" />
+                <div className="mt-4 p-3.5 rounded-xl bg-amber-50/50 border border-amber-200 text-xs">
+                  <div className="font-bold text-stone-900 mb-1 flex items-center gap-1">
+                    <CheckCircle2 className="w-3.5 h-3.5 text-amber-700" />
                     Explanation Preview:
                   </div>
-                  <div className="text-zinc-300">
+                  <div className="text-stone-800 leading-relaxed">
                     <FormattedMathText text={formExplanation} />
                   </div>
                 </div>
               )}
             </div>
 
-            <div className="mt-4 pt-3 border-t border-zinc-800/80 text-[11px] text-zinc-500 flex items-center justify-between">
-              <span>Estimated solving time: {formEstimatedSecs}s</span>
+            <div className="pt-3 border-t border-stone-200 text-[11px] text-stone-500 font-mono flex items-center justify-between">
+              <span>Estimated time: {formEstimatedSecs}s</span>
               <span>Source: {formSource || 'Custom'}</span>
             </div>
           </div>
@@ -1194,15 +1118,15 @@ export default function QuestionBankPage() {
         footer={
           assembleResult ? (
             <div className="flex items-center justify-between w-full">
-              <span className="text-xs text-emerald-400 font-semibold flex items-center gap-1">
-                <CheckCircle2 className="w-4 h-4" />
+              <span className="text-xs text-emerald-700 font-bold flex items-center gap-1">
+                <CheckCircle2 className="w-4 h-4 text-emerald-600" />
                 Test successfully created!
               </span>
               <div className="flex items-center gap-2">
                 <Button variant="secondary" onClick={() => setIsAssembleModalOpen(false)}>
                   Close
                 </Button>
-                <Link href={`/tests/${assembleResult.testId}/instructions`}>
+                <Link href={`/tests/${assembleResult.testId}/start`}>
                   <Button variant="primary" icon={<ExternalLink className="w-4 h-4" />}>
                     View & Start Test
                   </Button>
@@ -1227,44 +1151,44 @@ export default function QuestionBankPage() {
         }
       >
         {assembleResult ? (
-          <div className="p-4 bg-emerald-950/20 border border-emerald-500/30 rounded-xl text-center space-y-3">
-            <CheckCircle2 className="w-10 h-10 text-emerald-400 mx-auto" />
-            <h4 className="font-semibold text-zinc-100 text-sm">{assembleResult.title}</h4>
-            <p className="text-xs text-zinc-400">
+          <div className="p-5 bg-emerald-50 border border-emerald-200 rounded-2xl text-center space-y-3">
+            <CheckCircle2 className="w-10 h-10 text-emerald-600 mx-auto" />
+            <h4 className="font-serif font-bold text-stone-900 text-sm">{assembleResult.title}</h4>
+            <p className="text-xs text-stone-600 leading-relaxed">
               The test has been published and linked to your selected questions. You can start the mock test now or find it in your test library.
             </p>
           </div>
         ) : (
           <div className="space-y-4">
             <div>
-              <label className="block text-xs font-semibold text-zinc-400 mb-1">Test Title</label>
+              <label className="block text-xs font-bold text-stone-800 mb-1">Test Title</label>
               <input
                 type="text"
                 value={assembleTitle}
                 onChange={(e) => setAssembleTitle(e.target.value)}
                 placeholder="e.g. Quantitative Speed Drill #1"
-                className="w-full px-3 py-2 rounded-lg bg-zinc-900 border border-zinc-800 text-sm text-zinc-200 focus:border-brand-500 focus:outline-none"
+                className="w-full px-3 py-2 rounded-xl bg-white border border-stone-300 text-sm text-stone-900 focus:border-stone-900 focus:outline-none"
               />
             </div>
 
             <div>
-              <label className="block text-xs font-semibold text-zinc-400 mb-1">Description / Goal</label>
+              <label className="block text-xs font-bold text-stone-800 mb-1">Description / Goal</label>
               <textarea
                 rows={2}
                 value={assembleDescription}
                 onChange={(e) => setAssembleDescription(e.target.value)}
                 placeholder="Optional test description..."
-                className="w-full px-3 py-2 rounded-lg bg-zinc-900 border border-zinc-800 text-xs text-zinc-200 focus:border-brand-500 focus:outline-none"
+                className="w-full px-3 py-2 rounded-xl bg-white border border-stone-300 text-xs text-stone-900 focus:border-stone-900 focus:outline-none"
               />
             </div>
 
             <div className="grid grid-cols-2 gap-3">
               <div>
-                <label className="block text-xs font-semibold text-zinc-400 mb-1">Subject</label>
+                <label className="block text-xs font-bold text-stone-800 mb-1">Subject</label>
                 <select
                   value={assembleSubject}
                   onChange={(e) => setAssembleSubject(e.target.value)}
-                  className="w-full px-3 py-2 rounded-lg bg-zinc-900 border border-zinc-800 text-xs text-zinc-200"
+                  className="w-full px-3 py-2 rounded-xl bg-white border border-stone-300 text-xs text-stone-900"
                 >
                   {subjectsList.map((s) => (
                     <option key={s} value={s}>
@@ -1275,23 +1199,23 @@ export default function QuestionBankPage() {
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-zinc-400 mb-1">Duration (Minutes)</label>
+                <label className="block text-xs font-bold text-stone-800 mb-1">Duration (Minutes)</label>
                 <input
                   type="number"
                   value={assembleDurationMins}
                   onChange={(e) => setAssembleDurationMins(Number(e.target.value))}
-                  className="w-full px-3 py-2 rounded-lg bg-zinc-900 border border-zinc-800 text-xs text-zinc-200"
+                  className="w-full px-3 py-2 rounded-xl bg-white border border-stone-300 text-xs text-stone-900"
                 />
               </div>
             </div>
 
             <div className="grid grid-cols-2 gap-3">
               <div>
-                <label className="block text-xs font-semibold text-zinc-400 mb-1">Marking Scheme</label>
+                <label className="block text-xs font-bold text-stone-800 mb-1">Marking Scheme</label>
                 <select
                   value={assembleMarkingType}
                   onChange={(e) => setAssembleMarkingType(e.target.value)}
-                  className="w-full px-3 py-2 rounded-lg bg-zinc-900 border border-zinc-800 text-xs text-zinc-200"
+                  className="w-full px-3 py-2 rounded-xl bg-white border border-stone-300 text-xs text-stone-900"
                 >
                   <option value="standard">Standard (+4.0 / -1.0)</option>
                   <option value="ssc">SSC CGL (+2.0 / -0.5)</option>
@@ -1300,11 +1224,11 @@ export default function QuestionBankPage() {
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-zinc-400 mb-1">Publication State</label>
+                <label className="block text-xs font-bold text-stone-800 mb-1">Publication State</label>
                 <select
                   value={assembleStatus}
                   onChange={(e) => setAssembleStatus(e.target.value as any)}
-                  className="w-full px-3 py-2 rounded-lg bg-zinc-900 border border-zinc-800 text-xs text-zinc-200"
+                  className="w-full px-3 py-2 rounded-xl bg-white border border-stone-300 text-xs text-stone-900"
                 >
                   <option value="published">Published (Ready for practice)</option>
                   <option value="draft">Draft (Private draft)</option>
