@@ -76,8 +76,49 @@ export async function GET(req: NextRequest) {
       params = [user.id, user.id, user.id];
     }
 
+    const { searchParams } = new URL(req.url);
+    const filterExamId = searchParams.get('exam_id');
+    const filterSubjectId = searchParams.get('subject_id');
+    const filterTestType = searchParams.get('test_type');
+    const filterDifficulty = searchParams.get('difficulty');
+    const filterDuration = searchParams.get('duration');
+    const filterIsPaid = searchParams.get('is_paid');
+    const filterSource = searchParams.get('source');
+    const searchQuery = searchParams.get('q') || searchParams.get('search');
+
     const testsStmt = db.prepare(testsQuery);
-    const tests = testsStmt.all(...params) as any[];
+    let tests = testsStmt.all(...params) as any[];
+
+    // Apply multifaceted filters in memory
+    if (filterExamId && filterExamId !== 'all') {
+      tests = tests.filter(t => t.exam_id === filterExamId || !t.exam_id);
+    }
+    if (filterSubjectId && filterSubjectId !== 'all') {
+      tests = tests.filter(t => t.subject_id === filterSubjectId);
+    }
+    if (filterTestType && filterTestType !== 'all') {
+      tests = tests.filter(t => t.test_type === filterTestType);
+    }
+    if (filterDifficulty && filterDifficulty !== 'all') {
+      tests = tests.filter(t => (t.difficulty || 'medium') === filterDifficulty);
+    }
+    if (filterDuration && filterDuration !== 'all') {
+      if (filterDuration === 'short') tests = tests.filter(t => t.duration_seconds > 0 && t.duration_seconds <= 1800);
+      else if (filterDuration === 'medium') tests = tests.filter(t => t.duration_seconds > 1800 && t.duration_seconds <= 3600);
+      else if (filterDuration === 'long') tests = tests.filter(t => t.duration_seconds > 3600);
+    }
+    if (filterIsPaid !== null && filterIsPaid !== undefined && filterIsPaid !== 'all') {
+      const isPaidVal = filterIsPaid === '1' || filterIsPaid === 'true' ? 1 : 0;
+      tests = tests.filter(t => Boolean(t.is_paid) === Boolean(isPaidVal));
+    }
+    if (searchQuery) {
+      const qLower = searchQuery.toLowerCase();
+      tests = tests.filter(t =>
+        t.title.toLowerCase().includes(qLower) ||
+        (t.description && t.description.toLowerCase().includes(qLower)) ||
+        (t.subject && t.subject.toLowerCase().includes(qLower))
+      );
+    }
 
     // For each test, get attempts (filtered by user if student, or all student attempts if admin/superadmin)
     let attemptsQuery = `
@@ -94,8 +135,13 @@ export async function GET(req: NextRequest) {
     const enrichedTests = tests.map(test => {
       const attParams = user.role === 'student' ? [test.id, user.id] : [test.id];
       const attempts = attemptsStmt.all(...attParams) as any[];
+      const latestAttempt = attempts[0] || null;
+
       return {
         ...test,
+        difficulty: test.difficulty || 'medium',
+        source: test.source || 'Nalanda Official',
+        test_type: test.test_type || 'full_mock',
         shuffle_questions: Boolean(test.shuffle_questions),
         shuffle_options: Boolean(test.shuffle_options),
         allow_navigation: Boolean(test.allow_navigation),
@@ -103,6 +149,8 @@ export async function GET(req: NextRequest) {
         allow_review_marking: Boolean(test.allow_review_marking),
         show_immediate_results: Boolean(test.show_immediate_results),
         attempts,
+        last_attempt_status: latestAttempt?.status || null,
+        last_attempt_id: latestAttempt?.id || null,
       };
     });
 

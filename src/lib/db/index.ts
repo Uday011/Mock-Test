@@ -134,6 +134,8 @@ export function getDb(): DatabaseSync {
       accuracy REAL NOT NULL DEFAULT 0.0,
       questions_snapshot_json TEXT,
       ai_insights_json TEXT,
+      section_performance_json TEXT,
+      topic_performance_json TEXT,
       created_at TEXT NOT NULL,
       FOREIGN KEY (test_id) REFERENCES tests(id) ON DELETE CASCADE,
       FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
@@ -402,6 +404,17 @@ export function getDb(): DatabaseSync {
   try { db.exec('ALTER TABLE user_topic_progress ADD COLUMN repetition_interval_days INTEGER DEFAULT 3;'); } catch {}
   try { db.exec('ALTER TABLE user_topic_progress ADD COLUMN repetition_count INTEGER DEFAULT 0;'); } catch {}
   try { db.exec('ALTER TABLE user_topic_progress ADD COLUMN is_bookmarked INTEGER DEFAULT 0;'); } catch {}
+  try { db.exec('ALTER TABLE tests ADD COLUMN difficulty TEXT DEFAULT "medium";'); } catch {}
+  try { db.exec('ALTER TABLE tests ADD COLUMN source TEXT DEFAULT "Nalanda Official";'); } catch {}
+  try { db.exec('ALTER TABLE tests ADD COLUMN subtopic_id TEXT;'); } catch {}
+  try { db.exec('ALTER TABLE questions ADD COLUMN subject_id TEXT;'); } catch {}
+  try { db.exec('ALTER TABLE questions ADD COLUMN section_id TEXT;'); } catch {}
+  try { db.exec('ALTER TABLE questions ADD COLUMN topic_id TEXT;'); } catch {}
+  try { db.exec('ALTER TABLE questions ADD COLUMN subtopic_id TEXT;'); } catch {}
+  try { db.exec('ALTER TABLE questions ADD COLUMN difficulty TEXT DEFAULT "medium";'); } catch {}
+  try { db.exec('ALTER TABLE questions ADD COLUMN source TEXT;'); } catch {}
+  try { db.exec('ALTER TABLE test_attempts ADD COLUMN section_performance_json TEXT;'); } catch {}
+  try { db.exec('ALTER TABLE test_attempts ADD COLUMN topic_performance_json TEXT;'); } catch {}
 
   dbInstance = db;
   return dbInstance;

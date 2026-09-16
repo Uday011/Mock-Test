@@ -38,9 +38,32 @@ export interface Question {
   unanswered_marks: number;
   explanation?: string | null;
   parsing_confidence?: number;
+  subject_id?: string | null;
+  section_id?: string | null;
+  topic_id?: string | null;
+  subtopic_id?: string | null;
+  difficulty?: 'easy' | 'medium' | 'hard';
+  source?: string | null;
+  tags?: string[];
+  estimated_solving_time_seconds?: number;
   created_at?: string;
   updated_at?: string;
 }
+
+export type TestType =
+  | 'topic_test'
+  | 'subtopic_test'
+  | 'chapter_test'
+  | 'sectional_test'
+  | 'subject_test'
+  | 'full_mock'
+  | 'previous_year_paper'
+  | 'mixed_revision_test'
+  | 'custom_test'
+  | 'community_test'
+  | 'educator_test'
+  | 'test_series'
+  | 'custom_practice';
 
 export interface Test {
   id: string;
@@ -61,10 +84,13 @@ export interface Test {
   allow_review_marking: boolean;
   show_immediate_results: boolean;
   tags?: string[];
-  test_type?: 'topic_test' | 'sectional_test' | 'full_mock' | 'custom_practice';
+  test_type?: TestType;
   exam_id?: string | null;
   subject_id?: string | null;
   topic_id?: string | null;
+  subtopic_id?: string | null;
+  difficulty?: 'easy' | 'medium' | 'hard';
+  source?: string;
   visibility?: 'private' | 'unlisted' | 'shared' | 'public';
   is_paid?: boolean;
   price_inr?: number;
@@ -77,6 +103,34 @@ export interface Test {
   attempts_count?: number;
   best_score?: number | null;
   last_attempted_at?: string | null;
+  last_attempt_status?: string | null;
+  last_attempt_id?: string | null;
+}
+
+export interface SectionPerformance {
+  section_id?: string;
+  section_name: string;
+  total_questions: number;
+  attempted: number;
+  correct: number;
+  incorrect: number;
+  unanswered: number;
+  positive_marks: number;
+  negative_marks: number;
+  score: number;
+  accuracy: number;
+}
+
+export interface TopicPerformance {
+  topic_id: string;
+  topic_title: string;
+  subject_name?: string;
+  total_questions: number;
+  correct: number;
+  incorrect: number;
+  accuracy: number;
+  status_updated_to?: string;
+  is_mastered?: boolean;
 }
 
 export type QuestionPaletteState = 

@@ -85,6 +85,9 @@ export async function POST(req: NextRequest) {
       options: q.options,
       correct_marks: q.correct_marks,
       negative_marks: q.negative_marks,
+      subject: q.subject || test.subject || 'General',
+      section_name: q.section_name || q.subject || test.subject || 'General',
+      topic_id: q.topic_id || null,
     }));
 
     return NextResponse.json({

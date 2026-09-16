@@ -807,6 +807,294 @@ export function seedLearningSystem(db: DatabaseSync, student: any, instituteAdmi
       insertQ.run(q.id, testGeomId, q.num, q.text, JSON.stringify(q.options), q.correct, q.explanation, now, now);
     }
 
+    // 6. Seed Diverse Test Types for Testing Engine
+    // (A) Previous Year Paper
+    const pyqTestId = 'test-cgl-pyq-2023-s1';
+    insertTest.run(
+      pyqTestId,
+      instituteAdmin.id,
+      'SSC CGL 2023 Tier-I Official Paper (14 July Shift 1)',
+      'Authentic previous year question paper conducted by TCS for SSC CGL Tier-I, featuring exact historical questions and negative marking.',
+      'Combined Tier-I',
+      'sec-ssc',
+      3600,
+      'standard',
+      2.0,
+      0.5,
+      0.0,
+      0,
+      0,
+      1,
+      1,
+      1,
+      1,
+      'previous_year_paper',
+      'exam-ssc-cgl-2026',
+      null,
+      null,
+      'public',
+      0,
+      0.0,
+      now,
+      now
+    );
+
+    const pyqQuestions = [
+      {
+        id: 'q-pyq-1',
+        num: 1,
+        text: 'If (x + 1/x) = 5, find the value of (x³ + 1/x³).',
+        options: [
+          { label: 'A', text: '110' },
+          { label: 'B', text: '115' },
+          { label: 'C', text: '120' },
+          { label: 'D', text: '125' }
+        ],
+        correct: 'A',
+        explanation: 'Identity: x³ + 1/x³ = (x + 1/x)³ - 3(x + 1/x) = 5³ - 3(5) = 125 - 15 = 110.'
+      },
+      {
+        id: 'q-pyq-2',
+        num: 2,
+        text: 'Select the most appropriate synonym of the given word: "CANDID"',
+        options: [
+          { label: 'A', text: 'Frank' },
+          { label: 'B', text: 'Deceitful' },
+          { label: 'C', text: 'Arrogant' },
+          { label: 'D', text: 'Timid' }
+        ],
+        correct: 'A',
+        explanation: 'Candid means truthful and straightforward; frank.'
+      },
+      {
+        id: 'q-pyq-3',
+        num: 3,
+        text: 'Who among the following was the founder of the Brahmo Samaj in 1828?',
+        options: [
+          { label: 'A', text: 'Swami Vivekananda' },
+          { label: 'B', text: 'Raja Ram Mohan Roy' },
+          { label: 'C', text: 'Dayanand Saraswati' },
+          { label: 'D', text: 'Ishwar Chandra Vidyasagar' }
+        ],
+        correct: 'B',
+        explanation: 'Raja Ram Mohan Roy founded Brahmo Sabha in August 1828, later renamed Brahmo Samaj.'
+      },
+      {
+        id: 'q-pyq-4',
+        num: 4,
+        text: 'Three of the following four letter-clusters are alike in a certain way and one is different. Pick the odd one: PRT, KMO, BDF, HJL',
+        options: [
+          { label: 'A', text: 'PRT' },
+          { label: 'B', text: 'KMO' },
+          { label: 'C', text: 'BDF' },
+          { label: 'D', text: 'All follow +2 except none' }
+        ],
+        correct: 'D',
+        explanation: 'All groups have a uniform +2 letter gap (P(+2)R(+2)T, K(+2)M(+2)O, B(+2)D(+2)F, H(+2)J(+2)L).'
+      }
+    ];
+
+    for (const q of pyqQuestions) {
+      insertQ.run(q.id, pyqTestId, q.num, q.text, JSON.stringify(q.options), q.correct, q.explanation, now, now);
+    }
+
+    // (B) Sectional Drill: Quantitative Aptitude
+    const secQuantId = 'test-cgl-sec-quant-drill';
+    insertTest.run(
+      secQuantId,
+      instituteAdmin.id,
+      'Quantitative Aptitude Tier-I Speed & Calculation Drill 01',
+      'Timed sectional assessment testing mental calculation speed, percentages, ratios, algebra, and circle theorems under 25 minutes.',
+      'Quantitative Aptitude',
+      'sec-ssc',
+      1500, // 25 mins
+      'standard',
+      2.0,
+      0.5,
+      0.0,
+      0,
+      0,
+      1,
+      1,
+      1,
+      1,
+      'sectional_test',
+      'exam-ssc-cgl-2026',
+      'subj-cgl-quant',
+      null,
+      'public',
+      0,
+      0.0,
+      now,
+      now
+    );
+
+    for (let i = 0; i < percQuestions.length; i++) {
+      const q = percQuestions[i];
+      insertQ.run(`q-sec-quant-${i + 1}`, secQuantId, i + 1, q.text, JSON.stringify(q.options), q.correct, q.explanation, now, now);
+    }
+
+    // (C) Mixed Revision Test
+    const mixedTestId = 'test-cgl-mixed-rev-w2';
+    insertTest.run(
+      mixedTestId,
+      instituteAdmin.id,
+      'Week 2 Cumulative Mixed Revision Sprint (Quant + Reasoning)',
+      'Interleaved active recall assessment combining arithmetic profit & loss with logical syllogisms and analogies.',
+      'Quant & Reasoning',
+      'sec-ssc',
+      1200, // 20 mins
+      'standard',
+      2.0,
+      0.5,
+      0.0,
+      0,
+      0,
+      1,
+      1,
+      1,
+      1,
+      'mixed_revision_test',
+      'exam-ssc-cgl-2026',
+      null,
+      null,
+      'public',
+      0,
+      0.0,
+      now,
+      now
+    );
+
+    const mixedQs = [percQuestions[0], geomQuestions[0], pyqQuestions[0], pyqQuestions[3]];
+    for (let i = 0; i < mixedQs.length; i++) {
+      const q = mixedQs[i];
+      insertQ.run(`q-mix-${i + 1}`, mixedTestId, i + 1, q.text, JSON.stringify(q.options), q.correct, q.explanation, now, now);
+    }
+
+    // (D) Subject Test: English Language
+    const subjEngId = 'test-cgl-subj-english';
+    insertTest.run(
+      subjEngId,
+      instituteAdmin.id,
+      'English Comprehension & Grammar Subject Diagnostic Paper',
+      'Comprehensive sectional evaluating error spotting, correlative conjunctions, sentence improvement, idioms, and cloze passage logic.',
+      'English Comprehension',
+      'sec-ssc',
+      1200,
+      'standard',
+      2.0,
+      0.5,
+      0.0,
+      0,
+      0,
+      1,
+      1,
+      1,
+      1,
+      'subject_test',
+      'exam-ssc-cgl-2026',
+      'subj-cgl-english',
+      null,
+      'public',
+      0,
+      0.0,
+      now,
+      now
+    );
+
+    const engQuestions = [
+      {
+        id: 'q-eng-1',
+        num: 1,
+        text: 'Select the sentence with the correct usage of correlative conjunctions:',
+        options: [
+          { label: 'A', text: 'Neither he nor his friends was interested.' },
+          { label: 'B', text: 'Neither he nor his friends were interested.' },
+          { label: 'C', text: 'Neither he or his friends were interested.' },
+          { label: 'D', text: 'Neither he nor his friends are not interested.' }
+        ],
+        correct: 'B',
+        explanation: 'In "neither... nor", the verb agrees with the closer subject ("his friends" = plural => were).'
+      },
+      {
+        id: 'q-eng-2',
+        num: 2,
+        text: 'Identify the idiom meaning "to face a crisis with fortitude":',
+        options: [
+          { label: 'A', text: 'Bite the bullet' },
+          { label: 'B', text: 'Burn bridges' },
+          { label: 'C', text: 'Cry wolf' },
+          { label: 'D', text: 'Spill the beans' }
+        ],
+        correct: 'A',
+        explanation: 'To bite the bullet means to endure a painful or difficult situation with courage.'
+      }
+    ];
+
+    for (const q of engQuestions) {
+      insertQ.run(q.id, subjEngId, q.num, q.text, JSON.stringify(q.options), q.correct, q.explanation, now, now);
+    }
+
+    // (E) Educator Test
+    insertTest.run(
+      'test-cgl-faculty-marathon',
+      instituteAdmin.id,
+      'Faculty Special: High-Yield Geometry & Number Systems Marathon',
+      'Curated by Senior Faculty Dr. R. K. Sharma: Handpicked Tier-II tough questions testing non-obvious shortcut theorems.',
+      'Quantitative Aptitude',
+      'sec-ssc',
+      1800,
+      'standard',
+      2.0,
+      0.5,
+      0.0,
+      0,
+      0,
+      1,
+      1,
+      1,
+      1,
+      'educator_test',
+      'exam-ssc-cgl-2026',
+      'subj-cgl-quant',
+      null,
+      'public',
+      0,
+      0.0,
+      now,
+      now
+    );
+
+    // (F) Community Test
+    insertTest.run(
+      'test-cgl-community-challenge',
+      instituteAdmin.id,
+      'Aspirants Weekly Open CBE Sprint Challenge',
+      'Community crowdsourced full-length mock paper curated and peer-reviewed by top-ranking SSC aspirants.',
+      'Combined Tier-I',
+      'sec-ssc',
+      3600,
+      'standard',
+      2.0,
+      0.5,
+      0.0,
+      0,
+      0,
+      1,
+      1,
+      1,
+      1,
+      'community_test',
+      'exam-ssc-cgl-2026',
+      null,
+      null,
+      'public',
+      0,
+      0.0,
+      now,
+      now
+    );
+
   } catch (err) {
     console.warn('[Seed Learning System Error]:', err);
   }

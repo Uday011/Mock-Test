@@ -12,7 +12,7 @@ export async function POST(
 
   try {
     const attemptStmt = db.prepare(`
-      SELECT a.*, t.duration_seconds, t.title as current_test_title 
+      SELECT a.*, t.duration_seconds, t.title as current_test_title, t.exam_id, t.subject_id, t.subject
       FROM test_attempts a
       JOIN tests t ON t.id = a.test_id
       WHERE a.id = ?
@@ -145,10 +145,198 @@ export async function POST(
       );
     }
 
+    // ==========================================
+    // LEARNING INTEGRATION & FORENSICS
+    // ==========================================
+    const userId = attempt.user_id;
+
+    // Map question metadata (topic_id, subject_id)
+    const qMetaMap = new Map<string, any>();
+    for (const q of fullQuestions) {
+      qMetaMap.set(q.id, q);
+    }
+
+    // 1. Group by Topic for Learning Progress & Mastery
+    const topicGroups = new Map<string, { total: number; correct: number; incorrect: number }>();
+    const sectionGroups = new Map<string, { total: number; attempted: number; correct: number; incorrect: number; positive: number; negative: number }>();
+
+    for (const ans of evalResult.detailed_answers) {
+      const q = qMetaMap.get(ans.question_id);
+      const topicId = q?.topic_id;
+      const subjectName = q?.subject || attempt.subject || 'General';
+
+      // Section group
+      if (!sectionGroups.has(subjectName)) {
+        sectionGroups.set(subjectName, { total: 0, attempted: 0, correct: 0, incorrect: 0, positive: 0, negative: 0 });
+      }
+      const sGroup = sectionGroups.get(subjectName)!;
+      sGroup.total++;
+      if (ans.selected_answer) {
+        sGroup.attempted++;
+        if (ans.is_correct) {
+          sGroup.correct++;
+          sGroup.positive += ans.marks_awarded;
+        } else {
+          sGroup.incorrect++;
+          sGroup.negative += ans.negative_marks_deducted;
+        }
+      }
+
+      // Topic group
+      if (topicId) {
+        if (!topicGroups.has(topicId)) {
+          topicGroups.set(topicId, { total: 0, correct: 0, incorrect: 0 });
+        }
+        const tGroup = topicGroups.get(topicId)!;
+        tGroup.total++;
+        if (ans.is_correct) {
+          tGroup.correct++;
+        } else if (ans.selected_answer) {
+          tGroup.incorrect++;
+        }
+      }
+
+      // Auto-log mistake if answered incorrectly
+      if (ans.selected_answer && !ans.is_correct) {
+        try {
+          const insertMistake = db.prepare(`
+            INSERT OR IGNORE INTO mistake_records (
+              id, user_id, test_id, question_id, exam_id, subject_id, topic_id,
+              question_text, options_json, selected_answer, correct_answer, explanation,
+              error_category, user_notes, is_resolved, created_at
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'calculation_error', 'Logged from CBT test submission.', 0, ?)
+          `);
+          insertMistake.run(
+            `mistake-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`,
+            userId,
+            attempt.test_id,
+            ans.question_id,
+            attempt.exam_id || 'exam-ssc-cgl',
+            q?.subject_id || attempt.subject_id,
+            topicId,
+            q?.question_text || '',
+            JSON.stringify(q?.options || []),
+            ans.selected_answer,
+            ans.correct_answer || '',
+            q?.explanation || '',
+            now.toISOString()
+          );
+        } catch (mErr) {
+          console.warn('Mistake auto-log notice:', mErr);
+        }
+      }
+    }
+
+    // 2. Update user_topic_progress in database
+    const topicPerformanceList: any[] = [];
+    for (const [tId, tStats] of topicGroups.entries()) {
+      const topicAcc = tStats.total > 0 ? Math.round((tStats.correct / tStats.total) * 100) : 0;
+      const isTopicMastered = topicAcc >= 75.0;
+      const targetStatus = isTopicMastered ? 'mastered' : 'studied';
+      const nextIntervalDays = isTopicMastered ? 3 : 1;
+      const nextRevisionDate = new Date(Date.now() + nextIntervalDays * 86400000).toISOString();
+
+      const existingProg = db.prepare('SELECT id, repetition_count, tests_attempted, mastery_percentage FROM user_topic_progress WHERE user_id = ? AND topic_id = ?').get(userId, tId) as any;
+
+      if (existingProg) {
+        const newMastery = Math.max(existingProg.mastery_percentage || 0, topicAcc);
+        db.prepare(`
+          UPDATE user_topic_progress
+          SET status = ?, mastery_percentage = ?, tests_attempted = tests_attempted + 1,
+              questions_practiced = questions_practiced + ?,
+              questions_correct = questions_correct + ?,
+              next_revision_date = ?, repetition_interval_days = ?, repetition_count = repetition_count + 1,
+              last_studied_at = ?, updated_at = ?
+          WHERE id = ?
+        `).run(
+          targetStatus,
+          newMastery,
+          tStats.total,
+          tStats.correct,
+          nextRevisionDate,
+          nextIntervalDays,
+          now.toISOString(),
+          now.toISOString(),
+          existingProg.id
+        );
+      } else {
+        const progId = `prog-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`;
+        db.prepare(`
+          INSERT INTO user_topic_progress (
+            id, user_id, topic_id, status, mastery_percentage, questions_practiced,
+            questions_correct, tests_attempted, next_revision_date, repetition_interval_days,
+            repetition_count, last_studied_at, updated_at
+          ) VALUES (?, ?, ?, ?, ?, ?, ?, 1, ?, ?, 1, ?, ?)
+        `).run(
+          progId,
+          userId,
+          tId,
+          targetStatus,
+          topicAcc,
+          tStats.total,
+          tStats.correct,
+          nextRevisionDate,
+          nextIntervalDays,
+          now.toISOString(),
+          now.toISOString()
+        );
+      }
+
+      // Fetch topic title
+      const tNode = db.prepare('SELECT title FROM syllabus_nodes WHERE id = ?').get(tId) as any;
+      topicPerformanceList.push({
+        topic_id: tId,
+        topic_title: tNode?.title || tId,
+        total_questions: tStats.total,
+        correct: tStats.correct,
+        incorrect: tStats.incorrect,
+        accuracy: topicAcc,
+        is_mastered: isTopicMastered,
+        status_updated_to: targetStatus,
+      });
+    }
+
+    // Format section performance
+    const sectionPerformanceList: any[] = [];
+    for (const [secName, sStats] of sectionGroups.entries()) {
+      const score = Math.max(0, sStats.positive - sStats.negative);
+      const acc = sStats.attempted > 0 ? Math.round((sStats.correct / sStats.attempted) * 100) : 0;
+      sectionPerformanceList.push({
+        section_name: secName,
+        total_questions: sStats.total,
+        attempted: sStats.attempted,
+        correct: sStats.correct,
+        incorrect: sStats.incorrect,
+        unanswered: sStats.total - sStats.attempted,
+        score,
+        accuracy: acc,
+      });
+    }
+
+    // Persist section and topic performance breakdowns
+    try {
+      db.prepare(`
+        UPDATE test_attempts SET
+          section_performance_json = ?,
+          topic_performance_json = ?
+        WHERE id = ?
+      `).run(
+        JSON.stringify(sectionPerformanceList),
+        JSON.stringify(topicPerformanceList),
+        attemptId
+      );
+    } catch (saveErr) {
+      console.warn('Could not save section/topic performance to attempt record:', saveErr);
+    }
+
     return NextResponse.json({
       success: true,
       attemptId,
-      result: evalResult,
+      result: {
+        ...evalResult,
+        section_performance: sectionPerformanceList,
+        topic_performance: topicPerformanceList,
+      },
       timeTaken,
     });
   } catch (err: any) {

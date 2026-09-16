@@ -60,6 +60,9 @@ export async function GET(
         correct_marks: q.correct_marks,
         negative_marks: q.negative_marks,
         explanation: q.explanation,
+        subject: q.subject || attempt.subject || 'General',
+        section_name: q.section_name || q.subject || attempt.subject || 'General',
+        topic_id: q.topic_id || null,
         // User's answer info
         user_answer: ans?.selected_answer || null,
         is_correct: ans?.is_correct != null ? Boolean(ans.is_correct) : false,
@@ -74,6 +77,20 @@ export async function GET(
     if (attempt.ai_insights_json) {
       try {
         aiInsights = JSON.parse(attempt.ai_insights_json);
+      } catch (e) {}
+    }
+
+    let sectionPerformance = null;
+    if (attempt.section_performance_json) {
+      try {
+        sectionPerformance = JSON.parse(attempt.section_performance_json);
+      } catch (e) {}
+    }
+
+    let topicPerformance = null;
+    if (attempt.topic_performance_json) {
+      try {
+        topicPerformance = JSON.parse(attempt.topic_performance_json);
       } catch (e) {}
     }
 
@@ -100,6 +117,8 @@ export async function GET(
         percentage: attempt.percentage,
         accuracy: attempt.accuracy,
         ai_insights: aiInsights,
+        section_performance: sectionPerformance,
+        topic_performance: topicPerformance,
       },
       questions: reviewedQuestions,
     });
