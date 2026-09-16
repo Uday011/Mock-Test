@@ -253,6 +253,13 @@ export function getDb(): DatabaseSync {
       source_reference TEXT,
       tags_json TEXT NOT NULL DEFAULT '[]',
       usage_count INTEGER NOT NULL DEFAULT 0,
+      status TEXT NOT NULL DEFAULT 'active',
+      marks REAL NOT NULL DEFAULT 2.0,
+      negative_marks REAL NOT NULL DEFAULT 0.5,
+      estimated_seconds INTEGER NOT NULL DEFAULT 60,
+      subtopic_id TEXT,
+      used_in_tests_json TEXT NOT NULL DEFAULT '[]',
+      correctness_status TEXT NOT NULL DEFAULT 'verified',
       created_at TEXT NOT NULL,
       FOREIGN KEY (creator_id) REFERENCES users(id) ON DELETE CASCADE
     );
@@ -425,6 +432,17 @@ export function getDb(): DatabaseSync {
   try { db.exec('ALTER TABLE mistake_records ADD COLUMN retry_history_json TEXT NOT NULL DEFAULT "[]";'); } catch {}
   try { db.exec('ALTER TABLE user_topic_progress ADD COLUMN decay_days_threshold INTEGER DEFAULT 14;'); } catch {}
   try { db.exec('ALTER TABLE user_topic_progress ADD COLUMN last_quiz_score REAL;'); } catch {}
+  try { db.exec('ALTER TABLE tests ADD COLUMN status TEXT NOT NULL DEFAULT "published";'); } catch {}
+  try { db.exec('ALTER TABLE tests ADD COLUMN instructions TEXT;'); } catch {}
+  try { db.exec('ALTER TABLE tests ADD COLUMN result_availability TEXT NOT NULL DEFAULT "immediate";'); } catch {}
+  try { db.exec('ALTER TABLE tests ADD COLUMN tags_json TEXT NOT NULL DEFAULT "[]";'); } catch {}
+  try { db.exec('ALTER TABLE question_bank ADD COLUMN status TEXT NOT NULL DEFAULT "active";'); } catch {}
+  try { db.exec('ALTER TABLE question_bank ADD COLUMN marks REAL NOT NULL DEFAULT 2.0;'); } catch {}
+  try { db.exec('ALTER TABLE question_bank ADD COLUMN negative_marks REAL NOT NULL DEFAULT 0.5;'); } catch {}
+  try { db.exec('ALTER TABLE question_bank ADD COLUMN estimated_seconds INTEGER NOT NULL DEFAULT 60;'); } catch {}
+  try { db.exec('ALTER TABLE question_bank ADD COLUMN subtopic_id TEXT;'); } catch {}
+  try { db.exec('ALTER TABLE question_bank ADD COLUMN used_in_tests_json TEXT NOT NULL DEFAULT "[]";'); } catch {}
+  try { db.exec('ALTER TABLE question_bank ADD COLUMN correctness_status TEXT NOT NULL DEFAULT "verified";'); } catch {}
 
   dbInstance = db;
   return dbInstance;

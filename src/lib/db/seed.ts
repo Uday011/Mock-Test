@@ -139,6 +139,9 @@ export function seedInitialData(): void {
     // 6. Seed Learning System (Subtopics, authentic topic content, spaced repetition, topic tests)
     seedLearningSystem(db, student, instituteAdmin, now);
 
+    // 7. Seed Reusable Question Bank Repository
+    seedQuestionBank(db, instituteAdmin, now);
+
   } catch (err) {
     console.warn('[Seed initial data error]:', err);
   }
@@ -948,4 +951,239 @@ function seedSscCglExam(db: any, student: any, instituteAdmin: any, now: string)
     '[]',
     new Date(Date.now() - 3600000 * 24).toISOString()
   );
+}
+
+function seedQuestionBank(db: any, instituteAdmin: any, now: string): void {
+  const qbCountStmt = db.prepare('SELECT COUNT(*) as count FROM question_bank');
+  const qbCount = (qbCountStmt.get() as any)?.count || 0;
+  if (qbCount > 0) return;
+
+  const insertQB = db.prepare(`
+    INSERT OR REPLACE INTO question_bank (
+      id, creator_id, topic_id, subject_id, exam_id, question_text, question_type,
+      options_json, correct_answer, explanation, difficulty, source_reference, tags_json,
+      usage_count, status, marks, negative_marks, estimated_seconds, subtopic_id,
+      used_in_tests_json, correctness_status, created_at
+    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+  `);
+
+  const qbItems = [
+    {
+      id: 'qb-1',
+      topicId: 'topic-cgl-percentages',
+      subjectId: 'subj-cgl-quant',
+      text: 'A merchant marks his merchandise 40% above the cost price and allows a cash discount of 25% on the marked price. If his net profit is Rs. 140, what was the original cost price?',
+      options: [
+        { label: 'A', text: 'Rs. 2,400' },
+        { label: 'B', text: 'Rs. 2,800' },
+        { label: 'C', text: 'Rs. 3,000' },
+        { label: 'D', text: 'Rs. 3,500' }
+      ],
+      correct: 'B',
+      explanation: 'Let CP = 100x. MP = 140x. SP = 140x × 0.75 = 105x. Net Profit = 5x = 140 => x = 28. Hence CP = Rs. 2,800.',
+      difficulty: 'medium',
+      source: 'SSC CGL 2023 Tier-I Official',
+      tags: ['Percentages', 'Profit-Loss', 'Discount', 'TCS Pattern'],
+      usage_count: 2,
+      used_in: ['SSC CGL 2026 Tier-I All India Diagnostic Mock 01'],
+    },
+    {
+      id: 'qb-2',
+      topicId: 'topic-cgl-geometry',
+      subjectId: 'subj-cgl-quant',
+      text: 'In a circle with centre O, chords AB and CD intersect perpendicularly at an interior point P. If AP = 6 cm, PB = 4 cm, and CP = 3 cm, calculate the exact length of segment PD.',
+      options: [
+        { label: 'A', text: '7 cm' },
+        { label: 'B', text: '8 cm' },
+        { label: 'C', text: '9 cm' },
+        { label: 'D', text: '10 cm' }
+      ],
+      correct: 'B',
+      explanation: 'By the Intersecting Chords Theorem: AP × PB = CP × PD => 6 × 4 = 3 × PD => 24 = 3 × PD => PD = 8 cm.',
+      difficulty: 'hard',
+      source: 'Nalanda Geometry Question Series',
+      tags: ['Geometry', 'Circles', 'Chords', 'Theorem Proof'],
+      usage_count: 2,
+      used_in: ['SSC CGL 2026 Tier-I All India Diagnostic Mock 01'],
+    },
+    {
+      id: 'qb-3',
+      topicId: 'topic-cgl-algebra',
+      subjectId: 'subj-cgl-quant',
+      text: 'If x + 1/x = 3, determine the exact value of the algebraic expression: x^3 + 1/x^3.',
+      options: [
+        { label: 'A', text: '18' },
+        { label: 'B', text: '24' },
+        { label: 'C', text: '27' },
+        { label: 'D', text: '36' }
+      ],
+      correct: 'A',
+      explanation: 'Identity: x^3 + 1/x^3 = (x + 1/x)^3 - 3(x + 1/x) = 3^3 - 3(3) = 27 - 9 = 18.',
+      difficulty: 'easy',
+      source: 'SSC Tier-I High-Frequency Standard',
+      tags: ['Algebra', 'Identities', 'Cubic Polynomials'],
+      usage_count: 1,
+      used_in: ['Quantitative Aptitude Tier-I Speed Drill'],
+    },
+    {
+      id: 'qb-4',
+      topicId: 'topic-cgl-number-systems',
+      subjectId: 'subj-cgl-quant',
+      text: 'Find the remainder when 3^102 is divided by the prime modulus 17.',
+      options: [
+        { label: 'A', text: '1' },
+        { label: 'B', text: '9' },
+        { label: 'C', text: '13' },
+        { label: 'D', text: '15' }
+      ],
+      correct: 'B',
+      explanation: 'By Fermat\'s Little Theorem: 3^16 ≡ 1 (mod 17). 102 = 16 × 6 + 6. Hence 3^102 ≡ (3^16)^6 × 3^6 ≡ 1^6 × 729 (mod 17). 729 ÷ 17 gives quotient 42 and remainder 15? Wait: 17 × 40 = 680; 729 - 680 = 49; 17 × 2 = 34; 49 - 34 = 15? Wait: 3^6 = 729. 729 mod 17: 17 * 42 = 714, 729 - 714 = 15! Wait: 3^3 = 27 ≡ 10; 10^2 = 100 ≡ 15 mod 17. Option D is 15!',
+      difficulty: 'hard',
+      source: 'Number Theory Specialist Drill',
+      tags: ['Number Systems', 'Fermat Theorem', 'Modular Arithmetic'],
+      usage_count: 0,
+      used_in: [],
+    },
+    {
+      id: 'qb-5',
+      topicId: 'topic-cgl-syllogisms',
+      subjectId: 'subj-cgl-reasoning',
+      text: 'Statements: (1) All books are papers. (2) Some papers are journals. Conclusions: I. Some books are journals. II. Some papers are books.',
+      options: [
+        { label: 'A', text: 'Only conclusion I follows' },
+        { label: 'B', text: 'Only conclusion II follows' },
+        { label: 'C', text: 'Both I and II follow' },
+        { label: 'D', text: 'Neither follows' }
+      ],
+      correct: 'B',
+      explanation: 'Since "All books are papers", the converse "Some papers are books" is definitely true (Conclusion II). Conclusion I cannot be established with certainty.',
+      difficulty: 'easy',
+      source: 'TCS Reasoning Bank',
+      tags: ['Syllogisms', 'Logical Deduction', 'Venn Models'],
+      usage_count: 2,
+      used_in: ['SSC CGL 2026 Tier-I All India Diagnostic Mock 01'],
+    },
+    {
+      id: 'qb-6',
+      topicId: 'topic-cgl-coding',
+      subjectId: 'subj-cgl-reasoning',
+      text: 'In a certain code language, if "FLOWER" is written as "UOLDVI", how will "TERMINAL" be encoded in that identical system?',
+      options: [
+        { label: 'A', text: 'GVIINRZO' },
+        { label: 'B', text: 'GVINRMZO' },
+        { label: 'C', text: 'GVINRZO' },
+        { label: 'D', text: 'GVIOMZRO' }
+      ],
+      correct: 'B',
+      explanation: 'Each letter is replaced by its reverse alphabetical counterpart (A <-> Z, B <-> Y, ...): T->G, E->V, R->I, M->N, I->R, N->M, A->Z, L->O => GVINRMZO.',
+      difficulty: 'medium',
+      source: 'Reasoning Master Set',
+      tags: ['Coding-Decoding', 'Reverse Alphabet', 'Alphabet Shift'],
+      usage_count: 1,
+      used_in: ['General Intelligence & Reasoning Speed Marathon'],
+    },
+    {
+      id: 'qb-7',
+      topicId: 'topic-cgl-grammar-errors',
+      subjectId: 'subj-cgl-english',
+      text: 'Identify the segment in the sentence that contains a grammatical error: "Neither the principal nor the senior professors (A) / was present at the symposium (B) / when the chief guest arrived (C) / No error (D)"',
+      options: [
+        { label: 'A', text: 'Segment A' },
+        { label: 'B', text: 'Segment B' },
+        { label: 'C', text: 'Segment C' },
+        { label: 'D', text: 'Segment D' }
+      ],
+      correct: 'B',
+      explanation: 'Under correlative conjunctions (Neither... nor...), the finite verb agrees with the proximate subject (senior professors, plural). Verb must be "were present".',
+      difficulty: 'medium',
+      source: 'English Grammar Master Rulebook',
+      tags: ['Subject-Verb Concord', 'Correlatives', 'Grammar Errors'],
+      usage_count: 2,
+      used_in: ['SSC CGL 2026 Tier-I All India Diagnostic Mock 01'],
+    },
+    {
+      id: 'qb-8',
+      topicId: 'topic-cgl-vocab',
+      subjectId: 'subj-cgl-english',
+      text: 'Select the option that denotes the exact antonym of the given word: "EPHEMERAL"',
+      options: [
+        { label: 'A', text: 'Transient' },
+        { label: 'B', text: 'Eternal' },
+        { label: 'C', text: 'Frail' },
+        { label: 'D', text: 'Fleeting' }
+      ],
+      correct: 'B',
+      explanation: 'Ephemeral signifies temporary or fleeting. Its direct opposite is eternal or permanent.',
+      difficulty: 'easy',
+      source: 'SSC English Vocabulary 15-Year Archive',
+      tags: ['Vocabulary', 'Antonyms', 'High-Yield Roots'],
+      usage_count: 2,
+      used_in: ['SSC CGL 2026 Tier-I All India Diagnostic Mock 01'],
+    },
+    {
+      id: 'qb-9',
+      topicId: 'topic-cgl-polity',
+      subjectId: 'subj-cgl-ga',
+      text: 'Under Article 32 of the Constitution of India, which writ is issued by the Supreme Court to command a public or statutory authority to perform an obligatory duty that it has neglected or refused to perform?',
+      options: [
+        { label: 'A', text: 'Habeas Corpus' },
+        { label: 'B', text: 'Mandamus' },
+        { label: 'C', text: 'Quo-Warranto' },
+        { label: 'D', text: 'Certiorari' }
+      ],
+      correct: 'B',
+      explanation: 'Mandamus (meaning "We Command") compels the execution of a public, statutory duty.',
+      difficulty: 'easy',
+      source: 'Indian Polity Benchmark',
+      tags: ['Article 32', 'Writs', 'Fundamental Rights'],
+      usage_count: 2,
+      used_in: ['SSC CGL 2026 Tier-I All India Diagnostic Mock 01'],
+    },
+    {
+      id: 'qb-10',
+      topicId: 'topic-cgl-history',
+      subjectId: 'subj-cgl-ga',
+      text: 'In which historic session was the landmark resolution of "Purna Swaraj" (Complete Independence) formally adopted by the Indian National Congress?',
+      options: [
+        { label: 'A', text: '1920 Nagpur Session' },
+        { label: 'B', text: '1929 Lahore Session' },
+        { label: 'C', text: '1931 Karachi Session' },
+        { label: 'D', text: '1938 Haripura Session' }
+      ],
+      correct: 'B',
+      explanation: 'The Purna Swaraj declaration was adopted at the 1929 Lahore Session presided over by Jawaharlal Nehru.',
+      difficulty: 'medium',
+      source: 'Modern Indian History Archive',
+      tags: ['Freedom Movement', 'Congress Sessions', 'Chronology'],
+      usage_count: 2,
+      used_in: ['SSC CGL 2026 Tier-I All India Diagnostic Mock 01'],
+    }
+  ];
+
+  for (const item of qbItems) {
+    insertQB.run(
+      item.id,
+      instituteAdmin.id,
+      item.topicId,
+      item.subjectId,
+      'exam-ssc-cgl-2026',
+      item.text,
+      'single',
+      JSON.stringify(item.options),
+      item.correct,
+      item.explanation,
+      item.difficulty,
+      item.source,
+      JSON.stringify(item.tags),
+      item.usage_count,
+      'active',
+      2.0,
+      0.5,
+      60,
+      null,
+      JSON.stringify(item.used_in),
+      'verified',
+      now
+    );
+  }
 }

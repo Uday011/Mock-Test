@@ -35,7 +35,7 @@ export async function GET(req: NextRequest) {
         ORDER BY t.created_at DESC
       `;
     } else if (user.role === 'admin') {
-      // Admin sees their own tests, plus attempts made by students
+      // Admin sees their own tests (including drafts), plus published official tests
       testsQuery = `
         SELECT 
           t.*,
@@ -49,13 +49,13 @@ export async function GET(req: NextRequest) {
         LEFT JOIN users u ON u.id = t.user_id
         LEFT JOIN questions q ON q.test_id = t.id
         LEFT JOIN test_attempts a ON a.test_id = t.id AND a.status = 'completed'
-        WHERE t.user_id = ?
+        WHERE t.user_id = ? OR (t.status = 'published' AND (t.visibility = 'public' OR t.visibility IS NULL))
         GROUP BY t.id
         ORDER BY t.created_at DESC
       `;
       params = [user.id];
     } else {
-      // Student sees their own self-created practice tests + official mocks created by admins/superadmins
+      // Student sees their own self-created practice tests (including their own drafts) + official mocks created by admins/superadmins that are published
       testsQuery = `
         SELECT 
           t.*,
@@ -69,7 +69,7 @@ export async function GET(req: NextRequest) {
         LEFT JOIN users u ON u.id = t.user_id
         LEFT JOIN questions q ON q.test_id = t.id
         LEFT JOIN test_attempts a ON a.test_id = t.id AND a.status = 'completed'
-        WHERE t.user_id = ? OR u.role IN ('admin', 'superadmin')
+        WHERE (t.user_id = ?) OR (u.role IN ('admin', 'superadmin') AND (t.status = 'published' OR t.status IS NULL))
         GROUP BY t.id
         ORDER BY t.created_at DESC
       `;
@@ -83,6 +83,7 @@ export async function GET(req: NextRequest) {
     const filterDifficulty = searchParams.get('difficulty');
     const filterDuration = searchParams.get('duration');
     const filterIsPaid = searchParams.get('is_paid');
+    const filterStatus = searchParams.get('status');
     const filterSource = searchParams.get('source');
     const searchQuery = searchParams.get('q') || searchParams.get('search');
 
@@ -111,6 +112,12 @@ export async function GET(req: NextRequest) {
       const isPaidVal = filterIsPaid === '1' || filterIsPaid === 'true' ? 1 : 0;
       tests = tests.filter(t => Boolean(t.is_paid) === Boolean(isPaidVal));
     }
+    if (filterStatus && filterStatus !== 'all') {
+      tests = tests.filter(t => (t.status || 'published') === filterStatus);
+    }
+    if (filterSource && filterSource !== 'all') {
+      tests = tests.filter(t => (t.source || 'Nalanda Official').toLowerCase().includes(filterSource.toLowerCase()));
+    }
     if (searchQuery) {
       const qLower = searchQuery.toLowerCase();
       tests = tests.filter(t =>
@@ -137,11 +144,22 @@ export async function GET(req: NextRequest) {
       const attempts = attemptsStmt.all(...attParams) as any[];
       const latestAttempt = attempts[0] || null;
 
+      let parsedTags: string[] = [];
+      try {
+        parsedTags = typeof test.tags_json === 'string' ? JSON.parse(test.tags_json || '[]') : [];
+      } catch {
+        parsedTags = [];
+      }
+
       return {
         ...test,
         difficulty: test.difficulty || 'medium',
         source: test.source || 'Nalanda Official',
         test_type: test.test_type || 'full_mock',
+        status: test.status || 'published',
+        instructions: test.instructions || '',
+        result_availability: test.result_availability || 'immediate',
+        tags: parsedTags,
         shuffle_questions: Boolean(test.shuffle_questions),
         shuffle_options: Boolean(test.shuffle_options),
         allow_navigation: Boolean(test.allow_navigation),
@@ -225,6 +243,18 @@ export async function POST(req: NextRequest) {
       description = '',
       subject = 'General',
       section_id = null,
+      exam_id = null,
+      subject_id = null,
+      topic_id = null,
+      subtopic_id = null,
+      test_type = 'topic_test',
+      difficulty = 'medium',
+      source = 'User Created',
+      status = 'published',
+      visibility = 'public',
+      instructions = '',
+      result_availability = 'immediate',
+      tags = [],
       duration_seconds = 1800,
       marking_scheme_type = 'standard',
       default_correct_marks = 4.0,
@@ -236,6 +266,7 @@ export async function POST(req: NextRequest) {
       show_palette = true,
       allow_review_marking = true,
       show_immediate_results = true,
+      save_to_question_bank = false,
       questions = [],
     } = body;
 
@@ -249,14 +280,17 @@ export async function POST(req: NextRequest) {
 
     const testId = crypto.randomUUID();
     const now = new Date().toISOString();
+    const tagsJson = JSON.stringify(Array.isArray(tags) ? tags : []);
 
     const insertTest = db.prepare(`
       INSERT INTO tests (
         id, user_id, title, description, subject, section_id, duration_seconds,
         marking_scheme_type, default_correct_marks, default_negative_marks, default_unanswered_marks,
         shuffle_questions, shuffle_options, allow_navigation, show_palette, allow_review_marking, show_immediate_results,
+        test_type, difficulty, source, status, instructions, result_availability, tags_json,
+        exam_id, subject_id, topic_id, subtopic_id, visibility,
         created_at, updated_at
-      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     `);
 
     insertTest.run(
@@ -277,6 +311,18 @@ export async function POST(req: NextRequest) {
       show_palette ? 1 : 0,
       allow_review_marking ? 1 : 0,
       show_immediate_results ? 1 : 0,
+      test_type,
+      difficulty,
+      source,
+      status,
+      instructions,
+      result_availability,
+      tagsJson,
+      exam_id || null,
+      subject_id || null,
+      topic_id || null,
+      subtopic_id || null,
+      visibility,
       now,
       now
     );
@@ -285,9 +331,20 @@ export async function POST(req: NextRequest) {
       INSERT INTO questions (
         id, test_id, question_number, question_text, question_image_url, question_type,
         options_json, correct_answer, correct_marks, negative_marks, unanswered_marks,
-        explanation, parsing_confidence, created_at, updated_at
-      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        explanation, parsing_confidence, subject_id, section_id, topic_id, subtopic_id, difficulty, source,
+        created_at, updated_at
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     `);
+
+    const insertQB = save_to_question_bank ? db.prepare(`
+      INSERT INTO question_bank (
+        id, creator_id, topic_id, subject_id, exam_id, subtopic_id,
+        question_text, question_type, options_json, correct_answer, explanation,
+        difficulty, source_reference, tags_json, usage_count, status,
+        marks, negative_marks, estimated_seconds, used_in_tests_json, correctness_status,
+        created_at
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    `) : null;
 
     for (let i = 0; i < questions.length; i++) {
       const q = questions[i];
@@ -318,15 +375,51 @@ export async function POST(req: NextRequest) {
         Number(default_unanswered_marks),
         q.explanation || null,
         q.confidence || 1.0,
+        q.subject_id || subject_id || null,
+        section_id || null,
+        q.topic_id || topic_id || null,
+        q.subtopic_id || subtopic_id || null,
+        q.difficulty || difficulty || 'medium',
+        q.source || source || 'Test Studio',
         now,
         now
       );
+
+      if (insertQB) {
+        const qbId = crypto.randomUUID();
+        const qbTags = Array.isArray(q.tags) ? q.tags : (Array.isArray(tags) ? tags : []);
+        insertQB.run(
+          qbId,
+          user.id,
+          q.topic_id || topic_id || null,
+          q.subject_id || subject_id || null,
+          exam_id || null,
+          q.subtopic_id || subtopic_id || null,
+          q.question_text || `Question ${qNum}`,
+          q.question_type || 'single',
+          JSON.stringify(opts),
+          correct,
+          q.explanation || null,
+          q.difficulty || difficulty || 'medium',
+          source || 'Test Studio',
+          JSON.stringify(qbTags),
+          1,
+          'active',
+          correctMarks,
+          negativeMarks,
+          q.estimated_seconds || 60,
+          JSON.stringify([title.trim()]),
+          'verified',
+          now
+        );
+      }
     }
 
     return NextResponse.json({
       success: true,
       testId,
-      message: 'Test created successfully',
+      status,
+      message: status === 'draft' ? 'Draft saved successfully' : 'Test published successfully',
     });
   } catch (err: any) {
     console.error('Error creating test:', err);
