@@ -345,6 +345,21 @@ export function getDb(): DatabaseSync {
       FOREIGN KEY (exam_id) REFERENCES exams(id) ON DELETE CASCADE
     );
 
+    CREATE TABLE IF NOT EXISTS user_onboarding_profiles (
+      user_id TEXT PRIMARY KEY,
+      preferred_exam_id TEXT NOT NULL DEFAULT 'exam-ssc-cgl-2026',
+      preparation_stage TEXT NOT NULL DEFAULT 'beginner',
+      target_timeline TEXT NOT NULL DEFAULT '2026_tier1',
+      daily_study_hours REAL NOT NULL DEFAULT 3.0,
+      strong_subjects_json TEXT NOT NULL DEFAULT '[]',
+      weak_subjects_json TEXT NOT NULL DEFAULT '[]',
+      diagnostic_test_status TEXT NOT NULL DEFAULT 'skipped',
+      completed_at TEXT,
+      created_at TEXT NOT NULL,
+      FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+      FOREIGN KEY (preferred_exam_id) REFERENCES exams(id) ON DELETE CASCADE
+    );
+
     CREATE INDEX IF NOT EXISTS idx_tests_user_id ON tests(user_id);
     CREATE INDEX IF NOT EXISTS idx_questions_test_id ON questions(test_id);
     CREATE INDEX IF NOT EXISTS idx_test_attempts_test_id ON test_attempts(test_id);
@@ -372,6 +387,9 @@ export function getDb(): DatabaseSync {
   try { db.exec('ALTER TABLE tests ADD COLUMN price_inr REAL NOT NULL DEFAULT 0.0;'); } catch {}
   try { db.exec('ALTER TABLE test_attempts ADD COLUMN duration_seconds INTEGER NOT NULL DEFAULT 1800;'); } catch {}
   try { db.exec('ALTER TABLE test_attempts ADD COLUMN ai_insights_json TEXT;'); } catch {}
+  try { db.exec('ALTER TABLE exams ADD COLUMN conducting_body TEXT;'); } catch {}
+  try { db.exec('ALTER TABLE exams ADD COLUMN difficulty_level TEXT;'); } catch {}
+  try { db.exec('ALTER TABLE exams ADD COLUMN pattern_summary TEXT;'); } catch {}
 
   dbInstance = db;
   return dbInstance;

@@ -85,6 +85,37 @@ export function seedInitialData(): void {
     // 4. Seed Primary Sample Exam: SSC CGL 2026
     seedSscCglExam(db, student, instituteAdmin, now);
 
+    // Update Conducting Body, Difficulty Level, and Pattern Summary for all master exams
+    const updateExamMetadata = db.prepare(`
+      UPDATE exams SET conducting_body = ?, difficulty_level = ?, pattern_summary = ? WHERE id = ?
+    `);
+    updateExamMetadata.run('Staff Selection Commission (SSC)', 'National Graduate Level', 'Tier-I Objective CBE (100 Qs / 200 Marks) + Tier-II Mains', 'exam-ssc-cgl-2026');
+    updateExamMetadata.run('National Testing Agency (NTA)', 'National Pre-Medical Undergraduate', 'Single-Stage Pen & Paper OMR (180 Qs / 720 Marks)', 'exam-neet-2026');
+    updateExamMetadata.run('Union Public Service Commission (UPSC)', 'All-India Civil Services Level', 'Prelims Screening (GS-I + CSAT) + Mains Written + Interview', 'exam-upsc-2026');
+    updateExamMetadata.run('Joint Admission Board / IITs', 'Advanced Engineering Entrance', 'Paper 1 & Paper 2 Multi-Subject Computer Based Test', 'exam-jee-2026');
+
+    // Seed Demo Student Onboarding Profile
+    const obCheck = db.prepare('SELECT user_id FROM user_onboarding_profiles WHERE user_id = ?').get(student.id);
+    if (!obCheck) {
+      db.prepare(`
+        INSERT INTO user_onboarding_profiles (
+          user_id, preferred_exam_id, preparation_stage, target_timeline, daily_study_hours,
+          strong_subjects_json, weak_subjects_json, diagnostic_test_status, completed_at, created_at
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+      `).run(
+        student.id,
+        'exam-ssc-cgl-2026',
+        'intermediate',
+        '2026_tier1',
+        4.0,
+        JSON.stringify(['General Intelligence & Reasoning', 'English Comprehension']),
+        JSON.stringify(['Quantitative Aptitude (Geometry)', 'General Awareness (Polity Articles)']),
+        'completed',
+        now,
+        now
+      );
+    }
+
     // 5. Seed Educator Profile for Institute Admin if not present
     const educatorCheck = db.prepare('SELECT user_id FROM educator_profiles WHERE user_id = ?').get(instituteAdmin.id);
     if (!educatorCheck) {

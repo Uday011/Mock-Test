@@ -20,17 +20,19 @@ export async function GET(req: NextRequest) {
       }
     }
 
+    const safeUserId = userId || '';
+
     // 1. Fetch Primary Exam Enrollment
     let primaryEnrollment = null;
-    if (userId) {
+    if (safeUserId) {
       const enrStmt = db.prepare(`
-        SELECT ue.*, e.title as exam_title, e.code as exam_code, e.total_marks, e.total_duration_minutes, e.pattern_type
+        SELECT ue.*, e.title as exam_title, e.code as exam_code, e.total_marks, e.total_duration_minutes, e.pattern_type, e.conducting_body, e.difficulty_level, e.pattern_summary
         FROM user_exam_enrollments ue
         JOIN exams e ON e.id = ue.exam_id
         WHERE ue.user_id = ? AND ue.is_primary = 1
         LIMIT 1
       `);
-      primaryEnrollment = enrStmt.get(userId) as any;
+      primaryEnrollment = enrStmt.get(safeUserId) as any;
     }
 
     // Fallback to SSC CGL 2026 if no enrollment found
@@ -38,11 +40,22 @@ export async function GET(req: NextRequest) {
     const examStmt = db.prepare('SELECT * FROM exams WHERE id = ?');
     const activeExam = examStmt.get(examId) as any;
 
-    // 2. Fetch Exam Stages
+    // 2. Fetch User Onboarding Profile
+    const obStmt = db.prepare('SELECT * FROM user_onboarding_profiles WHERE user_id = ?');
+    const onboardingProfile = obStmt.get(safeUserId) as any;
+
+    let declaredWeakSubjects: string[] = [];
+    let declaredStrongSubjects: string[] = [];
+    if (onboardingProfile) {
+      try { declaredWeakSubjects = JSON.parse(onboardingProfile.weak_subjects_json || '[]'); } catch {}
+      try { declaredStrongSubjects = JSON.parse(onboardingProfile.strong_subjects_json || '[]'); } catch {}
+    }
+
+    // 3. Fetch Exam Stages
     const stagesStmt = db.prepare('SELECT * FROM exam_stages WHERE exam_id = ? ORDER BY stage_number ASC');
     const stages = stagesStmt.all(examId) as any[];
 
-    // 3. Fetch Subjects and Topic Progress for this exam
+    // 4. Fetch Subjects and Topic Progress for this exam
     const subjectsStmt = db.prepare(`
       SELECT 
         s.*,
@@ -63,10 +76,9 @@ export async function GET(req: NextRequest) {
       WHERE s.exam_id = ?
       ORDER BY s.order_index ASC
     `);
-    const safeUserId = userId || '';
     const subjects = subjectsStmt.all(safeUserId, safeUserId, safeUserId, safeUserId, examId) as any[];
 
-    // 4. Fetch Mistake Records
+    // 5. Fetch Mistake Records
     const mistakesStmt = db.prepare(`
       SELECT mr.*, sn.title as topic_title, s.name as subject_name
       FROM mistake_records mr
@@ -78,7 +90,7 @@ export async function GET(req: NextRequest) {
     `);
     const mistakes = mistakesStmt.all(safeUserId) as any[];
 
-    // 5. Fetch Recent Attempts
+    // 6. Fetch Recent Attempts
     const attemptsStmt = db.prepare(`
       SELECT ta.*, t.title as test_title, t.subject as test_subject
       FROM test_attempts ta
@@ -89,7 +101,18 @@ export async function GET(req: NextRequest) {
     `);
     const attempts = attemptsStmt.all(safeUserId) as any[];
 
-    // 6. Fetch Learning Path & Units
+    // 7. Fetch Available / Upcoming Tests for this exam
+    const testsStmt = db.prepare(`
+      SELECT t.*,
+        (SELECT COUNT(*) FROM questions q WHERE q.test_id = t.id) as questions_count
+      FROM tests t
+      WHERE t.exam_id = ? OR t.section_id = 'sec-ssc'
+      ORDER BY t.created_at DESC
+      LIMIT 4
+    `);
+    const availableTests = testsStmt.all(examId) as any[];
+
+    // 8. Fetch Learning Path & Units
     const pathStmt = db.prepare(`
       SELECT * FROM learning_paths WHERE exam_id = ? ORDER BY created_at DESC LIMIT 1
     `);
@@ -108,7 +131,7 @@ export async function GET(req: NextRequest) {
       units = unitsStmt.all(learningPath.id) as any[];
     }
 
-    // 7. Calculate aggregate learner metrics
+    // 9. Calculate aggregate learner metrics
     let totalPracticed = 0;
     let totalCorrect = 0;
     let totalTopics = 0;
@@ -124,21 +147,23 @@ export async function GET(req: NextRequest) {
     const accuracyRate = totalPracticed > 0 ? (totalCorrect / totalPracticed) * 100 : 78.5;
     const syllabusProgress = totalTopics > 0 ? (masteredTopics / totalTopics) * 100 : 42.0;
 
-    // Benchmark cutoff and predicted score
     const targetScore = primaryEnrollment?.target_score || 165.0;
-    const predictedScore = 142.0; // Scaled predicted CBE Tier-I score
+    const predictedScore = 142.0;
 
-    // Recommended next action identification
+    // 10. Weak Topics & Recommended Next Action
     const weakTopicStmt = db.prepare(`
       SELECT sn.*, s.name as subject_name, utp.mastery_percentage
       FROM syllabus_nodes sn
       JOIN subjects s ON s.id = sn.subject_id
-      JOIN user_topic_progress utp ON utp.topic_id = sn.id
-      WHERE s.exam_id = ? AND utp.user_id = ? AND utp.status = 'needs_focus'
+      LEFT JOIN user_topic_progress utp ON utp.topic_id = sn.id AND utp.user_id = ?
+      WHERE s.exam_id = ? AND (utp.status = 'needs_focus' OR utp.mastery_percentage < 50)
       ORDER BY sn.weightage_percentage DESC
-      LIMIT 1
+      LIMIT 3
     `);
-    const weakestTopic = weakTopicStmt.get(examId, safeUserId) as any || {
+    const weakTopics = weakTopicStmt.all(safeUserId, examId) as any[];
+
+    const weakestTopic = weakTopics[0] || {
+      id: 'topic-cgl-geometry',
       title: 'Triangles, Circles & Coordinate Geometry',
       subject_name: 'Quantitative Aptitude',
       mastery_percentage: 44.0,
@@ -151,6 +176,13 @@ export async function GET(req: NextRequest) {
       activeExam,
       stages,
       primaryEnrollment,
+      onboardingProfile: onboardingProfile
+        ? {
+            ...onboardingProfile,
+            declaredWeakSubjects,
+            declaredStrongSubjects,
+          }
+        : null,
       stats: {
         predictedScore,
         maxScore: activeExam?.total_marks || 200,
@@ -159,23 +191,47 @@ export async function GET(req: NextRequest) {
         syllabusProgress: Number(syllabusProgress.toFixed(1)),
         totalPracticed,
         totalCorrect,
-        mistakesCount: mistakes.filter(m => !m.is_resolved).length,
+        readinessIndex: 71, // Benchmark readiness %
+        cutoffBar: 138.0,
+        pendingRevisionCount: mistakes.filter(m => !m.is_resolved).length,
       },
       recommendedAction: {
         topicId: weakestTopic.id || 'topic-cgl-geometry',
         topicTitle: weakestTopic.title,
         subjectName: weakestTopic.subject_name,
         code: weakestTopic.code,
-        currentMastery: weakestTopic.mastery_percentage,
-        weightage: weakestTopic.weightage_percentage,
+        currentMastery: weakestTopic.mastery_percentage || 44.0,
+        weightage: weakestTopic.weightage_percentage || 10.0,
         urgency: 'high',
-        headline: 'Focus Drill Recommended: Geometry Theorems',
-        reason: `Your accuracy in ${weakestTopic.title} is ${weakestTopic.mastery_percentage}%. Raising this high-yield topic to 75%+ will boost your predicted score by +8 to +10 marks.`,
+        headline: `Focus Drill: ${weakestTopic.title}`,
+        reason: `Your accuracy in ${weakestTopic.title} is currently ${weakestTopic.mastery_percentage || 44}%. Raising this high-weightage topic will boost your predicted score by +8 to +10 marks.`,
         estimatedMinutes: 15,
+      },
+      weakAreas: {
+        declaredWeakSubjects,
+        flaggedTopics: weakTopics.length > 0 ? weakTopics : [
+          {
+            id: 'topic-cgl-geometry',
+            title: 'Triangles, Circles & Coordinate Geometry',
+            subject_name: 'Quantitative Aptitude',
+            mastery_percentage: 44.0,
+            weightage_percentage: 10.0,
+            code: 'MATH-105',
+          },
+          {
+            id: 'topic-cgl-history',
+            title: 'Modern Indian History & Freedom Movement',
+            subject_name: 'General Awareness',
+            mastery_percentage: 58.0,
+            weightage_percentage: 6.5,
+            code: 'GA-102',
+          },
+        ],
       },
       subjects,
       mistakes,
       attempts,
+      availableTests,
       learningPath: learningPath ? { ...learningPath, units } : null,
     });
   } catch (error: any) {

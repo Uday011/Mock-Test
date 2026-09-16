@@ -48,7 +48,7 @@ export default function SignUpPage() {
         throw new Error(data.error || 'Registration failed');
       }
 
-      router.push('/dashboard');
+      router.push('/onboarding');
     } catch (err: any) {
       setError(err.message);
     } finally {

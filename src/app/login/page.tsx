@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import {
@@ -24,6 +24,31 @@ export default function LoginPage() {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const [demoRoleLoading, setDemoRoleLoading] = useState<UserRole | null>(null);
+  const [redirectUrl, setRedirectUrl] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const params = new URLSearchParams(window.location.search);
+      const redir = params.get('redirect');
+      if (redir && redir.startsWith('/')) {
+        setRedirectUrl(redir);
+      }
+    }
+  }, []);
+
+  const navigateAfterAuth = (userRole?: string) => {
+    if (redirectUrl) {
+      router.push(redirectUrl);
+      return;
+    }
+    if (userRole === 'superadmin') {
+      router.push('/dashboard/superadmin');
+    } else if (userRole === 'admin') {
+      router.push('/dashboard/admin');
+    } else {
+      router.push('/dashboard');
+    }
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -49,13 +74,7 @@ export default function LoginPage() {
         throw new Error(data.error || 'Failed to sign in');
       }
 
-      if (data.user?.role === 'superadmin') {
-        router.push('/dashboard/superadmin');
-      } else if (data.user?.role === 'admin') {
-        router.push('/dashboard/admin');
-      } else {
-        router.push('/dashboard');
-      }
+      navigateAfterAuth(data.user?.role);
     } catch (err: any) {
       setError(err.message);
     } finally {
@@ -77,13 +96,7 @@ export default function LoginPage() {
       }
       if (!res.ok) throw new Error(data.error || 'Demo login failed');
 
-      if (role === 'superadmin') {
-        router.push('/dashboard/superadmin');
-      } else if (role === 'admin') {
-        router.push('/dashboard/admin');
-      } else {
-        router.push('/dashboard');
-      }
+      navigateAfterAuth(role);
     } catch (err: any) {
       setError(err.message);
     } finally {
@@ -186,9 +199,17 @@ export default function LoginPage() {
           </div>
 
           <div>
-            <label className="block text-xs font-semibold text-stone-700 mb-1.5">
-              Password
-            </label>
+            <div className="flex items-center justify-between mb-1.5">
+              <label className="block text-xs font-semibold text-stone-700">
+                Password
+              </label>
+              <Link
+                href="/forgot-password"
+                className="text-[11px] text-amber-800 hover:text-amber-900 font-medium hover:underline"
+              >
+                Forgot Password?
+              </Link>
+            </div>
             <div className="relative">
               <Lock className="w-4 h-4 absolute left-3 top-2.5 text-stone-400" />
               <input

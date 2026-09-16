@@ -171,7 +171,7 @@ export type ExamCategory =
 
 export interface Exam {
   id: string;
-  code: string; // e.g. 'NEET_UG', 'UPSC_CSE', 'JEE_ADV'
+  code: string; // e.g. 'NEET_UG', 'UPSC_CSE', 'JEE_ADV', 'SSC_CGL_2026'
   title: string;
   category: ExamCategory | string;
   description: string;
@@ -180,11 +180,31 @@ export interface Exam {
   total_marks: number;
   total_duration_minutes: number;
   is_active: boolean;
+  conducting_body?: string;
+  difficulty_level?: string;
+  pattern_summary?: string;
   created_at: string;
   // Computed aggregations
   subjects_count?: number;
   topics_count?: number;
   tests_count?: number;
+}
+
+export type PreparationStage = 'beginner' | 'intermediate' | 'revision_mocks';
+export type TargetTimeline = '2026_tier1' | '3_months' | '6_months' | '12_months';
+export type DiagnosticTestStatus = 'pending' | 'completed' | 'skipped';
+
+export interface UserOnboardingProfile {
+  user_id: string;
+  preferred_exam_id: string;
+  preparation_stage: PreparationStage;
+  target_timeline: TargetTimeline;
+  daily_study_hours: number;
+  strong_subjects_json: string;
+  weak_subjects_json: string;
+  diagnostic_test_status: DiagnosticTestStatus;
+  completed_at: string | null;
+  created_at: string;
 }
 
 export interface Subject {

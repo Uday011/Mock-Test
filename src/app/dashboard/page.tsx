@@ -21,6 +21,10 @@ import {
   GraduationCap,
   Calendar,
   Zap,
+  ShieldCheck,
+  HelpCircle,
+  RotateCcw,
+  Compass,
 } from 'lucide-react';
 import { AppShell } from '@/components/layout/AppShell';
 import { PageHeader } from '@/components/ui/PageHeader';
@@ -67,28 +71,23 @@ export default function StudentDashboardPage() {
     targetScore: 165.0,
     accuracyRate: 78.5,
     syllabusProgress: 42.0,
-    mistakesCount: 3,
+    readinessIndex: 71,
+    cutoffBar: 138.0,
+    pendingRevisionCount: 3,
   };
   const rec = data?.recommendedAction;
+  const weakAreas = data?.weakAreas || { declaredWeakSubjects: [], flaggedTopics: [] };
   const subjects = data?.subjects || [];
   const mistakes = data?.mistakes || [];
   const attempts = data?.attempts || [];
+  const availableTests = data?.availableTests || [];
   const learningPath = data?.learningPath;
-
-  const getSubjectColor = (accent: string) => {
-    switch (accent) {
-      case 'amber': return 'bg-amber-50 text-amber-900 border-amber-200';
-      case 'indigo': return 'bg-indigo-50 text-indigo-900 border-indigo-200';
-      case 'emerald': return 'bg-emerald-50 text-emerald-900 border-emerald-200';
-      case 'rose': return 'bg-rose-50 text-rose-900 border-rose-200';
-      default: return 'bg-stone-50 text-stone-900 border-stone-200';
-    }
-  };
+  const onboardingProfile = data?.onboardingProfile;
 
   const getErrorCategoryBadge = (category: string) => {
     switch (category) {
       case 'calculation_error':
-        return <Badge variant="saffron" size="sm">Calculation Error</Badge>;
+        return <Badge variant="saffron" size="sm">Calculation Slip</Badge>;
       case 'conceptual_gap':
         return <Badge variant="rose" size="sm">Conceptual Gap</Badge>;
       case 'time_rush':
@@ -100,32 +99,69 @@ export default function StudentDashboardPage() {
 
   return (
     <AppShell activeExamTitle={exam.title}>
-      {/* Workspace Header */}
-      <PageHeader
-        title="Learner Workspace"
-        description="Daily progress, diagnostic assessment readiness, cognitive mistake tracking, and structured syllabus coverage."
-        badge={
-          <Badge variant="emerald" size="md" dot>
-            {exam.title} (Tier-I)
-          </Badge>
-        }
-        actions={
-          <div className="flex items-center gap-2">
-            <Link href="/learn">
-              <Button variant="secondary" size="sm">
-                <BookOpen className="w-4 h-4 mr-1.5" />
-                Study Path
+      {/* Current Exam Banner with Conducting Body */}
+      <div className="p-5 sm:p-6 mb-6 rounded-2xl border border-stone-200 bg-white shadow-xs">
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+          <div className="space-y-1">
+            <div className="flex items-center gap-2 flex-wrap">
+              <span className="font-mono text-xs font-bold px-2 py-0.5 rounded bg-stone-100 text-stone-700 border border-stone-200">
+                {exam.code}
+              </span>
+              <Badge variant="emerald" size="sm" dot>
+                Active Primary Target
+              </Badge>
+              {exam.conducting_body && (
+                <span className="text-xs text-stone-500 font-medium flex items-center gap-1">
+                  <ShieldCheck className="w-3.5 h-3.5 text-emerald-600" />
+                  {exam.conducting_body}
+                </span>
+              )}
+            </div>
+
+            <h1 className="text-xl sm:text-2xl font-serif font-bold text-stone-900 tracking-tight">
+              {exam.title}
+            </h1>
+
+            <p className="text-xs text-stone-600 max-w-2xl leading-relaxed">
+              {exam.description}
+            </p>
+          </div>
+
+          <div className="flex items-center gap-2.5 flex-shrink-0">
+            <Link href={`/exams/${exam.id || 'exam-ssc-cgl-2026'}`}>
+              <Button variant="outline" size="sm">
+                <Compass className="w-4 h-4 mr-1.5" />
+                Exam Blueprint
               </Button>
             </Link>
-            <Link href="/tests">
+            <Link href="/learn">
               <Button variant="saffron" size="sm">
                 <Play className="w-4 h-4 mr-1.5 fill-current" />
-                Attempt Mock Test
+                Continue Learning
               </Button>
             </Link>
           </div>
-        }
-      />
+        </div>
+
+        {/* Readiness Bar & Overall Progress */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-5 mt-5 border-t border-stone-100">
+          <div className="space-y-1.5">
+            <div className="flex justify-between text-xs font-mono">
+              <span className="text-stone-600 font-medium">Syllabus Coverage (Mastered Topics)</span>
+              <strong className="text-stone-900">{stats.syllabusProgress}% Completed</strong>
+            </div>
+            <ProgressBar value={stats.syllabusProgress} max={100} size="sm" variant="emerald" />
+          </div>
+
+          <div className="space-y-1.5">
+            <div className="flex justify-between text-xs font-mono">
+              <span className="text-stone-600 font-medium">Examination Readiness Indicator</span>
+              <strong className="text-amber-800 font-bold">{stats.readinessIndex}% (Qualified Cutoff Zone)</strong>
+            </div>
+            <ProgressBar value={stats.readinessIndex} max={100} size="sm" variant="saffron" />
+          </div>
+        </div>
+      </div>
 
       {/* Metric Callout Row */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
@@ -133,7 +169,7 @@ export default function StudentDashboardPage() {
           label="Predicted Tier-I Score"
           value={stats.predictedScore.toFixed(0)}
           max={stats.maxScore}
-          subtext={`Target: ${stats.targetScore} (Cutoff ~138)`}
+          subtext={`Cutoff Est: ~${stats.cutoffBar} (Target: ${stats.targetScore})`}
           accent="saffron"
           trend={{ value: '+14 pts vs baseline', isPositive: true }}
         />
@@ -145,21 +181,21 @@ export default function StudentDashboardPage() {
           trend={{ value: '+4.2% this week', isPositive: true }}
         />
         <MetricCallout
-          label="Syllabus Progress"
+          label="Syllabus Mastered"
           value={`${stats.syllabusProgress}%`}
-          subtext="6 of 14 core modules mastered"
+          subtext="6 of 14 core modules completed"
           accent="navy"
           trend={{ value: '18 hrs logged', isPositive: true }}
         />
         <MetricCallout
-          label="Mistake Notebook"
-          value={stats.mistakesCount}
-          subtext="Active items to review"
+          label="Pending Revision"
+          value={stats.pendingRevisionCount}
+          subtext="Unresolved mistake records"
           accent="rose"
         />
       </div>
 
-      {/* Recommended Next Action: Pedagogical Coaching Banner */}
+      {/* Recommended Next Action: High-Impact Coaching Card */}
       {rec && (
         <div className="p-5 sm:p-6 mb-8 rounded-xl border border-amber-200/90 bg-gradient-to-r from-amber-50/90 via-white to-amber-50/50 shadow-xs">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
@@ -167,9 +203,12 @@ export default function StudentDashboardPage() {
               <div className="flex items-center gap-2">
                 <span className="flex items-center gap-1 text-[11px] uppercase font-bold tracking-wider text-amber-800 bg-amber-100/80 px-2 py-0.5 rounded border border-amber-200">
                   <Flame className="w-3.5 h-3.5 text-amber-700" />
-                  Recommended Next Action
+                  Recommended Next Topic
                 </span>
                 <Badge variant="stone" size="sm">{rec.subjectName}</Badge>
+                <span className="text-xs font-mono text-amber-900 font-bold">
+                  Weightage: {rec.weightage}%
+                </span>
               </div>
               <h3 className="text-base sm:text-lg font-serif font-bold text-stone-900">
                 {rec.headline}
@@ -183,7 +222,7 @@ export default function StudentDashboardPage() {
               <Link href="/mistakes">
                 <Button variant="secondary" size="sm">
                   <BookMarked className="w-4 h-4 mr-1.5" />
-                  Review Mistakes
+                  Pending Mistakes ({stats.pendingRevisionCount})
                 </Button>
               </Link>
               <Link href="/tests">
@@ -197,18 +236,59 @@ export default function StudentDashboardPage() {
         </div>
       )}
 
+      {/* Weak Areas & Remedial Drills Section */}
+      <div className="mb-8">
+        <div className="flex items-center justify-between mb-4">
+          <div>
+            <h2 className="text-lg font-serif font-bold text-stone-900">Focus & Weak Areas</h2>
+            <p className="text-xs text-stone-500">Topics flagged from your diagnostic attempts and onboarding calibration</p>
+          </div>
+          <Link
+            href="/mistakes"
+            className="text-xs text-rose-700 hover:text-rose-800 font-semibold flex items-center gap-1"
+          >
+            Mistake Ledger ({stats.pendingRevisionCount}) <ArrowRight className="w-3.5 h-3.5" />
+          </Link>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {weakAreas.flaggedTopics?.map((wt: any) => (
+            <Card key={wt.id} className="p-4 bg-white hover:border-stone-300 transition-colors flex items-center justify-between gap-4">
+              <div className="space-y-1">
+                <div className="flex items-center gap-2">
+                  <span className="font-mono text-[10px] font-bold px-2 py-0.5 rounded bg-rose-50 text-rose-800 border border-rose-200">
+                    {wt.code}
+                  </span>
+                  <span className="text-xs font-semibold text-stone-700">{wt.subject_name}</span>
+                  <Badge variant="rose" size="sm">{wt.mastery_percentage}% Accuracy</Badge>
+                </div>
+                <h4 className="text-sm font-bold text-stone-900">{wt.title}</h4>
+                <p className="text-[11px] text-stone-500">Weightage: {wt.weightage_percentage}% of Tier-I marks</p>
+              </div>
+
+              <Link href="/tests">
+                <Button variant="secondary" size="sm" className="shrink-0">
+                  <RotateCcw className="w-3.5 h-3.5 mr-1" />
+                  Remedial Drill
+                </Button>
+              </Link>
+            </Card>
+          ))}
+        </div>
+      </div>
+
       {/* Subject Mastery Grid */}
       <div className="mb-8">
         <div className="flex items-center justify-between mb-4">
           <div>
-            <h2 className="text-lg font-serif font-bold text-stone-900">Subject Mastery Matrix</h2>
-            <p className="text-xs text-stone-500">Tier-I syllabus distribution across 4 core disciplines</p>
+            <h2 className="text-lg font-serif font-bold text-stone-900">Subject Coverage Distribution</h2>
+            <p className="text-xs text-stone-500">Curricular breakdown across the 4 examination disciplines</p>
           </div>
           <Link
-            href="/exams/exam-ssc-cgl-2026"
+            href={`/exams/${exam.id || 'exam-ssc-cgl-2026'}`}
             className="text-xs text-amber-700 hover:text-amber-800 font-semibold flex items-center gap-1"
           >
-            Detailed Syllabus Tree <ArrowRight className="w-3.5 h-3.5" />
+            Full Syllabus Tree <ArrowRight className="w-3.5 h-3.5" />
           </Link>
         </div>
 
@@ -221,7 +301,7 @@ export default function StudentDashboardPage() {
               : 75;
 
             return (
-              <Card key={sub.id} className="hover:border-stone-300 transition-all flex flex-col justify-between">
+              <Card key={sub.id} className="hover:border-stone-300 transition-all flex flex-col justify-between bg-white">
                 <div className="p-4 space-y-3">
                   <div className="flex items-center justify-between">
                     <span className="font-mono text-[10px] font-bold px-2 py-0.5 rounded bg-stone-100 text-stone-700 border border-stone-200">
@@ -256,7 +336,7 @@ export default function StudentDashboardPage() {
                 <div className="px-4 py-2.5 bg-stone-50/60 border-t border-stone-100 rounded-b-xl flex items-center justify-between text-[11px]">
                   <span className="text-stone-500">{sub.total_topics || 3} Topics</span>
                   <Link
-                    href={`/exams/exam-ssc-cgl-2026?subject=${sub.id}`}
+                    href={`/exams/${exam.id || 'exam-ssc-cgl-2026'}?subject=${sub.id}`}
                     className="text-amber-700 font-semibold hover:underline flex items-center gap-0.5"
                   >
                     View Topics <ChevronRight className="w-3 h-3" />
@@ -268,14 +348,14 @@ export default function StudentDashboardPage() {
         </div>
       </div>
 
-      {/* Tabs Section: Mock Attempts, Mistakes Forensics, Learning Path */}
+      {/* Tabs Section: Mock Tests, Mistakes Forensics, 60-Day Path */}
       <div className="space-y-4">
         <Tabs
           activeTab={activeTab}
           onChange={(tab) => setActiveTab(tab as any)}
           tabs={[
-            { id: 'tests', label: 'Diagnostic Tests & Mocks', count: attempts.length },
-            { id: 'mistakes', label: 'Mistake Forensics', count: mistakes.length },
+            { id: 'tests', label: 'Recent Tests & Recommended Mocks', count: availableTests.length },
+            { id: 'mistakes', label: 'Pending Mistake Revision', count: stats.pendingRevisionCount },
             { id: 'path', label: '60-Day Strategic Plan' },
           ]}
         />
@@ -283,12 +363,16 @@ export default function StudentDashboardPage() {
         {/* Tab 1: Tests & Attempts */}
         {activeTab === 'tests' && (
           <div className="space-y-4">
-            {attempts.length > 0 ? (
+            {/* Recent Completed Attempts */}
+            {attempts.length > 0 && (
               <div className="space-y-3">
+                <h4 className="text-xs font-mono font-bold uppercase tracking-wider text-stone-400">
+                  Recent Test Performance
+                </h4>
                 {attempts.map((att: any) => (
                   <div
                     key={att.id}
-                    className="p-4 bg-white border border-stone-200/90 rounded-xl flex flex-col sm:flex-row sm:items-center justify-between gap-4 hover:border-stone-300 transition-colors"
+                    className="p-4 bg-white border border-stone-200 rounded-xl flex flex-col sm:flex-row sm:items-center justify-between gap-4 hover:border-stone-300 transition-colors"
                   >
                     <div className="space-y-1">
                       <div className="flex items-center gap-2">
@@ -305,7 +389,7 @@ export default function StudentDashboardPage() {
                         <span>•</span>
                         <span>Accuracy: <strong className="text-emerald-700 font-mono">{att.accuracy}%</strong></span>
                         <span>•</span>
-                        <span>Time: <strong className="text-stone-700 font-mono">{Math.round(att.time_taken_seconds / 60)} mins</strong></span>
+                        <span>Time Taken: <strong className="text-stone-700 font-mono">{Math.round(att.time_taken_seconds / 60)} mins</strong></span>
                       </div>
                     </div>
 
@@ -324,24 +408,50 @@ export default function StudentDashboardPage() {
                   </div>
                 ))}
               </div>
-            ) : (
-              <div className="p-8 text-center border border-dashed border-stone-200 rounded-xl bg-stone-50/50">
-                <FileCheck className="w-8 h-8 text-stone-400 mx-auto mb-2" />
-                <p className="text-xs text-stone-500">No mock tests attempted yet.</p>
-                <Link href="/tests" className="mt-3 inline-block">
-                  <Button variant="saffron" size="sm">Browse Available Tests</Button>
-                </Link>
-              </div>
             )}
+
+            {/* Recommended Mocks */}
+            <div className="space-y-3 pt-2">
+              <h4 className="text-xs font-mono font-bold uppercase tracking-wider text-stone-400">
+                Recommended Mock Exams
+              </h4>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {availableTests.map((t: any) => (
+                  <Card key={t.id} className="p-5 bg-white hover:border-stone-300 transition-colors space-y-3 flex flex-col justify-between">
+                    <div className="space-y-2">
+                      <div className="flex items-center justify-between">
+                        <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded bg-amber-50 text-amber-800 border border-amber-200">
+                          {t.test_type === 'full_mock' ? 'Full Length CBE' : 'Sectional Practice'}
+                        </span>
+                        <span className="text-xs text-stone-500 font-mono">
+                          {Math.round(t.duration_seconds / 60)} Mins
+                        </span>
+                      </div>
+                      <h4 className="text-sm font-bold text-stone-900">{t.title}</h4>
+                      <p className="text-xs text-stone-600 line-clamp-2">{t.description}</p>
+                    </div>
+
+                    <div className="pt-3 border-t border-stone-100 flex items-center justify-between">
+                      <span className="text-xs text-stone-500 font-mono">{t.questions_count || 8} Questions</span>
+                      <Link href="/tests">
+                        <Button variant="saffron" size="sm">
+                          Start Test <ArrowRight className="w-3.5 h-3.5 ml-1" />
+                        </Button>
+                      </Link>
+                    </div>
+                  </Card>
+                ))}
+              </div>
+            </div>
           </div>
         )}
 
-        {/* Tab 2: Mistakes Forensics Snapshot */}
+        {/* Tab 2: Pending Mistake Revision */}
         {activeTab === 'mistakes' && (
           <div className="space-y-3">
             <div className="flex items-center justify-between pb-1">
               <p className="text-xs text-stone-500">
-                Cognitive categorization helps distinguish calculation slips from deeper concept gaps.
+                Unresolved mistake records tagged by cognitive root causes.
               </p>
               <Link href="/mistakes" className="text-xs text-amber-700 font-semibold hover:underline">
                 Open Full Mistake Notebook →
