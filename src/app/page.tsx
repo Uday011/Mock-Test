@@ -18,7 +18,14 @@ import {
   BarChart3,
   Sliders,
   FileCheck,
+  Compass,
+  GraduationCap,
+  Building2,
+  BookOpen,
+  Target,
 } from 'lucide-react';
+import Badge from '@/components/ui/Badge';
+import Button from '@/components/ui/Button';
 
 export default function LandingPage() {
   const router = useRouter();
@@ -44,74 +51,72 @@ export default function LandingPage() {
   };
 
   return (
-    <div className="space-y-24 pb-16">
+    <div className="space-y-20 sm:space-y-24 pb-16">
       {/* Hero Section */}
-      <section className="relative overflow-hidden pt-8 sm:pt-16 md:pt-20 lg:pt-24">
-        <div className="absolute inset-0 -z-10 flex items-center justify-center opacity-25">
-          <div className="h-[380px] sm:h-[450px] w-[500px] sm:w-[700px] rounded-full bg-gradient-to-tr from-blue-400 to-slate-300 blur-3xl" />
-        </div>
-
+      <section className="relative overflow-hidden pt-8 sm:pt-14 md:pt-18 lg:pt-20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-blue-50 border border-blue-200/80 text-blue-800 text-xs font-semibold mb-6 sm:mb-8 shadow-xs">
-            <Sparkles className="w-3.5 h-3.5 text-blue-600" />
-            <span>Smart MCQ Paper Parser & Digital CBT Engine</span>
+          {/* Subtle Platform Pill */}
+          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-stone-100 border border-stone-200 text-slate-800 text-xs font-bold mb-6 sm:mb-8 shadow-2xs">
+            <span className="w-2 h-2 rounded-full bg-amber-600 animate-pulse" />
+            <span>Nalanda Academic Platform &middot; Integrated Syllabus, Testing & Publishing</span>
           </div>
 
           <h1 className="text-3xl sm:text-5xl lg:text-6xl font-black text-slate-900 tracking-tight max-w-4xl mx-auto leading-tight sm:leading-tight">
-            Turn Any MCQ Paper Into an{' '}
-            <span className="bg-gradient-to-r from-blue-600 to-slate-900 bg-clip-text text-transparent">
-              Interactive Mock Test
+            Integrated Learning, Testing &{' '}
+            <span className="text-amber-800 underline decoration-amber-400/60 underline-offset-8">
+              Readiness Diagnostics
             </span>
           </h1>
 
-          <p className="mt-4 sm:mt-6 text-sm sm:text-lg text-slate-600 max-w-2xl mx-auto leading-relaxed">
-            Upload your question paper and answer key, configure your timer and marking scheme, and practice in a real exam-like environment.
+          <p className="mt-4 sm:mt-6 text-sm sm:text-lg text-slate-600 max-w-3xl mx-auto leading-relaxed">
+            Follow structured syllabus paths with prerequisite mapping, practice in a high-fidelity CBT environment with instant scoring, diagnose weaknesses, and publish verified test series.
           </p>
 
           <div className="mt-8 sm:mt-10 flex flex-col sm:flex-row items-stretch sm:items-center justify-center gap-3 sm:gap-4 max-w-md sm:max-w-none mx-auto">
-            <Link
-              href="/tests/create"
-              className="min-h-[48px] px-8 py-3.5 bg-slate-900 hover:bg-slate-800 text-white font-bold rounded-xl shadow-md hover:shadow-lg transition-all flex items-center justify-center gap-2 text-sm sm:text-base group"
-            >
-              Create Your First Test
-              <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+            <Link href="/dashboard">
+              <Button
+                variant="primary"
+                size="lg"
+                fullWidth
+                iconRight={<ArrowRight className="w-4 h-4 ml-1" />}
+              >
+                Explore Learning Paths & Mocks
+              </Button>
             </Link>
 
-            <button
+            <Button
+              variant="secondary"
+              size="lg"
               onClick={handleStartQuickDemo}
-              disabled={loadingDemo}
-              className="min-h-[48px] px-7 py-3.5 bg-white hover:bg-slate-50 text-slate-800 font-bold rounded-xl border border-slate-200 shadow-xs hover:shadow-sm transition-all flex items-center justify-center gap-2 text-sm sm:text-base"
+              loading={loadingDemo}
+              loadingText="Launching Demo CBT Exam..."
+              icon={<Play className="w-4 h-4 text-amber-600 fill-amber-600" />}
             >
-              <Play className="w-4 h-4 text-blue-600 fill-blue-600" />
-              {loadingDemo ? 'Launching Demo Exam...' : 'Take Sample Live Exam'}
-            </button>
+              Take Sample Mock Exam
+            </Button>
+
+            <Link href="/tests/create">
+              <Button variant="outline" size="lg" fullWidth>
+                Open Test Studio
+              </Button>
+            </Link>
           </div>
 
-          {/* Quick trust metrics */}
-          <div className="mt-10 sm:mt-12 grid grid-cols-2 sm:flex sm:flex-wrap items-center justify-center gap-3 sm:gap-8 text-xs font-semibold text-slate-600 text-left sm:text-center">
-            <div className="flex items-center gap-2">
-              <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
-              <span>Multi-page PDF Support</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
-              <span>Negative & Decimal Marking</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
-              <span>CBT Question Palette</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
-              <span>Anti-Cheating Server Engine</span>
-            </div>
+          {/* Core Dimension Trust Pills */}
+          <div className="mt-10 sm:mt-12 flex flex-wrap items-center justify-center gap-2.5 sm:gap-3 text-xs font-bold text-slate-700">
+            <Badge variant="stone" dot>NEET UG 2026</Badge>
+            <Badge variant="stone" dot>UPSC CSE Prelims</Badge>
+            <Badge variant="stone" dot>JEE Advanced 2026</Badge>
+            <Badge variant="saffron" dot>Syllabus Prerequisite Trees</Badge>
+            <Badge variant="navy" dot>Live CBT Engine</Badge>
+            <Badge variant="emerald" dot>Readiness Scoring</Badge>
           </div>
         </div>
 
         {/* Product Visual Mockup */}
         <div className="mt-12 sm:mt-16 max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="rounded-2xl border border-slate-200 bg-white shadow-xl p-2 sm:p-4 overflow-hidden">
-            <div className="rounded-xl border border-slate-100 bg-slate-50/70 p-3 sm:p-6">
+          <div className="rounded-2xl border border-stone-200 bg-white shadow-xs p-2 sm:p-4 overflow-hidden">
+            <div className="rounded-xl border border-stone-100 bg-[#faf9f6] p-3 sm:p-6">
               {/* Fake Exam Header Bar */}
               <div className="flex flex-wrap items-center justify-between gap-3 pb-4 border-b border-slate-200">
                 <div className="flex items-center gap-2.5">
@@ -224,62 +229,80 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* How It Works Workflow Steps */}
+      {/* Nalanda Four Interconnected Dimensions */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="text-center max-w-3xl mx-auto mb-16">
-          <h2 className="text-3xl font-extrabold text-slate-900 tracking-tight">
-            From Static Paper to Live Test in 4 Simple Steps
+        <div className="text-center max-w-3xl mx-auto mb-14 sm:mb-16">
+          <Badge variant="saffron" dot className="mb-3">
+            Architectural Blueprint
+          </Badge>
+          <h2 className="text-2xl sm:text-4xl font-black text-slate-900 tracking-tight">
+            Four Interconnected Dimensions of Nalanda
           </h2>
-          <p className="mt-4 text-base text-slate-600">
-            Engineered to handle multi-column formats, non-standard numbering, single-line options, and diverse answer key layouts.
+          <p className="mt-3 text-sm sm:text-base text-slate-600 leading-relaxed">
+            An integrated academic ecosystem where every topic leads naturally to practice, performance directly updates readiness, and educators publish verified mock series.
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-7">
           {[
             {
-              step: '01',
-              title: 'Upload Paper & Key',
-              desc: 'Drag and drop your question paper (PDF, DOCX, TXT) and your answer sheet. The system validates both files.',
-              icon: UploadCloud,
-              color: 'bg-blue-600',
+              dim: '01',
+              title: 'Personal Learning & Testing',
+              desc: 'Select a target exam, follow a structured progression, study topics in sequence, and take topic tests, sectionals, and full-length mocks.',
+              tag: 'Learner Experience',
+              tagVariant: 'navy' as const,
+              icon: Compass,
+              iconColor: 'bg-slate-900 text-white',
             },
             {
-              step: '02',
-              title: 'Extract & Lint',
-              desc: 'AI-assisted and heuristic parsers identify questions, options, numbers, and correct keys with precision.',
+              dim: '02',
+              title: 'Exam-Specific Syllabus Trees',
+              desc: 'Detailed syllabus breakdown by subject, section, topic, and subtopic with prerequisites, weightage percentages, and connected resources.',
+              tag: 'Syllabus Engine',
+              tagVariant: 'saffron' as const,
+              icon: BookOpen,
+              iconColor: 'bg-amber-600 text-white',
+            },
+            {
+              dim: '03',
+              title: 'Open Test Platform',
+              desc: 'Students, teachers, and creators build, discover, and attempt public, shared, unlisted, or private tests with question bank reuse.',
+              tag: 'Test Studio',
+              tagVariant: 'stone' as const,
               icon: Layers,
-              color: 'bg-slate-800',
+              iconColor: 'bg-slate-800 text-white',
             },
             {
-              step: '03',
-              title: 'Review & Configure',
-              desc: 'Verify parsed items on the correction screen. Customize test timers, negative marking, and shuffle rules.',
-              icon: Sliders,
-              color: 'bg-amber-600',
-            },
-            {
-              step: '04',
-              title: 'Interactive Exam & Scores',
-              desc: 'Candidates practice in a full exam interface with countdown timers, question palette, and instant detailed solutions.',
+              dim: '04',
+              title: 'Educator Publishing Layer',
+              desc: 'Verified educator profiles, published mock series, cohort analytics, and scalable data models ready for creator monetization.',
+              tag: 'Academic Publishing',
+              tagVariant: 'emerald' as const,
               icon: Award,
-              color: 'bg-emerald-600',
+              iconColor: 'bg-emerald-700 text-white',
             },
           ].map((item) => {
             const Icon = item.icon;
             return (
               <div
-                key={item.step}
-                className="relative bg-white rounded-2xl p-6 border border-slate-200 shadow-xs hover:shadow-md transition-shadow"
+                key={item.dim}
+                className="relative bg-white rounded-2xl p-6 border border-stone-200 shadow-2xs hover:border-stone-400 hover:shadow-xs transition-all flex flex-col justify-between"
               >
-                <div className="text-4xl font-black text-slate-100 absolute top-4 right-4 select-none">
-                  {item.step}
+                <div>
+                  <div className="flex items-center justify-between mb-4">
+                    <div className={`w-10 h-10 rounded-xl ${item.iconColor} flex items-center justify-center shadow-2xs`}>
+                      <Icon className="w-5 h-5" />
+                    </div>
+                    <span className="text-2xl font-black text-stone-200 select-none font-mono">
+                      {item.dim}
+                    </span>
+                  </div>
+                  <Badge variant={item.tagVariant} size="sm" className="mb-2">
+                    {item.tag}
+                  </Badge>
+                  <h3 className="text-base font-bold text-slate-900 mb-2 leading-snug">{item.title}</h3>
+                  <p className="text-xs sm:text-sm text-slate-600 leading-relaxed">{item.desc}</p>
                 </div>
-                <div className={`w-12 h-12 rounded-xl ${item.color} text-white flex items-center justify-center mb-5 shadow-xs`}>
-                  <Icon className="w-6 h-6" />
-                </div>
-                <h3 className="text-base sm:text-lg font-bold text-slate-900 mb-2">{item.title}</h3>
-                <p className="text-xs sm:text-sm text-slate-600 leading-relaxed">{item.desc}</p>
               </div>
             );
           })}
@@ -356,27 +379,28 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* Final CTA Banner */}
+      {/* Final Academic CTA Banner */}
       <section className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-        <div className="rounded-3xl bg-slate-900 text-white p-8 sm:p-12 shadow-xl border border-slate-800">
+        <div className="rounded-3xl bg-slate-900 text-white p-8 sm:p-12 shadow-md border border-slate-800">
+          <Badge variant="saffron" dot className="mb-4">
+            Start Your Academic Journey
+          </Badge>
           <h2 className="text-2xl sm:text-4xl font-black tracking-tight">
-            Ready to convert your test papers?
+            Structure Your Preparation with Nalanda
           </h2>
-          <p className="mt-3 sm:mt-4 text-slate-300 max-w-xl mx-auto text-xs sm:text-base">
-            Upload your first question paper and answer key now. Test out our instant parsing and take your mock exam in minutes.
+          <p className="mt-3 sm:mt-4 text-stone-300 max-w-xl mx-auto text-xs sm:text-base leading-relaxed">
+            Follow syllabus-aligned paths, take timed CBT mocks, review question solutions, and measure real exam readiness.
           </p>
           <div className="mt-8 flex flex-col sm:flex-row items-stretch sm:items-center justify-center gap-3 sm:gap-4 max-w-md sm:max-w-none mx-auto">
-            <Link
-              href="/tests/create"
-              className="min-h-[48px] px-8 py-3.5 bg-blue-600 hover:bg-blue-500 text-white font-bold rounded-xl shadow-md transition-all flex items-center justify-center"
-            >
-              Get Started Free
+            <Link href="/dashboard">
+              <Button variant="saffron" size="lg" fullWidth>
+                Enter Learner Workspace
+              </Button>
             </Link>
-            <Link
-              href="/dashboard"
-              className="min-h-[48px] px-7 py-3.5 bg-slate-800 hover:bg-slate-700 text-slate-200 font-semibold rounded-xl border border-slate-700 transition-all flex items-center justify-center"
-            >
-              Go to Dashboard
+            <Link href="/tests/create">
+              <Button variant="secondary" size="lg" fullWidth>
+                Launch Test Studio
+              </Button>
             </Link>
           </div>
         </div>

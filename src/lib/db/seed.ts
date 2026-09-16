@@ -31,13 +31,140 @@ export function seedInitialData(): void {
       insertSection.run('sec-general', 'Science & Computing', 'Foundational Computer Science, General Science, and Logical Aptitude.', 'Layers', now);
     }
 
-  // 3. Check if tests already exist for the institute admin or demo user
-  const countStmt = db.prepare('SELECT COUNT(*) as count FROM tests WHERE user_id = ?');
-  const result = countStmt.get(instituteAdmin.id) as { count: number };
+    // 2b. Seed Nalanda Master Exams, Syllabus Hierarchy & Learning Paths
+    const examCountStmt = db.prepare('SELECT COUNT(*) as count FROM exams');
+    const examCount = (examCountStmt.get() as any)?.count || 0;
 
-  if (result && result.count > 0) {
-    return; // Already seeded
-  }
+    if (examCount === 0) {
+      const now = new Date().toISOString();
+      const insertExam = db.prepare(`
+        INSERT INTO exams (id, code, title, category, description, target_year, pattern_type, total_marks, total_duration_minutes, is_active, created_at)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 1, ?)
+      `);
+
+      insertExam.run(
+        'exam-neet-2026',
+        'NEET_UG_2026',
+        'NEET UG 2026 (Medical)',
+        'medical',
+        'National Eligibility cum Entrance Test for undergraduate medical and dental programs across India.',
+        2026,
+        'multi_subject',
+        720,
+        200,
+        now
+      );
+
+      insertExam.run(
+        'exam-upsc-2026',
+        'UPSC_CSE_2026',
+        'UPSC Civil Services Prelims 2026',
+        'civil_services',
+        'General Studies Paper-I and Civil Services Aptitude Test (CSAT) for national administrative services.',
+        2026,
+        'stage_based',
+        400,
+        240,
+        now
+      );
+
+      insertExam.run(
+        'exam-jee-2026',
+        'JEE_ADV_2026',
+        'JEE Advanced 2026 (Engineering)',
+        'engineering',
+        'Joint Entrance Examination Advanced for premier admissions into Indian Institutes of Technology (IITs).',
+        2026,
+        'multi_subject',
+        360,
+        180,
+        now
+      );
+
+      // Seed Subjects for NEET UG
+      const insertSubject = db.prepare(`
+        INSERT INTO subjects (id, exam_id, name, code, order_index, description, color_accent, created_at)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+      `);
+
+      insertSubject.run('subj-neet-physics', 'exam-neet-2026', 'Physics', 'PHY', 1, 'Classical Mechanics, Electromagnetism, Optics, and Modern Physics', 'blue', now);
+      insertSubject.run('subj-neet-chemistry', 'exam-neet-2026', 'Chemistry', 'CHEM', 2, 'Physical, Organic, and Inorganic Chemistry Principles', 'emerald', now);
+      insertSubject.run('subj-neet-biology', 'exam-neet-2026', 'Biology & Life Sciences', 'BIO', 3, 'Cellular Biology, Human Physiology, Genetics, and Plant Ecology', 'amber', now);
+
+      // Seed Subjects for UPSC CSE
+      insertSubject.run('subj-upsc-polity', 'exam-upsc-2026', 'Indian Polity & Governance', 'POL', 1, 'Constitutional framework, Fundamental Rights, Parliament, and Public Policy', 'indigo', now);
+      insertSubject.run('subj-upsc-economy', 'exam-upsc-2026', 'Economic & Social Development', 'ECO', 2, 'Macroeconomics, Fiscal Policy, Banking, and Sustainable Development', 'emerald', now);
+
+      // Seed Syllabus Nodes (Structured Topics with Prerequisites & Study Hours)
+      const insertSyllabus = db.prepare(`
+        INSERT INTO syllabus_nodes (id, subject_id, parent_id, level, title, code, order_index, estimated_study_hours, weightage_percentage, prerequisite_ids_json, description, created_at)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+      `);
+
+      // Physics Topics
+      insertSyllabus.run('topic-phy-kinematics', 'subj-neet-physics', null, 'topic', 'Kinematics & Vector Motion', 'PHY-101', 1, 14.0, 6.5, '[]', 'Scalars, vectors, 1D/2D projectile motion, and relative velocity calculus.', now);
+      insertSyllabus.run('topic-phy-newton', 'subj-neet-physics', null, 'topic', 'Laws of Motion & Friction', 'PHY-102', 2, 16.0, 7.0, JSON.stringify(['topic-phy-kinematics']), 'Newtonian dynamics, free-body diagrams, circular dynamics, and static/kinetic friction.', now);
+      insertSyllabus.run('topic-phy-workenergy', 'subj-neet-physics', null, 'topic', 'Work, Energy & Conservative Forces', 'PHY-103', 3, 12.0, 5.5, JSON.stringify(['topic-phy-newton']), 'Work-energy theorem, potential energy curves, spring oscillations, and elastic collisions.', now);
+      insertSyllabus.run('topic-phy-thermo', 'subj-neet-physics', null, 'topic', 'Thermodynamics & Kinetic Theory', 'PHY-104', 4, 18.0, 8.0, JSON.stringify(['topic-phy-workenergy']), 'Zeroth, first and second laws, Carnot heat engines, entropy, and ideal gas state equations.', now);
+
+      // Biology Topics
+      insertSyllabus.run('topic-bio-cell', 'subj-neet-biology', null, 'topic', 'Cell: The Unit of Life & Cell Cycle', 'BIO-101', 1, 15.0, 9.0, '[]', 'Prokaryotic vs eukaryotic membranes, organelles, mitosis, meiosis, and chromosomal segregation.', now);
+      insertSyllabus.run('topic-bio-genetics', 'subj-neet-biology', null, 'topic', 'Genetics & Molecular Inheritance', 'BIO-102', 2, 24.0, 12.0, JSON.stringify(['topic-bio-cell']), 'Mendelian inheritance patterns, DNA replication, transcription, genetic code, and translation.', now);
+      insertSyllabus.run('topic-bio-physio', 'subj-neet-biology', null, 'topic', 'Human Organ Systems & Physiology', 'BIO-103', 3, 28.0, 14.0, JSON.stringify(['topic-bio-cell']), 'Circulatory dynamics, neuro-endocrine signaling, renal regulation, and gaseous exchange.', now);
+
+      // Topic Resources
+      const insertResource = db.prepare(`
+        INSERT INTO topic_resources (id, topic_id, title, resource_type, content_summary, external_url, estimated_read_minutes, created_at)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+      `);
+
+      insertResource.run('res-kin-1', 'topic-phy-kinematics', 'Kinematics Core Formula Handbook', 'formula_digest', 'Summary of all 1D/2D displacement, acceleration calculus, and trajectory peak equations.', null, 12, now);
+      insertResource.run('res-kin-2', 'topic-phy-kinematics', 'Relative Motion & River-Boat Problems Guide', 'notes', 'Comprehensive mental models for perpendicular drift, upstream-downstream velocity vectors.', null, 20, now);
+      insertResource.run('res-cell-1', 'topic-bio-cell', 'Cell Organelles High-Yield Digest', 'cheat_sheet', 'Comparative breakdown of mitochondrial ATP synthesis, ER protein sorting, and Golgi vesicles.', null, 15, now);
+      insertResource.run('res-gen-1', 'topic-bio-genetics', 'Molecular Genetics & Pedigree Analysis Blueprint', 'notes', 'Step-by-step logic for solving autosomal vs sex-linked inheritance traits and Lac Operon regulation.', null, 25, now);
+
+      // Seed Student Primary Enrollment
+      const insertEnrollment = db.prepare(`
+        INSERT INTO user_exam_enrollments (id, user_id, exam_id, target_year, target_score, is_primary, enrolled_at)
+        VALUES (?, ?, ?, ?, ?, 1, ?)
+      `);
+      insertEnrollment.run('enr-student-neet', student.id, 'exam-neet-2026', 2026, 680.0, now);
+
+      // Seed Student Topic Progress
+      const insertProgress = db.prepare(`
+        INSERT INTO user_topic_progress (id, user_id, topic_id, status, mastery_percentage, questions_practiced, questions_correct, tests_attempted, last_studied_at, notes_taken, updated_at)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+      `);
+      insertProgress.run('prog-1', student.id, 'topic-phy-kinematics', 'mastered', 88.5, 45, 40, 3, new Date(Date.now() - 86400000).toISOString(), 'Vectors and trajectory peaks well understood.', now);
+      insertProgress.run('prog-2', student.id, 'topic-bio-cell', 'mastered', 92.0, 50, 46, 4, new Date(Date.now() - 172800000).toISOString(), 'Organelle division stages memorized thoroughly.', now);
+      insertProgress.run('prog-3', student.id, 'topic-phy-newton', 'in_progress', 62.0, 30, 19, 2, new Date(Date.now() - 259200000).toISOString(), 'Need to practice inclined plane friction problems.', now);
+      insertProgress.run('prog-4', student.id, 'topic-bio-genetics', 'revision_due', 48.0, 25, 12, 1, new Date(Date.now() - 604800000).toISOString(), 'Review dihybrid cross calculations and pedigree trees.', now);
+
+      // Seed Educator Profile for Institute Admin
+      const insertEducator = db.prepare(`
+        INSERT OR REPLACE INTO educator_profiles (user_id, headline, bio, institute_name, verification_status, specialization_subjects_json, total_students, average_rating, published_tests_count, created_at)
+        VALUES (?, ?, ?, ?, 'verified', ?, ?, ?, ?, ?)
+      `);
+      insertEducator.run(
+        instituteAdmin.id,
+        'Senior Academic Chair & Physics Faculty',
+        'Over 16 years coaching pre-medical and engineering aspirants with deep emphasis on conceptual mechanics, cognitive diagnostic testing, and exam temperament.',
+        'Apex Pre-Medical & Civil Academy',
+        JSON.stringify(['Physics', 'Physical Sciences', 'Exam Strategy']),
+        1240,
+        4.94,
+        8,
+        now
+      );
+    }
+
+    // 3. Check if tests already exist for the institute admin or demo user
+    const countStmt = db.prepare('SELECT COUNT(*) as count FROM tests WHERE user_id = ?');
+    const result = countStmt.get(instituteAdmin.id) as { count: number };
+
+    if (result && result.count > 0) {
+      return; // Already seeded
+    }
 
   const now = new Date().toISOString();
   const test1Id = crypto.randomUUID();
@@ -48,8 +175,9 @@ export function seedInitialData(): void {
       id, user_id, title, description, subject, section_id, duration_seconds,
       marking_scheme_type, default_correct_marks, default_negative_marks, default_unanswered_marks,
       shuffle_questions, shuffle_options, allow_navigation, show_palette, allow_review_marking, show_immediate_results,
+      test_type, exam_id, subject_id, topic_id, visibility, is_paid, price_inr,
       created_at, updated_at
-    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
   `);
 
   insertTest.run(
@@ -70,6 +198,13 @@ export function seedInitialData(): void {
     1, // show_palette
     1, // allow_review_marking
     1, // show_immediate_results
+    'full_mock',
+    'exam-neet-2026',
+    'subj-neet-physics',
+    'topic-phy-kinematics',
+    'public',
+    0,
+    0.0,
     now,
     now
   );

@@ -4,8 +4,8 @@ import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 
 export const metadata: Metadata = {
-  title: 'ExamCraft - MCQ Mock Test Platform',
-  description: 'Turn any MCQ question paper and answer key into an interactive, timed mock exam with instant scoring and detailed analytics.',
+  title: 'Nalanda — Integrated Learning, Testing & Academic Knowledge Platform',
+  description: 'A modern, structured education platform integrating syllabus-driven learning paths, computer-based mock exams, readiness diagnostics, and educator test publishing.',
 };
 
 export default function RootLayout({

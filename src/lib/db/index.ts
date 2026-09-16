@@ -153,17 +153,145 @@ export function getDb(): DatabaseSync {
       FOREIGN KEY (attempt_id) REFERENCES test_attempts(id) ON DELETE CASCADE
     );
 
+    CREATE TABLE IF NOT EXISTS exams (
+      id TEXT PRIMARY KEY,
+      code TEXT UNIQUE NOT NULL,
+      title TEXT NOT NULL,
+      category TEXT NOT NULL,
+      description TEXT,
+      target_year INTEGER NOT NULL DEFAULT 2026,
+      pattern_type TEXT NOT NULL DEFAULT 'multi_subject',
+      total_marks REAL NOT NULL DEFAULT 720.0,
+      total_duration_minutes INTEGER NOT NULL DEFAULT 200,
+      is_active INTEGER NOT NULL DEFAULT 1,
+      created_at TEXT NOT NULL
+    );
+
+    CREATE TABLE IF NOT EXISTS subjects (
+      id TEXT PRIMARY KEY,
+      exam_id TEXT NOT NULL,
+      name TEXT NOT NULL,
+      code TEXT NOT NULL,
+      order_index INTEGER NOT NULL DEFAULT 0,
+      description TEXT,
+      color_accent TEXT,
+      created_at TEXT NOT NULL,
+      FOREIGN KEY (exam_id) REFERENCES exams(id) ON DELETE CASCADE
+    );
+
+    CREATE TABLE IF NOT EXISTS syllabus_nodes (
+      id TEXT PRIMARY KEY,
+      subject_id TEXT NOT NULL,
+      parent_id TEXT,
+      level TEXT NOT NULL DEFAULT 'topic',
+      title TEXT NOT NULL,
+      code TEXT,
+      order_index INTEGER NOT NULL DEFAULT 0,
+      estimated_study_hours REAL NOT NULL DEFAULT 10.0,
+      weightage_percentage REAL NOT NULL DEFAULT 5.0,
+      prerequisite_ids_json TEXT NOT NULL DEFAULT '[]',
+      description TEXT,
+      created_at TEXT NOT NULL,
+      FOREIGN KEY (subject_id) REFERENCES subjects(id) ON DELETE CASCADE
+    );
+
+    CREATE TABLE IF NOT EXISTS topic_resources (
+      id TEXT PRIMARY KEY,
+      topic_id TEXT NOT NULL,
+      title TEXT NOT NULL,
+      resource_type TEXT NOT NULL DEFAULT 'notes',
+      content_summary TEXT NOT NULL,
+      external_url TEXT,
+      estimated_read_minutes INTEGER NOT NULL DEFAULT 15,
+      created_at TEXT NOT NULL,
+      FOREIGN KEY (topic_id) REFERENCES syllabus_nodes(id) ON DELETE CASCADE
+    );
+
+    CREATE TABLE IF NOT EXISTS user_exam_enrollments (
+      id TEXT PRIMARY KEY,
+      user_id TEXT NOT NULL,
+      exam_id TEXT NOT NULL,
+      target_year INTEGER NOT NULL DEFAULT 2026,
+      target_score REAL,
+      is_primary INTEGER NOT NULL DEFAULT 1,
+      enrolled_at TEXT NOT NULL,
+      FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+      FOREIGN KEY (exam_id) REFERENCES exams(id) ON DELETE CASCADE
+    );
+
+    CREATE TABLE IF NOT EXISTS user_topic_progress (
+      id TEXT PRIMARY KEY,
+      user_id TEXT NOT NULL,
+      topic_id TEXT NOT NULL,
+      status TEXT NOT NULL DEFAULT 'not_started',
+      mastery_percentage REAL NOT NULL DEFAULT 0.0,
+      questions_practiced INTEGER NOT NULL DEFAULT 0,
+      questions_correct INTEGER NOT NULL DEFAULT 0,
+      tests_attempted INTEGER NOT NULL DEFAULT 0,
+      last_studied_at TEXT,
+      notes_taken TEXT,
+      updated_at TEXT NOT NULL,
+      FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+      FOREIGN KEY (topic_id) REFERENCES syllabus_nodes(id) ON DELETE CASCADE,
+      UNIQUE (user_id, topic_id)
+    );
+
+    CREATE TABLE IF NOT EXISTS question_bank (
+      id TEXT PRIMARY KEY,
+      creator_id TEXT NOT NULL,
+      topic_id TEXT,
+      subject_id TEXT,
+      exam_id TEXT,
+      question_text TEXT NOT NULL,
+      question_type TEXT NOT NULL DEFAULT 'single',
+      options_json TEXT NOT NULL,
+      correct_answer TEXT NOT NULL,
+      explanation TEXT,
+      difficulty TEXT NOT NULL DEFAULT 'medium',
+      source_reference TEXT,
+      tags_json TEXT NOT NULL DEFAULT '[]',
+      usage_count INTEGER NOT NULL DEFAULT 0,
+      created_at TEXT NOT NULL,
+      FOREIGN KEY (creator_id) REFERENCES users(id) ON DELETE CASCADE
+    );
+
+    CREATE TABLE IF NOT EXISTS educator_profiles (
+      user_id TEXT PRIMARY KEY,
+      headline TEXT NOT NULL,
+      bio TEXT NOT NULL,
+      institute_name TEXT,
+      verification_status TEXT NOT NULL DEFAULT 'verified',
+      specialization_subjects_json TEXT NOT NULL DEFAULT '[]',
+      total_students INTEGER NOT NULL DEFAULT 0,
+      average_rating REAL NOT NULL DEFAULT 4.9,
+      published_tests_count INTEGER NOT NULL DEFAULT 0,
+      created_at TEXT NOT NULL,
+      FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+    );
+
     CREATE INDEX IF NOT EXISTS idx_tests_user_id ON tests(user_id);
     CREATE INDEX IF NOT EXISTS idx_questions_test_id ON questions(test_id);
     CREATE INDEX IF NOT EXISTS idx_test_attempts_test_id ON test_attempts(test_id);
     CREATE INDEX IF NOT EXISTS idx_test_attempts_user_id ON test_attempts(user_id);
     CREATE INDEX IF NOT EXISTS idx_user_answers_attempt_id ON user_answers(attempt_id);
+    CREATE INDEX IF NOT EXISTS idx_subjects_exam_id ON subjects(exam_id);
+    CREATE INDEX IF NOT EXISTS idx_syllabus_subject_id ON syllabus_nodes(subject_id);
+    CREATE INDEX IF NOT EXISTS idx_syllabus_parent_id ON syllabus_nodes(parent_id);
+    CREATE INDEX IF NOT EXISTS idx_topic_progress_user ON user_topic_progress(user_id);
+    CREATE INDEX IF NOT EXISTS idx_enrollments_user ON user_exam_enrollments(user_id);
   `);
 
   // Safe schema migrations for existing database files
   try { db.exec('ALTER TABLE users ADD COLUMN status TEXT NOT NULL DEFAULT "active";'); } catch {}
   try { db.exec('ALTER TABLE users ADD COLUMN institute_name TEXT;'); } catch {}
   try { db.exec('ALTER TABLE tests ADD COLUMN section_id TEXT;'); } catch {}
+  try { db.exec('ALTER TABLE tests ADD COLUMN test_type TEXT NOT NULL DEFAULT "custom_practice";'); } catch {}
+  try { db.exec('ALTER TABLE tests ADD COLUMN exam_id TEXT;'); } catch {}
+  try { db.exec('ALTER TABLE tests ADD COLUMN subject_id TEXT;'); } catch {}
+  try { db.exec('ALTER TABLE tests ADD COLUMN topic_id TEXT;'); } catch {}
+  try { db.exec('ALTER TABLE tests ADD COLUMN visibility TEXT NOT NULL DEFAULT "public";'); } catch {}
+  try { db.exec('ALTER TABLE tests ADD COLUMN is_paid INTEGER NOT NULL DEFAULT 0;'); } catch {}
+  try { db.exec('ALTER TABLE tests ADD COLUMN price_inr REAL NOT NULL DEFAULT 0.0;'); } catch {}
   try { db.exec('ALTER TABLE test_attempts ADD COLUMN duration_seconds INTEGER NOT NULL DEFAULT 1800;'); } catch {}
   try { db.exec('ALTER TABLE test_attempts ADD COLUMN ai_insights_json TEXT;'); } catch {}
 
