@@ -360,6 +360,13 @@ export function getDb(): DatabaseSync {
       FOREIGN KEY (preferred_exam_id) REFERENCES exams(id) ON DELETE CASCADE
     );
 
+    CREATE TABLE IF NOT EXISTS topic_contents (
+      topic_id TEXT PRIMARY KEY,
+      content_json TEXT NOT NULL,
+      updated_at TEXT NOT NULL,
+      FOREIGN KEY (topic_id) REFERENCES syllabus_nodes(id) ON DELETE CASCADE
+    );
+
     CREATE INDEX IF NOT EXISTS idx_tests_user_id ON tests(user_id);
     CREATE INDEX IF NOT EXISTS idx_questions_test_id ON questions(test_id);
     CREATE INDEX IF NOT EXISTS idx_test_attempts_test_id ON test_attempts(test_id);
@@ -390,6 +397,11 @@ export function getDb(): DatabaseSync {
   try { db.exec('ALTER TABLE exams ADD COLUMN conducting_body TEXT;'); } catch {}
   try { db.exec('ALTER TABLE exams ADD COLUMN difficulty_level TEXT;'); } catch {}
   try { db.exec('ALTER TABLE exams ADD COLUMN pattern_summary TEXT;'); } catch {}
+  try { db.exec('ALTER TABLE syllabus_nodes ADD COLUMN difficulty TEXT DEFAULT "medium";'); } catch {}
+  try { db.exec('ALTER TABLE user_topic_progress ADD COLUMN next_revision_date TEXT;'); } catch {}
+  try { db.exec('ALTER TABLE user_topic_progress ADD COLUMN repetition_interval_days INTEGER DEFAULT 3;'); } catch {}
+  try { db.exec('ALTER TABLE user_topic_progress ADD COLUMN repetition_count INTEGER DEFAULT 0;'); } catch {}
+  try { db.exec('ALTER TABLE user_topic_progress ADD COLUMN is_bookmarked INTEGER DEFAULT 0;'); } catch {}
 
   dbInstance = db;
   return dbInstance;

@@ -350,7 +350,14 @@ export default function ExamWorkspacePage() {
                     )}
                   </div>
 
-                  <div className="flex items-center gap-2 flex-shrink-0">
+                  <div className="flex items-center gap-2 flex-shrink-0 flex-wrap">
+                    <Link href={`/learn/${node.id}`}>
+                      <Button variant="outline" size="sm">
+                        <BookOpen className="w-3.5 h-3.5 mr-1" />
+                        Read Topic
+                      </Button>
+                    </Link>
+
                     {topicResources.length > 0 && (
                       <Button
                         variant="outline"
@@ -361,9 +368,16 @@ export default function ExamWorkspacePage() {
                         Resources ({topicResources.length})
                       </Button>
                     )}
-                    <Link href="/tests">
+
+                    <Link href={`/learn/${node.id}#practice`}>
                       <Button variant="secondary" size="sm">
-                        Practice Drill
+                        Practice
+                      </Button>
+                    </Link>
+
+                    <Link href={`/learn/${node.id}#assessment`}>
+                      <Button variant="saffron" size="sm">
+                        Topic Test
                       </Button>
                     </Link>
                   </div>

@@ -221,7 +221,7 @@ export interface Subject {
   tests_count?: number;
 }
 
-export type SyllabusNodeLevel = 'unit' | 'chapter' | 'topic' | 'subtopic';
+export type SyllabusNodeLevel = 'section' | 'unit' | 'chapter' | 'topic' | 'subtopic';
 
 export interface SyllabusNode {
   id: string;
@@ -235,13 +235,17 @@ export interface SyllabusNode {
   weightage_percentage: number;
   prerequisite_ids: string[]; // parsed array of topic IDs
   description?: string | null;
+  difficulty?: 'easy' | 'medium' | 'hard';
   created_at: string;
   // Computed aggregations for learner view
   resources_count?: number;
   tests_count?: number;
-  user_status?: 'not_started' | 'in_progress' | 'mastered' | 'revision_due';
+  user_status?: 'not_started' | 'in_progress' | 'studied' | 'mastered' | 'revision_due';
   user_mastery?: number;
+  revision_status?: 'due' | 'up_to_date' | 'scheduled';
+  next_revision_date?: string | null;
   subtopics?: SyllabusNode[];
+  prerequisite_nodes?: { id: string; title: string; status?: string }[];
 }
 
 export interface TopicResource {
@@ -273,14 +277,87 @@ export interface UserTopicProgress {
   id: string;
   user_id: string;
   topic_id: string;
-  status: 'not_started' | 'in_progress' | 'mastered' | 'revision_due';
+  status: 'not_started' | 'in_progress' | 'studied' | 'mastered' | 'revision_due';
   mastery_percentage: number; // 0 - 100
   questions_practiced: number;
   questions_correct: number;
   tests_attempted: number;
   last_studied_at?: string | null;
   notes_taken?: string | null;
+  next_revision_date?: string | null;
+  repetition_interval_days?: number;
+  repetition_count?: number;
+  is_bookmarked?: boolean;
   updated_at: string;
+}
+
+export interface KeyConcept {
+  id: string;
+  title: string;
+  definition: string;
+  formula?: string;
+  importance?: 'core' | 'high_yield' | 'advanced';
+}
+
+export interface WorkedExample {
+  id: string;
+  title: string;
+  problem_statement: string;
+  examiner_angle: string;
+  steps: { step_number: number; explanation: string; equation?: string }[];
+  final_answer: string;
+  pro_tip?: string;
+}
+
+export interface CommonMistake {
+  id: string;
+  mistake_title: string;
+  error_trap: string;
+  correct_approach: string;
+  prevention_rule: string;
+}
+
+export interface PYQReference {
+  id: string;
+  exam: string;
+  year: number;
+  tier_or_stage: string;
+  frequency_rating: 'very_high' | 'high' | 'moderate';
+  question_summary: string;
+}
+
+export interface ActiveRecallCheck {
+  id: string;
+  question: string;
+  options?: string[];
+  correct_answer: string;
+  explanation: string;
+  recall_hint: string;
+}
+
+export interface DiagramTableData {
+  title: string;
+  headers: string[];
+  rows: string[][];
+  caption?: string;
+}
+
+export interface TopicContent {
+  topic_id: string;
+  topic_title: string;
+  subject_name: string;
+  estimated_read_minutes: number;
+  learning_objectives: string[];
+  prerequisites: { id: string; title: string; is_completed: boolean }[];
+  overview: string;
+  key_concepts: KeyConcept[];
+  tables?: DiagramTableData[];
+  worked_examples: WorkedExample[];
+  common_mistakes: CommonMistake[];
+  pyq_references: PYQReference[];
+  active_recall_checks: ActiveRecallCheck[];
+  recap_points: string[];
+  recommended_sectional_test?: { id: string; title: string; duration_minutes: number } | null;
 }
 
 export interface UserReadiness {

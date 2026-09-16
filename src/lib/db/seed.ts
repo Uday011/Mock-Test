@@ -1,5 +1,6 @@
 import { getDb } from './index';
 import { hashPassword, getOrCreateRoleDemoUser } from '../auth';
+import { seedLearningSystem } from './seedLearning';
 import crypto from 'crypto';
 
 let hasSeeded = false;
@@ -134,6 +135,9 @@ export function seedInitialData(): void {
         now
       );
     }
+
+    // 6. Seed Learning System (Subtopics, authentic topic content, spaced repetition, topic tests)
+    seedLearningSystem(db, student, instituteAdmin, now);
 
   } catch (err) {
     console.warn('[Seed initial data error]:', err);

@@ -225,10 +225,10 @@ export default function StudentDashboardPage() {
                   Pending Mistakes ({stats.pendingRevisionCount})
                 </Button>
               </Link>
-              <Link href="/tests">
+              <Link href="/learn/topic-cgl-percentages">
                 <Button variant="saffron" size="sm">
-                  <Zap className="w-4 h-4 mr-1.5" />
-                  Start {rec.estimatedMinutes}m Drill
+                  <BookOpen className="w-4 h-4 mr-1.5" />
+                  Study Topic ({rec.estimatedMinutes}m)
                 </Button>
               </Link>
             </div>
