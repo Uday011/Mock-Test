@@ -21,13 +21,19 @@ export async function POST(
     const { action } = await params;
     const db = getDb();
     seedInitialData();
-    if (action === 'demo') {
+    if (action === 'demo' || action === 'demo-switch') {
       const url = new URL(req.url);
-      const queryRole = url.searchParams.get('role') as UserRole || 'student';
+      let queryRole = url.searchParams.get('role');
+      if (!queryRole) {
+        try {
+          const body = await req.json();
+          queryRole = body?.role;
+        } catch {}
+      }
       
       let validRole: UserRole = 'student';
       if (queryRole === 'superadmin' || queryRole === 'admin') {
-        validRole = queryRole;
+        validRole = queryRole as UserRole;
       }
 
       const demoUser = getOrCreateRoleDemoUser(validRole);

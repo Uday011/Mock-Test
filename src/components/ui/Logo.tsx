@@ -91,3 +91,5 @@ export default function Logo({
 
   return content;
 }
+
+export { Logo };

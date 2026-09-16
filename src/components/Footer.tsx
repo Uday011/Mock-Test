@@ -9,8 +9,18 @@ import Logo from '@/components/ui/Logo';
 export default function Footer() {
   const pathname = usePathname();
 
-  // Hide footer during live exam
-  if (pathname.startsWith('/exam/') && !pathname.includes('/result')) {
+  // Hide footer during live exam and inside workspace
+  if (
+    (pathname.startsWith('/exam/') && !pathname.includes('/result')) ||
+    pathname.startsWith('/dashboard') ||
+    pathname.startsWith('/learn') ||
+    pathname.startsWith('/mistakes') ||
+    pathname.startsWith('/performance') ||
+    pathname.startsWith('/question-bank') ||
+    pathname.startsWith('/library') ||
+    pathname.startsWith('/settings') ||
+    pathname.startsWith('/exams/')
+  ) {
     return null;
   }
 

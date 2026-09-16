@@ -308,3 +308,112 @@ export interface EducatorProfile {
   published_tests_count: number;
   created_at: string;
 }
+
+export interface ExamStage {
+  id: string;
+  exam_id: string;
+  name: string; // e.g. "Tier-I (CBE)", "Tier-II (Paper-I)"
+  stage_number: number;
+  total_marks: number;
+  total_questions: number;
+  duration_minutes: number;
+  is_computer_based: boolean;
+  description?: string | null;
+  created_at: string;
+}
+
+export interface LearningPath {
+  id: string;
+  exam_id: string;
+  title: string;
+  description: string;
+  target_days: number;
+  recommended_hours_per_week: number;
+  total_units: number;
+  created_at: string;
+}
+
+export interface LearningUnit {
+  id: string;
+  path_id: string;
+  topic_id: string;
+  order_index: number;
+  is_core: boolean;
+  estimated_minutes: number;
+  topic_title?: string;
+  subject_name?: string;
+}
+
+export type MistakeCategory =
+  | 'conceptual_gap'
+  | 'calculation_error'
+  | 'misread'
+  | 'time_rush'
+  | 'unfamiliar_pattern'
+  | 'formula_slip';
+
+export interface MistakeRecord {
+  id: string;
+  user_id: string;
+  test_id: string;
+  question_id: string;
+  exam_id?: string | null;
+  subject_id?: string | null;
+  topic_id?: string | null;
+  question_text: string;
+  options: QuestionOption[];
+  selected_answer: string;
+  correct_answer: string;
+  explanation?: string | null;
+  error_category: MistakeCategory;
+  user_notes?: string | null;
+  is_resolved: boolean;
+  resolved_at?: string | null;
+  created_at: string;
+  // Computed helpers
+  topic_title?: string;
+  subject_name?: string;
+  test_title?: string;
+}
+
+export interface PerformanceRecord {
+  id: string;
+  user_id: string;
+  exam_id: string;
+  subject_id?: string | null;
+  overall_score: number;
+  maximum_score: number;
+  accuracy_percentage: number;
+  speed_questions_per_minute: number;
+  percentile_rank: number;
+  benchmark_comparison: string;
+  recorded_at: string;
+}
+
+export interface TestSeries {
+  id: string;
+  creator_id: string;
+  exam_id: string;
+  title: string;
+  description: string;
+  target_year: number;
+  total_tests: number;
+  is_paid: boolean;
+  price_inr: number;
+  rating: number;
+  enrolled_count: number;
+  status: 'draft' | 'published' | 'archived';
+  created_at: string;
+}
+
+export interface Publication {
+  id: string;
+  series_id: string;
+  creator_id: string;
+  pricing_tier: 'free' | 'tier_standard' | 'tier_pro';
+  price_inr: number;
+  discount_percentage?: number;
+  visibility: 'public' | 'unlisted' | 'private' | 'institutional';
+  is_monetized: boolean;
+  published_at: string;
+}

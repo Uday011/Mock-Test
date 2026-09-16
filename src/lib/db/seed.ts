@@ -10,6 +10,7 @@ export function seedInitialData(): void {
 
   try {
     const db = getDb();
+    const now = new Date().toISOString();
 
     // 1. Seed Superadmin, Admin, and Student users
     const superAdmin = getOrCreateRoleDemoUser('superadmin');
@@ -24,153 +25,529 @@ export function seedInitialData(): void {
       const insertSection = db.prepare(
         'INSERT OR IGNORE INTO sections (id, name, description, icon, is_active, created_at) VALUES (?, ?, ?, ?, 1, ?)'
       );
-      const now = new Date().toISOString();
+      insertSection.run('sec-ssc', 'SSC & Staff Selection', 'SSC CGL, CHSL, CPO, and Central Staff Selection recruitment exams.', 'Award', now);
       insertSection.run('sec-medical', 'Medical Entrance (NEET)', 'Physics, Chemistry, and Biology mock papers designed for pre-medical aspirants.', 'Stethoscope', now);
       insertSection.run('sec-engineering', 'Engineering Entrance (JEE)', 'Advanced Mathematics, Mechanics, and Physical Sciences for engineering mock exams.', 'Cpu', now);
-      insertSection.run('sec-civil', 'Civil Services & UPSC', 'General Studies, Reasoning, Quantitative Aptitude, and Indian Polity.', 'Award', now);
+      insertSection.run('sec-civil', 'Civil Services & UPSC', 'General Studies, Reasoning, Quantitative Aptitude, and Indian Polity.', 'Bookmark', now);
       insertSection.run('sec-general', 'Science & Computing', 'Foundational Computer Science, General Science, and Logical Aptitude.', 'Layers', now);
+    } else {
+      // Ensure sec-ssc exists
+      db.prepare(
+        'INSERT OR IGNORE INTO sections (id, name, description, icon, is_active, created_at) VALUES (?, ?, ?, ?, 1, ?)'
+      ).run('sec-ssc', 'SSC & Staff Selection', 'SSC CGL, CHSL, CPO, and Central Staff Selection recruitment exams.', 'Award', now);
     }
 
-    // 2b. Seed Nalanda Master Exams, Syllabus Hierarchy & Learning Paths
-    const examCountStmt = db.prepare('SELECT COUNT(*) as count FROM exams');
-    const examCount = (examCountStmt.get() as any)?.count || 0;
+    // 3. Seed Baseline Exams (NEET, UPSC, JEE) if not present
+    const insertExam = db.prepare(`
+      INSERT OR IGNORE INTO exams (id, code, title, category, description, target_year, pattern_type, total_marks, total_duration_minutes, is_active, created_at)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 1, ?)
+    `);
 
-    if (examCount === 0) {
-      const now = new Date().toISOString();
-      const insertExam = db.prepare(`
-        INSERT INTO exams (id, code, title, category, description, target_year, pattern_type, total_marks, total_duration_minutes, is_active, created_at)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 1, ?)
-      `);
+    insertExam.run(
+      'exam-neet-2026',
+      'NEET_UG_2026',
+      'NEET UG 2026 (Medical)',
+      'medical',
+      'National Eligibility cum Entrance Test for undergraduate medical and dental programs across India.',
+      2026,
+      'multi_subject',
+      720,
+      200,
+      now
+    );
 
-      insertExam.run(
-        'exam-neet-2026',
-        'NEET_UG_2026',
-        'NEET UG 2026 (Medical)',
-        'medical',
-        'National Eligibility cum Entrance Test for undergraduate medical and dental programs across India.',
-        2026,
-        'multi_subject',
-        720,
-        200,
-        now
-      );
+    insertExam.run(
+      'exam-upsc-2026',
+      'UPSC_CSE_2026',
+      'UPSC Civil Services Prelims 2026',
+      'civil_services',
+      'General Studies Paper-I and Civil Services Aptitude Test (CSAT) for national administrative services.',
+      2026,
+      'stage_based',
+      400,
+      240,
+      now
+    );
 
-      insertExam.run(
-        'exam-upsc-2026',
-        'UPSC_CSE_2026',
-        'UPSC Civil Services Prelims 2026',
-        'civil_services',
-        'General Studies Paper-I and Civil Services Aptitude Test (CSAT) for national administrative services.',
-        2026,
-        'stage_based',
-        400,
-        240,
-        now
-      );
+    insertExam.run(
+      'exam-jee-2026',
+      'JEE_ADV_2026',
+      'JEE Advanced 2026 (Engineering)',
+      'engineering',
+      'Joint Entrance Examination Advanced for premier admissions into Indian Institutes of Technology (IITs).',
+      2026,
+      'multi_subject',
+      360,
+      180,
+      now
+    );
 
-      insertExam.run(
-        'exam-jee-2026',
-        'JEE_ADV_2026',
-        'JEE Advanced 2026 (Engineering)',
-        'engineering',
-        'Joint Entrance Examination Advanced for premier admissions into Indian Institutes of Technology (IITs).',
-        2026,
-        'multi_subject',
-        360,
-        180,
-        now
-      );
+    // 4. Seed Primary Sample Exam: SSC CGL 2026
+    seedSscCglExam(db, student, instituteAdmin, now);
 
-      // Seed Subjects for NEET UG
-      const insertSubject = db.prepare(`
-        INSERT INTO subjects (id, exam_id, name, code, order_index, description, color_accent, created_at)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?)
-      `);
-
-      insertSubject.run('subj-neet-physics', 'exam-neet-2026', 'Physics', 'PHY', 1, 'Classical Mechanics, Electromagnetism, Optics, and Modern Physics', 'blue', now);
-      insertSubject.run('subj-neet-chemistry', 'exam-neet-2026', 'Chemistry', 'CHEM', 2, 'Physical, Organic, and Inorganic Chemistry Principles', 'emerald', now);
-      insertSubject.run('subj-neet-biology', 'exam-neet-2026', 'Biology & Life Sciences', 'BIO', 3, 'Cellular Biology, Human Physiology, Genetics, and Plant Ecology', 'amber', now);
-
-      // Seed Subjects for UPSC CSE
-      insertSubject.run('subj-upsc-polity', 'exam-upsc-2026', 'Indian Polity & Governance', 'POL', 1, 'Constitutional framework, Fundamental Rights, Parliament, and Public Policy', 'indigo', now);
-      insertSubject.run('subj-upsc-economy', 'exam-upsc-2026', 'Economic & Social Development', 'ECO', 2, 'Macroeconomics, Fiscal Policy, Banking, and Sustainable Development', 'emerald', now);
-
-      // Seed Syllabus Nodes (Structured Topics with Prerequisites & Study Hours)
-      const insertSyllabus = db.prepare(`
-        INSERT INTO syllabus_nodes (id, subject_id, parent_id, level, title, code, order_index, estimated_study_hours, weightage_percentage, prerequisite_ids_json, description, created_at)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-      `);
-
-      // Physics Topics
-      insertSyllabus.run('topic-phy-kinematics', 'subj-neet-physics', null, 'topic', 'Kinematics & Vector Motion', 'PHY-101', 1, 14.0, 6.5, '[]', 'Scalars, vectors, 1D/2D projectile motion, and relative velocity calculus.', now);
-      insertSyllabus.run('topic-phy-newton', 'subj-neet-physics', null, 'topic', 'Laws of Motion & Friction', 'PHY-102', 2, 16.0, 7.0, JSON.stringify(['topic-phy-kinematics']), 'Newtonian dynamics, free-body diagrams, circular dynamics, and static/kinetic friction.', now);
-      insertSyllabus.run('topic-phy-workenergy', 'subj-neet-physics', null, 'topic', 'Work, Energy & Conservative Forces', 'PHY-103', 3, 12.0, 5.5, JSON.stringify(['topic-phy-newton']), 'Work-energy theorem, potential energy curves, spring oscillations, and elastic collisions.', now);
-      insertSyllabus.run('topic-phy-thermo', 'subj-neet-physics', null, 'topic', 'Thermodynamics & Kinetic Theory', 'PHY-104', 4, 18.0, 8.0, JSON.stringify(['topic-phy-workenergy']), 'Zeroth, first and second laws, Carnot heat engines, entropy, and ideal gas state equations.', now);
-
-      // Biology Topics
-      insertSyllabus.run('topic-bio-cell', 'subj-neet-biology', null, 'topic', 'Cell: The Unit of Life & Cell Cycle', 'BIO-101', 1, 15.0, 9.0, '[]', 'Prokaryotic vs eukaryotic membranes, organelles, mitosis, meiosis, and chromosomal segregation.', now);
-      insertSyllabus.run('topic-bio-genetics', 'subj-neet-biology', null, 'topic', 'Genetics & Molecular Inheritance', 'BIO-102', 2, 24.0, 12.0, JSON.stringify(['topic-bio-cell']), 'Mendelian inheritance patterns, DNA replication, transcription, genetic code, and translation.', now);
-      insertSyllabus.run('topic-bio-physio', 'subj-neet-biology', null, 'topic', 'Human Organ Systems & Physiology', 'BIO-103', 3, 28.0, 14.0, JSON.stringify(['topic-bio-cell']), 'Circulatory dynamics, neuro-endocrine signaling, renal regulation, and gaseous exchange.', now);
-
-      // Topic Resources
-      const insertResource = db.prepare(`
-        INSERT INTO topic_resources (id, topic_id, title, resource_type, content_summary, external_url, estimated_read_minutes, created_at)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?)
-      `);
-
-      insertResource.run('res-kin-1', 'topic-phy-kinematics', 'Kinematics Core Formula Handbook', 'formula_digest', 'Summary of all 1D/2D displacement, acceleration calculus, and trajectory peak equations.', null, 12, now);
-      insertResource.run('res-kin-2', 'topic-phy-kinematics', 'Relative Motion & River-Boat Problems Guide', 'notes', 'Comprehensive mental models for perpendicular drift, upstream-downstream velocity vectors.', null, 20, now);
-      insertResource.run('res-cell-1', 'topic-bio-cell', 'Cell Organelles High-Yield Digest', 'cheat_sheet', 'Comparative breakdown of mitochondrial ATP synthesis, ER protein sorting, and Golgi vesicles.', null, 15, now);
-      insertResource.run('res-gen-1', 'topic-bio-genetics', 'Molecular Genetics & Pedigree Analysis Blueprint', 'notes', 'Step-by-step logic for solving autosomal vs sex-linked inheritance traits and Lac Operon regulation.', null, 25, now);
-
-      // Seed Student Primary Enrollment
-      const insertEnrollment = db.prepare(`
-        INSERT INTO user_exam_enrollments (id, user_id, exam_id, target_year, target_score, is_primary, enrolled_at)
-        VALUES (?, ?, ?, ?, ?, 1, ?)
-      `);
-      insertEnrollment.run('enr-student-neet', student.id, 'exam-neet-2026', 2026, 680.0, now);
-
-      // Seed Student Topic Progress
-      const insertProgress = db.prepare(`
-        INSERT INTO user_topic_progress (id, user_id, topic_id, status, mastery_percentage, questions_practiced, questions_correct, tests_attempted, last_studied_at, notes_taken, updated_at)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-      `);
-      insertProgress.run('prog-1', student.id, 'topic-phy-kinematics', 'mastered', 88.5, 45, 40, 3, new Date(Date.now() - 86400000).toISOString(), 'Vectors and trajectory peaks well understood.', now);
-      insertProgress.run('prog-2', student.id, 'topic-bio-cell', 'mastered', 92.0, 50, 46, 4, new Date(Date.now() - 172800000).toISOString(), 'Organelle division stages memorized thoroughly.', now);
-      insertProgress.run('prog-3', student.id, 'topic-phy-newton', 'in_progress', 62.0, 30, 19, 2, new Date(Date.now() - 259200000).toISOString(), 'Need to practice inclined plane friction problems.', now);
-      insertProgress.run('prog-4', student.id, 'topic-bio-genetics', 'revision_due', 48.0, 25, 12, 1, new Date(Date.now() - 604800000).toISOString(), 'Review dihybrid cross calculations and pedigree trees.', now);
-
-      // Seed Educator Profile for Institute Admin
-      const insertEducator = db.prepare(`
-        INSERT OR REPLACE INTO educator_profiles (user_id, headline, bio, institute_name, verification_status, specialization_subjects_json, total_students, average_rating, published_tests_count, created_at)
+    // 5. Seed Educator Profile for Institute Admin if not present
+    const educatorCheck = db.prepare('SELECT user_id FROM educator_profiles WHERE user_id = ?').get(instituteAdmin.id);
+    if (!educatorCheck) {
+      db.prepare(`
+        INSERT INTO educator_profiles (user_id, headline, bio, institute_name, verification_status, specialization_subjects_json, total_students, average_rating, published_tests_count, created_at)
         VALUES (?, ?, ?, ?, 'verified', ?, ?, ?, ?, ?)
-      `);
-      insertEducator.run(
+      `).run(
         instituteAdmin.id,
-        'Senior Academic Chair & Physics Faculty',
-        'Over 16 years coaching pre-medical and engineering aspirants with deep emphasis on conceptual mechanics, cognitive diagnostic testing, and exam temperament.',
-        'Apex Pre-Medical & Civil Academy',
-        JSON.stringify(['Physics', 'Physical Sciences', 'Exam Strategy']),
-        1240,
-        4.94,
-        8,
+        'Director of Pedagogy & Senior SSC / Civil Faculty',
+        'Over 16 years coaching competitive exam aspirants with deep emphasis on conceptual clarity, speed optimization, and cognitive mistake forensics.',
+        'Nalanda Institute of Advanced Academics',
+        JSON.stringify(['Quantitative Aptitude', 'Reasoning', 'General Studies']),
+        1480,
+        4.95,
+        12,
         now
       );
     }
 
-    // 3. Check if tests already exist for the institute admin or demo user
-    const countStmt = db.prepare('SELECT COUNT(*) as count FROM tests WHERE user_id = ?');
-    const result = countStmt.get(instituteAdmin.id) as { count: number };
+  } catch (err) {
+    console.warn('[Seed initial data error]:', err);
+  }
+}
 
-    if (result && result.count > 0) {
-      return; // Already seeded
-    }
+function seedSscCglExam(db: any, student: any, instituteAdmin: any, now: string): void {
+  // Check if SSC CGL already seeded
+  const existingExam = db.prepare("SELECT id FROM exams WHERE id = 'exam-ssc-cgl-2026'").get();
+  if (existingExam) {
+    return; // Already populated
+  }
 
-  const now = new Date().toISOString();
-  const test1Id = crypto.randomUUID();
+  // 1. Insert Exam Master
+  db.prepare(`
+    INSERT INTO exams (id, code, title, category, description, target_year, pattern_type, total_marks, total_duration_minutes, is_active, created_at)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 1, ?)
+  `).run(
+    'exam-ssc-cgl-2026',
+    'SSC_CGL_2026',
+    'SSC CGL 2026 (Combined Graduate Level)',
+    'government_job',
+    'Staff Selection Commission Combined Graduate Level Examination for Group B & C posts across Central Ministries, Departments, and Attached Offices.',
+    2026,
+    'stage_based',
+    200.0,
+    60,
+    now
+  );
 
-  // Insert Official Test 1 created by Institute Admin
-  const insertTest = db.prepare(`
+  // 2. Insert Stages
+  const insertStage = db.prepare(`
+    INSERT INTO exam_stages (id, exam_id, name, stage_number, total_marks, total_questions, duration_minutes, is_computer_based, description, created_at)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+  `);
+
+  insertStage.run(
+    'stage-cgl-tier1',
+    'exam-ssc-cgl-2026',
+    'Tier-I Computer Based Examination',
+    1,
+    200.0,
+    100,
+    60,
+    1,
+    'Objective multiple-choice screening test covering 4 sections (25 Qs each, +2 / -0.50 marks). Qualifying for Tier-II.',
+    now
+  );
+
+  insertStage.run(
+    'stage-cgl-tier2',
+    'exam-ssc-cgl-2026',
+    'Tier-II Mains Examination',
+    2,
+    390.0,
+    130,
+    135,
+    1,
+    'Paper-I compulsory objective mains exam: Mathematical Abilities, Reasoning, English Language, General Awareness, and Computer Knowledge Module.',
+    now
+  );
+
+  // 3. Insert Subjects
+  const insertSubject = db.prepare(`
+    INSERT INTO subjects (id, exam_id, name, code, order_index, description, color_accent, created_at)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+  `);
+
+  insertSubject.run(
+    'subj-cgl-quant',
+    'exam-ssc-cgl-2026',
+    'Quantitative Aptitude',
+    'MATH',
+    1,
+    'Arithmetic, Advanced Algebra, Geometry, Mensuration & Trigonometric ratios',
+    'amber',
+    now
+  );
+
+  insertSubject.run(
+    'subj-cgl-reasoning',
+    'exam-ssc-cgl-2026',
+    'General Intelligence & Reasoning',
+    'REAS',
+    2,
+    'Verbal & Non-Verbal logic, Syllogisms, Analogies, Direction tests, Blood Relations, Series',
+    'indigo',
+    now
+  );
+
+  insertSubject.run(
+    'subj-cgl-english',
+    'exam-ssc-cgl-2026',
+    'English Comprehension',
+    'ENG',
+    3,
+    'Grammar, Error Spotting, Reading Comprehension, Cloze Tests, Idioms & Vocabulary',
+    'emerald',
+    now
+  );
+
+  insertSubject.run(
+    'subj-cgl-ga',
+    'exam-ssc-cgl-2026',
+    'General Awareness',
+    'GA',
+    4,
+    'Indian Polity, Modern Freedom Struggle, Geography, Macroeconomics & General Science',
+    'rose',
+    now
+  );
+
+  // 4. Insert Syllabus Nodes (Topics with weightages, prerequisites, estimated hours)
+  const insertSyllabus = db.prepare(`
+    INSERT INTO syllabus_nodes (id, subject_id, parent_id, level, title, code, order_index, estimated_study_hours, weightage_percentage, prerequisite_ids_json, description, created_at)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+  `);
+
+  // Quant Topics
+  insertSyllabus.run(
+    'topic-cgl-number-systems',
+    'subj-cgl-quant',
+    null,
+    'topic',
+    'Number Systems & Divisibility',
+    'MATH-101',
+    1,
+    12.0,
+    6.0,
+    '[]',
+    'Divisibility rules, LCM/HCF, unit digit calculation, power cycles, and Euler remainder theorem.',
+    now
+  );
+
+  insertSyllabus.run(
+    'topic-cgl-percentages',
+    'subj-cgl-quant',
+    null,
+    'topic',
+    'Percentages, Profit, Loss & Discount',
+    'MATH-102',
+    2,
+    18.0,
+    9.0,
+    JSON.stringify(['topic-cgl-number-systems']),
+    'Successive percentage shifts, marked price formulas, dishonet dealer problems, and discount margins.',
+    now
+  );
+
+  insertSyllabus.run(
+    'topic-cgl-ratio-proportions',
+    'subj-cgl-quant',
+    null,
+    'topic',
+    'Ratio, Proportion & Mixture Alligation',
+    'MATH-103',
+    3,
+    14.0,
+    7.5,
+    JSON.stringify(['topic-cgl-percentages']),
+    'Direct/inverse proportionality, mean proportional, mixture replacement cycles, and partnership distributions.',
+    now
+  );
+
+  insertSyllabus.run(
+    'topic-cgl-algebra',
+    'subj-cgl-quant',
+    null,
+    'topic',
+    'Elementary Algebra & Identities',
+    'MATH-104',
+    4,
+    20.0,
+    8.5,
+    JSON.stringify(['topic-cgl-number-systems']),
+    'Standard polynomial identities, symmetric algebraic expressions, factorization, and quadratic root analysis.',
+    now
+  );
+
+  insertSyllabus.run(
+    'topic-cgl-geometry',
+    'subj-cgl-quant',
+    null,
+    'topic',
+    'Triangles, Circles & Coordinate Geometry',
+    'MATH-105',
+    5,
+    24.0,
+    10.0,
+    JSON.stringify(['topic-cgl-algebra']),
+    'Centroid/orthocenter properties, intersecting chord theorems, cyclic quadrilaterals, and tangent secant equations.',
+    now
+  );
+
+  // Reasoning Topics
+  insertSyllabus.run(
+    'topic-cgl-analogies',
+    'subj-cgl-reasoning',
+    null,
+    'topic',
+    'Analogies & Classification',
+    'REAS-101',
+    1,
+    10.0,
+    6.0,
+    '[]',
+    'Semantic pairs, numerical cube/square relations, and symbolic matrix classification.',
+    now
+  );
+
+  insertSyllabus.run(
+    'topic-cgl-syllogisms',
+    'subj-cgl-reasoning',
+    null,
+    'topic',
+    'Syllogisms & Logical Deductions',
+    'REAS-102',
+    2,
+    14.0,
+    7.0,
+    '[]',
+    'Universal affirmative/negative statements, Venn diagram overlap models, and "only a few" possibility rules.',
+    now
+  );
+
+  insertSyllabus.run(
+    'topic-cgl-coding',
+    'subj-cgl-reasoning',
+    null,
+    'topic',
+    'Coding-Decoding & Alphanumeric Series',
+    'REAS-103',
+    3,
+    12.0,
+    6.5,
+    '[]',
+    'Alphabet position shifts, reverse index coding, pattern step jumps, and symbol substitution matrices.',
+    now
+  );
+
+  // English Topics
+  insertSyllabus.run(
+    'topic-cgl-grammar-errors',
+    'subj-cgl-english',
+    null,
+    'topic',
+    'Error Spotting & Sentence Improvement',
+    'ENG-101',
+    1,
+    16.0,
+    8.0,
+    '[]',
+    'Subject-verb concord, correlative conjunction proximity, prepositional collocations, and tense coherence.',
+    now
+  );
+
+  insertSyllabus.run(
+    'topic-cgl-comprehension',
+    'subj-cgl-english',
+    null,
+    'topic',
+    'Reading Comprehension & Cloze Tests',
+    'ENG-102',
+    2,
+    18.0,
+    9.0,
+    '[]',
+    'Passage central idea extraction, contextual inference, tone classification, and thematic cloze blanks.',
+    now
+  );
+
+  insertSyllabus.run(
+    'topic-cgl-vocab',
+    'subj-cgl-english',
+    null,
+    'topic',
+    'One-Word Substitutions, Idioms & Phrases',
+    'ENG-103',
+    3,
+    20.0,
+    8.0,
+    '[]',
+    'High-frequency SSC past 15-year vocabulary root analysis, classical idioms, and phrasal verb distinctions.',
+    now
+  );
+
+  // General Awareness Topics
+  insertSyllabus.run(
+    'topic-cgl-polity',
+    'subj-cgl-ga',
+    null,
+    'topic',
+    'Indian Constitution & Governance',
+    'GA-101',
+    1,
+    22.0,
+    8.0,
+    '[]',
+    'Constitutional assembly, Fundamental Rights (Articles 12-35), Directive Principles, and Supreme Court jurisdiction.',
+    now
+  );
+
+  insertSyllabus.run(
+    'topic-cgl-history',
+    'subj-cgl-ga',
+    null,
+    'topic',
+    'Modern Indian History & National Movement',
+    'GA-102',
+    2,
+    18.0,
+    6.5,
+    '[]',
+    '1857 revolt, Indian National Congress sessions, Non-Cooperation, Civil Disobedience, and 1935 Government of India Act.',
+    now
+  );
+
+  insertSyllabus.run(
+    'topic-cgl-science',
+    'subj-cgl-ga',
+    null,
+    'topic',
+    'General Science & Environmental Ecology',
+    'GA-103',
+    3,
+    16.0,
+    6.0,
+    '[]',
+    'Newtonian laws, optical instruments, periodic table trends, human organ systems, vitamins, and ecosystems.',
+    now
+  );
+
+  // 5. Topic Resources
+  const insertResource = db.prepare(`
+    INSERT INTO topic_resources (id, topic_id, title, resource_type, content_summary, external_url, estimated_read_minutes, created_at)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+  `);
+
+  insertResource.run(
+    'res-cgl-num-1',
+    'topic-cgl-number-systems',
+    'Divisibility Rules & Remainder Theorems Master Handbook',
+    'formula_digest',
+    'Shortcuts for 7, 11, 13, 72, 88 divisibility, Wilson theorem, and binomial remainder expressions.',
+    null,
+    15,
+    now
+  );
+
+  insertResource.run(
+    'res-cgl-perc-1',
+    'topic-cgl-percentages',
+    'Percentage-Fraction Multipliers & Profit-Loss Matrix',
+    'cheat_sheet',
+    'Instant conversion fractions (1/1 through 1/20), markup formulas, and dishonest seller multiplier tables.',
+    null,
+    12,
+    now
+  );
+
+  insertResource.run(
+    'res-cgl-geom-1',
+    'topic-cgl-geometry',
+    'Circle Theorems & Triangle Medians Blueprint',
+    'notes',
+    'Comprehensive reference with visual proofs for chord intersections, cyclic quad angles, and Apollonius theorem.',
+    null,
+    25,
+    now
+  );
+
+  insertResource.run(
+    'res-cgl-polity-1',
+    'topic-cgl-polity',
+    'Important Constitutional Articles & Amendments Ready-Reckoner',
+    'notes',
+    'Articles 14 to 32, Emergency provisions (352, 356, 360), and 42nd/44th/73rd/103rd amendments digest.',
+    null,
+    20,
+    now
+  );
+
+  // 6. Learning Path & Units
+  db.prepare(`
+    INSERT INTO learning_paths (id, exam_id, title, description, target_days, recommended_hours_per_week, total_units, created_at)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+  `).run(
+    'path-cgl-60d',
+    'exam-ssc-cgl-2026',
+    'SSC CGL 60-Day Strategic Master Plan',
+    'Curated curriculum balancing high-weightage arithmetic, reasoning speed drills, constitutional polity, and full-length CBE mocks.',
+    60,
+    18.0,
+    8,
+    now
+  );
+
+  const insertUnit = db.prepare(`
+    INSERT INTO learning_units (id, path_id, topic_id, order_index, is_core, estimated_minutes)
+    VALUES (?, ?, ?, ?, ?, ?)
+  `);
+
+  insertUnit.run('unit-1', 'path-cgl-60d', 'topic-cgl-number-systems', 1, 1, 90);
+  insertUnit.run('unit-2', 'path-cgl-60d', 'topic-cgl-percentages', 2, 1, 120);
+  insertUnit.run('unit-3', 'path-cgl-60d', 'topic-cgl-analogies', 3, 1, 60);
+  insertUnit.run('unit-4', 'path-cgl-60d', 'topic-cgl-grammar-errors', 4, 1, 75);
+  insertUnit.run('unit-5', 'path-cgl-60d', 'topic-cgl-polity', 5, 1, 90);
+  insertUnit.run('unit-6', 'path-cgl-60d', 'topic-cgl-ratio-proportions', 6, 1, 90);
+  insertUnit.run('unit-7', 'path-cgl-60d', 'topic-cgl-syllogisms', 7, 1, 75);
+  insertUnit.run('unit-8', 'path-cgl-60d', 'topic-cgl-geometry', 8, 1, 150);
+
+  // 7. Student Primary Enrollment: Set SSC CGL as Primary
+  db.prepare('UPDATE user_exam_enrollments SET is_primary = 0 WHERE user_id = ?').run(student.id);
+
+  db.prepare(`
+    INSERT INTO user_exam_enrollments (id, user_id, exam_id, target_year, target_score, is_primary, enrolled_at)
+    VALUES (?, ?, ?, ?, ?, 1, ?)
+  `).run(
+    'enr-student-ssc-cgl',
+    student.id,
+    'exam-ssc-cgl-2026',
+    2026,
+    165.0,
+    now
+  );
+
+  // 8. Student Topic Progress: Realistic Diagnostic Profile (42% progress, 78.5% accuracy, 142/200 predicted score)
+  const insertProgress = db.prepare(`
+    INSERT OR REPLACE INTO user_topic_progress (id, user_id, topic_id, status, mastery_percentage, questions_practiced, questions_correct, tests_attempted, last_studied_at, notes_taken, updated_at)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+  `);
+
+  insertProgress.run('prog-cgl-1', student.id, 'topic-cgl-number-systems', 'mastered', 92.0, 65, 60, 4, new Date(Date.now() - 86400000).toISOString(), 'Strong accuracy on remainder theorems and unit digits.', now);
+  insertProgress.run('prog-cgl-2', student.id, 'topic-cgl-percentages', 'in_progress', 74.0, 55, 41, 3, new Date(Date.now() - 172800000).toISOString(), 'Check discount calculations on marked price.', now);
+  insertProgress.run('prog-cgl-3', student.id, 'topic-cgl-ratio-proportions', 'in_progress', 68.5, 40, 27, 2, new Date(Date.now() - 259200000).toISOString(), 'Practice alligation method for multi-container replacements.', now);
+  insertProgress.run('prog-cgl-4', student.id, 'topic-cgl-geometry', 'needs_focus', 44.0, 35, 15, 2, new Date(Date.now() - 345600000).toISOString(), 'Circles and intersecting chord theorems need urgent review.', now);
+  insertProgress.run('prog-cgl-5', student.id, 'topic-cgl-analogies', 'mastered', 95.0, 40, 38, 3, new Date(Date.now() - 432000000).toISOString(), 'High speed on semantic analogies.', now);
+  insertProgress.run('prog-cgl-6', student.id, 'topic-cgl-syllogisms', 'mastered', 86.0, 30, 26, 2, new Date(Date.now() - 518400000).toISOString(), 'Few vs A Few rules clear.', now);
+  insertProgress.run('prog-cgl-7', student.id, 'topic-cgl-grammar-errors', 'in_progress', 76.0, 45, 34, 3, new Date(Date.now() - 604800000).toISOString(), 'Subject-verb concord with correlatives needs careful inspection.', now);
+  insertProgress.run('prog-cgl-8', student.id, 'topic-cgl-polity', 'in_progress', 70.0, 50, 35, 3, new Date(Date.now() - 691200000).toISOString(), 'Revision due for Articles 19 through 22.', now);
+  insertProgress.run('prog-cgl-9', student.id, 'topic-cgl-history', 'in_progress', 58.0, 30, 17, 2, new Date(Date.now() - 777600000).toISOString(), 'Chronology of Viceroys and Acts from 1909 to 1947.', now);
+
+  // 9. Seed Official SSC CGL Tier-I Mock Test 01
+  const testId = 'test-ssc-cgl-tier1-mock1';
+  db.prepare(`
     INSERT INTO tests (
       id, user_id, title, description, subject, section_id, duration_seconds,
       marking_scheme_type, default_correct_marks, default_negative_marks, default_unanswered_marks,
@@ -178,30 +555,28 @@ export function seedInitialData(): void {
       test_type, exam_id, subject_id, topic_id, visibility, is_paid, price_inr,
       created_at, updated_at
     ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-  `);
-
-  insertTest.run(
-    test1Id,
+  `).run(
+    testId,
     instituteAdmin.id,
-    'National Science & Medical Mock Test 2026',
-    'Official Academy Mock Test covering Mechanics, Optics, Cell Biology, and Thermodynamics.',
-    'Physics & Life Sciences',
-    'sec-medical',
+    'SSC CGL 2026 Tier-I All India Diagnostic Mock 01',
+    'Official high-fidelity Tier-I diagnostic mock conforming strictly to latest TCS pattern (Quant, Reasoning, English, General Awareness).',
+    'Combined Tier-I',
+    'sec-ssc',
     3600, // 60 minutes
     'standard',
-    4.0,
-    1.0,
+    2.0,  // +2 marks per question in SSC CGL Tier-I
+    0.50, // -0.50 negative marks
     0.0,
-    0, // shuffle_questions
-    0, // shuffle_options
-    1, // allow_navigation
-    1, // show_palette
-    1, // allow_review_marking
-    1, // show_immediate_results
+    0,
+    0,
+    1,
+    1,
+    1,
+    1,
     'full_mock',
-    'exam-neet-2026',
-    'subj-neet-physics',
-    'topic-phy-kinematics',
+    'exam-ssc-cgl-2026',
+    'subj-cgl-quant',
+    'topic-cgl-percentages',
     'public',
     0,
     0.0,
@@ -209,118 +584,143 @@ export function seedInitialData(): void {
     now
   );
 
-  const sampleQuestions = [
+  // Realistic Questions for Mock Test
+  const cglQuestions = [
     {
+      id: 'q-cgl-1',
       num: 1,
-      text: 'A ball is thrown vertically upward with a speed of 20 m/s from the ground. Taking g = 10 m/s², what is the maximum height reached by the ball?',
+      subjectId: 'subj-cgl-quant',
+      topicId: 'topic-cgl-percentages',
+      text: 'A dealer marks an article 40% above its cost price and offers a discount of 25% on the marked price. If his net profit is Rs. 140, what was the original cost price of the article?',
       options: [
-        { label: 'A', text: '15 m' },
-        { label: 'B', text: '20 m' },
-        { label: 'C', text: '25 m' },
-        { label: 'D', text: '30 m' }
+        { label: 'A', text: 'Rs. 2,400' },
+        { label: 'B', text: 'Rs. 2,800' },
+        { label: 'C', text: 'Rs. 3,000' },
+        { label: 'D', text: 'Rs. 3,500' }
       ],
       correct: 'B',
-      correct_marks: 4,
-      negative_marks: 1,
-      explanation: 'Using equation v² = u² - 2gh at peak v=0: 0 = 20² - 2(10)h => 20h = 400 => h = 20 meters.'
+      correct_marks: 2.0,
+      negative_marks: 0.5,
+      explanation: 'Let Cost Price (CP) = 100x. Marked Price (MP) = 140x. Selling Price (SP) = 140x × (1 - 0.25) = 140x × 0.75 = 105x. Net Profit = 105x - 100x = 5x. Given 5x = 140 => x = 28. Therefore, CP = 100 × 28 = Rs. 2,800.'
     },
     {
+      id: 'q-cgl-2',
       num: 2,
-      text: 'Which organelle is universally known as the powerhouse of the eukaryotic cell because it produces ATP?',
+      subjectId: 'subj-cgl-quant',
+      topicId: 'topic-cgl-geometry',
+      text: 'In a circle with centre O, chords AB and CD intersect perpendicularly at an interior point P. If AP = 6 cm, PB = 4 cm, and CP = 3 cm, what is the length of PD?',
       options: [
-        { label: 'A', text: 'Endoplasmic Reticulum' },
-        { label: 'B', text: 'Golgi Apparatus' },
-        { label: 'C', text: 'Mitochondria' },
-        { label: 'D', text: 'Ribosome' }
-      ],
-      correct: 'C',
-      correct_marks: 4,
-      negative_marks: 1,
-      explanation: 'Mitochondria generate most of the chemical energy needed to power the cell’s biochemical reactions in the form of ATP.'
-    },
-    {
-      num: 3,
-      text: 'According to Snell\'s Law of refraction, the ratio of the sine of the angle of incidence to the sine of the angle of refraction is equal to:',
-      options: [
-        { label: 'A', text: 'The ratio of refractive indices (n2 / n1)' },
-        { label: 'B', text: 'The sum of refractive indices (n1 + n2)' },
-        { label: 'C', text: 'Constant zero' },
-        { label: 'D', text: 'The product of refractive indices (n1 × n2)' }
-      ],
-      correct: 'A',
-      correct_marks: 4,
-      negative_marks: 1,
-      explanation: 'Snell’s Law states n1 sin(θ1) = n2 sin(θ2), hence sin(θ1) / sin(θ2) = n2 / n1.'
-    },
-    {
-      num: 4,
-      text: 'What is the SI unit of electric capacitance?',
-      options: [
-        { label: 'A', text: 'Henry' },
-        { label: 'B', text: 'Weber' },
-        { label: 'C', text: 'Farad' },
-        { label: 'D', text: 'Tesla' }
-      ],
-      correct: 'C',
-      correct_marks: 4,
-      negative_marks: 1,
-      explanation: 'The SI unit of electrical capacitance is the Farad (F), named after Michael Faraday.'
-    },
-    {
-      num: 5,
-      text: 'In mendelian genetics, crossing two heterozygous individuals (Aa × Aa) results in what expected phenotypic ratio for complete dominance?',
-      options: [
-        { label: 'A', text: '1:2:1' },
-        { label: 'B', text: '3:1' },
-        { label: 'C', text: '9:3:3:1' },
-        { label: 'D', text: '1:1' }
+        { label: 'A', text: '7 cm' },
+        { label: 'B', text: '8 cm' },
+        { label: 'C', text: '9 cm' },
+        { label: 'D', text: '10 cm' }
       ],
       correct: 'B',
-      correct_marks: 4,
-      negative_marks: 1,
-      explanation: 'The genotypic ratio is 1 AA : 2 Aa : 1 aa, giving a phenotypic ratio of 3 dominant to 1 recessive (3:1).'
+      correct_marks: 2.0,
+      negative_marks: 0.5,
+      explanation: 'By the Intersecting Chords Theorem: AP × PB = CP × PD. Substituting the values: 6 × 4 = 3 × PD => 24 = 3 × PD => PD = 8 cm.'
     },
     {
+      id: 'q-cgl-3',
+      num: 3,
+      subjectId: 'subj-cgl-reasoning',
+      topicId: 'topic-cgl-analogies',
+      text: 'Select the option that is related to the third term in the same way as the second term is related to the first term: ARCHITECT : BUILDING :: SCULPTOR : ?',
+      options: [
+        { label: 'A', text: 'Chisel' },
+        { label: 'B', text: 'Statue' },
+        { label: 'C', text: 'Museum' },
+        { label: 'D', text: 'Canvas' }
+      ],
+      correct: 'B',
+      correct_marks: 2.0,
+      negative_marks: 0.5,
+      explanation: 'An architect designs and produces a building; similarly, a sculptor carves and produces a statue.'
+    },
+    {
+      id: 'q-cgl-4',
+      num: 4,
+      subjectId: 'subj-cgl-reasoning',
+      topicId: 'topic-cgl-syllogisms',
+      text: 'Statements: (1) All books are papers. (2) Some papers are journals. Conclusions: I. Some books are journals. II. Some papers are books.',
+      options: [
+        { label: 'A', text: 'Only conclusion I follows' },
+        { label: 'B', text: 'Only conclusion II follows' },
+        { label: 'C', text: 'Both I and II follow' },
+        { label: 'D', text: 'Neither follows' }
+      ],
+      correct: 'B',
+      correct_marks: 2.0,
+      negative_marks: 0.5,
+      explanation: 'Since "All books are papers", the converse "Some papers are books" is directly true (Conclusion II). Conclusion I cannot be established with certainty.'
+    },
+    {
+      id: 'q-cgl-5',
+      num: 5,
+      subjectId: 'subj-cgl-english',
+      topicId: 'topic-cgl-grammar-errors',
+      text: 'Identify the segment in the sentence that contains a grammatical error: "Neither the principal nor the senior professors (A) / was present at the symposium (B) / when the chief guest arrived (C) / No error (D)"',
+      options: [
+        { label: 'A', text: 'Segment A' },
+        { label: 'B', text: 'Segment B' },
+        { label: 'C', text: 'Segment C' },
+        { label: 'D', text: 'Segment D' }
+      ],
+      correct: 'B',
+      correct_marks: 2.0,
+      negative_marks: 0.5,
+      explanation: 'Under correlative conjunctions (Neither... nor...), the finite verb agrees with the proximate subject. Since "senior professors" is plural, the verb must be "were present" instead of "was present".'
+    },
+    {
+      id: 'q-cgl-6',
       num: 6,
-      text: 'In thermodynamics, an isothermal process is one where which variable remains constant throughout?',
+      subjectId: 'subj-cgl-english',
+      topicId: 'topic-cgl-vocab',
+      text: 'Choose the word that means the opposite of the given word: "EPHEMERAL"',
       options: [
-        { label: 'A', text: 'Pressure' },
-        { label: 'B', text: 'Volume' },
-        { label: 'C', text: 'Temperature' },
-        { label: 'D', text: 'Entropy' }
+        { label: 'A', text: 'Transient' },
+        { label: 'B', text: 'Eternal' },
+        { label: 'C', text: 'Frail' },
+        { label: 'D', text: 'Fleeting' }
       ],
-      correct: 'C',
-      correct_marks: 4,
-      negative_marks: 1,
-      explanation: 'Iso = same, thermal = heat/temperature. An isothermal process occurs at constant temperature (ΔT = 0).'
+      correct: 'B',
+      correct_marks: 2.0,
+      negative_marks: 0.5,
+      explanation: 'Ephemeral denotes short-lived, momentary or temporary. Its exact antonym is eternal or everlasting.'
     },
     {
+      id: 'q-cgl-7',
       num: 7,
-      text: 'Which blood group is recognized as the universal donor for red blood cell transfusions?',
+      subjectId: 'subj-cgl-ga',
+      topicId: 'topic-cgl-polity',
+      text: 'Under Article 32 of the Constitution of India, which writ is issued by the Supreme Court to command an authority to perform a statutory duty that it has refused or failed to perform?',
       options: [
-        { label: 'A', text: 'AB positive' },
-        { label: 'B', text: 'A negative' },
-        { label: 'C', text: 'O negative' },
-        { label: 'D', text: 'B positive' }
+        { label: 'A', text: 'Habeas Corpus' },
+        { label: 'B', text: 'Mandamus' },
+        { label: 'C', text: 'Quo-Warranto' },
+        { label: 'D', text: 'Certiorari' }
       ],
-      correct: 'C',
-      correct_marks: 4,
-      negative_marks: 1,
-      explanation: 'O negative red blood cells lack A, B, and Rh antigens, meaning they can be transfused to patients of any blood group in emergencies.'
+      correct: 'B',
+      correct_marks: 2.0,
+      negative_marks: 0.5,
+      explanation: 'Mandamus (meaning "We Command") is issued to a public body, officer, or tribunal compelling the performance of a public or statutory duty.'
     },
     {
+      id: 'q-cgl-8',
       num: 8,
-      text: 'What is the acceleration due to gravity at the center of the Earth (assuming a spherical planet of uniform density)?',
+      subjectId: 'subj-cgl-ga',
+      topicId: 'topic-cgl-history',
+      text: 'In which historic session was the resolution of "Purna Swaraj" (Complete Independence) formally adopted by the Indian National Congress?',
       options: [
-        { label: 'A', text: '9.8 m/s²' },
-        { label: 'B', text: 'Infinite' },
-        { label: 'C', text: '0 m/s²' },
-        { label: 'D', text: '4.9 m/s²' }
+        { label: 'A', text: '1920 Nagpur Session' },
+        { label: 'B', text: '1929 Lahore Session' },
+        { label: 'C', text: '1931 Karachi Session' },
+        { label: 'D', text: '1938 Haripura Session' }
       ],
-      correct: 'C',
-      correct_marks: 4,
-      negative_marks: 1,
-      explanation: 'By shell theorem, gravitational forces from the surrounding mass cancel out symmetrically at the center of the Earth, resulting in g = 0.'
+      correct: 'B',
+      correct_marks: 2.0,
+      negative_marks: 0.5,
+      explanation: 'The Purna Swaraj resolution was passed at the 1929 Lahore session presided over by Jawaharlal Nehru on the banks of the Ravi River.'
     }
   ];
 
@@ -332,10 +732,10 @@ export function seedInitialData(): void {
     ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
   `);
 
-  for (const q of sampleQuestions) {
+  for (const q of cglQuestions) {
     insertQ.run(
-      crypto.randomUUID(),
-      test1Id,
+      q.id,
+      testId,
       q.num,
       q.text,
       'single',
@@ -351,9 +751,9 @@ export function seedInitialData(): void {
     );
   }
 
-  // Seed historical attempt for student
-  const attemptId = crypto.randomUUID();
-  const insertAttempt = db.prepare(`
+  // 10. Seed Student Mock Attempt
+  const attemptId = 'attempt-student-cgl-mock1';
+  db.prepare(`
     INSERT INTO test_attempts (
       id, test_id, user_id, test_title_snapshot, duration_seconds, started_at, submitted_at,
       time_taken_seconds, status, total_questions, attempted_questions,
@@ -361,32 +761,90 @@ export function seedInitialData(): void {
       positive_marks, negative_marks, final_score, maximum_marks,
       percentage, accuracy, created_at
     ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-  `);
-
-  insertAttempt.run(
+  `).run(
     attemptId,
-    test1Id,
+    testId,
     student.id,
-    'National Science & Medical Mock Test 2026',
+    'SSC CGL 2026 Tier-I All India Diagnostic Mock 01',
     3600,
-    new Date(Date.now() - 3600000).toISOString(),
-    new Date(Date.now() - 2400000).toISOString(),
-    1200,
+    new Date(Date.now() - 3600000 * 24).toISOString(),
+    new Date(Date.now() - 3600000 * 23).toISOString(),
+    3120, // 52 minutes
     'completed',
     8,
-    7,
-    6,
-    1,
-    1,
-    24.0, // 6 * 4
-    1.0,  // 1 * 1
-    23.0, // 24 - 1
-    32.0, // 8 * 4
-    71.88,
-    85.71,
-    new Date(Date.now() - 2400000).toISOString()
+    8,
+    5,
+    3,
+    0,
+    10.0, // 5 * 2.0
+    1.5,  // 3 * 0.5
+    8.5,  // 8.5 on this 8-question diagnostic (Scaled to 142/200 on 100 Qs)
+    16.0,
+    53.12,
+    62.5,
+    new Date(Date.now() - 3600000 * 23).toISOString()
   );
-  } catch (err) {
-    console.warn('[Seed initial data error]:', err);
-  }
+
+  // 11. Seed 3 High-Fidelity Mistake Records for Student
+  const insertMistake = db.prepare(`
+    INSERT INTO mistake_records (
+      id, user_id, test_id, question_id, exam_id, subject_id, topic_id,
+      question_text, options_json, selected_answer, correct_answer, explanation,
+      error_category, user_notes, is_resolved, created_at
+    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 0, ?)
+  `);
+
+  insertMistake.run(
+    'mistake-1',
+    student.id,
+    testId,
+    'q-cgl-1',
+    'exam-ssc-cgl-2026',
+    'subj-cgl-quant',
+    'topic-cgl-percentages',
+    cglQuestions[0].text,
+    JSON.stringify(cglQuestions[0].options),
+    'A', // selected A (Rs. 2,400)
+    'B', // correct B (Rs. 2,800)
+    cglQuestions[0].explanation,
+    'calculation_error',
+    'Multiplied 140x by 0.80 instead of 0.75 for 25% discount during mental arithmetic under time pressure.',
+    now
+  );
+
+  insertMistake.run(
+    'mistake-2',
+    student.id,
+    testId,
+    'q-cgl-2',
+    'exam-ssc-cgl-2026',
+    'subj-cgl-quant',
+    'topic-cgl-geometry',
+    cglQuestions[1].text,
+    JSON.stringify(cglQuestions[1].options),
+    'A', // selected A (7 cm)
+    'B', // correct B (8 cm)
+    cglQuestions[1].explanation,
+    'conceptual_gap',
+    'Confused internal intersecting chord theorem (AP × PB = CP × PD) with tangent-secant segment square theorem.',
+    now
+  );
+
+  insertMistake.run(
+    'mistake-3',
+    student.id,
+    testId,
+    'q-cgl-5',
+    'exam-ssc-cgl-2026',
+    'subj-cgl-english',
+    'topic-cgl-grammar-errors',
+    cglQuestions[4].text,
+    JSON.stringify(cglQuestions[4].options),
+    'D', // selected D (No error)
+    'B', // correct B (Segment B)
+    cglQuestions[4].explanation,
+    'time_rush',
+    'Glanced over "was present" quickly and assumed subject was "the principal" without checking the plural proximity rule.',
+    now
+  );
 }

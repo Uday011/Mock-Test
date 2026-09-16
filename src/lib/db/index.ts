@@ -269,6 +269,82 @@ export function getDb(): DatabaseSync {
       FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
     );
 
+    CREATE TABLE IF NOT EXISTS exam_stages (
+      id TEXT PRIMARY KEY,
+      exam_id TEXT NOT NULL,
+      name TEXT NOT NULL,
+      stage_number INTEGER NOT NULL DEFAULT 1,
+      total_marks REAL NOT NULL DEFAULT 200.0,
+      total_questions INTEGER NOT NULL DEFAULT 100,
+      duration_minutes INTEGER NOT NULL DEFAULT 60,
+      is_computer_based INTEGER NOT NULL DEFAULT 1,
+      description TEXT,
+      created_at TEXT NOT NULL,
+      FOREIGN KEY (exam_id) REFERENCES exams(id) ON DELETE CASCADE
+    );
+
+    CREATE TABLE IF NOT EXISTS mistake_records (
+      id TEXT PRIMARY KEY,
+      user_id TEXT NOT NULL,
+      test_id TEXT NOT NULL,
+      question_id TEXT NOT NULL,
+      exam_id TEXT,
+      subject_id TEXT,
+      topic_id TEXT,
+      question_text TEXT NOT NULL,
+      options_json TEXT NOT NULL,
+      selected_answer TEXT NOT NULL,
+      correct_answer TEXT NOT NULL,
+      explanation TEXT,
+      error_category TEXT NOT NULL DEFAULT 'conceptual_gap',
+      user_notes TEXT,
+      is_resolved INTEGER NOT NULL DEFAULT 0,
+      resolved_at TEXT,
+      created_at TEXT NOT NULL,
+      FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+    );
+
+    CREATE TABLE IF NOT EXISTS learning_paths (
+      id TEXT PRIMARY KEY,
+      exam_id TEXT NOT NULL,
+      title TEXT NOT NULL,
+      description TEXT,
+      target_days INTEGER NOT NULL DEFAULT 60,
+      recommended_hours_per_week REAL NOT NULL DEFAULT 15.0,
+      total_units INTEGER NOT NULL DEFAULT 24,
+      created_at TEXT NOT NULL,
+      FOREIGN KEY (exam_id) REFERENCES exams(id) ON DELETE CASCADE
+    );
+
+    CREATE TABLE IF NOT EXISTS learning_units (
+      id TEXT PRIMARY KEY,
+      path_id TEXT NOT NULL,
+      topic_id TEXT NOT NULL,
+      order_index INTEGER NOT NULL DEFAULT 0,
+      is_core INTEGER NOT NULL DEFAULT 1,
+      estimated_minutes INTEGER NOT NULL DEFAULT 45,
+      FOREIGN KEY (path_id) REFERENCES learning_paths(id) ON DELETE CASCADE,
+      FOREIGN KEY (topic_id) REFERENCES syllabus_nodes(id) ON DELETE CASCADE
+    );
+
+    CREATE TABLE IF NOT EXISTS test_series (
+      id TEXT PRIMARY KEY,
+      creator_id TEXT NOT NULL,
+      exam_id TEXT NOT NULL,
+      title TEXT NOT NULL,
+      description TEXT,
+      target_year INTEGER NOT NULL DEFAULT 2026,
+      total_tests INTEGER NOT NULL DEFAULT 10,
+      is_paid INTEGER NOT NULL DEFAULT 0,
+      price_inr REAL NOT NULL DEFAULT 0.0,
+      rating REAL NOT NULL DEFAULT 4.9,
+      enrolled_count INTEGER NOT NULL DEFAULT 0,
+      status TEXT NOT NULL DEFAULT 'published',
+      created_at TEXT NOT NULL,
+      FOREIGN KEY (creator_id) REFERENCES users(id) ON DELETE CASCADE,
+      FOREIGN KEY (exam_id) REFERENCES exams(id) ON DELETE CASCADE
+    );
+
     CREATE INDEX IF NOT EXISTS idx_tests_user_id ON tests(user_id);
     CREATE INDEX IF NOT EXISTS idx_questions_test_id ON questions(test_id);
     CREATE INDEX IF NOT EXISTS idx_test_attempts_test_id ON test_attempts(test_id);
@@ -279,6 +355,8 @@ export function getDb(): DatabaseSync {
     CREATE INDEX IF NOT EXISTS idx_syllabus_parent_id ON syllabus_nodes(parent_id);
     CREATE INDEX IF NOT EXISTS idx_topic_progress_user ON user_topic_progress(user_id);
     CREATE INDEX IF NOT EXISTS idx_enrollments_user ON user_exam_enrollments(user_id);
+    CREATE INDEX IF NOT EXISTS idx_mistakes_user ON mistake_records(user_id);
+    CREATE INDEX IF NOT EXISTS idx_exam_stages_exam ON exam_stages(exam_id);
   `);
 
   // Safe schema migrations for existing database files

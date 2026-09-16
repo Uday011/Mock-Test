@@ -137,8 +137,18 @@ export default function Navbar() {
     setTimeout(() => setIsSaved(false), 2000);
   };
 
-  // Hide Navbar during live exam to provide distraction-free environment
-  if (pathname.startsWith('/exam/') && !pathname.includes('/result')) {
+  // AppShell provides the navigation bar on internal workspace routes
+  const isWorkspace =
+    pathname.startsWith('/dashboard') ||
+    pathname.startsWith('/learn') ||
+    pathname.startsWith('/mistakes') ||
+    pathname.startsWith('/performance') ||
+    pathname.startsWith('/question-bank') ||
+    pathname.startsWith('/library') ||
+    pathname.startsWith('/settings') ||
+    pathname.startsWith('/exams/');
+
+  if (isWorkspace || (pathname.startsWith('/exam/') && !pathname.includes('/result'))) {
     return null;
   }
 

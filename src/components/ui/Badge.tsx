@@ -2,7 +2,7 @@ import React from 'react';
 
 export interface BadgeProps {
   children: React.ReactNode;
-  variant?: 'default' | 'saffron' | 'navy' | 'emerald' | 'purple' | 'outline' | 'stone' | 'danger';
+  variant?: 'default' | 'saffron' | 'navy' | 'emerald' | 'purple' | 'outline' | 'stone' | 'danger' | 'rose';
   size?: 'sm' | 'md';
   dot?: boolean;
   icon?: React.ReactNode;
@@ -33,6 +33,7 @@ export default function Badge({
     emerald: 'bg-emerald-50 text-emerald-900 border border-emerald-200/80',
     purple: 'bg-purple-50 text-purple-900 border border-purple-200/80',
     danger: 'bg-rose-50 text-rose-900 border border-rose-200/80',
+    rose: 'bg-rose-50 text-rose-900 border border-rose-200/80',
     outline: 'bg-transparent text-slate-700 border border-stone-300',
   };
 
@@ -44,6 +45,7 @@ export default function Badge({
     emerald: 'bg-emerald-600',
     purple: 'bg-purple-600',
     danger: 'bg-rose-600',
+    rose: 'bg-rose-600',
     outline: 'bg-slate-400',
   };
 
@@ -55,3 +57,5 @@ export default function Badge({
     </span>
   );
 }
+
+export { Badge };
