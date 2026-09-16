@@ -172,11 +172,20 @@ export async function POST(req: NextRequest) {
     }
 
     // 5. Update Topic Mastery & Spaced Repetition Schedule
-    const isMastered = percentage >= 75.0;
-    const targetStatus = isMastered ? 'mastered' : 'studied';
+    let targetStatus = 'practiced';
+    let nextIntervalDays = 3;
 
-    // Interval: 3 days if mastered, 1 day if needs revision
-    const nextIntervalDays = isMastered ? 3 : 1;
+    if (percentage >= 75.0) {
+      targetStatus = 'proficient';
+      nextIntervalDays = 7;
+    } else if (percentage >= 50.0) {
+      targetStatus = 'developing';
+      nextIntervalDays = 3;
+    } else {
+      targetStatus = 'needs_revision';
+      nextIntervalDays = 1;
+    }
+
     const nextRevisionDate = new Date(Date.now() + nextIntervalDays * 86400000).toISOString();
 
     const existingProg = db.prepare('SELECT id, repetition_count, tests_attempted FROM user_topic_progress WHERE user_id = ? AND topic_id = ?').get(userId, topic_id) as any;
@@ -263,7 +272,7 @@ export async function POST(req: NextRequest) {
       correct_count: correctCount,
       incorrect_count: incorrectCount,
       unanswered_count: unansweredCount,
-      is_mastered: isMastered,
+      is_mastered: targetStatus === 'proficient',
       new_status: targetStatus,
       next_revision_date: nextRevisionDate,
       recommend_sectional_test: recommendSectionalTest,

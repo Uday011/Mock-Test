@@ -196,31 +196,50 @@ export async function POST(
         }
       }
 
-      // Auto-log mistake if answered incorrectly
+      // Auto-log mistake or increment recurrence if answered incorrectly
       if (ans.selected_answer && !ans.is_correct) {
         try {
-          const insertMistake = db.prepare(`
-            INSERT OR IGNORE INTO mistake_records (
-              id, user_id, test_id, question_id, exam_id, subject_id, topic_id,
-              question_text, options_json, selected_answer, correct_answer, explanation,
-              error_category, user_notes, is_resolved, created_at
-            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'calculation_error', 'Logged from CBT test submission.', 0, ?)
-          `);
-          insertMistake.run(
-            `mistake-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`,
-            userId,
-            attempt.test_id,
-            ans.question_id,
-            attempt.exam_id || 'exam-ssc-cgl',
-            q?.subject_id || attempt.subject_id,
-            topicId,
-            q?.question_text || '',
-            JSON.stringify(q?.options || []),
-            ans.selected_answer,
-            ans.correct_answer || '',
-            q?.explanation || '',
-            now.toISOString()
-          );
+          const existingMistake = db.prepare('SELECT id, attempt_count, retry_history_json FROM mistake_records WHERE user_id = ? AND question_id = ?').get(userId, ans.question_id) as any;
+
+          if (existingMistake) {
+            let hist: any[] = [];
+            try { hist = JSON.parse(existingMistake.retry_history_json || '[]'); } catch {}
+            hist.push({ attempt: (existingMistake.attempt_count || 1) + 1, selected: ans.selected_answer, timestamp: now.toISOString() });
+
+            db.prepare(`
+              UPDATE mistake_records SET
+                attempt_count = attempt_count + 1,
+                last_attempted_at = ?,
+                retry_history_json = ?,
+                is_resolved = 0,
+                selected_answer = ?
+              WHERE id = ?
+            `).run(now.toISOString(), JSON.stringify(hist), ans.selected_answer, existingMistake.id);
+          } else {
+            const insertMistake = db.prepare(`
+              INSERT INTO mistake_records (
+                id, user_id, test_id, question_id, exam_id, subject_id, topic_id,
+                question_text, options_json, selected_answer, correct_answer, explanation,
+                error_category, user_notes, is_resolved, attempt_count, is_bookmarked, last_attempted_at, retry_history_json, created_at
+              ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'calculation_error', 'Logged from CBT test submission.', 0, 1, 0, ?, '[]', ?)
+            `);
+            insertMistake.run(
+              `mistake-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`,
+              userId,
+              attempt.test_id,
+              ans.question_id,
+              attempt.exam_id || 'exam-ssc-cgl',
+              q?.subject_id || attempt.subject_id,
+              topicId,
+              q?.question_text || '',
+              JSON.stringify(q?.options || []),
+              ans.selected_answer,
+              ans.correct_answer || '',
+              q?.explanation || '',
+              now.toISOString(),
+              now.toISOString()
+            );
+          }
         } catch (mErr) {
           console.warn('Mistake auto-log notice:', mErr);
         }
@@ -231,9 +250,20 @@ export async function POST(
     const topicPerformanceList: any[] = [];
     for (const [tId, tStats] of topicGroups.entries()) {
       const topicAcc = tStats.total > 0 ? Math.round((tStats.correct / tStats.total) * 100) : 0;
-      const isTopicMastered = topicAcc >= 75.0;
-      const targetStatus = isTopicMastered ? 'mastered' : 'studied';
-      const nextIntervalDays = isTopicMastered ? 3 : 1;
+      let targetStatus = 'practiced';
+      let nextIntervalDays = 3;
+
+      if (topicAcc >= 75.0) {
+        targetStatus = 'proficient';
+        nextIntervalDays = 7;
+      } else if (topicAcc >= 50.0) {
+        targetStatus = 'developing';
+        nextIntervalDays = 3;
+      } else {
+        targetStatus = 'needs_revision';
+        nextIntervalDays = 1;
+      }
+
       const nextRevisionDate = new Date(Date.now() + nextIntervalDays * 86400000).toISOString();
 
       const existingProg = db.prepare('SELECT id, repetition_count, tests_attempted, mastery_percentage FROM user_topic_progress WHERE user_id = ? AND topic_id = ?').get(userId, tId) as any;
@@ -291,7 +321,7 @@ export async function POST(
         correct: tStats.correct,
         incorrect: tStats.incorrect,
         accuracy: topicAcc,
-        is_mastered: isTopicMastered,
+        is_mastered: targetStatus === 'proficient',
         status_updated_to: targetStatus,
       });
     }

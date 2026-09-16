@@ -26,9 +26,10 @@ import { Button } from '@/components/ui/Button';
 import { ProgressBar } from '@/components/ui/ProgressBar';
 import { SyllabusHierarchyTree } from '@/components/learning/SyllabusHierarchyTree';
 import { TopicTestModal } from '@/components/learning/TopicTestModal';
+import { RevisionQueueHub } from '@/components/learning/RevisionQueueHub';
 
 export default function LearningDashboardPage() {
-  const [activeTab, setActiveTab] = useState<'recommended' | 'official_syllabus'>('recommended');
+  const [activeTab, setActiveTab] = useState<'recommended' | 'official_syllabus' | 'revision_queue'>('recommended');
   const [treeData, setTreeData] = useState<any>(null);
   const [dashboardData, setDashboardData] = useState<any>(null);
   const [loading, setLoading] = useState(true);
@@ -320,10 +321,21 @@ export default function LearningDashboardPage() {
           >
             Official Syllabus Structure
           </button>
+          <button
+            type="button"
+            onClick={() => setActiveTab('revision_queue')}
+            className={`px-4 py-2 rounded-lg font-mono text-xs font-bold transition-all ${
+              activeTab === 'revision_queue'
+                ? 'bg-stone-900 text-white shadow-sm'
+                : 'bg-stone-100 text-stone-600 hover:bg-stone-200'
+            }`}
+          >
+            Spaced Repetition & Revision Queue
+          </button>
         </div>
 
         <span className="text-xs font-mono text-stone-500">
-          Showing: {activeTab === 'recommended' ? 'Prerequisite-Sequenced Sprint' : 'Taxonomic Subject Hierarchy'}
+          Showing: {activeTab === 'recommended' ? 'Prerequisite-Sequenced Sprint' : activeTab === 'official_syllabus' ? 'Taxonomic Subject Hierarchy' : 'Memory Retention & Retrieval Schedules'}
         </span>
       </div>
 
@@ -474,6 +486,11 @@ export default function LearningDashboardPage() {
           })}
         </div>
       </div>
+
+      {/* Tab 3: Spaced Repetition & Revision Queue */}
+      {activeTab === 'revision_queue' && (
+        <RevisionQueueHub />
+      )}
 
       {/* Topic Assessment Modal */}
       {activeTest && (

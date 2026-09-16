@@ -302,6 +302,10 @@ export function getDb(): DatabaseSync {
       user_notes TEXT,
       is_resolved INTEGER NOT NULL DEFAULT 0,
       resolved_at TEXT,
+      attempt_count INTEGER NOT NULL DEFAULT 1,
+      is_bookmarked INTEGER NOT NULL DEFAULT 0,
+      last_attempted_at TEXT,
+      retry_history_json TEXT NOT NULL DEFAULT '[]',
       created_at TEXT NOT NULL,
       FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
     );
@@ -415,6 +419,12 @@ export function getDb(): DatabaseSync {
   try { db.exec('ALTER TABLE questions ADD COLUMN source TEXT;'); } catch {}
   try { db.exec('ALTER TABLE test_attempts ADD COLUMN section_performance_json TEXT;'); } catch {}
   try { db.exec('ALTER TABLE test_attempts ADD COLUMN topic_performance_json TEXT;'); } catch {}
+  try { db.exec('ALTER TABLE mistake_records ADD COLUMN attempt_count INTEGER NOT NULL DEFAULT 1;'); } catch {}
+  try { db.exec('ALTER TABLE mistake_records ADD COLUMN is_bookmarked INTEGER NOT NULL DEFAULT 0;'); } catch {}
+  try { db.exec('ALTER TABLE mistake_records ADD COLUMN last_attempted_at TEXT;'); } catch {}
+  try { db.exec('ALTER TABLE mistake_records ADD COLUMN retry_history_json TEXT NOT NULL DEFAULT "[]";'); } catch {}
+  try { db.exec('ALTER TABLE user_topic_progress ADD COLUMN decay_days_threshold INTEGER DEFAULT 14;'); } catch {}
+  try { db.exec('ALTER TABLE user_topic_progress ADD COLUMN last_quiz_score REAL;'); } catch {}
 
   dbInstance = db;
   return dbInstance;

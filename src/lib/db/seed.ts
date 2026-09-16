@@ -566,19 +566,21 @@ function seedSscCglExam(db: any, student: any, instituteAdmin: any, now: string)
 
   // 8. Student Topic Progress: Realistic Diagnostic Profile (42% progress, 78.5% accuracy, 142/200 predicted score)
   const insertProgress = db.prepare(`
-    INSERT OR REPLACE INTO user_topic_progress (id, user_id, topic_id, status, mastery_percentage, questions_practiced, questions_correct, tests_attempted, last_studied_at, notes_taken, updated_at)
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    INSERT OR REPLACE INTO user_topic_progress (
+      id, user_id, topic_id, status, mastery_percentage, questions_practiced, questions_correct,
+      tests_attempted, next_revision_date, repetition_interval_days, repetition_count, last_studied_at, notes_taken, updated_at
+    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
   `);
 
-  insertProgress.run('prog-cgl-1', student.id, 'topic-cgl-number-systems', 'mastered', 92.0, 65, 60, 4, new Date(Date.now() - 86400000).toISOString(), 'Strong accuracy on remainder theorems and unit digits.', now);
-  insertProgress.run('prog-cgl-2', student.id, 'topic-cgl-percentages', 'in_progress', 74.0, 55, 41, 3, new Date(Date.now() - 172800000).toISOString(), 'Check discount calculations on marked price.', now);
-  insertProgress.run('prog-cgl-3', student.id, 'topic-cgl-ratio-proportions', 'in_progress', 68.5, 40, 27, 2, new Date(Date.now() - 259200000).toISOString(), 'Practice alligation method for multi-container replacements.', now);
-  insertProgress.run('prog-cgl-4', student.id, 'topic-cgl-geometry', 'needs_focus', 44.0, 35, 15, 2, new Date(Date.now() - 345600000).toISOString(), 'Circles and intersecting chord theorems need urgent review.', now);
-  insertProgress.run('prog-cgl-5', student.id, 'topic-cgl-analogies', 'mastered', 95.0, 40, 38, 3, new Date(Date.now() - 432000000).toISOString(), 'High speed on semantic analogies.', now);
-  insertProgress.run('prog-cgl-6', student.id, 'topic-cgl-syllogisms', 'mastered', 86.0, 30, 26, 2, new Date(Date.now() - 518400000).toISOString(), 'Few vs A Few rules clear.', now);
-  insertProgress.run('prog-cgl-7', student.id, 'topic-cgl-grammar-errors', 'in_progress', 76.0, 45, 34, 3, new Date(Date.now() - 604800000).toISOString(), 'Subject-verb concord with correlatives needs careful inspection.', now);
-  insertProgress.run('prog-cgl-8', student.id, 'topic-cgl-polity', 'in_progress', 70.0, 50, 35, 3, new Date(Date.now() - 691200000).toISOString(), 'Revision due for Articles 19 through 22.', now);
-  insertProgress.run('prog-cgl-9', student.id, 'topic-cgl-history', 'in_progress', 58.0, 30, 17, 2, new Date(Date.now() - 777600000).toISOString(), 'Chronology of Viceroys and Acts from 1909 to 1947.', now);
+  insertProgress.run('prog-cgl-1', student.id, 'topic-cgl-number-systems', 'proficient', 92.0, 65, 60, 4, new Date(Date.now() + 86400000 * 5).toISOString(), 7, 3, new Date(Date.now() - 86400000).toISOString(), 'Strong accuracy on remainder theorems and unit digits.', now);
+  insertProgress.run('prog-cgl-2', student.id, 'topic-cgl-percentages', 'developing', 74.0, 55, 41, 3, new Date(Date.now() + 86400000 * 2).toISOString(), 3, 2, new Date(Date.now() - 172800000).toISOString(), 'Check discount calculations on marked price.', now);
+  insertProgress.run('prog-cgl-3', student.id, 'topic-cgl-ratio-proportions', 'developing', 68.5, 40, 27, 2, new Date(Date.now() + 86400000 * 3).toISOString(), 3, 2, new Date(Date.now() - 259200000).toISOString(), 'Practice alligation method for multi-container replacements.', now);
+  insertProgress.run('prog-cgl-4', student.id, 'topic-cgl-geometry', 'needs_revision', 44.0, 35, 15, 2, new Date(Date.now() - 86400000 * 2).toISOString(), 1, 1, new Date(Date.now() - 345600000).toISOString(), 'Circles and intersecting chord theorems need urgent review.', now);
+  insertProgress.run('prog-cgl-5', student.id, 'topic-cgl-analogies', 'proficient', 95.0, 40, 38, 3, new Date(Date.now() + 86400000 * 6).toISOString(), 7, 3, new Date(Date.now() - 432000000).toISOString(), 'High speed on semantic analogies.', now);
+  insertProgress.run('prog-cgl-6', student.id, 'topic-cgl-syllogisms', 'proficient', 86.0, 30, 26, 2, new Date(Date.now() + 86400000 * 4).toISOString(), 7, 2, new Date(Date.now() - 518400000).toISOString(), 'Few vs A Few rules clear.', now);
+  insertProgress.run('prog-cgl-7', student.id, 'topic-cgl-grammar-errors', 'practiced', 76.0, 45, 34, 3, new Date(Date.now() + 86400000 * 1).toISOString(), 3, 2, new Date(Date.now() - 604800000).toISOString(), 'Subject-verb concord with correlatives needs careful inspection.', now);
+  insertProgress.run('prog-cgl-8', student.id, 'topic-cgl-polity', 'needs_revision', 70.0, 50, 35, 3, new Date(Date.now() - 86400000 * 1).toISOString(), 1, 1, new Date(Date.now() - 691200000).toISOString(), 'Revision due for Articles 19 through 22.', now);
+  insertProgress.run('prog-cgl-9', student.id, 'topic-cgl-history', 'studying', 58.0, 30, 17, 2, new Date(Date.now() + 86400000 * 1).toISOString(), 2, 1, new Date(Date.now() - 777600000).toISOString(), 'Chronology of Viceroys and Acts from 1909 to 1947.', now);
 
   // 9. Seed Official SSC CGL Tier-I Mock Test 01
   const testId = 'test-ssc-cgl-tier1-mock1';
@@ -820,13 +822,13 @@ function seedSscCglExam(db: any, student: any, instituteAdmin: any, now: string)
     new Date(Date.now() - 3600000 * 23).toISOString()
   );
 
-  // 11. Seed 3 High-Fidelity Mistake Records for Student
+  // 11. Seed High-Fidelity Mistake Records for Student across Multiple Categories
   const insertMistake = db.prepare(`
-    INSERT INTO mistake_records (
+    INSERT OR REPLACE INTO mistake_records (
       id, user_id, test_id, question_id, exam_id, subject_id, topic_id,
       question_text, options_json, selected_answer, correct_answer, explanation,
-      error_category, user_notes, is_resolved, created_at
-    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 0, ?)
+      error_category, user_notes, is_resolved, attempt_count, is_bookmarked, last_attempted_at, retry_history_json, created_at
+    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
   `);
 
   insertMistake.run(
@@ -844,7 +846,12 @@ function seedSscCglExam(db: any, student: any, instituteAdmin: any, now: string)
     cglQuestions[0].explanation,
     'calculation_error',
     'Multiplied 140x by 0.80 instead of 0.75 for 25% discount during mental arithmetic under time pressure.',
-    now
+    0,
+    1,
+    1, // bookmarked for revision
+    new Date(Date.now() - 3600000 * 24).toISOString(),
+    '[]',
+    new Date(Date.now() - 3600000 * 24).toISOString()
   );
 
   insertMistake.run(
@@ -862,7 +869,12 @@ function seedSscCglExam(db: any, student: any, instituteAdmin: any, now: string)
     cglQuestions[1].explanation,
     'conceptual_gap',
     'Confused internal intersecting chord theorem (AP × PB = CP × PD) with tangent-secant segment square theorem.',
-    now
+    0,
+    2, // repeated mistake!
+    1, // bookmarked
+    new Date(Date.now() - 3600000 * 12).toISOString(),
+    JSON.stringify([{ attempt: 1, selected: 'A', timestamp: new Date(Date.now() - 3600000 * 24).toISOString() }]),
+    new Date(Date.now() - 3600000 * 24).toISOString()
   );
 
   insertMistake.run(
@@ -880,6 +892,60 @@ function seedSscCglExam(db: any, student: any, instituteAdmin: any, now: string)
     cglQuestions[4].explanation,
     'time_rush',
     'Glanced over "was present" quickly and assumed subject was "the principal" without checking the plural proximity rule.',
-    now
+    0,
+    1,
+    0,
+    new Date(Date.now() - 3600000 * 24).toISOString(),
+    '[]',
+    new Date(Date.now() - 3600000 * 24).toISOString()
+  );
+
+  insertMistake.run(
+    'mistake-4',
+    student.id,
+    testId,
+    'q-cgl-7',
+    'exam-ssc-cgl-2026',
+    'subj-cgl-ga',
+    'topic-cgl-polity',
+    cglQuestions[6].text,
+    JSON.stringify(cglQuestions[6].options),
+    'D', // Certiorari
+    'B', // Mandamus
+    cglQuestions[6].explanation,
+    'formula_recall',
+    'Confused prerogative writ definitions between Mandamus (command to act) and Certiorari (quash order).',
+    1, // already resolved by student
+    2,
+    0,
+    new Date(Date.now() - 3600000 * 4).toISOString(),
+    JSON.stringify([
+      { attempt: 1, selected: 'D', timestamp: new Date(Date.now() - 3600000 * 24).toISOString() },
+      { attempt: 2, selected: 'B', timestamp: new Date(Date.now() - 3600000 * 4).toISOString() }
+    ]),
+    new Date(Date.now() - 3600000 * 24).toISOString()
+  );
+
+  insertMistake.run(
+    'mistake-5',
+    student.id,
+    testId,
+    'q-cgl-8',
+    'exam-ssc-cgl-2026',
+    'subj-cgl-ga',
+    'topic-cgl-history',
+    cglQuestions[7].text,
+    JSON.stringify(cglQuestions[7].options),
+    'A', // 1920 Nagpur
+    'B', // 1929 Lahore
+    cglQuestions[7].explanation,
+    'knowledge_gap',
+    'Historical chronology confusion between Non-Cooperation resolution (Nagpur 1920) and Complete Independence (Lahore 1929).',
+    0,
+    1,
+    0,
+    new Date(Date.now() - 3600000 * 24).toISOString(),
+    '[]',
+    new Date(Date.now() - 3600000 * 24).toISOString()
   );
 }
