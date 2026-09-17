@@ -115,8 +115,8 @@ export default function OnboardingPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-[#fbfbfa] flex flex-col items-center justify-center p-4">
-        <div className="w-6 h-6 border-2 border-[#37352f] border-t-transparent rounded-full animate-spin mb-3" />
+      <div className="min-h-screen bg-[#F7F7F5] flex flex-col items-center justify-center p-4">
+        <div className="w-6 h-6 border-2 border-[#202124] border-t-transparent rounded-full animate-spin mb-3" />
         <p className="text-xs text-[#787774]">Preparing Academic Onboarding...</p>
       </div>
     );
@@ -131,18 +131,18 @@ export default function OnboardingPage() {
   ];
 
   return (
-    <div className="min-h-screen bg-[#fbfbfa] flex flex-col text-[#37352f]">
+    <div className="min-h-screen bg-[#F7F7F5] flex flex-col text-[#202124]">
       {/* Top Onboarding Header */}
-      <header className="px-6 py-3.5 border-b border-[#ebebeb] bg-white flex items-center justify-between sticky top-0 z-20">
+      <header className="px-6 py-3.5 border-b border-[#E6E6E3] bg-white flex items-center justify-between sticky top-0 z-20">
         <Logo size="sm" href="/" />
 
         <div className="flex items-center gap-4">
           <span className="text-xs text-[#787774] hidden sm:inline">
-            Step {currentStep} of 5: <strong className="text-[#37352f]">{stepTitles[currentStep - 1]}</strong>
+            Step {currentStep} of 5: <strong className="text-[#202124]">{stepTitles[currentStep - 1]}</strong>
           </span>
           <button
             onClick={() => handleSaveAndProceed(true, false)}
-            className="text-xs text-[#787774] hover:text-[#37352f] flex items-center gap-1 font-medium transition-colors"
+            className="text-xs text-[#787774] hover:text-[#202124] flex items-center gap-1 font-medium transition-colors"
           >
             <SkipForward className="w-3.5 h-3.5" />
             <span>Skip for now</span>
@@ -151,9 +151,9 @@ export default function OnboardingPage() {
       </header>
 
       {/* Progress Line */}
-      <div className="w-full bg-[#ebebeb] h-0.5">
+      <div className="w-full bg-[#E6E6E3] h-0.5">
         <div
-          className="bg-[#37352f] h-0.5 transition-all duration-300"
+          className="bg-[#202124] h-0.5 transition-all duration-300"
           style={{ width: `${(currentStep / 5) * 100}%` }}
         />
       </div>
@@ -166,7 +166,7 @@ export default function OnboardingPage() {
             <div className="space-y-4 animate-in fade-in duration-200">
               <div className="space-y-1">
                 <Badge variant="stone" size="sm">Step 1 of 5</Badge>
-                <h2 className="text-xl font-bold text-[#37352f]">
+                <h2 className="text-xl font-bold text-[#202124]">
                   Select Your Primary Examination
                 </h2>
                 <p className="text-xs text-[#787774] leading-relaxed">
@@ -183,13 +183,13 @@ export default function OnboardingPage() {
                       onClick={() => setSelectedExamId(ex.id)}
                       className={`p-3.5 rounded-md border cursor-pointer transition-colors flex items-start justify-between gap-3 ${
                         isSelected
-                          ? 'border-[#37352f] bg-[#f7f6f3] ring-1 ring-[#37352f]'
-                          : 'border-[#ebebeb] bg-white hover:bg-[#fcfbf9]'
+                          ? 'border-[#202124] bg-[#F1F1EF] ring-1 ring-[#202124]'
+                          : 'border-[#E6E6E3] bg-white hover:bg-[#fcfbf9]'
                       }`}
                     >
                       <div className="space-y-1">
                         <div className="flex items-center gap-2">
-                          <span className="font-mono text-[10px] px-1.5 py-0.5 rounded-[3px] bg-[#f7f6f3] text-[#787774] border border-[#ebebeb]">
+                          <span className="font-mono text-[10px] px-1.5 py-0.5 rounded-[3px] bg-[#F1F1EF] text-[#787774] border border-[#E6E6E3]">
                             {ex.code}
                           </span>
                           {ex.conducting_body && (
@@ -198,7 +198,7 @@ export default function OnboardingPage() {
                             </span>
                           )}
                         </div>
-                        <h3 className="text-sm font-semibold text-[#37352f]">
+                        <h3 className="text-sm font-semibold text-[#202124]">
                           {ex.title}
                         </h3>
                         <p className="text-xs text-[#787774] line-clamp-2">
@@ -209,8 +209,8 @@ export default function OnboardingPage() {
                       <div
                         className={`w-4 h-4 rounded-full border flex items-center justify-center shrink-0 mt-0.5 ${
                           isSelected
-                            ? 'border-[#37352f] bg-[#37352f] text-white'
-                            : 'border-[#ebebeb]'
+                            ? 'border-[#202124] bg-[#202124] text-white'
+                            : 'border-[#E6E6E3]'
                         }`}
                       >
                         {isSelected && <Check className="w-2.5 h-2.5 stroke-[3]" />}
@@ -227,7 +227,7 @@ export default function OnboardingPage() {
             <div className="space-y-4 animate-in fade-in duration-200">
               <div className="space-y-1">
                 <Badge variant="stone" size="sm">Step 2 of 5</Badge>
-                <h2 className="text-xl font-bold text-[#37352f]">
+                <h2 className="text-xl font-bold text-[#202124]">
                   Where are you in your preparation?
                 </h2>
                 <p className="text-xs text-[#787774] leading-relaxed">
@@ -263,13 +263,13 @@ export default function OnboardingPage() {
                       onClick={() => setPreparationStage(st.id as any)}
                       className={`p-3.5 rounded-md border cursor-pointer transition-colors flex items-start justify-between gap-3 ${
                         isSelected
-                          ? 'border-[#37352f] bg-[#f7f6f3] ring-1 ring-[#37352f]'
-                          : 'border-[#ebebeb] bg-white hover:bg-[#fcfbf9]'
+                          ? 'border-[#202124] bg-[#F1F1EF] ring-1 ring-[#202124]'
+                          : 'border-[#E6E6E3] bg-white hover:bg-[#fcfbf9]'
                       }`}
                     >
                       <div className="space-y-1">
                         <div className="flex items-center gap-2">
-                          <h3 className="text-sm font-semibold text-[#37352f]">
+                          <h3 className="text-sm font-semibold text-[#202124]">
                             {st.title}
                           </h3>
                           <Badge variant={isSelected ? 'saffron' : 'stone'} size="sm">
@@ -284,8 +284,8 @@ export default function OnboardingPage() {
                       <div
                         className={`w-4 h-4 rounded-full border flex items-center justify-center shrink-0 mt-0.5 ${
                           isSelected
-                            ? 'border-[#37352f] bg-[#37352f] text-white'
-                            : 'border-[#ebebeb]'
+                            ? 'border-[#202124] bg-[#202124] text-white'
+                            : 'border-[#E6E6E3]'
                         }`}
                       >
                         {isSelected && <Check className="w-2.5 h-2.5 stroke-[3]" />}
@@ -302,7 +302,7 @@ export default function OnboardingPage() {
             <div className="space-y-4 animate-in fade-in duration-200">
               <div className="space-y-1">
                 <Badge variant="stone" size="sm">Step 3 of 5</Badge>
-                <h2 className="text-xl font-bold text-[#37352f]">
+                <h2 className="text-xl font-bold text-[#202124]">
                   Timeline & Daily Commitment
                 </h2>
                 <p className="text-xs text-[#787774] leading-relaxed">
@@ -312,7 +312,7 @@ export default function OnboardingPage() {
 
               {/* Timeline Selection */}
               <div className="space-y-1.5 pt-1">
-                <label className="block text-xs font-medium text-[#37352f]">
+                <label className="block text-xs font-medium text-[#202124]">
                   Target Exam Attempt
                 </label>
                 <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
@@ -328,11 +328,11 @@ export default function OnboardingPage() {
                       onClick={() => setTargetTimeline(t.id as any)}
                       className={`p-2.5 rounded-[4px] border text-left transition-colors ${
                         targetTimeline === t.id
-                          ? 'border-[#37352f] bg-[#f7f6f3] ring-1 ring-[#37352f]'
-                          : 'border-[#ebebeb] bg-white hover:bg-[#fcfbf9] text-[#787774]'
+                          ? 'border-[#202124] bg-[#F1F1EF] ring-1 ring-[#202124]'
+                          : 'border-[#E6E6E3] bg-white hover:bg-[#fcfbf9] text-[#787774]'
                       }`}
                     >
-                      <div className="text-xs font-semibold text-[#37352f]">{t.label}</div>
+                      <div className="text-xs font-semibold text-[#202124]">{t.label}</div>
                       <div className="text-[10px] text-[#787774] mt-0.5">{t.sub}</div>
                     </button>
                   ))}
@@ -342,10 +342,10 @@ export default function OnboardingPage() {
               {/* Daily Hours Commitment */}
               <div className="space-y-2 pt-2">
                 <div className="flex items-center justify-between">
-                  <label className="text-xs font-medium text-[#37352f]">
+                  <label className="text-xs font-medium text-[#202124]">
                     Daily Study Availability
                   </label>
-                  <span className="font-mono text-xs font-semibold text-[#37352f] bg-[#f7f6f3] px-2 py-0.5 rounded-[3px] border border-[#ebebeb]">
+                  <span className="font-mono text-xs font-semibold text-[#202124] bg-[#F1F1EF] px-2 py-0.5 rounded-[3px] border border-[#E6E6E3]">
                     {dailyHours} Hours / Day
                   </span>
                 </div>
@@ -358,11 +358,11 @@ export default function OnboardingPage() {
                       onClick={() => setDailyHours(hrs)}
                       className={`p-2.5 rounded-[4px] border text-center transition-colors ${
                         dailyHours === hrs
-                          ? 'border-[#37352f] bg-[#f7f6f3] ring-1 ring-[#37352f]'
-                          : 'border-[#ebebeb] bg-white text-[#787774] hover:bg-[#fcfbf9]'
+                          ? 'border-[#202124] bg-[#F1F1EF] ring-1 ring-[#202124]'
+                          : 'border-[#E6E6E3] bg-white text-[#787774] hover:bg-[#fcfbf9]'
                       }`}
                     >
-                      <span className="text-xs font-mono font-semibold text-[#37352f] block">{hrs} Hours</span>
+                      <span className="text-xs font-mono font-semibold text-[#202124] block">{hrs} Hours</span>
                       <span className="text-[10px] text-[#787774] block mt-0.5">
                         {hrs === 2.0 ? '~14h/wk' : hrs === 4.0 ? '~28h/wk' : '~42h/wk'}
                       </span>
@@ -378,7 +378,7 @@ export default function OnboardingPage() {
             <div className="space-y-4 animate-in fade-in duration-200">
               <div className="space-y-1">
                 <Badge variant="stone" size="sm">Step 4 of 5</Badge>
-                <h2 className="text-xl font-bold text-[#37352f]">
+                <h2 className="text-xl font-bold text-[#202124]">
                   Calibrate Strengths & Weak Areas
                 </h2>
                 <p className="text-xs text-[#787774] leading-relaxed">
@@ -388,7 +388,7 @@ export default function OnboardingPage() {
 
               {/* Strong Subjects */}
               <div className="space-y-1.5 pt-1">
-                <label className="text-xs font-medium text-[#37352f] block">
+                <label className="text-xs font-medium text-[#202124] block">
                   Strong Areas <span className="text-[#787774] font-normal">(Tap to highlight strengths)</span>
                 </label>
                 <div className="flex flex-wrap gap-1.5">
@@ -402,7 +402,7 @@ export default function OnboardingPage() {
                         className={`px-2.5 py-1 rounded-[3px] text-xs font-medium border transition-colors flex items-center gap-1.5 ${
                           isSelected
                             ? 'border-[#cbe4eb] bg-[#edf6f9] text-[#1e6074]'
-                            : 'border-[#ebebeb] bg-white text-[#787774] hover:bg-[#fcfbf9]'
+                            : 'border-[#E6E6E3] bg-white text-[#787774] hover:bg-[#fcfbf9]'
                         }`}
                       >
                         {isSelected && <Check className="w-3 h-3 text-[#1e6074]" />}
@@ -415,7 +415,7 @@ export default function OnboardingPage() {
 
               {/* Weak Subjects */}
               <div className="space-y-1.5 pt-2">
-                <label className="text-xs font-medium text-[#37352f] block">
+                <label className="text-xs font-medium text-[#202124] block">
                   Areas Requiring Focus <span className="text-[#787774] font-normal">(Tap to assign remedial drills)</span>
                 </label>
                 <div className="flex flex-wrap gap-1.5">
@@ -429,7 +429,7 @@ export default function OnboardingPage() {
                         className={`px-2.5 py-1 rounded-[3px] text-xs font-medium border transition-colors flex items-center gap-1.5 ${
                           isSelected
                             ? 'border-[#f5c6cb] bg-[#fdf3f2] text-[#eb5757]'
-                            : 'border-[#ebebeb] bg-white text-[#787774] hover:bg-[#fcfbf9]'
+                            : 'border-[#E6E6E3] bg-white text-[#787774] hover:bg-[#fcfbf9]'
                         }`}
                       >
                         {isSelected && <Check className="w-3 h-3 text-[#eb5757]" />}
@@ -447,7 +447,7 @@ export default function OnboardingPage() {
             <div className="space-y-4 animate-in fade-in duration-200">
               <div className="space-y-1">
                 <Badge variant="stone" size="sm">Final Step</Badge>
-                <h2 className="text-xl font-bold text-[#37352f]">
+                <h2 className="text-xl font-bold text-[#202124]">
                   Ready to Benchmark Your Readiness?
                 </h2>
                 <p className="text-xs text-[#787774] leading-relaxed">
@@ -458,17 +458,17 @@ export default function OnboardingPage() {
               <div className="space-y-2.5 pt-1">
                 <div
                   onClick={() => handleSaveAndProceed(false, true)}
-                  className="p-4 rounded-md border border-[#ebebeb] bg-white hover:bg-[#fcfbf9] cursor-pointer transition-colors space-y-1.5"
+                  className="p-4 rounded-md border border-[#E6E6E3] bg-white hover:bg-[#fcfbf9] cursor-pointer transition-colors space-y-1.5"
                 >
                   <div className="flex items-center justify-between">
-                    <span className="flex items-center gap-1 text-[11px] font-semibold text-[#37352f]">
-                      <Zap className="w-3.5 h-3.5 text-[#d9730d]" /> Recommended
+                    <span className="flex items-center gap-1 text-[11px] font-semibold text-[#202124]">
+                      <Zap className="w-3.5 h-3.5 text-[#B7791F]" /> Recommended
                     </span>
-                    <span className="text-[11px] font-mono px-1.5 py-0.5 rounded-[3px] bg-[#fbf3db] text-[#4d3800] border border-[#f1e0b5]">
+                    <span className="text-[11px] font-mono px-1.5 py-0.5 rounded-[3px] bg-[#FFFBEB] text-[#4d3800] border border-[#f1e0b5]">
                       10 Minutes
                     </span>
                   </div>
-                  <h3 className="text-sm font-semibold text-[#37352f]">
+                  <h3 className="text-sm font-semibold text-[#202124]">
                     Take 10-Min Diagnostic Drill
                   </h3>
                   <p className="text-xs text-[#787774] leading-relaxed">
@@ -478,15 +478,15 @@ export default function OnboardingPage() {
 
                 <div
                   onClick={() => handleSaveAndProceed(false, false)}
-                  className="p-4 rounded-md border border-[#ebebeb] bg-white hover:bg-[#fcfbf9] cursor-pointer transition-colors space-y-1.5"
+                  className="p-4 rounded-md border border-[#E6E6E3] bg-white hover:bg-[#fcfbf9] cursor-pointer transition-colors space-y-1.5"
                 >
                   <div className="flex items-center justify-between">
                     <span className="text-[11px] text-[#787774]">Standard Setup</span>
-                    <span className="text-[11px] font-mono px-1.5 py-0.5 rounded-[3px] bg-[#f7f6f3] text-[#787774] border border-[#ebebeb]">
+                    <span className="text-[11px] font-mono px-1.5 py-0.5 rounded-[3px] bg-[#F1F1EF] text-[#787774] border border-[#E6E6E3]">
                       Direct Entry
                     </span>
                   </div>
-                  <h3 className="text-sm font-semibold text-[#37352f]">
+                  <h3 className="text-sm font-semibold text-[#202124]">
                     Proceed Directly to Dashboard
                   </h3>
                   <p className="text-xs text-[#787774] leading-relaxed">
@@ -499,7 +499,7 @@ export default function OnboardingPage() {
         </div>
 
         {/* Action Controls */}
-        <div className="pt-6 border-t border-[#ebebeb] flex items-center justify-between mt-6">
+        <div className="pt-6 border-t border-[#E6E6E3] flex items-center justify-between mt-6">
           {currentStep > 1 ? (
             <Button
               variant="secondary"

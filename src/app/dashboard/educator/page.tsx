@@ -183,7 +183,7 @@ export default function EducatorDashboardPage() {
       <AppShell>
         <div className="max-w-md mx-auto my-16 p-8 bg-white rounded-2xl border border-stone-200 text-center space-y-4">
           <AlertCircle className="w-10 h-10 text-rose-500 mx-auto" />
-          <h3 className="font-bold text-stone-900 font-serif text-lg">Studio Unavailable</h3>
+          <h3 className="font-bold text-stone-900 font-sans text-lg">Studio Unavailable</h3>
           <p className="text-xs text-stone-500">{error || 'Could not load educator dashboard data'}</p>
           <Button variant="primary" size="sm" onClick={fetchDashboardData}>
             Retry
@@ -241,7 +241,7 @@ export default function EducatorDashboardPage() {
         <div className="bg-white rounded-md p-6 border border-notion-border space-y-4">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div className="flex items-start gap-3.5">
-              <div className="w-12 h-12 rounded bg-notion-sidebar border border-notion-border text-notion-text flex items-center justify-center font-serif font-bold text-xl shrink-0">
+              <div className="w-12 h-12 rounded bg-notion-sidebar border border-notion-border text-notion-text flex items-center justify-center font-sans font-bold text-xl shrink-0">
                 {educator.name?.charAt(0) || 'E'}
               </div>
               <div className="space-y-1">
@@ -984,7 +984,7 @@ export default function EducatorDashboardPage() {
         <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-xs flex items-center justify-center p-4">
           <div className="bg-white rounded-3xl max-w-lg w-full p-6 border border-stone-200 shadow-2xl space-y-4 animate-in fade-in zoom-in-95">
             <div className="flex items-center justify-between border-b border-stone-100 pb-3">
-              <h3 className="font-serif font-bold text-base text-stone-900">
+              <h3 className="font-sans font-bold text-base text-stone-900">
                 Create New Master Test Series
               </h3>
               <button

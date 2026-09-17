@@ -115,7 +115,7 @@ export function SyllabusHierarchyTree({
   return (
     <div className={`space-y-3 ${className}`}>
       {/* Controls Header */}
-      <div className="flex items-center justify-between pb-2 border-b border-[#ebebeb]">
+      <div className="flex items-center justify-between pb-2 border-b border-[#E6E6E3]">
         <div className="flex items-center gap-2">
           <span className="text-xs font-mono uppercase tracking-wider text-[#787774] font-medium">
             Curriculum Hierarchy
@@ -129,15 +129,15 @@ export function SyllabusHierarchyTree({
           <button
             type="button"
             onClick={expandAll}
-            className="text-xs text-[#787774] hover:text-[#37352f] underline px-1 py-0.5"
+            className="text-xs text-[#787774] hover:text-[#202124] underline px-1 py-0.5"
           >
             Expand All
           </button>
-          <span className="text-[#ebebeb]">/</span>
+          <span className="text-[#E6E6E3]">/</span>
           <button
             type="button"
             onClick={collapseAll}
-            className="text-xs text-[#787774] hover:text-[#37352f] underline px-1 py-0.5"
+            className="text-xs text-[#787774] hover:text-[#202124] underline px-1 py-0.5"
           >
             Collapse All
           </button>
@@ -156,23 +156,23 @@ export function SyllabusHierarchyTree({
           return (
             <div
               key={subj.id}
-              className="border border-[#ebebeb] bg-white rounded-lg overflow-hidden transition-all"
+              className="border border-[#E6E6E3] bg-white rounded-lg overflow-hidden transition-all"
             >
               {/* Subject Header Bar */}
               <div
                 onClick={() => toggleSubject(subj.id)}
-                className="p-3.5 flex flex-col sm:flex-row sm:items-center justify-between gap-3 cursor-pointer hover:bg-[#fbfbfa] select-none bg-[#fbfbfa]"
+                className="p-3.5 flex flex-col sm:flex-row sm:items-center justify-between gap-3 cursor-pointer hover:bg-[#F7F7F5] select-none bg-[#F7F7F5]"
               >
                 <div className="flex items-center gap-2.5">
-                  <div className="w-5 h-5 rounded flex items-center justify-center text-[#787774] bg-[#f7f6f3] shrink-0">
+                  <div className="w-5 h-5 rounded flex items-center justify-center text-[#787774] bg-[#F1F1EF] shrink-0">
                     {isSubjExpanded ? <ChevronDown className="w-3.5 h-3.5" /> : <ChevronRight className="w-3.5 h-3.5" />}
                   </div>
                   <div>
                     <div className="flex items-center gap-2">
-                      <span className="font-mono text-[10px] font-medium px-1.5 py-0.5 rounded bg-[#f7f6f3] text-[#787774] border border-[#ebebeb]">
+                      <span className="font-mono text-[10px] font-medium px-1.5 py-0.5 rounded bg-[#F1F1EF] text-[#787774] border border-[#E6E6E3]">
                         {subj.code || `SUBJ-${subjIdx + 1}`}
                       </span>
-                      <h3 className="font-semibold text-[#37352f] text-sm">
+                      <h3 className="font-semibold text-[#202124] text-sm">
                         {subj.name}
                       </h3>
                     </div>
@@ -187,9 +187,9 @@ export function SyllabusHierarchyTree({
                     <div className="text-[11px] font-mono text-[#787774]">
                       {subjProgress}% Covered
                     </div>
-                    <div className="w-full bg-[#f7f6f3] h-1.5 rounded-full overflow-hidden mt-1 border border-[#ebebeb]">
+                    <div className="w-full bg-[#F1F1EF] h-1.5 rounded-full overflow-hidden mt-1 border border-[#E6E6E3]">
                       <div
-                        className="bg-[#37352f] h-full rounded-full transition-all"
+                        className="bg-[#202124] h-full rounded-full transition-all"
                         style={{ width: `${subjProgress}%` }}
                       />
                     </div>
@@ -202,7 +202,7 @@ export function SyllabusHierarchyTree({
 
               {/* Topics Container */}
               {isSubjExpanded && (
-                <div className="divide-y divide-[#ebebeb] border-t border-[#ebebeb]">
+                <div className="divide-y divide-[#E6E6E3] border-t border-[#E6E6E3]">
                   {subj.topics.map((topic, tIdx) => {
                     const isTopicExpanded = Boolean(expandedTopics[topic.id]);
                     const subtopics = topic.subtopics || [];
@@ -215,7 +215,7 @@ export function SyllabusHierarchyTree({
                             <button
                               type="button"
                               onClick={() => toggleTopic(topic.id)}
-                              className="mt-0.5 w-4 h-4 rounded flex items-center justify-center text-[#787774] hover:text-[#37352f] bg-[#f7f6f3] shrink-0"
+                              className="mt-0.5 w-4 h-4 rounded flex items-center justify-center text-[#787774] hover:text-[#202124] bg-[#F1F1EF] shrink-0"
                             >
                               {subtopics.length > 0 ? (
                                 isTopicExpanded ? <ChevronDown className="w-3 h-3" /> : <ChevronRight className="w-3 h-3" />
@@ -229,10 +229,10 @@ export function SyllabusHierarchyTree({
                                 <span className="font-mono text-[10px] text-[#787774]">
                                   {topic.code || `${subj.code}-${tIdx + 1}`}
                                 </span>
-                                <span className="text-[#ebebeb]">•</span>
+                                <span className="text-[#E6E6E3]">•</span>
                                 <Link
                                   href={`/learn/${topic.id}`}
-                                  className="text-[#37352f] font-medium text-xs sm:text-sm hover:underline inline-flex items-center gap-1 group"
+                                  className="text-[#202124] font-medium text-xs sm:text-sm hover:underline inline-flex items-center gap-1 group"
                                 >
                                   {topic.title}
                                   <ArrowRight className="w-3 h-3 opacity-0 group-hover:opacity-100 text-[#787774] transition-opacity" />
@@ -306,7 +306,7 @@ export function SyllabusHierarchyTree({
                                           className={`px-1 rounded text-[10px] ${
                                             p.status === 'mastered'
                                               ? 'bg-[#ebf5e8] text-[#2b593f] border border-[#c4e2b8]'
-                                              : 'bg-[#f7f6f3] text-[#787774] border border-[#ebebeb]'
+                                              : 'bg-[#F1F1EF] text-[#787774] border border-[#E6E6E3]'
                                           }`}
                                         >
                                           {p.title}
@@ -356,7 +356,7 @@ export function SyllabusHierarchyTree({
 
                         {/* Subtopics Hierarchy Level */}
                         {isTopicExpanded && subtopics.length > 0 && (
-                          <div className="mt-3 pl-6 pr-3 py-2 bg-[#fbfbfa] border border-[#ebebeb] rounded-md space-y-1.5">
+                          <div className="mt-3 pl-6 pr-3 py-2 bg-[#F7F7F5] border border-[#E6E6E3] rounded-md space-y-1.5">
                             <div className="text-[10px] font-mono uppercase text-[#787774] font-medium flex items-center gap-1">
                               <Layers className="w-3 h-3" />
                               Subtopics & Conceptual Units
@@ -365,19 +365,19 @@ export function SyllabusHierarchyTree({
                               {subtopics.map((sub, sIdx) => (
                                 <div
                                   key={sub.id}
-                                  className="flex items-center justify-between text-xs py-1 border-b border-[#ebebeb] last:border-0"
+                                  className="flex items-center justify-between text-xs py-1 border-b border-[#E6E6E3] last:border-0"
                                 >
                                   <div className="flex items-center gap-2">
                                     <span className="font-mono text-[10px] text-[#9b9a97]">
                                       {sub.code || `${topic.code}.${sIdx + 1}`}
                                     </span>
-                                    <span className="font-normal text-[#37352f]">
+                                    <span className="font-normal text-[#202124]">
                                       {sub.title}
                                     </span>
                                   </div>
                                   <div className="flex items-center gap-3 text-[#787774] text-[11px] font-mono">
                                     <span>{sub.estimated_study_hours}h</span>
-                                    <span className="text-[#ebebeb]">•</span>
+                                    <span className="text-[#E6E6E3]">•</span>
                                     <span className="capitalize">{sub.difficulty || 'Core'}</span>
                                   </div>
                                 </div>

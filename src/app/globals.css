@@ -3,8 +3,8 @@
 @tailwind utilities;
 
 :root {
-  --foreground-rgb: 55, 53, 47;
-  --background-rgb: 251, 251, 250;
+  --foreground-rgb: 32, 33, 36;
+  --background-rgb: 247, 247, 245;
 }
 
 html {
@@ -13,11 +13,11 @@ html {
 }
 
 body {
-  color: #37352f;
-  background-color: #fbfbfa;
+  color: #202124;
+  background-color: #f7f7f5;
   min-height: 100vh;
   min-height: 100dvh;
-  font-family: ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol";
+  font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
   overflow-x: hidden;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
@@ -32,11 +32,11 @@ body {
   background: transparent;
 }
 ::-webkit-scrollbar-thumb {
-  background: #cbd5e1;
+  background: #e6e6e3;
   border-radius: 9999px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: #94a3b8;
+  background: #cbd5e1;
 }
 
 /* Mobile sheet and modal keyframe animations */

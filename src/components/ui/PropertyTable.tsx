@@ -26,7 +26,7 @@ export function PropertyRow({ icon, label, value, children, className = '' }: Pr
 
   return (
     <div
-      className={`flex items-center py-1.5 px-2 rounded-md hover:bg-[#f7f6f3] transition-colors text-xs ${className}`}
+      className={`flex items-center py-1.5 px-2 rounded-md hover:bg-[#F1F1EF] transition-colors text-xs ${className}`}
     >
       <div className="w-36 sm:w-44 flex items-center gap-2 text-[#787774] shrink-0 font-normal select-none">
         {renderedIcon && (
@@ -36,7 +36,7 @@ export function PropertyRow({ icon, label, value, children, className = '' }: Pr
         )}
         <span className="truncate">{label}</span>
       </div>
-      <div className="flex-1 min-w-0 text-[#37352f] font-medium flex items-center gap-1.5">
+      <div className="flex-1 min-w-0 text-[#202124] font-medium flex items-center gap-1.5">
         {content}
       </div>
     </div>
@@ -50,7 +50,7 @@ export interface PropertyTableProps {
 
 export function PropertyTable({ children, className = '' }: PropertyTableProps) {
   return (
-    <div className={`space-y-0.5 py-2 border-y border-[#ebebeb] my-4 ${className}`}>
+    <div className={`space-y-0.5 py-1.5 border-y border-[#E6E6E3] my-3 ${className}`}>
       {children}
     </div>
   );

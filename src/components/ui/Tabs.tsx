@@ -29,7 +29,7 @@ export function Tabs({
     return (
       <div
         role="tablist"
-        className={`inline-flex items-center p-1 bg-stone-100 rounded-lg border border-stone-200/80 ${className}`}
+        className={`inline-flex items-center p-1 bg-[#F1F1EF] rounded-md border border-[#E6E6E3] ${className}`}
       >
         {tabs.map((tab) => {
           const isActive = tab.id === activeTab;
@@ -40,10 +40,10 @@ export function Tabs({
               role="tab"
               aria-selected={isActive}
               onClick={() => onChange(tab.id)}
-              className={`flex items-center gap-2 px-3 py-1.5 text-xs font-medium rounded-md transition-all ${
+              className={`flex items-center gap-2 px-3 py-1.5 text-xs font-medium rounded transition-all ${
                 isActive
-                  ? 'bg-white text-stone-900 shadow-sm font-semibold'
-                  : 'text-stone-500 hover:text-stone-900'
+                  ? 'bg-white text-[#202124] shadow-xs font-semibold'
+                  : 'text-[#787774] hover:text-[#202124]'
               }`}
             >
               {Icon && <Icon className="w-3.5 h-3.5 flex-shrink-0" />}
@@ -52,8 +52,8 @@ export function Tabs({
                 <span
                   className={`text-[10px] font-mono px-1.5 py-0.2 rounded-full ${
                     isActive
-                      ? 'bg-stone-100 text-stone-700'
-                      : 'bg-stone-200 text-stone-500'
+                      ? 'bg-[#EEF0FB] text-[#4F46A5] font-medium'
+                      : 'bg-[#E6E6E3] text-[#787774]'
                   }`}
                 >
                   {tab.count}
@@ -67,7 +67,7 @@ export function Tabs({
   }
 
   return (
-    <div className={`border-b border-stone-200 ${className}`}>
+    <div className={`border-b border-[#E6E6E3] ${className}`}>
       <nav role="tablist" className="flex space-x-6 overflow-x-auto no-scrollbar">
         {tabs.map((tab) => {
           const isActive = tab.id === activeTab;
@@ -78,26 +78,26 @@ export function Tabs({
               role="tab"
               aria-selected={isActive}
               onClick={() => onChange(tab.id)}
-              className={`group inline-flex items-center gap-2 py-3 px-1 border-b-2 text-sm font-medium transition-colors whitespace-nowrap ${
+              className={`group inline-flex items-center gap-2 py-2.5 px-1 border-b-2 text-xs sm:text-sm font-medium transition-colors whitespace-nowrap ${
                 isActive
-                  ? 'border-amber-600 text-stone-900 font-semibold'
-                  : 'border-transparent text-stone-500 hover:text-stone-800 hover:border-stone-300'
+                  ? 'border-[#4F46A5] text-[#202124] font-semibold'
+                  : 'border-transparent text-[#787774] hover:text-[#202124] hover:border-[#E6E6E3]'
               }`}
             >
               {Icon && (
                 <Icon
                   className={`w-4 h-4 flex-shrink-0 ${
-                    isActive ? 'text-amber-600' : 'text-stone-400 group-hover:text-stone-500'
+                    isActive ? 'text-[#4F46A5]' : 'text-[#787774] group-hover:text-[#202124]'
                   }`}
                 />
               )}
               <span>{tab.label}</span>
               {typeof tab.count === 'number' && (
                 <span
-                  className={`text-xs font-mono ml-1 px-1.5 py-0.5 rounded-full ${
+                  className={`text-[11px] font-mono ml-1 px-1.5 py-0.5 rounded-full ${
                     isActive
-                      ? 'bg-amber-100 text-amber-900 font-semibold'
-                      : 'bg-stone-100 text-stone-500 group-hover:bg-stone-200'
+                      ? 'bg-[#EEF0FB] text-[#4F46A5] font-medium'
+                      : 'bg-[#F1F1EF] text-[#787774] group-hover:bg-[#E6E6E3]'
                   }`}
                 >
                   {tab.count}

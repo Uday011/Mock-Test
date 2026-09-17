@@ -173,7 +173,7 @@ export function AppShell({
     <div className="space-y-4">
       {navGroups.map((group, groupIdx) => (
         <div key={groupIdx} className="space-y-0.5">
-          <div className="px-2 text-[11px] font-medium uppercase tracking-wider text-[#787774]">
+          <div className="px-2 text-[10px] font-semibold uppercase tracking-wider text-[#787774]">
             {group.title}
           </div>
           <div className="space-y-0.5 pt-0.5">
@@ -188,22 +188,24 @@ export function AppShell({
                 <Link
                   key={item.href}
                   href={item.href}
-                  className={`flex items-center justify-between px-2.5 py-1.5 text-[13px] rounded-md transition-colors min-h-[32px] select-none ${
+                  className={`flex items-center justify-between px-2.5 py-1.5 text-xs rounded-md transition-colors min-h-[30px] select-none ${
                     isActive
-                      ? 'bg-[#efefed] text-[#37352f] font-medium'
-                      : 'text-[#5f5e5b] hover:text-[#37352f] hover:bg-[#efefed]'
+                      ? 'bg-[#EEF0FB] text-[#4F46A5] font-medium'
+                      : 'text-[#5F5E5B] hover:text-[#202124] hover:bg-[#EAEAE7]'
                   }`}
                 >
                   <div className="flex items-center gap-2.5 min-w-0">
                     <Icon
-                      className={`w-4 h-4 flex-shrink-0 ${
-                        isActive ? 'text-[#37352f]' : 'text-[#787774]'
+                      className={`w-3.5 h-3.5 flex-shrink-0 ${
+                        isActive ? 'text-[#4F46A5]' : 'text-[#787774]'
                       }`}
                     />
                     <span className="truncate">{item.label}</span>
                   </div>
                   {item.badge && (
-                    <span className="text-[10px] font-mono px-1.5 py-0.2 rounded bg-[#ebebeb] text-[#787774]">
+                    <span className={`text-[10px] font-mono px-1.5 py-0.2 rounded ${
+                      isActive ? 'bg-[#DCDDF7] text-[#4F46A5]' : 'bg-[#E6E6E3] text-[#787774]'
+                    }`}>
                       {item.badge}
                     </span>
                   )}
@@ -217,26 +219,26 @@ export function AppShell({
   );
 
   return (
-    <div className="min-h-screen bg-[#ffffff] flex flex-col md:flex-row text-[#37352f]">
-      {/* Notion-Style Collapsible Desktop Sidebar */}
+    <div className="min-h-screen bg-[#F7F7F5] flex flex-col md:flex-row text-[#202124]">
+      {/* Nalanda Collapsible Desktop Sidebar */}
       <aside
-        className={`hidden md:flex flex-col border-r border-[#ebebeb] bg-[#f7f6f3] sticky top-0 h-screen overflow-y-auto shrink-0 z-20 transition-all duration-200 select-none ${
+        className={`hidden md:flex flex-col border-r border-[#E6E6E3] bg-[#F1F1EF] sticky top-0 h-screen overflow-y-auto shrink-0 z-20 transition-all duration-200 select-none ${
           sidebarCollapsed ? 'w-0 -ml-px border-r-0 overflow-hidden' : 'w-60'
         }`}
       >
         {/* Workspace Brand / Identity Switcher */}
-        <div className="p-3 border-b border-[#ebebeb] flex items-center justify-between">
+        <div className="p-3 border-b border-[#E6E6E3] flex items-center justify-between">
           <div className="flex items-center gap-2 min-w-0">
-            <div className="w-5 h-5 rounded bg-[#37352f] text-white flex items-center justify-center text-[10px] font-bold shrink-0">
+            <div className="w-5 h-5 rounded-[4px] bg-[#4F46A5] text-white flex items-center justify-center text-[10px] font-bold shrink-0">
               N
             </div>
-            <span className="text-xs font-semibold text-[#37352f] truncate tracking-tight">
+            <span className="text-xs font-semibold text-[#202124] truncate tracking-tight">
               Nalanda Workspace
             </span>
           </div>
           <button
             onClick={() => setSidebarCollapsed(true)}
-            className="p-1 rounded text-[#787774] hover:text-[#37352f] hover:bg-[#efefed] transition-colors"
+            className="p-1 rounded text-[#787774] hover:text-[#202124] hover:bg-[#EAEAE7] transition-colors"
             title="Collapse Sidebar"
           >
             <PanelLeft className="w-3.5 h-3.5" />
@@ -244,16 +246,16 @@ export function AppShell({
         </div>
 
         {/* Active Target Exam Pill */}
-        <div className="px-3 py-2 border-b border-[#ebebeb]">
+        <div className="px-3 py-2 border-b border-[#E6E6E3]">
           <div className="flex items-center justify-between text-[11px] text-[#787774] mb-1">
             <span>Target Exam</span>
-            <Link href="/exams" className="text-[#37352f] hover:underline text-[10px]">
+            <Link href="/exams" className="text-[#4F46A5] hover:underline text-[10px] font-medium">
               Switch
             </Link>
           </div>
-          <div className="flex items-center justify-between text-xs text-[#37352f] bg-white px-2 py-1.5 rounded border border-[#ebebeb]">
+          <div className="flex items-center justify-between text-xs text-[#202124] bg-white px-2 py-1.5 rounded-[4px] border border-[#E6E6E3]">
             <div className="flex items-center gap-1.5 truncate font-medium">
-              <span className="w-1.5 h-1.5 rounded-full bg-[#0f7b6c] shrink-0" />
+              <span className="w-1.5 h-1.5 rounded-full bg-[#4F46A5] shrink-0" />
               <span className="truncate">{selectedExam}</span>
             </div>
             <span className="text-[10px] font-mono text-[#787774]">Tier-I</span>
@@ -266,14 +268,14 @@ export function AppShell({
         </div>
 
         {/* User Session Footer */}
-        <div className="p-2.5 border-t border-[#ebebeb] bg-[#f7f6f3]">
-          <div className="flex items-center justify-between px-2 py-1.5 rounded hover:bg-[#efefed] transition-colors">
+        <div className="p-2.5 border-t border-[#E6E6E3] bg-[#F1F1EF]">
+          <div className="flex items-center justify-between px-2 py-1.5 rounded hover:bg-[#EAEAE7] transition-colors">
             <div className="flex items-center gap-2 min-w-0">
-              <div className="w-6 h-6 rounded-full bg-[#ebebeb] text-[#37352f] flex items-center justify-center text-[10px] font-medium shrink-0">
+              <div className="w-6 h-6 rounded-full bg-[#E6E6E3] text-[#202124] flex items-center justify-center text-[10px] font-medium shrink-0">
                 {user?.name ? user.name.slice(0, 2).toUpperCase() : 'NL'}
               </div>
               <div className="min-w-0">
-                <div className="text-xs font-medium text-[#37352f] truncate">
+                <div className="text-xs font-medium text-[#202124] truncate">
                   {user?.name || 'Aspirant'}
                 </div>
                 <div className="text-[10px] text-[#787774] capitalize truncate">
@@ -284,7 +286,7 @@ export function AppShell({
 
             <button
               onClick={handleLogout}
-              className="p-1 text-[#787774] hover:text-[#c93b3b] rounded hover:bg-white transition-colors"
+              className="p-1 text-[#787774] hover:text-[#C53030] rounded hover:bg-white transition-colors"
               title="Sign Out"
             >
               <LogOut className="w-3.5 h-3.5" />
@@ -294,11 +296,11 @@ export function AppShell({
       </aside>
 
       {/* Mobile Header Bar */}
-      <div className="md:hidden flex items-center justify-between px-3.5 py-2.5 bg-white border-b border-[#ebebeb] sticky top-0 z-30">
+      <div className="md:hidden flex items-center justify-between px-3.5 py-2.5 bg-white border-b border-[#E6E6E3] sticky top-0 z-30">
         <div className="flex items-center gap-2.5">
           <button
             onClick={() => setMobileOpen(true)}
-            className="p-1.5 -ml-1 text-[#37352f] hover:bg-[#efefed] rounded transition-colors"
+            className="p-1.5 -ml-1 text-[#202124] hover:bg-[#F1F1EF] rounded transition-colors"
             aria-label="Open navigation menu"
           >
             <Menu className="w-4 h-4" />
@@ -307,12 +309,12 @@ export function AppShell({
         </div>
 
         <div className="flex items-center gap-2">
-          <Badge variant="saffron" size="sm">
+          <Badge variant="indigo" size="sm">
             {selectedExam.split(' ')[0]}
           </Badge>
           <button
             onClick={() => setRoleDropdownOpen(!roleDropdownOpen)}
-            className="w-6 h-6 rounded-full bg-[#efefed] text-[#37352f] flex items-center justify-center text-[10px] font-medium"
+            className="w-6 h-6 rounded-full bg-[#F1F1EF] text-[#202124] flex items-center justify-center text-[10px] font-medium"
           >
             {user?.name ? user.name.slice(0, 1).toUpperCase() : 'N'}
           </button>
@@ -326,24 +328,24 @@ export function AppShell({
             className="fixed inset-0 bg-black/20 backdrop-blur-2xs transition-opacity"
             onClick={() => setMobileOpen(false)}
           />
-          <div className="relative flex flex-col w-4/5 max-w-xs bg-[#f7f6f3] h-full shadow-lg z-10 overflow-y-auto border-r border-[#ebebeb]">
-            <div className="p-3.5 border-b border-[#ebebeb] flex items-center justify-between bg-white">
+          <div className="relative flex flex-col w-4/5 max-w-xs bg-[#F1F1EF] h-full shadow-lg z-10 overflow-y-auto border-r border-[#E6E6E3]">
+            <div className="p-3.5 border-b border-[#E6E6E3] flex items-center justify-between bg-white">
               <Logo size="sm" />
               <button
                 onClick={() => setMobileOpen(false)}
-                className="p-1 text-[#787774] hover:text-[#37352f] rounded hover:bg-[#efefed]"
+                className="p-1 text-[#787774] hover:text-[#202124] rounded hover:bg-[#F1F1EF]"
                 aria-label="Close menu"
               >
                 <X className="w-4 h-4" />
               </button>
             </div>
 
-            <div className="p-3 border-b border-[#ebebeb]">
-              <div className="text-[10px] uppercase font-medium text-[#787774] tracking-wider mb-1">
+            <div className="p-3 border-b border-[#E6E6E3]">
+              <div className="text-[10px] uppercase font-semibold text-[#787774] tracking-wider mb-1">
                 Active Target Exam
               </div>
-              <div className="text-xs font-medium text-[#37352f] flex items-center gap-2">
-                <span className="w-1.5 h-1.5 rounded-full bg-[#0f7b6c]" />
+              <div className="text-xs font-medium text-[#202124] flex items-center gap-2">
+                <span className="w-1.5 h-1.5 rounded-full bg-[#4F46A5]" />
                 {selectedExam}
               </div>
             </div>
@@ -352,15 +354,15 @@ export function AppShell({
               {renderNavLinks()}
             </div>
 
-            <div className="p-3 border-t border-[#ebebeb] bg-white">
+            <div className="p-3 border-t border-[#E6E6E3] bg-white">
               <div className="flex items-center justify-between">
                 <div>
-                  <div className="text-xs font-medium text-[#37352f]">{user?.name || 'Aspirant'}</div>
+                  <div className="text-xs font-medium text-[#202124]">{user?.name || 'Aspirant'}</div>
                   <div className="text-[10px] text-[#787774]">{user?.email || 'aspirant@nalanda.edu'}</div>
                 </div>
                 <button
                   onClick={handleLogout}
-                  className="p-1.5 text-[#787774] hover:text-[#c93b3b] rounded hover:bg-[#efefed] transition-colors"
+                  className="p-1.5 text-[#787774] hover:text-[#C53030] rounded hover:bg-[#F1F1EF] transition-colors"
                 >
                   <LogOut className="w-4 h-4" />
                 </button>
@@ -371,15 +373,15 @@ export function AppShell({
       )}
 
       {/* Main Content Area */}
-      <div className="flex-1 flex flex-col min-w-0 bg-[#ffffff]">
-        {/* Compact Notion Top Header Bar (Height 44px) */}
-        <header className="hidden md:flex items-center justify-between px-5 h-11 bg-white border-b border-[#ebebeb] sticky top-0 z-10 select-none">
+      <div className="flex-1 flex flex-col min-w-0 bg-[#F7F7F5]">
+        {/* Compact Top Header Bar (Height 44px) */}
+        <header className="hidden md:flex items-center justify-between px-5 h-11 bg-white border-b border-[#E6E6E3] sticky top-0 z-10 select-none">
           {/* Breadcrumbs & Sidebar Toggle */}
           <div className="flex items-center gap-2 min-w-0">
             {sidebarCollapsed && (
               <button
                 onClick={() => setSidebarCollapsed(false)}
-                className="p-1 rounded text-[#787774] hover:text-[#37352f] hover:bg-[#efefed] transition-colors mr-1"
+                className="p-1 rounded text-[#787774] hover:text-[#202124] hover:bg-[#F1F1EF] transition-colors mr-1"
                 title="Expand Sidebar"
               >
                 <PanelLeft className="w-4 h-4" />
@@ -390,7 +392,7 @@ export function AppShell({
               <Breadcrumbs items={breadcrumbs} />
             ) : (
               <div className="flex items-center gap-1.5 text-xs text-[#787774]">
-                <span className="text-[#37352f] font-medium">Nalanda</span>
+                <span className="text-[#202124] font-medium">Nalanda</span>
                 <span>/</span>
                 <span>{selectedExam}</span>
               </div>
@@ -403,37 +405,37 @@ export function AppShell({
             <div className="relative" ref={examMenuRef}>
               <button
                 onClick={() => setExamDropdownOpen(!examDropdownOpen)}
-                className="flex items-center gap-1.5 px-2.5 py-1 text-xs text-[#37352f] hover:bg-[#efefed] rounded transition-colors"
+                className="flex items-center gap-1.5 px-2.5 py-1 text-xs text-[#202124] hover:bg-[#F1F1EF] rounded transition-colors"
               >
-                <span className="w-1.5 h-1.5 rounded-full bg-[#0f7b6c]" />
+                <span className="w-1.5 h-1.5 rounded-full bg-[#4F46A5]" />
                 <span className="font-medium">{selectedExam}</span>
                 <ChevronDown className="w-3 h-3 text-[#787774]" />
               </button>
 
               {examDropdownOpen && (
-                <div className="absolute right-0 mt-1 w-60 bg-white rounded-md shadow-[0_4px_16px_rgba(0,0,0,0.08)] border border-[#ebebeb] py-1 z-50 animate-in fade-in zoom-in-95">
-                  <div className="px-2.5 py-1 text-[10px] font-medium uppercase tracking-wider text-[#787774]">
+                <div className="absolute right-0 mt-1 w-60 bg-white rounded-md shadow-[0_4px_16px_rgba(0,0,0,0.06)] border border-[#E6E6E3] py-1 z-50 animate-in fade-in zoom-in-95">
+                  <div className="px-2.5 py-1 text-[10px] font-semibold uppercase tracking-wider text-[#787774]">
                     Switch Target Exam
                   </div>
                   {availableExams.map((ex) => (
                     <button
                       key={ex.id}
                       onClick={() => handleSelectExam(ex.name)}
-                      className="w-full text-left px-2.5 py-1.5 text-xs hover:bg-[#f7f6f3] flex items-center justify-between text-[#37352f] transition-colors"
+                      className="w-full text-left px-2.5 py-1.5 text-xs hover:bg-[#F7F7F5] flex items-center justify-between text-[#202124] transition-colors"
                     >
                       <div>
                         <div className="font-medium">{ex.name}</div>
                         <div className="text-[10px] text-[#787774]">{ex.sub}</div>
                       </div>
                       {selectedExam === ex.name && (
-                        <Check className="w-3.5 h-3.5 text-[#0f7b6c] shrink-0" />
+                        <Check className="w-3.5 h-3.5 text-[#4F46A5] shrink-0" />
                       )}
                     </button>
                   ))}
-                  <div className="p-1.5 border-t border-[#ebebeb] mt-0.5">
+                  <div className="p-1.5 border-t border-[#E6E6E3] mt-0.5">
                     <Link
                       href="/exams"
-                      className="text-[11px] text-[#787774] hover:text-[#37352f] flex items-center justify-center gap-1"
+                      className="text-[11px] text-[#787774] hover:text-[#4F46A5] flex items-center justify-center gap-1 font-medium"
                     >
                       Complete Catalog <ExternalLink className="w-3 h-3" />
                     </Link>
@@ -446,7 +448,7 @@ export function AppShell({
             <div className="relative" ref={roleMenuRef}>
               <button
                 onClick={() => setRoleDropdownOpen(!roleDropdownOpen)}
-                className="flex items-center gap-1.5 px-2 py-1 text-xs text-[#37352f] hover:bg-[#efefed] rounded transition-colors"
+                className="flex items-center gap-1.5 px-2 py-1 text-xs text-[#202124] hover:bg-[#F1F1EF] rounded transition-colors"
                 title="Switch Workspace Role"
               >
                 <ShieldCheck className="w-3.5 h-3.5 text-[#787774]" />
@@ -455,8 +457,8 @@ export function AppShell({
               </button>
 
               {roleDropdownOpen && (
-                <div className="absolute right-0 mt-1 w-52 bg-white rounded-md shadow-[0_4px_16px_rgba(0,0,0,0.08)] border border-[#ebebeb] py-1 z-50 animate-in fade-in zoom-in-95">
-                  <div className="px-2.5 py-1 text-[10px] font-medium uppercase tracking-wider text-[#787774]">
+                <div className="absolute right-0 mt-1 w-52 bg-white rounded-md shadow-[0_4px_16px_rgba(0,0,0,0.06)] border border-[#E6E6E3] py-1 z-50 animate-in fade-in zoom-in-95">
+                  <div className="px-2.5 py-1 text-[10px] font-semibold uppercase tracking-wider text-[#787774]">
                     Active Workspace Role
                   </div>
                   {[
@@ -468,13 +470,13 @@ export function AppShell({
                     <button
                       key={r.role}
                       onClick={() => handleSwitchRole(r.role)}
-                      className="w-full text-left px-2.5 py-1.5 text-xs hover:bg-[#f7f6f3] text-[#37352f] flex items-center justify-between"
+                      className="w-full text-left px-2.5 py-1.5 text-xs hover:bg-[#F7F7F5] text-[#202124] flex items-center justify-between"
                     >
                       <span>{r.label}</span>
-                      {user?.role === r.role && <Check className="w-3.5 h-3.5 text-[#0f7b6c]" />}
+                      {user?.role === r.role && <Check className="w-3.5 h-3.5 text-[#4F46A5]" />}
                     </button>
                   ))}
-                  <div className="p-1.5 border-t border-[#ebebeb] mt-0.5">
+                  <div className="p-1.5 border-t border-[#E6E6E3] mt-0.5">
                     <button
                       onClick={async () => {
                         try {
@@ -488,7 +490,7 @@ export function AppShell({
                           console.error(e);
                         }
                       }}
-                      className="w-full py-1 px-2 rounded bg-[#faece3] hover:bg-[#f5e1d3] text-[#d9730d] text-[11px] font-medium flex items-center justify-center gap-1 transition-colors"
+                      className="w-full py-1 px-2 rounded bg-[#EEF0FB] hover:bg-[#DCDDF7] text-[#4F46A5] text-[11px] font-medium flex items-center justify-center gap-1 transition-colors"
                     >
                       <Sparkles className="w-3 h-3" />
                       <span>Become an Educator</span>
@@ -510,55 +512,55 @@ export function AppShell({
         {/* Mobile Fixed Bottom Navigation Bar (Screens < md:) */}
         <nav
           aria-label="Mobile Bottom Navigation"
-          className="md:hidden fixed bottom-0 inset-x-0 bg-white/95 backdrop-blur-md border-t border-[#ebebeb] z-30 flex items-center justify-around py-1.5 px-2 shadow-xs select-none"
+          className="md:hidden fixed bottom-0 inset-x-0 bg-white/95 backdrop-blur-md border-t border-[#E6E6E3] z-30 flex items-center justify-around py-1.5 px-2 shadow-xs select-none"
         >
           <Link
             href="/dashboard"
             className={`flex flex-col items-center justify-center py-1 px-2 rounded text-[10px] min-w-[52px] transition-colors ${
-              pathname === '/dashboard' ? 'text-[#37352f] font-semibold' : 'text-[#787774] hover:text-[#37352f]'
+              pathname === '/dashboard' ? 'text-[#4F46A5] font-semibold' : 'text-[#787774] hover:text-[#202124]'
             }`}
           >
-            <LayoutDashboard className={`w-4 h-4 mb-0.5 ${pathname === '/dashboard' ? 'text-[#37352f]' : 'text-[#9b9a97]'}`} />
+            <LayoutDashboard className={`w-4 h-4 mb-0.5 ${pathname === '/dashboard' ? 'text-[#4F46A5]' : 'text-[#787774]'}`} />
             <span>Overview</span>
           </Link>
 
           <Link
             href="/learn"
             className={`flex flex-col items-center justify-center py-1 px-2 rounded text-[10px] min-w-[52px] transition-colors ${
-              pathname.startsWith('/learn') ? 'text-[#37352f] font-semibold' : 'text-[#787774] hover:text-[#37352f]'
+              pathname.startsWith('/learn') ? 'text-[#4F46A5] font-semibold' : 'text-[#787774] hover:text-[#202124]'
             }`}
           >
-            <BookOpen className={`w-4 h-4 mb-0.5 ${pathname.startsWith('/learn') ? 'text-[#37352f]' : 'text-[#9b9a97]'}`} />
+            <BookOpen className={`w-4 h-4 mb-0.5 ${pathname.startsWith('/learn') ? 'text-[#4F46A5]' : 'text-[#787774]'}`} />
             <span>Learn</span>
           </Link>
 
           <Link
             href="/tests"
             className={`flex flex-col items-center justify-center py-1 px-2 rounded text-[10px] min-w-[52px] transition-colors ${
-              pathname.startsWith('/tests') && !pathname.startsWith('/tests/create') ? 'text-[#37352f] font-semibold' : 'text-[#787774] hover:text-[#37352f]'
+              pathname.startsWith('/tests') && !pathname.startsWith('/tests/create') ? 'text-[#4F46A5] font-semibold' : 'text-[#787774] hover:text-[#202124]'
             }`}
           >
-            <FileCheck className={`w-4 h-4 mb-0.5 ${pathname.startsWith('/tests') && !pathname.startsWith('/tests/create') ? 'text-[#37352f]' : 'text-[#9b9a97]'}`} />
+            <FileCheck className={`w-4 h-4 mb-0.5 ${pathname.startsWith('/tests') && !pathname.startsWith('/tests/create') ? 'text-[#4F46A5]' : 'text-[#787774]'}`} />
             <span>Tests</span>
           </Link>
 
           <Link
             href="/mistakes"
             className={`flex flex-col items-center justify-center py-1 px-2 rounded text-[10px] min-w-[52px] transition-colors ${
-              pathname === '/mistakes' ? 'text-[#c93b3b] font-semibold' : 'text-[#787774] hover:text-[#37352f]'
+              pathname === '/mistakes' ? 'text-[#C53030] font-semibold' : 'text-[#787774] hover:text-[#202124]'
             }`}
           >
-            <BookMarked className={`w-4 h-4 mb-0.5 ${pathname === '/mistakes' ? 'text-[#c93b3b]' : 'text-[#9b9a97]'}`} />
+            <BookMarked className={`w-4 h-4 mb-0.5 ${pathname === '/mistakes' ? 'text-[#C53030]' : 'text-[#787774]'}`} />
             <span>Mistakes</span>
           </Link>
 
           <Link
             href="/library"
             className={`flex flex-col items-center justify-center py-1 px-2 rounded text-[10px] min-w-[52px] transition-colors ${
-              pathname === '/library' ? 'text-[#37352f] font-semibold' : 'text-[#787774] hover:text-[#37352f]'
+              pathname === '/library' ? 'text-[#4F46A5] font-semibold' : 'text-[#787774] hover:text-[#202124]'
             }`}
           >
-            <Library className={`w-4 h-4 mb-0.5 ${pathname === '/library' ? 'text-[#37352f]' : 'text-[#9b9a97]'}`} />
+            <Library className={`w-4 h-4 mb-0.5 ${pathname === '/library' ? 'text-[#4F46A5]' : 'text-[#787774]'}`} />
             <span>Library</span>
           </Link>
         </nav>

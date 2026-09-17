@@ -93,13 +93,13 @@ export default function SettingsPage() {
 
       <div className="space-y-5 max-w-4xl">
         {/* Target Exam & Benchmark Goals */}
-        <div className="p-5 bg-white rounded-md border border-[#ebebeb] space-y-4">
-          <div className="flex items-center gap-2 pb-3 border-b border-[#ebebeb]">
-            <div className="w-6 h-6 rounded-[3px] bg-[#fbf3db] text-[#4d3800] flex items-center justify-center">
+        <div className="p-5 bg-white rounded-md border border-[#E6E6E3] space-y-4">
+          <div className="flex items-center gap-2 pb-3 border-b border-[#E6E6E3]">
+            <div className="w-6 h-6 rounded-[3px] bg-[#FFFBEB] text-[#4d3800] flex items-center justify-center">
               <Target className="w-3.5 h-3.5" />
             </div>
             <div>
-              <h3 className="text-sm font-semibold text-[#37352f]">
+              <h3 className="text-sm font-semibold text-[#202124]">
                 Target Examination & Score Goals
               </h3>
               <p className="text-[11px] text-[#787774]">Define your primary national examination and target Tier-I marks</p>
@@ -108,13 +108,13 @@ export default function SettingsPage() {
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-              <label className="block text-xs font-medium text-[#37352f] mb-1">
+              <label className="block text-xs font-medium text-[#202124] mb-1">
                 Primary Target Exam
               </label>
               <select
                 value={activeExam}
                 onChange={(e) => setActiveExam(e.target.value)}
-                className="w-full px-2.5 py-1.5 text-xs border border-[#ebebeb] rounded-[4px] focus:outline-none focus:border-[#37352f] bg-[#fcfbf9] text-[#37352f]"
+                className="w-full px-2.5 py-1.5 text-xs border border-[#E6E6E3] rounded-[4px] focus:outline-none focus:border-[#202124] bg-[#fcfbf9] text-[#202124]"
               >
                 <option value="SSC CGL 2026">SSC CGL 2026 (Staff Selection Group B/C)</option>
                 <option value="NEET UG 2026">NEET UG 2026 (Pre-Medical Entrance)</option>
@@ -124,14 +124,14 @@ export default function SettingsPage() {
             </div>
 
             <div>
-              <label className="block text-xs font-medium text-[#37352f] mb-1">
+              <label className="block text-xs font-medium text-[#202124] mb-1">
                 Target Score Benchmark (Tier-I)
               </label>
               <input
                 type="number"
                 value={targetScore}
                 onChange={(e) => setTargetScore(e.target.value)}
-                className="w-full px-2.5 py-1.5 text-xs border border-[#ebebeb] rounded-[4px] focus:outline-none focus:border-[#37352f] bg-[#fcfbf9] text-[#37352f]"
+                className="w-full px-2.5 py-1.5 text-xs border border-[#E6E6E3] rounded-[4px] focus:outline-none focus:border-[#202124] bg-[#fcfbf9] text-[#202124]"
                 placeholder="e.g. 165"
               />
               <span className="text-[10px] text-[#787774] mt-1 block">General category qualifying cutoff: ~138 / 200</span>
@@ -140,13 +140,13 @@ export default function SettingsPage() {
         </div>
 
         {/* AI Pedagogical Intelligence & Gemini Key */}
-        <div className="p-5 bg-white rounded-md border border-[#ebebeb] space-y-4">
-          <div className="flex items-center gap-2 pb-3 border-b border-[#ebebeb]">
-            <div className="w-6 h-6 rounded-[3px] bg-[#fbf3db] text-[#4d3800] flex items-center justify-center">
+        <div className="p-5 bg-white rounded-md border border-[#E6E6E3] space-y-4">
+          <div className="flex items-center gap-2 pb-3 border-b border-[#E6E6E3]">
+            <div className="w-6 h-6 rounded-[3px] bg-[#FFFBEB] text-[#4d3800] flex items-center justify-center">
               <Sparkles className="w-3.5 h-3.5" />
             </div>
             <div>
-              <h3 className="text-sm font-semibold text-[#37352f]">
+              <h3 className="text-sm font-semibold text-[#202124]">
                 Cognitive AI & Diagnostic Engine
               </h3>
               <p className="text-[11px] text-[#787774]">Power automated question parsing, hint generation, and mistake categorization</p>
@@ -154,7 +154,7 @@ export default function SettingsPage() {
           </div>
 
           <div>
-            <label className="block text-xs font-medium text-[#37352f] mb-1">
+            <label className="block text-xs font-medium text-[#202124] mb-1">
               Google Gemini API Key
             </label>
             <input
@@ -162,7 +162,7 @@ export default function SettingsPage() {
               value={geminiKey}
               onChange={(e) => setGeminiKey(e.target.value)}
               placeholder="AIzaSy..."
-              className="w-full px-2.5 py-1.5 text-xs font-mono border border-[#ebebeb] rounded-[4px] focus:outline-none focus:border-[#37352f] bg-[#fcfbf9] text-[#37352f]"
+              className="w-full px-2.5 py-1.5 text-xs font-mono border border-[#E6E6E3] rounded-[4px] focus:outline-none focus:border-[#202124] bg-[#fcfbf9] text-[#202124]"
             />
             <p className="text-[11px] text-[#787774] mt-1 leading-relaxed">
               Stored locally in your browser. Used for rapid syllabus topic classification and OCR exam paper parsing.
@@ -171,13 +171,13 @@ export default function SettingsPage() {
         </div>
 
         {/* Persona Role Switcher */}
-        <div className="p-5 bg-white rounded-md border border-[#ebebeb] space-y-4">
-          <div className="flex items-center gap-2 pb-3 border-b border-[#ebebeb]">
-            <div className="w-6 h-6 rounded-[3px] bg-[#f7f6f3] text-[#37352f] flex items-center justify-center border border-[#ebebeb]">
+        <div className="p-5 bg-white rounded-md border border-[#E6E6E3] space-y-4">
+          <div className="flex items-center gap-2 pb-3 border-b border-[#E6E6E3]">
+            <div className="w-6 h-6 rounded-[3px] bg-[#F1F1EF] text-[#202124] flex items-center justify-center border border-[#E6E6E3]">
               <ShieldCheck className="w-3.5 h-3.5" />
             </div>
             <div>
-              <h3 className="text-sm font-semibold text-[#37352f]">
+              <h3 className="text-sm font-semibold text-[#202124]">
                 Persona Role Simulator
               </h3>
               <p className="text-[11px] text-[#787774]">Quickly toggle between testing personas to preview platform dimensions</p>
@@ -189,11 +189,11 @@ export default function SettingsPage() {
               onClick={() => handleSwitchRole('student')}
               className={`p-3.5 rounded-md border text-left transition-colors ${
                 currentUser?.role === 'student'
-                  ? 'border-[#37352f] bg-[#f7f6f3] ring-1 ring-[#37352f]'
-                  : 'border-[#ebebeb] hover:bg-[#fcfbf9]'
+                  ? 'border-[#202124] bg-[#F1F1EF] ring-1 ring-[#202124]'
+                  : 'border-[#E6E6E3] hover:bg-[#fcfbf9]'
               }`}
             >
-              <div className="text-xs font-semibold text-[#37352f]">Aspirant / Learner</div>
+              <div className="text-xs font-semibold text-[#202124]">Aspirant / Learner</div>
               <p className="text-[11px] text-[#787774] mt-0.5">Full CBT testing, mistake notebook, syllabus progression</p>
             </button>
 
@@ -201,11 +201,11 @@ export default function SettingsPage() {
               onClick={() => handleSwitchRole('admin')}
               className={`p-3.5 rounded-md border text-left transition-colors ${
                 currentUser?.role === 'admin'
-                  ? 'border-[#37352f] bg-[#f7f6f3] ring-1 ring-[#37352f]'
-                  : 'border-[#ebebeb] hover:bg-[#fcfbf9]'
+                  ? 'border-[#202124] bg-[#F1F1EF] ring-1 ring-[#202124]'
+                  : 'border-[#E6E6E3] hover:bg-[#fcfbf9]'
               }`}
             >
-              <div className="text-xs font-semibold text-[#37352f]">Educator / Faculty</div>
+              <div className="text-xs font-semibold text-[#202124]">Educator / Faculty</div>
               <p className="text-[11px] text-[#787774] mt-0.5">Test studio authoring, parser, student cohort analytics</p>
             </button>
 
@@ -213,11 +213,11 @@ export default function SettingsPage() {
               onClick={() => handleSwitchRole('superadmin')}
               className={`p-3.5 rounded-md border text-left transition-colors ${
                 currentUser?.role === 'superadmin'
-                  ? 'border-[#37352f] bg-[#f7f6f3] ring-1 ring-[#37352f]'
-                  : 'border-[#ebebeb] hover:bg-[#fcfbf9]'
+                  ? 'border-[#202124] bg-[#F1F1EF] ring-1 ring-[#202124]'
+                  : 'border-[#E6E6E3] hover:bg-[#fcfbf9]'
               }`}
             >
-              <div className="text-xs font-semibold text-[#37352f]">Super Administrator</div>
+              <div className="text-xs font-semibold text-[#202124]">Super Administrator</div>
               <p className="text-[11px] text-[#787774] mt-0.5">System governance, institution directory, global exams</p>
             </button>
           </div>

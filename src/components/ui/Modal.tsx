@@ -71,11 +71,11 @@ export function Modal({
       {/* Dialog Body */}
       <div
         ref={modalRef}
-        className={`relative w-full ${sizeWidths[size]} bg-white rounded-lg shadow-[0_4px_24px_rgba(0,0,0,0.12)] border border-[#ebebeb] overflow-hidden z-10 text-[#37352f] ${className}`}
+        className={`relative w-full ${sizeWidths[size]} bg-white rounded-lg shadow-[0_4px_24px_rgba(0,0,0,0.08)] border border-[#E6E6E3] overflow-hidden z-10 text-[#202124] ${className}`}
       >
-        <div className="flex items-start justify-between px-5 pt-4 pb-3 border-b border-[#ebebeb]">
+        <div className="flex items-start justify-between px-5 pt-4 pb-3 border-b border-[#E6E6E3]">
           <div>
-            <h2 id="modal-title" className="text-base font-semibold text-[#37352f] tracking-tight">
+            <h2 id="modal-title" className="text-base font-semibold text-[#202124] tracking-tight">
               {title}
             </h2>
             {description && (
@@ -84,7 +84,7 @@ export function Modal({
           </div>
           <button
             onClick={onClose}
-            className="p-1 rounded-md text-[#787774] hover:text-[#37352f] hover:bg-[#efefed] transition-colors focus:outline-none"
+            className="p-1 rounded-md text-[#787774] hover:text-[#202124] hover:bg-[#F1F1EF] transition-colors focus:outline-none"
             aria-label="Close dialog"
           >
             <X className="w-4 h-4" />
@@ -96,7 +96,7 @@ export function Modal({
         </div>
 
         {footer && (
-          <div className="flex items-center justify-end gap-2.5 px-5 py-3 bg-[#fbfbfa] border-t border-[#ebebeb]">
+          <div className="flex items-center justify-end gap-2.5 px-5 py-3 bg-[#F7F7F5] border-t border-[#E6E6E3]">
             {footer}
           </div>
         )}

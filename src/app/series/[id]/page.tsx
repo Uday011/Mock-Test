@@ -104,7 +104,7 @@ export default function TestSeriesDetailPage() {
     return (
       <AppShell>
         <div className="min-h-[50vh] flex flex-col items-center justify-center space-y-3">
-          <div className="w-6 h-6 border-2 border-[#37352f] border-t-transparent rounded-full animate-spin" />
+          <div className="w-6 h-6 border-2 border-[#202124] border-t-transparent rounded-full animate-spin" />
           <p className="text-xs text-[#787774]">Loading test series curriculum...</p>
         </div>
       </AppShell>
@@ -114,9 +114,9 @@ export default function TestSeriesDetailPage() {
   if (error || !series) {
     return (
       <AppShell>
-        <div className="max-w-md mx-auto my-16 p-6 bg-white rounded-md border border-[#ebebeb] text-center space-y-4">
+        <div className="max-w-md mx-auto my-16 p-6 bg-white rounded-md border border-[#E6E6E3] text-center space-y-4">
           <AlertCircle className="w-8 h-8 text-[#eb5757] mx-auto" />
-          <h3 className="font-semibold text-[#37352f] text-base">Test Series Not Found</h3>
+          <h3 className="font-semibold text-[#202124] text-base">Test Series Not Found</h3>
           <p className="text-xs text-[#787774]">{error || 'This series does not exist or has been unpublished.'}</p>
           <Link href="/library" className="inline-block">
             <Button variant="primary" size="sm">
@@ -141,7 +141,7 @@ export default function TestSeriesDetailPage() {
     >
       {/* Toast Notification */}
       {toastMessage && (
-        <div className="fixed bottom-6 right-6 z-50 bg-[#37352f] text-white text-xs px-3.5 py-2.5 rounded-md shadow-lg flex items-center gap-2 animate-in fade-in slide-in-from-bottom-2">
+        <div className="fixed bottom-6 right-6 z-50 bg-[#202124] text-white text-xs px-3.5 py-2.5 rounded-md shadow-lg flex items-center gap-2 animate-in fade-in slide-in-from-bottom-2">
           <CheckCircle2 className="w-4 h-4 text-emerald-400" />
           <span>{toastMessage}</span>
         </div>
@@ -167,7 +167,7 @@ export default function TestSeriesDetailPage() {
         <div className="flex items-center justify-between">
           <Link
             href="/library"
-            className="inline-flex items-center gap-1.5 text-xs text-[#787774] hover:text-[#37352f] transition-colors"
+            className="inline-flex items-center gap-1.5 text-xs text-[#787774] hover:text-[#202124] transition-colors"
           >
             <ArrowLeft className="w-3.5 h-3.5" /> Back to Assessment Library
           </Link>
@@ -175,7 +175,7 @@ export default function TestSeriesDetailPage() {
           <div className="flex items-center gap-2">
             <button
               onClick={handleShare}
-              className="px-2.5 py-1 rounded-[4px] border border-[#ebebeb] bg-white text-[#37352f] hover:bg-[#f7f6f3] text-xs font-medium flex items-center gap-1.5 transition-colors"
+              className="px-2.5 py-1 rounded-[4px] border border-[#E6E6E3] bg-white text-[#202124] hover:bg-[#F1F1EF] text-xs font-medium flex items-center gap-1.5 transition-colors"
             >
               <Share2 className="w-3.5 h-3.5 text-[#787774]" />
               <span>Share</span>
@@ -184,14 +184,14 @@ export default function TestSeriesDetailPage() {
         </div>
 
         {/* Hero Card */}
-        <div className="bg-white rounded-md p-5 sm:p-6 border border-[#ebebeb] space-y-5">
+        <div className="bg-white rounded-md p-5 sm:p-6 border border-[#E6E6E3] space-y-5">
           <div className="flex flex-col md:flex-row md:items-start justify-between gap-6">
             <div className="space-y-3 flex-1">
               <div className="flex items-center gap-2 flex-wrap">
-                <span className="text-[11px] font-mono px-2 py-0.5 rounded-[3px] bg-[#fbf3db] text-[#4d3800] border border-[#f1e0b5]">
+                <span className="text-[11px] font-mono px-2 py-0.5 rounded-[3px] bg-[#FFFBEB] text-[#4d3800] border border-[#f1e0b5]">
                   {series.exam_title || 'SSC CGL 2026'}
                 </span>
-                <span className="text-[11px] px-2 py-0.5 rounded-[3px] bg-[#f7f6f3] text-[#787774] border border-[#ebebeb]">
+                <span className="text-[11px] px-2 py-0.5 rounded-[3px] bg-[#F1F1EF] text-[#787774] border border-[#E6E6E3]">
                   {items.length} Mock Examinations
                 </span>
                 <span className="text-[11px] font-medium px-2 py-0.5 rounded-[3px] bg-[#edf6f9] text-[#1e6074] border border-[#cbe4eb]">
@@ -199,7 +199,7 @@ export default function TestSeriesDetailPage() {
                 </span>
               </div>
 
-              <h1 className="text-xl sm:text-2xl font-bold text-[#37352f] tracking-tight">
+              <h1 className="text-xl sm:text-2xl font-bold text-[#202124] tracking-tight">
                 {series.title}
               </h1>
 
@@ -211,13 +211,13 @@ export default function TestSeriesDetailPage() {
               <div className="pt-2 flex items-center gap-3">
                 <Link
                   href={`/creators/${series.creator_id}`}
-                  className="flex items-center gap-2 text-xs text-[#37352f] hover:text-black group"
+                  className="flex items-center gap-2 text-xs text-[#202124] hover:text-black group"
                 >
-                  <div className="w-7 h-7 rounded-[4px] bg-[#fbf3db] text-[#4d3800] flex items-center justify-center font-bold text-xs border border-[#f1e0b5]">
+                  <div className="w-7 h-7 rounded-[4px] bg-[#FFFBEB] text-[#4d3800] flex items-center justify-center font-bold text-xs border border-[#f1e0b5]">
                     {series.creator_name?.charAt(0) || 'F'}
                   </div>
                   <div>
-                    <div className="font-medium text-[#37352f] flex items-center gap-1 group-hover:underline">
+                    <div className="font-medium text-[#202124] flex items-center gap-1 group-hover:underline">
                       <span>{series.creator_name || 'Academic Faculty'}</span>
                       <ShieldCheck className="w-3.5 h-3.5 text-emerald-600" />
                     </div>
@@ -230,12 +230,12 @@ export default function TestSeriesDetailPage() {
             </div>
 
             {/* CTA Pricing & Action Box */}
-            <div className="bg-[#fcfbf9] p-4 rounded-md border border-[#ebebeb] text-center space-y-3 shrink-0 w-full md:w-60">
+            <div className="bg-[#fcfbf9] p-4 rounded-md border border-[#E6E6E3] text-center space-y-3 shrink-0 w-full md:w-60">
               <div>
                 <span className="text-[10px] uppercase tracking-wider font-semibold text-[#787774] block">
                   Series Enrollment
                 </span>
-                <div className="font-bold text-xl text-[#37352f] mt-1">
+                <div className="font-bold text-xl text-[#202124] mt-1">
                   {series.is_paid ? `₹${series.price_inr}` : 'Free'}
                 </div>
                 {series.is_paid && (
@@ -279,9 +279,9 @@ export default function TestSeriesDetailPage() {
                 </Button>
               )}
 
-              <div className="flex items-center justify-center gap-2 pt-2 border-t border-[#ebebeb] text-[11px] text-[#787774]">
+              <div className="flex items-center justify-center gap-2 pt-2 border-t border-[#E6E6E3] text-[11px] text-[#787774]">
                 <div className="flex items-center gap-1">
-                  <Star className="w-3 h-3 fill-[#d9730d] text-[#d9730d]" />
+                  <Star className="w-3 h-3 fill-[#B7791F] text-[#B7791F]" />
                   <span>{Number(series.rating || 4.9).toFixed(2)}</span>
                 </div>
                 <span>•</span>
@@ -295,9 +295,9 @@ export default function TestSeriesDetailPage() {
 
           {/* Learner Progression Bar (if enrolled) */}
           {series.user_progress && (
-            <div className="p-3.5 rounded-md bg-[#f7f6f3] border border-[#ebebeb] space-y-2">
+            <div className="p-3.5 rounded-md bg-[#F1F1EF] border border-[#E6E6E3] space-y-2">
               <div className="flex items-center justify-between text-xs">
-                <span className="font-medium text-[#37352f]">Series Completion Progress</span>
+                <span className="font-medium text-[#202124]">Series Completion Progress</span>
                 <span className="font-mono text-[11px] text-[#787774]">
                   {series.user_progress.completed_tests_count} of {series.user_progress.total_tests} Tests Completed ({series.user_progress.progress_percentage}%)
                 </span>
@@ -309,9 +309,9 @@ export default function TestSeriesDetailPage() {
 
         {/* Ordered Test Curriculum List */}
         <div className="space-y-3">
-          <div className="flex items-center justify-between border-b border-[#ebebeb] pb-2">
+          <div className="flex items-center justify-between border-b border-[#E6E6E3] pb-2">
             <div>
-              <h3 className="text-sm font-semibold text-[#37352f]">
+              <h3 className="text-sm font-semibold text-[#202124]">
                 Recommended Examination Sequence
               </h3>
               <p className="text-[11px] text-[#787774]">
@@ -332,18 +332,18 @@ export default function TestSeriesDetailPage() {
                   key={item.id}
                   className={`bg-white rounded-md border p-3.5 sm:p-4 transition-colors flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 ${
                     isLocked
-                      ? 'border-[#ebebeb] opacity-85'
-                      : 'border-[#ebebeb] hover:bg-[#fcfbf9]'
+                      ? 'border-[#E6E6E3] opacity-85'
+                      : 'border-[#E6E6E3] hover:bg-[#fcfbf9]'
                   }`}
                 >
                   <div className="flex items-start gap-3">
-                    <div className="w-7 h-7 rounded-[4px] bg-[#f7f6f3] text-[#787774] flex items-center justify-center font-mono font-bold text-xs shrink-0 mt-0.5 border border-[#ebebeb]">
+                    <div className="w-7 h-7 rounded-[4px] bg-[#F1F1EF] text-[#787774] flex items-center justify-center font-mono font-bold text-xs shrink-0 mt-0.5 border border-[#E6E6E3]">
                       {String(item.sequence_order || idx + 1).padStart(2, '0')}
                     </div>
 
                     <div className="space-y-1">
                       <div className="flex items-center gap-2 flex-wrap">
-                        <h4 className="font-medium text-[#37352f] text-sm">
+                        <h4 className="font-medium text-[#202124] text-sm">
                           {item.test_title}
                         </h4>
 
@@ -354,14 +354,14 @@ export default function TestSeriesDetailPage() {
                         )}
 
                         {isLocked && (
-                          <span className="inline-flex items-center gap-1 text-[10px] px-1.5 py-0.5 rounded-[3px] bg-[#f7f6f3] text-[#787774] border border-[#ebebeb]">
+                          <span className="inline-flex items-center gap-1 text-[10px] px-1.5 py-0.5 rounded-[3px] bg-[#F1F1EF] text-[#787774] border border-[#E6E6E3]">
                             <Lock className="w-2.5 h-2.5" />
                             Locked
                           </span>
                         )}
 
                         {item.is_attempted && (
-                          <span className="text-[10px] font-mono font-medium px-1.5 py-0.5 rounded-[3px] bg-[#fbf3db] text-[#4d3800] border border-[#f1e0b5]">
+                          <span className="text-[10px] font-mono font-medium px-1.5 py-0.5 rounded-[3px] bg-[#FFFBEB] text-[#4d3800] border border-[#f1e0b5]">
                             Score: {item.best_score}
                           </span>
                         )}

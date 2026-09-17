@@ -87,7 +87,7 @@ export function RevisionQueueHub() {
             <span className="text-[10px] uppercase font-bold text-rose-600 font-mono">Overdue for Recall</span>
             <Badge variant="rose" size="sm">Urgent</Badge>
           </div>
-          <div className="text-2xl font-serif font-bold text-stone-900 mt-1">
+          <div className="text-2xl font-sans font-bold text-stone-900 mt-1">
             {summary.overdue_topics_count || 0} Topics
           </div>
           <span className="text-[11px] text-stone-500 mt-0.5 block">Memory decay threshold exceeded</span>
@@ -98,7 +98,7 @@ export function RevisionQueueHub() {
             <span className="text-[10px] uppercase font-bold text-amber-700 font-mono">Questions Due for Retry</span>
             <Badge variant="saffron" size="sm">Pending</Badge>
           </div>
-          <div className="text-2xl font-serif font-bold text-stone-900 mt-1">
+          <div className="text-2xl font-sans font-bold text-stone-900 mt-1">
             {summary.unresolved_mistakes_count || 0} Questions
           </div>
           <span className="text-[11px] text-stone-500 mt-0.5 block">{summary.repeated_mistakes_count || 0} repeated mistakes</span>
@@ -109,7 +109,7 @@ export function RevisionQueueHub() {
             <span className="text-[10px] uppercase font-bold text-stone-500 font-mono">Upcoming (Next 7d)</span>
             <Badge variant="stone" size="sm">Scheduled</Badge>
           </div>
-          <div className="text-2xl font-serif font-bold text-stone-900 mt-1">
+          <div className="text-2xl font-sans font-bold text-stone-900 mt-1">
             {summary.upcoming_topics_count || 0} Topics
           </div>
           <span className="text-[11px] text-stone-500 mt-0.5 block">Pre-scheduled spaced checkpoints</span>
@@ -120,7 +120,7 @@ export function RevisionQueueHub() {
             <span className="text-[10px] uppercase font-bold text-stone-500 font-mono">Weak Friction Areas</span>
             <Badge variant="stone" size="sm">&lt; 60% Mastery</Badge>
           </div>
-          <div className="text-2xl font-serif font-bold text-stone-900 mt-1">
+          <div className="text-2xl font-sans font-bold text-stone-900 mt-1">
             {summary.weak_topics_count || 0} Topics
           </div>
           <span className="text-[11px] text-stone-500 mt-0.5 block">Priority reinforcement targets</span>
@@ -131,7 +131,7 @@ export function RevisionQueueHub() {
       <Card className="p-6 bg-white">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
           <div>
-            <h3 className="text-base font-serif font-bold text-stone-900 flex items-center gap-2">
+            <h3 className="text-base font-sans font-bold text-stone-900 flex items-center gap-2">
               <RotateCcw className="w-4 h-4 text-amber-600" />
               <span>Topics Due for Immediate Spaced Retrieval</span>
             </h3>
@@ -206,7 +206,7 @@ export function RevisionQueueHub() {
       {/* Curated Recommended Revision Sessions */}
       <div className="space-y-4">
         <div>
-          <h3 className="text-base font-serif font-bold text-stone-900">
+          <h3 className="text-base font-sans font-bold text-stone-900">
             Recommended Revision Sessions
           </h3>
           <p className="text-xs text-stone-500">
@@ -245,7 +245,7 @@ export function RevisionQueueHub() {
       <Card className="p-6 bg-white">
         <div className="flex items-center justify-between mb-4">
           <div>
-            <h3 className="text-base font-serif font-bold text-stone-900">
+            <h3 className="text-base font-sans font-bold text-stone-900">
               High-Yield Questions Due for Blind Re-Attempt
             </h3>
             <p className="text-xs text-stone-500">

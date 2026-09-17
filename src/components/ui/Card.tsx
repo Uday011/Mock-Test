@@ -13,14 +13,14 @@ export function Card({
   ...props
 }: CardProps) {
   const interactiveStyles = interactive
-    ? 'hover:border-stone-400 hover:bg-[#f7f6f3]/50 transition-all duration-150 cursor-pointer'
+    ? 'hover:border-[#CBD5E1] hover:bg-[#F1F1EF]/60 transition-colors duration-150 cursor-pointer'
     : '';
 
   const paddingStyle = padded ? 'p-4 sm:p-5' : '';
 
   return (
     <div
-      className={`bg-white rounded-lg border border-[#ebebeb] text-[#37352f] overflow-hidden ${interactiveStyles} ${paddingStyle} ${className}`}
+      className={`bg-white rounded-md border border-[#E6E6E3] text-[#202124] overflow-hidden ${interactiveStyles} ${paddingStyle} ${className}`}
       {...props}
     >
       {children}
@@ -47,7 +47,7 @@ export function CardTitle({
 }: React.HTMLAttributes<HTMLHeadingElement>) {
   return (
     <h3
-      className={`text-sm sm:text-base font-semibold text-[#37352f] tracking-tight leading-snug ${className}`}
+      className={`text-sm sm:text-base font-semibold text-[#202124] tracking-tight leading-snug ${className}`}
       {...props}
     >
       {children}
@@ -86,7 +86,7 @@ export function CardFooter({
 }: React.HTMLAttributes<HTMLDivElement>) {
   return (
     <div
-      className={`mt-4 pt-3 border-t border-[#ebebeb] flex items-center justify-between gap-3 text-xs text-[#787774] ${className}`}
+      className={`mt-4 pt-3 border-t border-[#E6E6E3] flex items-center justify-between gap-3 text-xs text-[#787774] ${className}`}
       {...props}
     >
       {children}

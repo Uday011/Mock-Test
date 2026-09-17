@@ -162,7 +162,7 @@ export default function Navbar() {
 
   return (
     <>
-      <header className="sticky top-0 z-50 w-full border-b border-[#ebebeb] bg-white/90 text-[#37352f] backdrop-blur-md select-none">
+      <header className="sticky top-0 z-50 w-full border-b border-[#E6E6E3] bg-white/90 text-[#202124] backdrop-blur-md select-none">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-14 flex items-center justify-between">
           {/* Logo & Brand */}
           <div className="flex items-center gap-4 lg:gap-6">
@@ -172,10 +172,10 @@ export default function Navbar() {
             <div className="relative hidden lg:block" ref={examMenuRef}>
               <button
                 onClick={() => setShowExamMenu(!showExamMenu)}
-                className="px-2.5 py-1 rounded border border-[#ebebeb] text-xs font-medium flex items-center gap-1.5 transition-colors bg-[#f7f6f3] hover:bg-[#efefed] text-[#37352f]"
+                className="px-2.5 py-1 rounded border border-[#E6E6E3] text-xs font-medium flex items-center gap-1.5 transition-colors bg-[#F1F1EF] hover:bg-[#F1F1EF] text-[#202124]"
                 title="Active Target Exam"
               >
-                <span className="w-1.5 h-1.5 rounded-full bg-[#0f7b6c] shrink-0" />
+                <span className="w-1.5 h-1.5 rounded-full bg-[#1B5E20] shrink-0" />
                 <span className="text-[#787774]">Target:</span>
                 <span>{selectedExam}</span>
                 <ChevronDown className="w-3 h-3 ml-0.5 text-[#787774]" />

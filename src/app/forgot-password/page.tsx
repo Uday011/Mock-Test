@@ -28,13 +28,13 @@ export default function ForgotPasswordPage() {
   };
 
   return (
-    <div className="min-h-[85vh] flex items-center justify-center px-4 py-12 bg-[#fbfbfa]">
-      <div className="max-w-md w-full space-y-5 bg-white p-6 sm:p-8 rounded-md border border-[#ebebeb] shadow-xs">
+    <div className="min-h-[85vh] flex items-center justify-center px-4 py-12 bg-[#F7F7F5]">
+      <div className="max-w-md w-full space-y-5 bg-white p-6 sm:p-8 rounded-md border border-[#E6E6E3] shadow-xs">
         <div className="text-center space-y-1.5">
           <div className="flex justify-center mb-2">
             <Logo size="md" href="/" />
           </div>
-          <h2 className="text-xl font-bold text-[#37352f]">
+          <h2 className="text-xl font-bold text-[#202124]">
             Reset Your Password
           </h2>
           <p className="text-xs text-[#787774] max-w-sm mx-auto">
@@ -55,7 +55,7 @@ export default function ForgotPasswordPage() {
               <CheckCircle2 className="w-5 h-5 text-emerald-600" />
             </div>
             <div className="space-y-1">
-              <h3 className="text-sm font-semibold text-[#37352f]">
+              <h3 className="text-sm font-semibold text-[#202124]">
                 Recovery Instructions Dispatched
               </h3>
               <p className="text-xs text-[#787774] leading-relaxed max-w-xs mx-auto">
@@ -73,7 +73,7 @@ export default function ForgotPasswordPage() {
         ) : (
           <form onSubmit={handleSubmit} className="space-y-3.5">
             <div>
-              <label className="block text-xs font-medium text-[#37352f] mb-1">
+              <label className="block text-xs font-medium text-[#202124] mb-1">
                 Registered Email
               </label>
               <div className="relative">
@@ -84,7 +84,7 @@ export default function ForgotPasswordPage() {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="name@example.com"
-                  className="w-full pl-8 pr-3 py-1.5 text-xs rounded-[4px] border border-[#ebebeb] focus:outline-none focus:border-[#37352f] bg-[#fcfbf9] focus:bg-white text-[#37352f]"
+                  className="w-full pl-8 pr-3 py-1.5 text-xs rounded-[4px] border border-[#E6E6E3] focus:outline-none focus:border-[#202124] bg-[#fcfbf9] focus:bg-white text-[#202124]"
                 />
               </div>
             </div>
@@ -103,7 +103,7 @@ export default function ForgotPasswordPage() {
             <div className="text-center pt-2">
               <Link
                 href="/login"
-                className="text-xs text-[#787774] hover:text-[#37352f] font-medium inline-flex items-center gap-1"
+                className="text-xs text-[#787774] hover:text-[#202124] font-medium inline-flex items-center gap-1"
               >
                 <ArrowLeft className="w-3 h-3" /> Back to Sign In
               </Link>

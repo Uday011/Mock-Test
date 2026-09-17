@@ -4,6 +4,7 @@ export interface BadgeProps {
   children: React.ReactNode;
   variant?:
     | 'default'
+    | 'indigo'
     | 'saffron'
     | 'navy'
     | 'emerald'
@@ -45,47 +46,49 @@ export default function Badge({
   };
 
   const variantStyles: Record<string, string> = {
-    default: 'bg-[#f1f1ef] text-[#37352f]',
-    stone: 'bg-[#f1f1ef] text-[#37352f]',
-    saffron: 'bg-[#faece3] text-[#d9730d]',
-    navy: 'bg-[#e7f3f8] text-[#0b6e99]',
-    emerald: 'bg-[#edf3ec] text-[#0f7b6c]',
-    purple: 'bg-[#f4f0f7] text-[#6940a5]',
-    danger: 'bg-[#fdebec] text-[#c93b3b]',
-    rose: 'bg-[#fdebec] text-[#c93b3b]',
-    outline: 'bg-transparent text-[#787774] border border-[#ebebeb]',
-    orange: 'bg-[#faece3] text-[#d9730d]',
-    amber: 'bg-[#fbf3db] text-[#8f6b10]',
-    blue: 'bg-[#e7f3f8] text-[#0b6e99]',
-    green: 'bg-[#edf3ec] text-[#0f7b6c]',
-    red: 'bg-[#fdebec] text-[#c93b3b]',
-    gray: 'bg-[#f1f1ef] text-[#787774]',
-    brown: 'bg-[#f4eeee] text-[#64473a]',
-    yellow: 'bg-[#fbf3db] text-[#8f6b10]',
-    pink: 'bg-[#faf0f5] text-[#9a2862]',
-    teal: 'bg-[#edf3ec] text-[#0f7b6c]',
+    default: 'bg-[#F1F1EF] text-[#202124] border border-[#E6E6E3]',
+    stone: 'bg-[#F1F1EF] text-[#202124] border border-[#E6E6E3]',
+    gray: 'bg-[#F1F1EF] text-[#787774] border border-[#E6E6E3]',
+    indigo: 'bg-[#EEF0FB] text-[#4F46A5] border border-[#DCDDF7]',
+    saffron: 'bg-[#FDF6EC] text-[#B7791F] border border-[#F6E3C7]',
+    navy: 'bg-[#EEF0FB] text-[#4F46A5] border border-[#DCDDF7]',
+    blue: 'bg-[#EEF0FB] text-[#4F46A5] border border-[#DCDDF7]',
+    emerald: 'bg-[#EDF7ED] text-[#1B5E20] border border-[#C8E6C9]',
+    green: 'bg-[#EDF7ED] text-[#1B5E20] border border-[#C8E6C9]',
+    teal: 'bg-[#EDF7ED] text-[#1B5E20] border border-[#C8E6C9]',
+    amber: 'bg-[#FFFBEB] text-[#B7791F] border border-[#FEF3C7]',
+    orange: 'bg-[#FDF6EC] text-[#B7791F] border border-[#F6E3C7]',
+    yellow: 'bg-[#FFFBEB] text-[#B7791F] border border-[#FEF3C7]',
+    purple: 'bg-[#EEF0FB] text-[#4F46A5] border border-[#DCDDF7]',
+    pink: 'bg-[#FAF0F5] text-[#9A2862] border border-[#F5D8E8]',
+    brown: 'bg-[#F4EEEE] text-[#64473A] border border-[#E8DCD9]',
+    danger: 'bg-[#FEF2F2] text-[#C53030] border border-[#FEE2E2]',
+    rose: 'bg-[#FEF2F2] text-[#C53030] border border-[#FEE2E2]',
+    red: 'bg-[#FEF2F2] text-[#C53030] border border-[#FEE2E2]',
+    outline: 'bg-transparent text-[#787774] border border-[#E6E6E3]',
   };
 
   const dotColors: Record<string, string> = {
     default: 'bg-[#787774]',
     stone: 'bg-[#787774]',
-    saffron: 'bg-[#d9730d]',
-    navy: 'bg-[#0b6e99]',
-    emerald: 'bg-[#0f7b6c]',
-    purple: 'bg-[#6940a5]',
-    danger: 'bg-[#c93b3b]',
-    rose: 'bg-[#c93b3b]',
-    outline: 'bg-[#9b9a97]',
-    orange: 'bg-[#d9730d]',
-    amber: 'bg-[#8f6b10]',
-    blue: 'bg-[#0b6e99]',
-    green: 'bg-[#0f7b6c]',
-    red: 'bg-[#c93b3b]',
     gray: 'bg-[#787774]',
-    brown: 'bg-[#64473a]',
-    yellow: 'bg-[#8f6b10]',
-    pink: 'bg-[#9a2862]',
-    teal: 'bg-[#0f7b6c]',
+    indigo: 'bg-[#4F46A5]',
+    saffron: 'bg-[#B7791F]',
+    navy: 'bg-[#4F46A5]',
+    blue: 'bg-[#4F46A5]',
+    emerald: 'bg-[#1B5E20]',
+    green: 'bg-[#1B5E20]',
+    teal: 'bg-[#1B5E20]',
+    amber: 'bg-[#B7791F]',
+    orange: 'bg-[#B7791F]',
+    yellow: 'bg-[#B7791F]',
+    purple: 'bg-[#4F46A5]',
+    pink: 'bg-[#9A2862]',
+    brown: 'bg-[#64473A]',
+    danger: 'bg-[#C53030]',
+    rose: 'bg-[#C53030]',
+    red: 'bg-[#C53030]',
+    outline: 'bg-[#787774]',
   };
 
   const renderIcon = () => {
@@ -102,9 +105,15 @@ export default function Badge({
   const renderedIcon = renderIcon();
 
   return (
-    <span className={`${baseStyles} ${sizeStyles[size]} ${variantStyles[variant]} ${className}`}>
-      {dot && <span className={`w-1.5 h-1.5 rounded-full ${dotColors[variant]} shrink-0`} />}
-      {renderedIcon && <span className="shrink-0 opacity-80">{renderedIcon}</span>}
+    <span
+      className={`${baseStyles} ${sizeStyles[size]} ${variantStyles[variant] || variantStyles.default} ${className}`}
+    >
+      {dot && (
+        <span
+          className={`w-1.5 h-1.5 rounded-full shrink-0 ${dotColors[variant] || dotColors.default}`}
+        />
+      )}
+      {renderedIcon && <span className="shrink-0">{renderedIcon}</span>}
       <span>{children}</span>
     </span>
   );

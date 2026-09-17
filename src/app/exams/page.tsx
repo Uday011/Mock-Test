@@ -103,8 +103,8 @@ export default function ExamsCatalogPage() {
         />
 
         {actionSuccess && (
-          <div className="p-3 bg-[#edf3ec] border border-[#d3e5d2] rounded-md text-xs text-[#1c3829] flex items-center gap-2">
-            <Check className="w-3.5 h-3.5 text-[#0f7b6c] shrink-0" />
+          <div className="p-3 bg-[#EDF7ED] border border-[#C8E6C9] rounded-md text-xs text-[#1c3829] flex items-center gap-2">
+            <Check className="w-3.5 h-3.5 text-[#1B5E20] shrink-0" />
             <span>{actionSuccess}</span>
           </div>
         )}
@@ -117,8 +117,8 @@ export default function ExamsCatalogPage() {
               onClick={() => setCategoryFilter(c.id)}
               className={`px-3 py-1 text-xs rounded-md whitespace-nowrap transition-colors ${
                 categoryFilter === c.id
-                  ? 'bg-[#37352f] text-white font-medium'
-                  : 'bg-white border border-[#ebebeb] text-[#787774] hover:bg-[#f7f6f3]'
+                  ? 'bg-[#202124] text-white font-medium'
+                  : 'bg-white border border-[#E6E6E3] text-[#787774] hover:bg-[#F1F1EF]'
               }`}
             >
               {c.label}
@@ -148,8 +148,8 @@ export default function ExamsCatalogPage() {
                   key={ex.id}
                   className={`p-5 rounded-lg border flex flex-col justify-between transition-colors bg-white ${
                     isPrimary
-                      ? 'border-[#37352f] shadow-xs'
-                      : 'border-[#ebebeb] hover:border-[#d4d4d4]'
+                      ? 'border-[#202124] shadow-xs'
+                      : 'border-[#E6E6E3] hover:border-[#d4d4d4]'
                   }`}
                 >
                   <div className="space-y-3.5">
@@ -157,20 +157,20 @@ export default function ExamsCatalogPage() {
                     <div className="flex items-start justify-between gap-2 flex-wrap">
                       <div className="space-y-1">
                         <div className="flex items-center gap-2 flex-wrap">
-                          <span className="font-mono text-[10px] font-medium px-1.5 py-0.5 rounded bg-[#f1f1ef] text-[#37352f]">
+                          <span className="font-mono text-[10px] font-medium px-1.5 py-0.5 rounded bg-[#f1f1ef] text-[#202124]">
                             {ex.code}
                           </span>
                           {statusBadge}
                         </div>
 
-                        <h3 className="text-base font-semibold text-[#37352f] pt-0.5">
+                        <h3 className="text-base font-semibold text-[#202124] pt-0.5">
                           {ex.title}
                         </h3>
 
                         {ex.conducting_body && (
                           <div className="flex items-center gap-1.5 text-xs text-[#787774]">
-                            <ShieldCheck className="w-3.5 h-3.5 text-[#0f7b6c] shrink-0" />
-                            <span>Conducting Body: <strong className="text-[#37352f] font-medium">{ex.conducting_body}</strong></span>
+                            <ShieldCheck className="w-3.5 h-3.5 text-[#1B5E20] shrink-0" />
+                            <span>Conducting Body: <strong className="text-[#202124] font-medium">{ex.conducting_body}</strong></span>
                           </div>
                         )}
                       </div>
@@ -186,8 +186,8 @@ export default function ExamsCatalogPage() {
 
                     {/* Pattern Summary */}
                     {ex.pattern_summary && (
-                      <div className="p-2.5 rounded-md bg-[#fbfbfa] border border-[#ebebeb] text-xs text-[#787774]">
-                        <strong className="text-[#37352f] block mb-0.5 font-medium">Exam Pattern:</strong>
+                      <div className="p-2.5 rounded-md bg-[#F7F7F5] border border-[#E6E6E3] text-xs text-[#787774]">
+                        <strong className="text-[#202124] block mb-0.5 font-medium">Exam Pattern:</strong>
                         {ex.pattern_summary}
                       </div>
                     )}
@@ -202,7 +202,7 @@ export default function ExamsCatalogPage() {
                           {ex.subjects.map((sub: any) => (
                             <span
                               key={sub.id}
-                              className="px-1.5 py-0.5 rounded text-[11px] bg-[#f7f6f3] text-[#37352f] border border-[#ebebeb]"
+                              className="px-1.5 py-0.5 rounded text-[11px] bg-[#F1F1EF] text-[#202124] border border-[#E6E6E3]"
                             >
                               {sub.name}
                             </span>
@@ -212,34 +212,34 @@ export default function ExamsCatalogPage() {
                     )}
 
                     {/* Metrics Specs */}
-                    <div className="grid grid-cols-3 gap-2 py-2 border-y border-[#ebebeb] text-xs text-[#787774] font-mono">
+                    <div className="grid grid-cols-3 gap-2 py-2 border-y border-[#E6E6E3] text-xs text-[#787774] font-mono">
                       <div>
                         <span className="text-[10px] text-[#9b9a97] block uppercase">Total Marks</span>
-                        <strong className="text-[#37352f] text-sm">{ex.total_marks}</strong>
+                        <strong className="text-[#202124] text-sm">{ex.total_marks}</strong>
                       </div>
                       <div>
                         <span className="text-[10px] text-[#9b9a97] block uppercase">Duration</span>
-                        <strong className="text-[#37352f] text-sm">{ex.total_duration_minutes}m</strong>
+                        <strong className="text-[#202124] text-sm">{ex.total_duration_minutes}m</strong>
                       </div>
                       <div>
                         <span className="text-[10px] text-[#9b9a97] block uppercase">Target Year</span>
-                        <strong className="text-[#37352f] text-sm">{ex.target_year}</strong>
+                        <strong className="text-[#202124] text-sm">{ex.target_year}</strong>
                       </div>
                     </div>
                   </div>
 
                   {/* Actions Row */}
-                  <div className="pt-4 flex items-center justify-between gap-3 mt-2 border-t border-[#ebebeb]">
+                  <div className="pt-4 flex items-center justify-between gap-3 mt-2 border-t border-[#E6E6E3]">
                     {!isPrimary ? (
                       <button
                         onClick={() => handleSetPrimary(ex)}
-                        className="text-xs font-medium text-[#787774] hover:text-[#37352f] flex items-center gap-1"
+                        className="text-xs font-medium text-[#787774] hover:text-[#202124] flex items-center gap-1"
                       >
                         <Target className="w-3.5 h-3.5" />
                         Set as Primary
                       </button>
                     ) : (
-                      <span className="text-xs font-medium text-[#0f7b6c] flex items-center gap-1">
+                      <span className="text-xs font-medium text-[#1B5E20] flex items-center gap-1">
                         <Check className="w-3.5 h-3.5" />
                         Primary Target
                       </span>

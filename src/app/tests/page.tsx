@@ -161,8 +161,8 @@ export default function TestDiscoveryPage() {
                 onClick={() => setSelectedType(tt.id)}
                 className={`px-2.5 py-1 rounded-md text-xs font-medium whitespace-nowrap transition-colors ${
                   selectedType === tt.id
-                    ? 'bg-[#37352f] text-white'
-                    : 'bg-white border border-[#ebebeb] text-[#787774] hover:bg-[#f7f6f3]'
+                    ? 'bg-[#202124] text-white'
+                    : 'bg-white border border-[#E6E6E3] text-[#787774] hover:bg-[#F1F1EF]'
                 }`}
               >
                 {tt.label}
@@ -171,7 +171,7 @@ export default function TestDiscoveryPage() {
           </div>
 
           {/* Secondary Filter Row: Search & Selectors */}
-          <div className="p-2.5 bg-white border border-[#ebebeb] rounded-lg flex flex-col md:flex-row md:items-center justify-between gap-2.5">
+          <div className="p-2.5 bg-white border border-[#E6E6E3] rounded-lg flex flex-col md:flex-row md:items-center justify-between gap-2.5">
             {/* Search Form */}
             <form onSubmit={handleSearchSubmit} className="relative flex-1">
               <Search className="w-3.5 h-3.5 absolute left-3 top-1/2 -translate-y-1/2 text-[#787774]" />
@@ -181,7 +181,7 @@ export default function TestDiscoveryPage() {
                 onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder="Search tests by title, topic, or exam..."
                 aria-label="Search tests by title, topic, or exam"
-                className="w-full pl-8 pr-3 py-1.5 text-xs rounded-md border border-[#ebebeb] bg-[#fbfbfa] text-[#37352f] placeholder:text-[#9b9a97] focus:outline-none focus:border-[#37352f]"
+                className="w-full pl-8 pr-3 py-1.5 text-xs rounded-md border border-[#E6E6E3] bg-[#F7F7F5] text-[#202124] placeholder:text-[#9b9a97] focus:outline-none focus:border-[#202124]"
               />
             </form>
 
@@ -190,7 +190,7 @@ export default function TestDiscoveryPage() {
               <select
                 value={selectedDifficulty}
                 onChange={(e) => setSelectedDifficulty(e.target.value)}
-                className="text-xs py-1.5 px-2.5 rounded-md border border-[#ebebeb] bg-[#fbfbfa] text-[#37352f] focus:outline-none"
+                className="text-xs py-1.5 px-2.5 rounded-md border border-[#E6E6E3] bg-[#F7F7F5] text-[#202124] focus:outline-none"
               >
                 <option value="all">All Difficulties</option>
                 <option value="easy">Easy</option>
@@ -201,7 +201,7 @@ export default function TestDiscoveryPage() {
               <select
                 value={selectedDuration}
                 onChange={(e) => setSelectedDuration(e.target.value)}
-                className="text-xs py-1.5 px-2.5 rounded-md border border-[#ebebeb] bg-[#fbfbfa] text-[#37352f] focus:outline-none"
+                className="text-xs py-1.5 px-2.5 rounded-md border border-[#E6E6E3] bg-[#F7F7F5] text-[#202124] focus:outline-none"
               >
                 <option value="all">All Durations</option>
                 <option value="short">Short (&lt;30m)</option>
@@ -218,9 +218,9 @@ export default function TestDiscoveryPage() {
             Loading tests catalog...
           </div>
         ) : tests.length === 0 ? (
-          <div className="p-12 text-center bg-white border border-[#ebebeb] rounded-lg space-y-3">
+          <div className="p-12 text-center bg-white border border-[#E6E6E3] rounded-lg space-y-3">
             <Layers className="w-8 h-8 text-[#9b9a97] mx-auto" />
-            <h3 className="font-semibold text-sm text-[#37352f]">No Tests Found</h3>
+            <h3 className="font-semibold text-sm text-[#202124]">No Tests Found</h3>
             <p className="text-xs text-[#787774] max-w-sm mx-auto">
               No examinations match the current filter selection. Try adjusting your search query or reset filters.
             </p>
@@ -247,12 +247,12 @@ export default function TestDiscoveryPage() {
               return (
                 <div
                   key={test.id}
-                  className="p-4 bg-white border border-[#ebebeb] rounded-lg flex flex-col justify-between hover:border-[#d4d4d4] transition-colors space-y-3"
+                  className="p-4 bg-white border border-[#E6E6E3] rounded-lg flex flex-col justify-between hover:border-[#d4d4d4] transition-colors space-y-3"
                 >
                   <div className="space-y-2.5">
                     {/* Top Badges */}
                     <div className="flex items-center justify-between gap-2 flex-wrap">
-                      <span className="font-mono text-[10px] px-1.5 py-0.5 rounded bg-[#f7f6f3] text-[#787774] border border-[#ebebeb]">
+                      <span className="font-mono text-[10px] px-1.5 py-0.5 rounded bg-[#F1F1EF] text-[#787774] border border-[#E6E6E3]">
                         {test.subject || 'Comprehensive'}
                       </span>
                       <Badge variant={getTypeBadgeVariant(test.test_type)} size="sm">
@@ -262,7 +262,7 @@ export default function TestDiscoveryPage() {
 
                     {/* Title & Description */}
                     <div>
-                      <h3 className="font-medium text-xs sm:text-sm text-[#37352f] leading-snug line-clamp-1">
+                      <h3 className="font-medium text-xs sm:text-sm text-[#202124] leading-snug line-clamp-1">
                         {test.title}
                       </h3>
                       {test.description && (
@@ -273,25 +273,25 @@ export default function TestDiscoveryPage() {
                     </div>
 
                     {/* Test Specs Bar */}
-                    <div className="grid grid-cols-3 gap-2 py-2 border-y border-[#ebebeb] text-[#787774] font-mono text-[11px] text-center">
+                    <div className="grid grid-cols-3 gap-2 py-2 border-y border-[#E6E6E3] text-[#787774] font-mono text-[11px] text-center">
                       <div>
                         <span className="text-[9px] uppercase text-[#9b9a97] block">Questions</span>
-                        <span className="font-medium text-[#37352f]">{test.question_count || 0} Qs</span>
+                        <span className="font-medium text-[#202124]">{test.question_count || 0} Qs</span>
                       </div>
                       <div>
                         <span className="text-[9px] uppercase text-[#9b9a97] block">Duration</span>
-                        <span className="font-medium text-[#37352f]">{formatDuration(test.duration_seconds)}</span>
+                        <span className="font-medium text-[#202124]">{formatDuration(test.duration_seconds)}</span>
                       </div>
                       <div>
                         <span className="text-[9px] uppercase text-[#9b9a97] block">Difficulty</span>
-                        <span className="font-medium capitalize text-[#37352f]">{test.difficulty || 'Medium'}</span>
+                        <span className="font-medium capitalize text-[#202124]">{test.difficulty || 'Medium'}</span>
                       </div>
                     </div>
 
                     {/* Marking & Source Info */}
                     <div className="flex items-center justify-between text-[11px] text-[#787774]">
                       <span>
-                        Marking: <strong className="text-[#37352f]">+{test.default_correct_marks} / -{test.default_negative_marks}</strong>
+                        Marking: <strong className="text-[#202124]">+{test.default_correct_marks} / -{test.default_negative_marks}</strong>
                       </span>
                       <span className="text-[#9b9a97] truncate max-w-[130px]">
                         {test.source || 'Nalanda Official'}
@@ -300,7 +300,7 @@ export default function TestDiscoveryPage() {
 
                     {/* Previous Attempt Status Callout */}
                     {hasAttempted && (
-                      <div className="p-2 rounded bg-[#fbfbfa] border border-[#ebebeb] text-[11px] font-mono flex items-center justify-between">
+                      <div className="p-2 rounded bg-[#F7F7F5] border border-[#E6E6E3] text-[11px] font-mono flex items-center justify-between">
                         {isInProgress ? (
                           <span className="text-amber-800 font-medium flex items-center gap-1">
                             <span className="w-1.5 h-1.5 rounded-full bg-amber-600 animate-pulse" />
@@ -319,8 +319,8 @@ export default function TestDiscoveryPage() {
                   </div>
 
                   {/* Card Action Buttons */}
-                  <div className="pt-3 border-t border-[#ebebeb] flex items-center justify-between gap-2">
-                    <Link href={`/tests/${test.id}`} className="text-xs text-[#787774] hover:text-[#37352f] hover:underline">
+                  <div className="pt-3 border-t border-[#E6E6E3] flex items-center justify-between gap-2">
+                    <Link href={`/tests/${test.id}`} className="text-xs text-[#787774] hover:text-[#202124] hover:underline">
                       Blueprint
                     </Link>
 

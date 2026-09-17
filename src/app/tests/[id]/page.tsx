@@ -128,7 +128,7 @@ export default function TestDetailsPage() {
     return (
       <AppShell>
         <div className="min-h-[60vh] flex flex-col items-center justify-center space-y-3">
-          <div className="w-5 h-5 border-2 border-[#37352f] border-t-transparent rounded-full animate-spin" />
+          <div className="w-5 h-5 border-2 border-[#202124] border-t-transparent rounded-full animate-spin" />
           <p className="text-xs text-[#787774] font-medium">Loading assessment metadata...</p>
         </div>
       </AppShell>
@@ -138,9 +138,9 @@ export default function TestDetailsPage() {
   if (error || !test) {
     return (
       <AppShell>
-        <div className="max-w-md mx-auto my-16 p-8 bg-white rounded-lg border border-[#ebebeb] text-center space-y-4">
+        <div className="max-w-md mx-auto my-16 p-8 bg-white rounded-lg border border-[#E6E6E3] text-center space-y-4">
           <AlertCircle className="w-8 h-8 text-[#e03e3e] mx-auto" />
-          <h3 className="font-semibold text-[#37352f] text-base">Test Not Found</h3>
+          <h3 className="font-semibold text-[#202124] text-base">Test Not Found</h3>
           <p className="text-xs text-[#787774]">
             The requested assessment paper does not exist or has been made private.
           </p>
@@ -183,7 +183,7 @@ export default function TestDetailsPage() {
     >
       {/* Toast Notice */}
       {toastMessage && (
-        <div className="fixed bottom-6 right-6 z-50 bg-[#37352f] text-white text-xs px-3.5 py-2.5 rounded-md shadow-lg flex items-center gap-2 animate-in fade-in">
+        <div className="fixed bottom-6 right-6 z-50 bg-[#202124] text-white text-xs px-3.5 py-2.5 rounded-md shadow-lg flex items-center gap-2 animate-in fade-in">
           <Check className="w-3.5 h-3.5 text-emerald-400" />
           <span>{toastMessage}</span>
         </div>
@@ -203,7 +203,7 @@ export default function TestDetailsPage() {
         <div className="flex items-center justify-between">
           <Link
             href="/library"
-            className="inline-flex items-center gap-1.5 text-xs text-[#787774] hover:text-[#37352f] transition-colors"
+            className="inline-flex items-center gap-1.5 text-xs text-[#787774] hover:text-[#202124] transition-colors"
           >
             <ArrowLeft className="w-3.5 h-3.5" /> Back to Assessment Library
           </Link>
@@ -214,7 +214,7 @@ export default function TestDetailsPage() {
               className={`px-2.5 py-1 rounded-md border text-xs font-medium flex items-center gap-1.5 transition-colors ${
                 isBookmarked
                   ? 'bg-[#fdf5e8] border-[#fae2be] text-[#8f4f00]'
-                  : 'bg-white border-[#ebebeb] text-[#787774] hover:bg-[#f7f6f3]'
+                  : 'bg-white border-[#E6E6E3] text-[#787774] hover:bg-[#F1F1EF]'
               }`}
             >
               <Bookmark className={`w-3 h-3 ${isBookmarked ? 'fill-amber-600 text-amber-600' : ''}`} />
@@ -223,7 +223,7 @@ export default function TestDetailsPage() {
 
             <button
               onClick={handleShare}
-              className="px-2.5 py-1 rounded-md border border-[#ebebeb] bg-white text-[#787774] hover:bg-[#f7f6f3] text-xs font-medium flex items-center gap-1.5 transition-colors"
+              className="px-2.5 py-1 rounded-md border border-[#E6E6E3] bg-white text-[#787774] hover:bg-[#F1F1EF] text-xs font-medium flex items-center gap-1.5 transition-colors"
             >
               <Share2 className="w-3 h-3" />
               <span>Share</span>
@@ -232,7 +232,7 @@ export default function TestDetailsPage() {
             <button
               onClick={handleDuplicate}
               disabled={duplicating}
-              className="px-2.5 py-1 rounded-md border border-[#ebebeb] bg-white text-[#787774] hover:bg-[#f7f6f3] text-xs font-medium flex items-center gap-1.5 transition-colors"
+              className="px-2.5 py-1 rounded-md border border-[#E6E6E3] bg-white text-[#787774] hover:bg-[#F1F1EF] text-xs font-medium flex items-center gap-1.5 transition-colors"
               title="Clone this test to customize in Test Studio"
             >
               <Copy className="w-3 h-3" />
@@ -241,7 +241,7 @@ export default function TestDetailsPage() {
 
             <button
               onClick={() => setIsReportModalOpen(true)}
-              className="px-2.5 py-1 rounded-md border border-[#ebebeb] bg-white text-[#787774] hover:text-[#e03e3e] hover:border-[#f5c2c2] text-xs font-medium flex items-center gap-1.5 transition-colors"
+              className="px-2.5 py-1 rounded-md border border-[#E6E6E3] bg-white text-[#787774] hover:text-[#e03e3e] hover:border-[#f5c2c2] text-xs font-medium flex items-center gap-1.5 transition-colors"
               title="Report an error or formatting issue"
             >
               <Flag className="w-3 h-3" />
@@ -251,12 +251,12 @@ export default function TestDetailsPage() {
         </div>
 
         {/* Document Header & Main Overview */}
-        <div className="bg-white rounded-lg p-5 border border-[#ebebeb] space-y-5">
+        <div className="bg-white rounded-lg p-5 border border-[#E6E6E3] space-y-5">
           <div className="flex flex-col md:flex-row md:items-start justify-between gap-5">
             <div className="space-y-2 flex-1">
               <div className="flex items-center gap-2 flex-wrap">
                 <TrustLabel label={test.trust_label} size="sm" showTooltip />
-                <span className="text-xs font-mono px-1.5 py-0.5 rounded bg-[#f7f6f3] text-[#787774] border border-[#ebebeb]">
+                <span className="text-xs font-mono px-1.5 py-0.5 rounded bg-[#F1F1EF] text-[#787774] border border-[#E6E6E3]">
                   {test.subject || 'General Studies'}
                 </span>
                 <Badge variant="blue" size="sm">
@@ -273,7 +273,7 @@ export default function TestDetailsPage() {
                 </Badge>
               </div>
 
-              <h1 className="text-xl sm:text-2xl font-semibold text-[#37352f] tracking-tight">
+              <h1 className="text-xl sm:text-2xl font-semibold text-[#202124] tracking-tight">
                 {test.title}
               </h1>
 
@@ -317,22 +317,22 @@ export default function TestDetailsPage() {
           </div>
 
           {/* Properties Table */}
-          <div className="pt-4 border-t border-[#ebebeb]">
+          <div className="pt-4 border-t border-[#E6E6E3]">
             <PropertyTable>
               <PropertyRow icon={Layers} label="Total Items">
-                <span className="font-mono text-xs text-[#37352f] font-medium">
+                <span className="font-mono text-xs text-[#202124] font-medium">
                   {questions.length} Questions
                 </span>
               </PropertyRow>
 
               <PropertyRow icon={Clock} label="Duration">
-                <span className="font-mono text-xs text-[#37352f]">
+                <span className="font-mono text-xs text-[#202124]">
                   {formatDuration(test.duration_seconds)}
                 </span>
               </PropertyRow>
 
               <PropertyRow icon={Award} label="Marking Scheme">
-                <span className="font-mono text-xs text-[#37352f]">
+                <span className="font-mono text-xs text-[#202124]">
                   +{test.default_correct_marks} / -{test.default_negative_marks}
                 </span>
               </PropertyRow>
@@ -346,17 +346,17 @@ export default function TestDetailsPage() {
           </div>
 
           {/* Creator Attribution */}
-          <div className="pt-3 border-t border-[#ebebeb] flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+          <div className="pt-3 border-t border-[#E6E6E3] flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
             <Link
               href={`/creators/${test.user_id}`}
               className="flex items-center gap-2.5 group hover:opacity-90 transition-opacity"
             >
-              <div className="w-8 h-8 rounded-md bg-[#f7f6f3] border border-[#ebebeb] text-[#37352f] flex items-center justify-center font-semibold text-xs">
+              <div className="w-8 h-8 rounded-md bg-[#F1F1EF] border border-[#E6E6E3] text-[#202124] flex items-center justify-center font-semibold text-xs">
                 {test.creator_name?.charAt(0) || 'E'}
               </div>
               <div>
                 <div className="flex items-center gap-1">
-                  <span className="font-medium text-[#37352f] group-hover:underline text-xs">
+                  <span className="font-medium text-[#202124] group-hover:underline text-xs">
                     {test.creator_name || 'Academic Faculty'}
                   </span>
                   <ShieldCheck className="w-3 h-3 text-emerald-600" />
@@ -388,7 +388,7 @@ export default function TestDetailsPage() {
           </div>
 
           {attempts.length === 0 ? (
-            <div className="bg-white rounded-lg p-6 border border-[#ebebeb] text-center space-y-2.5">
+            <div className="bg-white rounded-lg p-6 border border-[#E6E6E3] text-center space-y-2.5">
               <p className="text-xs text-[#787774]">You haven't attempted this test paper yet.</p>
               <Link href={`/tests/${test.id}/start`} className="inline-block">
                 <Button variant="primary" size="sm">
@@ -397,10 +397,10 @@ export default function TestDetailsPage() {
               </Link>
             </div>
           ) : (
-            <div className="bg-white rounded-lg border border-[#ebebeb] overflow-hidden">
+            <div className="bg-white rounded-lg border border-[#E6E6E3] overflow-hidden">
               <div className="overflow-x-auto">
                 <table className="w-full text-left text-xs">
-                  <thead className="bg-[#fbfbfa] border-b border-[#ebebeb] text-[#787774] font-medium uppercase text-[10px]">
+                  <thead className="bg-[#F7F7F5] border-b border-[#E6E6E3] text-[#787774] font-medium uppercase text-[10px]">
                     <tr>
                       <th className="py-2.5 px-3.5">Attempt</th>
                       <th className="py-2.5 px-3.5">Date</th>
@@ -411,18 +411,18 @@ export default function TestDetailsPage() {
                       <th className="py-2.5 px-3.5 text-right">Actions</th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-[#ebebeb]">
+                  <tbody className="divide-y divide-[#E6E6E3]">
                     {attempts.map((att: any, idx: number) => {
                       const attemptNumber = attempts.length - idx;
                       return (
-                        <tr key={att.id} className="hover:bg-[#fbfbfa] transition-colors">
-                          <td className="py-2.5 px-3.5 font-medium text-[#37352f]">
+                        <tr key={att.id} className="hover:bg-[#F7F7F5] transition-colors">
+                          <td className="py-2.5 px-3.5 font-medium text-[#202124]">
                             Attempt #{attemptNumber}
                           </td>
                           <td className="py-2.5 px-3.5 text-[#787774] font-mono">
                             {new Date(att.created_at).toLocaleDateString()}
                           </td>
-                          <td className="py-2.5 px-3.5 font-mono font-medium text-[#37352f]">
+                          <td className="py-2.5 px-3.5 font-mono font-medium text-[#202124]">
                             {att.final_score} / {att.maximum_marks}
                           </td>
                           <td className="py-2.5 px-3.5 font-medium text-emerald-700 font-mono">
@@ -437,7 +437,7 @@ export default function TestDetailsPage() {
                           <td className="py-2.5 px-3.5 text-right">
                             <Link
                               href={`/exam/${att.id}/result`}
-                              className="inline-flex items-center gap-1 text-[#37352f] hover:underline font-medium"
+                              className="inline-flex items-center gap-1 text-[#202124] hover:underline font-medium"
                             >
                               Forensics & Solutions <ExternalLink className="w-3 h-3" />
                             </Link>
@@ -453,10 +453,10 @@ export default function TestDetailsPage() {
         </div>
 
         {/* Question Paper Preview Drawer */}
-        <div className="bg-white rounded-lg border border-[#ebebeb] p-4 space-y-3">
+        <div className="bg-white rounded-lg border border-[#E6E6E3] p-4 space-y-3">
           <div className="flex items-center justify-between">
             <div>
-              <h3 className="text-xs font-semibold text-[#37352f]">
+              <h3 className="text-xs font-semibold text-[#202124]">
                 Question Paper Structure ({questions.length} Items)
               </h3>
               <p className="text-[11px] text-[#787774] mt-0.5">
@@ -481,14 +481,14 @@ export default function TestDetailsPage() {
           </div>
 
           {showQuestions && (
-            <div className="space-y-3 pt-3 border-t border-[#ebebeb]">
+            <div className="space-y-3 pt-3 border-t border-[#E6E6E3]">
               {questions.map((q: any) => (
                 <div
                   key={q.id || q.question_number}
-                  className="p-3.5 rounded-md bg-[#fbfbfa] border border-[#ebebeb] space-y-2 text-xs"
+                  className="p-3.5 rounded-md bg-[#F7F7F5] border border-[#E6E6E3] space-y-2 text-xs"
                 >
                   <div className="flex items-center justify-between">
-                    <span className="font-medium text-[#37352f] font-mono">
+                    <span className="font-medium text-[#202124] font-mono">
                       Question #{q.question_number}
                     </span>
                     <span className="font-mono text-emerald-800 text-[11px] bg-[#ebf5e8] px-1.5 py-0.5 rounded border border-[#c4e2b8]">
@@ -496,7 +496,7 @@ export default function TestDetailsPage() {
                     </span>
                   </div>
 
-                  <p className="text-[#37352f] leading-relaxed">{q.question_text}</p>
+                  <p className="text-[#202124] leading-relaxed">{q.question_text}</p>
 
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-1">
                     {(q.options || []).map((opt: any, oIdx: number) => {
@@ -507,7 +507,7 @@ export default function TestDetailsPage() {
                           className={`p-2 rounded border text-xs transition-colors ${
                             isCorrect
                               ? 'border-[#c4e2b8] bg-[#ebf5e8] font-medium text-[#2b593f]'
-                              : 'border-[#ebebeb] bg-white text-[#37352f]'
+                              : 'border-[#E6E6E3] bg-white text-[#202124]'
                           }`}
                         >
                           <span className="font-mono mr-1.5">{opt.label}.</span>
@@ -518,8 +518,8 @@ export default function TestDetailsPage() {
                   </div>
 
                   {q.explanation && (
-                    <div className="p-2.5 rounded bg-white border border-[#ebebeb] text-[#787774] text-[11px] leading-relaxed">
-                      <strong className="text-[#37352f] block mb-0.5">Solution:</strong>
+                    <div className="p-2.5 rounded bg-white border border-[#E6E6E3] text-[#787774] text-[11px] leading-relaxed">
+                      <strong className="text-[#202124] block mb-0.5">Solution:</strong>
                       {q.explanation}
                     </div>
                   )}

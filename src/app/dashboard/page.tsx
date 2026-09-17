@@ -62,7 +62,7 @@ export default function StudentDashboardPage() {
     return (
       <AppShell>
         <div className="flex flex-col items-center justify-center py-24 space-y-3">
-          <div className="w-5 h-5 border-2 border-[#37352f] border-t-transparent rounded-full animate-spin" />
+          <div className="w-5 h-5 border-2 border-[#202124] border-t-transparent rounded-full animate-spin" />
           <p className="text-xs text-[#787774] font-mono tracking-wide">Loading workspace...</p>
         </div>
       </AppShell>
@@ -134,11 +134,11 @@ export default function StudentDashboardPage() {
         />
 
         {/* Notion-style Document Properties Table */}
-        <div className="bg-white border border-[#ebebeb] rounded-lg p-4 space-y-1">
+        <div className="bg-white border border-[#E6E6E3] rounded-lg p-4 space-y-1">
           <PropertyTable>
             <PropertyRow icon={Compass} label="Primary Target Exam">
               <div className="flex items-center gap-2">
-                <span className="font-medium text-[#37352f]">{exam.title}</span>
+                <span className="font-medium text-[#202124]">{exam.title}</span>
                 <Badge variant="gray" size="sm">{exam.code || 'Tier-I'}</Badge>
                 {exam.conducting_body && (
                   <span className="text-xs text-[#787774] flex items-center gap-1">
@@ -151,7 +151,7 @@ export default function StudentDashboardPage() {
 
             <PropertyRow icon={Activity} label="Readiness Index">
               <div className="flex items-center gap-3 w-full max-w-md">
-                <span className="font-mono text-xs font-semibold text-[#37352f]">
+                <span className="font-mono text-xs font-semibold text-[#202124]">
                   {stats.readinessIndex}%
                 </span>
                 <div className="flex-1">
@@ -163,7 +163,7 @@ export default function StudentDashboardPage() {
 
             <PropertyRow icon={Target} label="Predicted Score">
               <div className="flex items-center gap-2 font-mono text-xs">
-                <span className="font-semibold text-[#37352f]">
+                <span className="font-semibold text-[#202124]">
                   {stats.predictedScore.toFixed(1)}
                 </span>
                 <span className="text-[#787774]">/ {stats.maxScore}</span>
@@ -175,14 +175,14 @@ export default function StudentDashboardPage() {
 
             <PropertyRow icon={CheckCircle2} label="Diagnostic Accuracy">
               <div className="flex items-center gap-2 font-mono text-xs">
-                <span className="font-semibold text-[#37352f]">{stats.accuracyRate}%</span>
+                <span className="font-semibold text-[#202124]">{stats.accuracyRate}%</span>
                 <span className="text-[11px] text-[#787774]">(Across 420 questions practiced)</span>
               </div>
             </PropertyRow>
 
             <PropertyRow icon={BookOpen} label="Syllabus Mastered">
               <div className="flex items-center gap-3 w-full max-w-md">
-                <span className="font-mono text-xs font-semibold text-[#37352f]">
+                <span className="font-mono text-xs font-semibold text-[#202124]">
                   {stats.syllabusProgress}%
                 </span>
                 <div className="flex-1">
@@ -197,7 +197,7 @@ export default function StudentDashboardPage() {
                 <Badge variant={stats.pendingRevisionCount > 0 ? 'rose' : 'gray'} size="sm">
                   {stats.pendingRevisionCount} unresolved records
                 </Badge>
-                <Link href="/mistakes" className="text-xs text-[#787774] hover:text-[#37352f] underline ml-2">
+                <Link href="/mistakes" className="text-xs text-[#787774] hover:text-[#202124] underline ml-2">
                   Open Forensic Ledger →
                 </Link>
               </div>
@@ -232,10 +232,10 @@ export default function StudentDashboardPage() {
               <div className="flex items-center gap-2 flex-wrap">
                 <Badge variant="orange" size="sm">{rec.subjectName}</Badge>
                 <span className="text-xs font-mono text-[#787774]">
-                  Exam Weightage: <strong className="text-[#37352f]">{rec.weightage}%</strong>
+                  Exam Weightage: <strong className="text-[#202124]">{rec.weightage}%</strong>
                 </span>
               </div>
-              <p className="text-xs text-[#37352f] leading-relaxed max-w-3xl">
+              <p className="text-xs text-[#202124] leading-relaxed max-w-3xl">
                 {rec.reason}
               </p>
             </div>
@@ -247,11 +247,11 @@ export default function StudentDashboardPage() {
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
               <AlertTriangle className="w-4 h-4 text-[#787774]" />
-              <h2 className="text-sm font-semibold text-[#37352f]">Focus & Weak Areas</h2>
+              <h2 className="text-sm font-semibold text-[#202124]">Focus & Weak Areas</h2>
             </div>
             <Link
               href="/mistakes"
-              className="text-xs text-[#787774] hover:text-[#37352f] font-medium flex items-center gap-1 transition-colors"
+              className="text-xs text-[#787774] hover:text-[#202124] font-medium flex items-center gap-1 transition-colors"
             >
               Mistake Ledger ({stats.pendingRevisionCount}) <ArrowRight className="w-3 h-3" />
             </Link>
@@ -261,17 +261,17 @@ export default function StudentDashboardPage() {
             {weakAreas.flaggedTopics?.map((wt: any) => (
               <div
                 key={wt.id}
-                className="p-3.5 bg-white border border-[#ebebeb] rounded-lg hover:border-[#d4d4d4] transition-colors flex items-center justify-between gap-4"
+                className="p-3.5 bg-white border border-[#E6E6E3] rounded-lg hover:border-[#d4d4d4] transition-colors flex items-center justify-between gap-4"
               >
                 <div className="space-y-1 min-w-0">
                   <div className="flex items-center gap-2">
-                    <span className="font-mono text-[10px] font-medium px-1.5 py-0.5 rounded bg-[#f7f6f3] text-[#787774] border border-[#ebebeb]">
+                    <span className="font-mono text-[10px] font-medium px-1.5 py-0.5 rounded bg-[#F1F1EF] text-[#787774] border border-[#E6E6E3]">
                       {wt.code}
                     </span>
                     <span className="text-xs text-[#787774] truncate">{wt.subject_name}</span>
                     <Badge variant="rose" size="sm">{wt.mastery_percentage}% Acc</Badge>
                   </div>
-                  <h4 className="text-xs font-medium text-[#37352f] truncate">{wt.title}</h4>
+                  <h4 className="text-xs font-medium text-[#202124] truncate">{wt.title}</h4>
                   <p className="text-[11px] text-[#9b9a97] font-mono">Weightage: {wt.weightage_percentage}% of marks</p>
                 </div>
 
@@ -291,11 +291,11 @@ export default function StudentDashboardPage() {
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
               <Layers className="w-4 h-4 text-[#787774]" />
-              <h2 className="text-sm font-semibold text-[#37352f]">Subject Coverage Distribution</h2>
+              <h2 className="text-sm font-semibold text-[#202124]">Subject Coverage Distribution</h2>
             </div>
             <Link
               href={`/exams/${exam.id || 'exam-ssc-cgl-2026'}`}
-              className="text-xs text-[#787774] hover:text-[#37352f] font-medium flex items-center gap-1 transition-colors"
+              className="text-xs text-[#787774] hover:text-[#202124] font-medium flex items-center gap-1 transition-colors"
             >
               Full Syllabus Tree <ArrowRight className="w-3 h-3" />
             </Link>
@@ -312,20 +312,20 @@ export default function StudentDashboardPage() {
               return (
                 <div
                   key={sub.id}
-                  className="p-3.5 bg-white border border-[#ebebeb] rounded-lg flex flex-col justify-between hover:border-[#d4d4d4] transition-colors space-y-3"
+                  className="p-3.5 bg-white border border-[#E6E6E3] rounded-lg flex flex-col justify-between hover:border-[#d4d4d4] transition-colors space-y-3"
                 >
                   <div className="space-y-2">
                     <div className="flex items-center justify-between">
-                      <span className="font-mono text-[10px] px-1.5 py-0.5 rounded bg-[#f7f6f3] text-[#787774] border border-[#ebebeb]">
+                      <span className="font-mono text-[10px] px-1.5 py-0.5 rounded bg-[#F1F1EF] text-[#787774] border border-[#E6E6E3]">
                         {sub.code}
                       </span>
-                      <span className="text-xs font-mono text-[#37352f] font-medium">
+                      <span className="text-xs font-mono text-[#202124] font-medium">
                         {mastery}%
                       </span>
                     </div>
 
                     <div>
-                      <h3 className="text-xs font-medium text-[#37352f] line-clamp-1">
+                      <h3 className="text-xs font-medium text-[#202124] line-clamp-1">
                         {sub.name}
                       </h3>
                       <p className="text-[11px] text-[#787774] line-clamp-2 mt-0.5">
@@ -339,17 +339,17 @@ export default function StudentDashboardPage() {
                       variant="emerald"
                     />
 
-                    <div className="pt-2 border-t border-[#f7f6f3] flex items-center justify-between text-[11px] text-[#787774] font-mono">
+                    <div className="pt-2 border-t border-[#F1F1EF] flex items-center justify-between text-[11px] text-[#787774] font-mono">
                       <span>{practiced} Qs</span>
                       <span>{accuracy}% Acc</span>
                     </div>
                   </div>
 
-                  <div className="pt-2 border-t border-[#ebebeb] flex items-center justify-between text-[11px]">
+                  <div className="pt-2 border-t border-[#E6E6E3] flex items-center justify-between text-[11px]">
                     <span className="text-[#9b9a97]">{sub.total_topics || 3} Topics</span>
                     <Link
                       href={`/exams/${exam.id || 'exam-ssc-cgl-2026'}?subject=${sub.id}`}
-                      className="text-[#37352f] hover:underline flex items-center gap-0.5 font-medium"
+                      className="text-[#202124] hover:underline flex items-center gap-0.5 font-medium"
                     >
                       View <ChevronRight className="w-3 h-3" />
                     </Link>
@@ -382,11 +382,11 @@ export default function StudentDashboardPage() {
                   <h4 className="text-xs font-medium text-[#787774] uppercase tracking-wider">
                     Recent Test Performance
                   </h4>
-                  <div className="divide-y divide-[#ebebeb] border border-[#ebebeb] rounded-lg bg-white overflow-hidden">
+                  <div className="divide-y divide-[#E6E6E3] border border-[#E6E6E3] rounded-lg bg-white overflow-hidden">
                     {attempts.map((att: any) => (
                       <div
                         key={att.id}
-                        className="p-3.5 flex flex-col sm:flex-row sm:items-center justify-between gap-3 hover:bg-[#fbfbfa] transition-colors"
+                        className="p-3.5 flex flex-col sm:flex-row sm:items-center justify-between gap-3 hover:bg-[#F7F7F5] transition-colors"
                       >
                         <div className="space-y-1">
                           <div className="flex items-center gap-2">
@@ -395,11 +395,11 @@ export default function StudentDashboardPage() {
                               {new Date(att.created_at).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' })}
                             </span>
                           </div>
-                          <h4 className="text-xs font-medium text-[#37352f]">
+                          <h4 className="text-xs font-medium text-[#202124]">
                             {att.test_title}
                           </h4>
                           <div className="flex items-center gap-3 text-xs text-[#787774] font-mono flex-wrap">
-                            <span>Score: <strong className="text-[#37352f]">{att.final_score}</strong> / {att.maximum_marks}</span>
+                            <span>Score: <strong className="text-[#202124]">{att.final_score}</strong> / {att.maximum_marks}</span>
                             <span>•</span>
                             <span>Accuracy: <strong className="text-emerald-700">{att.accuracy}%</strong></span>
                             <span>•</span>
@@ -434,7 +434,7 @@ export default function StudentDashboardPage() {
                   {availableTests.map((t: any) => (
                     <div
                       key={t.id}
-                      className="p-4 bg-white border border-[#ebebeb] rounded-lg hover:border-[#d4d4d4] transition-colors flex flex-col justify-between space-y-3"
+                      className="p-4 bg-white border border-[#E6E6E3] rounded-lg hover:border-[#d4d4d4] transition-colors flex flex-col justify-between space-y-3"
                     >
                       <div className="space-y-1.5">
                         <div className="flex items-center justify-between">
@@ -445,11 +445,11 @@ export default function StudentDashboardPage() {
                             {Math.round(t.duration_seconds / 60)} Mins
                           </span>
                         </div>
-                        <h4 className="text-xs font-semibold text-[#37352f]">{t.title}</h4>
+                        <h4 className="text-xs font-semibold text-[#202124]">{t.title}</h4>
                         <p className="text-xs text-[#787774] line-clamp-2 leading-relaxed">{t.description}</p>
                       </div>
 
-                      <div className="pt-3 border-t border-[#ebebeb] flex items-center justify-between">
+                      <div className="pt-3 border-t border-[#E6E6E3] flex items-center justify-between">
                         <span className="text-xs text-[#787774] font-mono">{t.questions_count || 8} Questions</span>
                         <Link href="/tests">
                           <Button variant="primary" size="sm">
@@ -471,13 +471,13 @@ export default function StudentDashboardPage() {
                 <p className="text-xs text-[#787774]">
                   Multi-part sequential test series curated by verified faculty.
                 </p>
-                <Link href="/library" className="text-xs text-[#37352f] hover:underline">
+                <Link href="/library" className="text-xs text-[#202124] hover:underline">
                   Explore More Series in Library →
                 </Link>
               </div>
 
               {enrolledSeries.length === 0 ? (
-                <div className="p-8 bg-white border border-[#ebebeb] rounded-lg text-center text-xs text-[#787774] space-y-3">
+                <div className="p-8 bg-white border border-[#E6E6E3] rounded-lg text-center text-xs text-[#787774] space-y-3">
                   <p>You haven't enrolled in any test series yet.</p>
                   <Link href="/library">
                     <Button variant="primary" size="sm">
@@ -490,11 +490,11 @@ export default function StudentDashboardPage() {
                   {enrolledSeries.map((s: any) => (
                     <div
                       key={s.enrollment_id}
-                      className="p-4 bg-white border border-[#ebebeb] rounded-lg space-y-3 flex flex-col justify-between hover:border-[#d4d4d4] transition-colors"
+                      className="p-4 bg-white border border-[#E6E6E3] rounded-lg space-y-3 flex flex-col justify-between hover:border-[#d4d4d4] transition-colors"
                     >
                       <div className="space-y-1.5">
                         <div className="flex items-center justify-between">
-                          <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-[#f7f6f3] text-[#787774] border border-[#ebebeb]">
+                          <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-[#F1F1EF] text-[#787774] border border-[#E6E6E3]">
                             {s.exam_title || 'Target Exam'}
                           </span>
                           <Badge variant={s.access_tier === 'paid' ? 'emerald' : 'gray'} size="sm">
@@ -502,16 +502,16 @@ export default function StudentDashboardPage() {
                           </Badge>
                         </div>
 
-                        <h4 className="text-xs font-semibold text-[#37352f]">{s.series_title}</h4>
+                        <h4 className="text-xs font-semibold text-[#202124]">{s.series_title}</h4>
                         <p className="text-xs text-[#787774] line-clamp-2 leading-relaxed">{s.series_description}</p>
                         <p className="text-[11px] text-[#9b9a97] font-mono">By {s.creator_name || 'Faculty Member'}</p>
                       </div>
 
-                      <div className="space-y-2.5 pt-3 border-t border-[#ebebeb]">
+                      <div className="space-y-2.5 pt-3 border-t border-[#E6E6E3]">
                         <div className="space-y-1">
                           <div className="flex justify-between text-xs font-mono">
                             <span className="text-[#787774]">Series Progression</span>
-                            <span className="font-medium text-[#37352f]">{s.completed_tests_count || 0} / {s.total_tests || 5} Completed</span>
+                            <span className="font-medium text-[#202124]">{s.completed_tests_count || 0} / {s.total_tests || 5} Completed</span>
                           </div>
                           <ProgressBar value={s.progress_percentage || 0} size="sm" variant="emerald" />
                         </div>
@@ -541,41 +541,41 @@ export default function StudentDashboardPage() {
                 <p className="text-xs text-[#787774]">
                   Unresolved mistake records tagged by cognitive root causes.
                 </p>
-                <Link href="/mistakes" className="text-xs text-[#37352f] hover:underline">
+                <Link href="/mistakes" className="text-xs text-[#202124] hover:underline">
                   Open Full Mistake Notebook →
                 </Link>
               </div>
 
-              <div className="divide-y divide-[#ebebeb] border border-[#ebebeb] rounded-lg bg-white overflow-hidden">
+              <div className="divide-y divide-[#E6E6E3] border border-[#E6E6E3] rounded-lg bg-white overflow-hidden">
                 {mistakes.slice(0, 3).map((m: any) => (
-                  <div key={m.id} className="p-4 space-y-2.5 hover:bg-[#fbfbfa] transition-colors">
+                  <div key={m.id} className="p-4 space-y-2.5 hover:bg-[#F7F7F5] transition-colors">
                     <div className="flex items-center justify-between flex-wrap gap-2">
                       <div className="flex items-center gap-2">
                         {getErrorCategoryBadge(m.error_category)}
-                        <span className="text-xs font-medium text-[#37352f]">{m.topic_title || m.subject_name}</span>
+                        <span className="text-xs font-medium text-[#202124]">{m.topic_title || m.subject_name}</span>
                       </div>
                       <span className="text-[11px] font-mono text-[#9b9a97]">
                         {new Date(m.created_at).toLocaleDateString()}
                       </span>
                     </div>
 
-                    <p className="text-xs text-[#37352f] leading-relaxed">
+                    <p className="text-xs text-[#202124] leading-relaxed">
                       {m.question_text}
                     </p>
 
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs p-2.5 bg-[#f7f6f3] rounded border border-[#ebebeb] font-mono">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs p-2.5 bg-[#F1F1EF] rounded border border-[#E6E6E3] font-mono">
                       <div>
                         <span className="text-rose-600 font-medium">Your Selection: </span>
-                        <span className="text-[#37352f]">Option {m.selected_answer}</span>
+                        <span className="text-[#202124]">Option {m.selected_answer}</span>
                       </div>
                       <div>
                         <span className="text-emerald-700 font-medium">Correct Key: </span>
-                        <span className="text-[#37352f]">Option {m.correct_answer}</span>
+                        <span className="text-[#202124]">Option {m.correct_answer}</span>
                       </div>
                     </div>
 
                     {m.user_notes && (
-                      <p className="text-xs text-[#37352f] bg-[#fbfbfa] p-2 rounded border border-[#ebebeb] leading-relaxed">
+                      <p className="text-xs text-[#202124] bg-[#F7F7F5] p-2 rounded border border-[#E6E6E3] leading-relaxed">
                         <strong className="text-[#787774]">Forensic Reflection:</strong> {m.user_notes}
                       </p>
                     )}
@@ -590,29 +590,29 @@ export default function StudentDashboardPage() {
             <div className="space-y-3">
               {learningPath ? (
                 <div className="space-y-3">
-                  <div className="p-3.5 bg-white border border-[#ebebeb] rounded-lg flex items-center justify-between">
+                  <div className="p-3.5 bg-white border border-[#E6E6E3] rounded-lg flex items-center justify-between">
                     <div>
-                      <h3 className="text-xs font-semibold text-[#37352f]">{learningPath.title}</h3>
+                      <h3 className="text-xs font-semibold text-[#202124]">{learningPath.title}</h3>
                       <p className="text-xs text-[#787774] mt-0.5">{learningPath.description}</p>
                     </div>
                     <div className="text-right font-mono">
-                      <span className="text-xs font-semibold text-[#37352f]">{learningPath.target_days} Days</span>
+                      <span className="text-xs font-semibold text-[#202124]">{learningPath.target_days} Days</span>
                       <div className="text-[11px] text-[#787774]">{learningPath.recommended_hours_per_week} hrs/week</div>
                     </div>
                   </div>
 
-                  <div className="divide-y divide-[#ebebeb] border border-[#ebebeb] rounded-lg bg-white overflow-hidden">
+                  <div className="divide-y divide-[#E6E6E3] border border-[#E6E6E3] rounded-lg bg-white overflow-hidden">
                     {learningPath.units?.map((u: any, idx: number) => (
                       <div
                         key={u.id}
-                        className="p-3 flex items-center justify-between text-xs hover:bg-[#fbfbfa] transition-colors"
+                        className="p-3 flex items-center justify-between text-xs hover:bg-[#F7F7F5] transition-colors"
                       >
                         <div className="flex items-center gap-3">
-                          <span className="w-5 h-5 rounded bg-[#f7f6f3] text-[#787774] border border-[#ebebeb] flex items-center justify-center font-mono text-[10px]">
+                          <span className="w-5 h-5 rounded bg-[#F1F1EF] text-[#787774] border border-[#E6E6E3] flex items-center justify-center font-mono text-[10px]">
                             {idx + 1}
                           </span>
                           <div>
-                            <div className="font-medium text-[#37352f]">{u.topic_title}</div>
+                            <div className="font-medium text-[#202124]">{u.topic_title}</div>
                             <div className="text-[11px] text-[#787774]">{u.subject_name} • {u.estimated_minutes} mins</div>
                           </div>
                         </div>

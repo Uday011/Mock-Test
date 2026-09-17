@@ -75,7 +75,7 @@ function FormattedMathText({ text }: { text: string }) {
           return (
             <span
               key={i}
-              className="inline-block font-mono text-[0.9em] bg-[#f7f6f3] text-[#37352f] px-1.5 py-0.5 rounded border border-[#ebebeb] mx-0.5 font-medium"
+              className="inline-block font-mono text-[0.9em] bg-[#F1F1EF] text-[#202124] px-1.5 py-0.5 rounded border border-[#E6E6E3] mx-0.5 font-medium"
             >
               {formula}
             </span>
@@ -385,10 +385,10 @@ export default function QuestionBankPage() {
         />
 
         {/* Summary Properties */}
-        <div className="bg-white border border-[#ebebeb] rounded-lg p-3.5">
+        <div className="bg-white border border-[#E6E6E3] rounded-lg p-3.5">
           <PropertyTable>
             <PropertyRow icon={Hash} label="Total Questions">
-              <span className="font-mono text-xs font-semibold text-[#37352f]">
+              <span className="font-mono text-xs font-semibold text-[#202124]">
                 {summary.total} repository items
               </span>
             </PropertyRow>
@@ -403,7 +403,7 @@ export default function QuestionBankPage() {
             </PropertyRow>
 
             <PropertyRow icon={FileCheck} label="Active Circulation">
-              <span className="font-mono text-xs text-[#37352f]">
+              <span className="font-mono text-xs text-[#202124]">
                 {summary.active} live questions ready to assemble
               </span>
             </PropertyRow>
@@ -417,7 +417,7 @@ export default function QuestionBankPage() {
         </div>
 
         {/* Search & Multifaceted Filtering Bar */}
-        <div className="bg-white rounded-lg border border-[#ebebeb] p-3 space-y-2.5">
+        <div className="bg-white rounded-lg border border-[#E6E6E3] p-3 space-y-2.5">
           <div className="flex flex-col md:flex-row items-center gap-2.5">
             <div className="relative flex-1 w-full">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-[#787774]" />
@@ -426,12 +426,12 @@ export default function QuestionBankPage() {
                 placeholder="Search by keywords, formulas, concepts, or tags..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full pl-8 pr-8 py-1.5 rounded-md bg-[#fbfbfa] border border-[#ebebeb] text-xs text-[#37352f] placeholder-[#9b9a97] focus:outline-none focus:border-[#37352f]"
+                className="w-full pl-8 pr-8 py-1.5 rounded-md bg-[#F7F7F5] border border-[#E6E6E3] text-xs text-[#202124] placeholder-[#9b9a97] focus:outline-none focus:border-[#202124]"
               />
               {searchQuery && (
                 <button
                   onClick={() => setSearchQuery('')}
-                  className="absolute right-2.5 top-1/2 -translate-y-1/2 text-[#787774] hover:text-[#37352f]"
+                  className="absolute right-2.5 top-1/2 -translate-y-1/2 text-[#787774] hover:text-[#202124]"
                 >
                   <X className="w-3.5 h-3.5" />
                 </button>
@@ -442,7 +442,7 @@ export default function QuestionBankPage() {
               <select
                 value={selectedSubject}
                 onChange={(e) => setSelectedSubject(e.target.value)}
-                className="px-2.5 py-1.5 rounded-md bg-[#fbfbfa] border border-[#ebebeb] text-xs text-[#37352f] focus:outline-none"
+                className="px-2.5 py-1.5 rounded-md bg-[#F7F7F5] border border-[#E6E6E3] text-xs text-[#202124] focus:outline-none"
               >
                 <option value="all">All Subjects</option>
                 {subjectsList.map((s) => (
@@ -455,7 +455,7 @@ export default function QuestionBankPage() {
               <select
                 value={selectedDifficulty}
                 onChange={(e) => setSelectedDifficulty(e.target.value)}
-                className="px-2.5 py-1.5 rounded-md bg-[#fbfbfa] border border-[#ebebeb] text-xs text-[#37352f] focus:outline-none"
+                className="px-2.5 py-1.5 rounded-md bg-[#F7F7F5] border border-[#E6E6E3] text-xs text-[#202124] focus:outline-none"
               >
                 <option value="all">All Difficulties</option>
                 <option value="easy">Easy</option>
@@ -466,7 +466,7 @@ export default function QuestionBankPage() {
               <select
                 value={selectedStatus}
                 onChange={(e) => setSelectedStatus(e.target.value)}
-                className="px-2.5 py-1.5 rounded-md bg-[#fbfbfa] border border-[#ebebeb] text-xs text-[#37352f] focus:outline-none"
+                className="px-2.5 py-1.5 rounded-md bg-[#F7F7F5] border border-[#E6E6E3] text-xs text-[#202124] focus:outline-none"
               >
                 <option value="all">All Statuses</option>
                 <option value="active">Active</option>
@@ -476,7 +476,7 @@ export default function QuestionBankPage() {
               <select
                 value={selectedCorrectness}
                 onChange={(e) => setSelectedCorrectness(e.target.value)}
-                className="px-2.5 py-1.5 rounded-md bg-[#fbfbfa] border border-[#ebebeb] text-xs text-[#37352f] focus:outline-none"
+                className="px-2.5 py-1.5 rounded-md bg-[#F7F7F5] border border-[#E6E6E3] text-xs text-[#202124] focus:outline-none"
               >
                 <option value="all">All Quality Levels</option>
                 <option value="verified">Verified Proof</option>
@@ -485,14 +485,14 @@ export default function QuestionBankPage() {
             </div>
           </div>
 
-          <div className="pt-2 border-t border-[#ebebeb] flex items-center justify-between text-xs text-[#787774]">
+          <div className="pt-2 border-t border-[#E6E6E3] flex items-center justify-between text-xs text-[#787774]">
             <div className="flex items-center gap-2">
               <button
                 onClick={selectAll}
-                className="flex items-center gap-1.5 text-[#37352f] hover:underline"
+                className="flex items-center gap-1.5 text-[#202124] hover:underline"
               >
                 {selectedIds.size === questions.length && questions.length > 0 ? (
-                  <CheckSquare className="w-3.5 h-3.5 text-[#37352f]" />
+                  <CheckSquare className="w-3.5 h-3.5 text-[#202124]" />
                 ) : (
                   <Square className="w-3.5 h-3.5 text-[#787774]" />
                 )}
@@ -506,7 +506,7 @@ export default function QuestionBankPage() {
             </div>
 
             <div className="font-mono text-[11px]">
-              Showing <span className="font-semibold text-[#37352f]">{questions.length}</span> questions
+              Showing <span className="font-semibold text-[#202124]">{questions.length}</span> questions
             </div>
           </div>
         </div>
@@ -523,9 +523,9 @@ export default function QuestionBankPage() {
             <p className="text-xs text-[#787774] mt-1">{error}</p>
           </div>
         ) : questions.length === 0 ? (
-          <div className="p-12 text-center bg-white rounded-lg border border-[#ebebeb] space-y-3">
+          <div className="p-12 text-center bg-white rounded-lg border border-[#E6E6E3] space-y-3">
             <Layers className="w-8 h-8 text-[#9b9a97] mx-auto" />
-            <h3 className="text-sm font-semibold text-[#37352f]">No questions match your filter</h3>
+            <h3 className="text-sm font-semibold text-[#202124]">No questions match your filter</h3>
             <p className="text-xs text-[#787774] max-w-sm mx-auto">
               Try adjusting search keywords or clearing filter constraints to see more questions.
             </p>
@@ -545,30 +545,30 @@ export default function QuestionBankPage() {
                   key={q.id}
                   className={`p-4 rounded-lg border transition-colors space-y-2.5 ${
                     isSelected
-                      ? 'border-[#37352f] bg-[#fbfbfa]'
-                      : 'border-[#ebebeb] bg-white hover:border-[#d4d4d4]'
+                      ? 'border-[#202124] bg-[#F7F7F5]'
+                      : 'border-[#E6E6E3] bg-white hover:border-[#d4d4d4]'
                   }`}
                 >
                   {/* Card Header Row */}
-                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-2 border-b border-[#ebebeb]">
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-2 border-b border-[#E6E6E3]">
                     <div className="flex items-center gap-2 flex-wrap">
                       <button
                         onClick={() => toggleSelect(q.id)}
-                        className="text-[#787774] hover:text-[#37352f]"
+                        className="text-[#787774] hover:text-[#202124]"
                         title={isSelected ? 'Deselect' : 'Select'}
                       >
                         {isSelected ? (
-                          <CheckSquare className="w-3.5 h-3.5 text-[#37352f]" />
+                          <CheckSquare className="w-3.5 h-3.5 text-[#202124]" />
                         ) : (
                           <Square className="w-3.5 h-3.5 text-[#787774]" />
                         )}
                       </button>
 
-                      <span className="font-mono text-[10px] text-[#787774] bg-[#f7f6f3] px-1.5 py-0.5 rounded border border-[#ebebeb]">
+                      <span className="font-mono text-[10px] text-[#787774] bg-[#F1F1EF] px-1.5 py-0.5 rounded border border-[#E6E6E3]">
                         {q.id.slice(0, 8)}
                       </span>
 
-                      <span className="text-xs font-medium text-[#37352f]">
+                      <span className="text-xs font-medium text-[#202124]">
                         {q.subject_id || 'General Subject'}
                       </span>
 
@@ -593,7 +593,7 @@ export default function QuestionBankPage() {
                         {q.difficulty}
                       </Badge>
 
-                      <span className="font-medium text-[#37352f]">
+                      <span className="font-medium text-[#202124]">
                         +{q.marks} / -{q.negative_marks}
                       </span>
 
@@ -606,16 +606,16 @@ export default function QuestionBankPage() {
                       <div className="relative">
                         <button
                           onClick={() => setUsagePopoverId(isUsagePopoverOpen ? null : q.id)}
-                          className="px-1.5 py-0.5 rounded bg-[#f7f6f3] hover:bg-[#efefed] text-[#37352f] text-[11px] border border-[#ebebeb]"
+                          className="px-1.5 py-0.5 rounded bg-[#F1F1EF] hover:bg-[#F1F1EF] text-[#202124] text-[11px] border border-[#E6E6E3]"
                           title="View tests using this question"
                         >
                           {q.usage_count} tests
                         </button>
 
                         {isUsagePopoverOpen && (
-                          <div className="absolute right-0 top-6 z-20 w-56 p-2.5 bg-white border border-[#ebebeb] rounded-lg shadow-lg text-xs space-y-1.5">
-                            <div className="flex items-center justify-between pb-1 border-b border-[#ebebeb]">
-                              <span className="font-medium text-[#37352f]">Used in Tests</span>
+                          <div className="absolute right-0 top-6 z-20 w-56 p-2.5 bg-white border border-[#E6E6E3] rounded-lg shadow-lg text-xs space-y-1.5">
+                            <div className="flex items-center justify-between pb-1 border-b border-[#E6E6E3]">
+                              <span className="font-medium text-[#202124]">Used in Tests</span>
                               <button onClick={() => setUsagePopoverId(null)} className="text-[#787774]">
                                 <X className="w-3 h-3" />
                               </button>
@@ -638,7 +638,7 @@ export default function QuestionBankPage() {
                   </div>
 
                   {/* Question Statement */}
-                  <div className="text-xs sm:text-sm text-[#37352f] leading-relaxed">
+                  <div className="text-xs sm:text-sm text-[#202124] leading-relaxed">
                     <FormattedMathText text={q.question_text} />
                   </div>
 
@@ -654,12 +654,12 @@ export default function QuestionBankPage() {
                           className={`p-2 rounded-md text-xs border flex items-start gap-2 ${
                             isCorrect
                               ? 'bg-[#ebf5e8] border-[#c4e2b8] text-[#2b593f] font-medium'
-                              : 'bg-[#fbfbfa] border-[#ebebeb] text-[#37352f]'
+                              : 'bg-[#F7F7F5] border-[#E6E6E3] text-[#202124]'
                           }`}
                         >
                           <span
                             className={`w-4 h-4 rounded flex items-center justify-center text-[10px] font-mono shrink-0 ${
-                              isCorrect ? 'bg-emerald-700 text-white' : 'bg-[#f7f6f3] text-[#787774] border border-[#ebebeb]'
+                              isCorrect ? 'bg-emerald-700 text-white' : 'bg-[#F1F1EF] text-[#787774] border border-[#E6E6E3]'
                             }`}
                           >
                             {optKey}
@@ -677,13 +677,13 @@ export default function QuestionBankPage() {
 
                   {/* Expanded Details */}
                   {isExpanded && (
-                    <div className="mt-2.5 pt-2.5 border-t border-[#ebebeb] bg-[#fbfbfa] rounded-md p-3 text-xs space-y-2 border">
-                      <div className="font-medium text-[#37352f]">
+                    <div className="mt-2.5 pt-2.5 border-t border-[#E6E6E3] bg-[#F7F7F5] rounded-md p-3 text-xs space-y-2 border">
+                      <div className="font-medium text-[#202124]">
                         Pedagogical Derivation & Explanation:
                       </div>
 
                       {q.explanation ? (
-                        <div className="text-[#787774] leading-relaxed pl-2 border-l-2 border-[#ebebeb]">
+                        <div className="text-[#787774] leading-relaxed pl-2 border-l-2 border-[#E6E6E3]">
                           <FormattedMathText text={q.explanation} />
                         </div>
                       ) : (
@@ -692,7 +692,7 @@ export default function QuestionBankPage() {
 
                       {q.source_reference && (
                         <div className="pt-1 text-[11px] text-[#787774]">
-                          <span className="font-medium text-[#37352f]">Source: </span>
+                          <span className="font-medium text-[#202124]">Source: </span>
                           <span>{q.source_reference}</span>
                         </div>
                       )}
@@ -702,7 +702,7 @@ export default function QuestionBankPage() {
                           {q.tags.map((tag, tIdx) => (
                             <span
                               key={tIdx}
-                              className="bg-white text-[#787774] text-[10px] px-1.5 py-0.5 rounded border border-[#ebebeb]"
+                              className="bg-white text-[#787774] text-[10px] px-1.5 py-0.5 rounded border border-[#E6E6E3]"
                             >
                               {tag}
                             </span>
@@ -713,10 +713,10 @@ export default function QuestionBankPage() {
                   )}
 
                   {/* Card Bottom Toolbar */}
-                  <div className="pt-2 border-t border-[#ebebeb] flex items-center justify-between text-xs">
+                  <div className="pt-2 border-t border-[#E6E6E3] flex items-center justify-between text-xs">
                     <button
                       onClick={() => toggleExpand(q.id)}
-                      className="flex items-center gap-1 text-[#787774] hover:text-[#37352f] text-[11px]"
+                      className="flex items-center gap-1 text-[#787774] hover:text-[#202124] text-[11px]"
                     >
                       <span>{isExpanded ? 'Hide Solution' : 'View Solution'}</span>
                       {isExpanded ? <ChevronUp className="w-3 h-3" /> : <ChevronDown className="w-3 h-3" />}
@@ -725,13 +725,13 @@ export default function QuestionBankPage() {
                     <div className="flex items-center gap-1.5">
                       <button
                         onClick={() => handleOpenEdit(q, 'edit')}
-                        className="px-2 py-0.5 rounded bg-white hover:bg-[#f7f6f3] text-[#787774] border border-[#ebebeb] text-[11px]"
+                        className="px-2 py-0.5 rounded bg-white hover:bg-[#F1F1EF] text-[#787774] border border-[#E6E6E3] text-[11px]"
                       >
                         Edit
                       </button>
                       <button
                         onClick={() => handleOpenEdit(q, 'duplicate')}
-                        className="px-2 py-0.5 rounded bg-white hover:bg-[#f7f6f3] text-[#787774] border border-[#ebebeb] flex items-center gap-1 text-[11px]"
+                        className="px-2 py-0.5 rounded bg-white hover:bg-[#F1F1EF] text-[#787774] border border-[#E6E6E3] flex items-center gap-1 text-[11px]"
                         title="Duplicate"
                       >
                         <Copy className="w-2.5 h-2.5" />
@@ -739,7 +739,7 @@ export default function QuestionBankPage() {
                       </button>
                       <button
                         onClick={() => toggleSelect(q.id)}
-                        className="px-2 py-0.5 rounded bg-white hover:bg-[#f7f6f3] text-[#787774] border border-[#ebebeb] text-[11px]"
+                        className="px-2 py-0.5 rounded bg-white hover:bg-[#F1F1EF] text-[#787774] border border-[#E6E6E3] text-[11px]"
                       >
                         {isSelected ? 'Deselect' : 'Select'}
                       </button>
@@ -753,7 +753,7 @@ export default function QuestionBankPage() {
 
         {/* Floating Batch Action Bar */}
         {selectedIds.size > 0 && (
-          <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 bg-[#37352f] text-white rounded-lg px-4 py-2.5 shadow-xl flex items-center gap-3 animate-in fade-in">
+          <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 bg-[#202124] text-white rounded-lg px-4 py-2.5 shadow-xl flex items-center gap-3 animate-in fade-in">
             <div className="flex items-center gap-1.5 pr-2 border-r border-[#787774] text-xs font-mono">
               <span className="w-2 h-2 rounded-full bg-emerald-400" />
               <span>{selectedIds.size} Selected</span>
@@ -763,7 +763,7 @@ export default function QuestionBankPage() {
               variant="primary"
               size="sm"
               onClick={handleOpenAssemble}
-              className="bg-white text-[#37352f] hover:bg-[#f7f6f3]"
+              className="bg-white text-[#202124] hover:bg-[#F1F1EF]"
             >
               Assemble Test
             </Button>
@@ -823,11 +823,11 @@ export default function QuestionBankPage() {
             <div className="space-y-3">
               <div className="grid grid-cols-2 gap-2.5">
                 <div>
-                  <label className="block text-xs font-medium text-[#37352f] mb-1">Subject</label>
+                  <label className="block text-xs font-medium text-[#202124] mb-1">Subject</label>
                   <select
                     value={formSubject}
                     onChange={(e) => setFormSubject(e.target.value)}
-                    className="w-full px-2.5 py-1.5 rounded-md bg-white border border-[#ebebeb] text-xs text-[#37352f]"
+                    className="w-full px-2.5 py-1.5 rounded-md bg-white border border-[#E6E6E3] text-xs text-[#202124]"
                   >
                     {subjectsList.map((s) => (
                       <option key={s} value={s}>
@@ -837,11 +837,11 @@ export default function QuestionBankPage() {
                   </select>
                 </div>
                 <div>
-                  <label className="block text-xs font-medium text-[#37352f] mb-1">Difficulty</label>
+                  <label className="block text-xs font-medium text-[#202124] mb-1">Difficulty</label>
                   <select
                     value={formDifficulty}
                     onChange={(e) => setFormDifficulty(e.target.value as any)}
-                    className="w-full px-2.5 py-1.5 rounded-md bg-white border border-[#ebebeb] text-xs text-[#37352f]"
+                    className="w-full px-2.5 py-1.5 rounded-md bg-white border border-[#E6E6E3] text-xs text-[#202124]"
                   >
                     <option value="easy">Easy</option>
                     <option value="medium">Medium</option>
@@ -858,7 +858,7 @@ export default function QuestionBankPage() {
                     step="0.5"
                     value={formMarks}
                     onChange={(e) => setFormMarks(Number(e.target.value))}
-                    className="w-full px-2 py-1 rounded-md bg-white border border-[#ebebeb] text-[#37352f]"
+                    className="w-full px-2 py-1 rounded-md bg-white border border-[#E6E6E3] text-[#202124]"
                   />
                 </div>
                 <div>
@@ -868,7 +868,7 @@ export default function QuestionBankPage() {
                     step="0.25"
                     value={formNegativeMarks}
                     onChange={(e) => setFormNegativeMarks(Number(e.target.value))}
-                    className="w-full px-2 py-1 rounded-md bg-white border border-[#ebebeb] text-[#37352f]"
+                    className="w-full px-2 py-1 rounded-md bg-white border border-[#E6E6E3] text-[#202124]"
                   />
                 </div>
                 <div>
@@ -877,13 +877,13 @@ export default function QuestionBankPage() {
                     type="number"
                     value={formEstimatedSecs}
                     onChange={(e) => setFormEstimatedSecs(Number(e.target.value))}
-                    className="w-full px-2 py-1 rounded-md bg-white border border-[#ebebeb] text-[#37352f]"
+                    className="w-full px-2 py-1 rounded-md bg-white border border-[#E6E6E3] text-[#202124]"
                   />
                 </div>
               </div>
 
               <div>
-                <label className="block text-xs font-medium text-[#37352f] mb-1">
+                <label className="block text-xs font-medium text-[#202124] mb-1">
                   Question Statement (use $...$ for formulas)
                 </label>
                 <textarea
@@ -891,12 +891,12 @@ export default function QuestionBankPage() {
                   value={formText}
                   onChange={(e) => setFormText(e.target.value)}
                   placeholder="e.g. A cylinder has height $h = 14$ cm and radius $r = 7$ cm..."
-                  className="w-full px-2.5 py-1.5 rounded-md bg-white border border-[#ebebeb] text-xs text-[#37352f] focus:outline-none focus:border-[#37352f]"
+                  className="w-full px-2.5 py-1.5 rounded-md bg-white border border-[#E6E6E3] text-xs text-[#202124] focus:outline-none focus:border-[#202124]"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-medium text-[#37352f] mb-1">
+                <label className="block text-xs font-medium text-[#202124] mb-1">
                   Options & Correct Answer:
                 </label>
                 <div className="space-y-1.5">
@@ -910,8 +910,8 @@ export default function QuestionBankPage() {
                           onClick={() => setFormCorrect(optKey)}
                           className={`w-6 h-6 rounded flex items-center justify-center text-xs font-mono transition-colors ${
                             isChecked
-                              ? 'bg-[#37352f] text-white'
-                              : 'bg-[#f7f6f3] text-[#787774] border border-[#ebebeb]'
+                              ? 'bg-[#202124] text-white'
+                              : 'bg-[#F1F1EF] text-[#787774] border border-[#E6E6E3]'
                           }`}
                         >
                           {optKey}
@@ -925,8 +925,8 @@ export default function QuestionBankPage() {
                             setFormOptions(next);
                           }}
                           placeholder={`Option ${optKey}`}
-                          className={`flex-1 px-2.5 py-1 rounded-md border text-xs text-[#37352f] focus:outline-none ${
-                            isChecked ? 'border-[#37352f] bg-[#fbfbfa]' : 'border-[#ebebeb] bg-white'
+                          className={`flex-1 px-2.5 py-1 rounded-md border text-xs text-[#202124] focus:outline-none ${
+                            isChecked ? 'border-[#202124] bg-[#F7F7F5]' : 'border-[#E6E6E3] bg-white'
                           }`}
                         />
                       </div>
@@ -936,7 +936,7 @@ export default function QuestionBankPage() {
               </div>
 
               <div>
-                <label className="block text-xs font-medium text-[#37352f] mb-1">
+                <label className="block text-xs font-medium text-[#202124] mb-1">
                   Explanation / Solution Proof
                 </label>
                 <textarea
@@ -944,39 +944,39 @@ export default function QuestionBankPage() {
                   value={formExplanation}
                   onChange={(e) => setFormExplanation(e.target.value)}
                   placeholder="Step-by-step reasoning or formula derivation..."
-                  className="w-full px-2.5 py-1.5 rounded-md bg-white border border-[#ebebeb] text-xs text-[#37352f] focus:outline-none focus:border-[#37352f]"
+                  className="w-full px-2.5 py-1.5 rounded-md bg-white border border-[#E6E6E3] text-xs text-[#202124] focus:outline-none focus:border-[#202124]"
                 />
               </div>
 
               <div className="grid grid-cols-2 gap-2.5">
                 <div>
-                  <label className="block text-xs font-medium text-[#37352f] mb-1">Topic / Subtopic</label>
+                  <label className="block text-xs font-medium text-[#202124] mb-1">Topic / Subtopic</label>
                   <input
                     type="text"
                     value={formTopic}
                     onChange={(e) => setFormTopic(e.target.value)}
                     placeholder="e.g. Geometry"
-                    className="w-full px-2.5 py-1 rounded-md bg-white border border-[#ebebeb] text-xs text-[#37352f]"
+                    className="w-full px-2.5 py-1 rounded-md bg-white border border-[#E6E6E3] text-xs text-[#202124]"
                   />
                 </div>
                 <div>
-                  <label className="block text-xs font-medium text-[#37352f] mb-1">Source Reference</label>
+                  <label className="block text-xs font-medium text-[#202124] mb-1">Source Reference</label>
                   <input
                     type="text"
                     value={formSource}
                     onChange={(e) => setFormSource(e.target.value)}
                     placeholder="e.g. SSC CGL 2024"
-                    className="w-full px-2.5 py-1 rounded-md bg-white border border-[#ebebeb] text-xs text-[#37352f]"
+                    className="w-full px-2.5 py-1 rounded-md bg-white border border-[#E6E6E3] text-xs text-[#202124]"
                   />
                 </div>
               </div>
             </div>
 
             {/* Live Preview */}
-            <div className="bg-[#fbfbfa] rounded-lg p-4 border border-[#ebebeb] flex flex-col justify-between space-y-3">
+            <div className="bg-[#F7F7F5] rounded-lg p-4 border border-[#E6E6E3] flex flex-col justify-between space-y-3">
               <div>
-                <div className="flex items-center justify-between pb-2 border-b border-[#ebebeb] text-xs text-[#787774]">
-                  <span className="font-medium text-[#37352f] flex items-center gap-1">
+                <div className="flex items-center justify-between pb-2 border-b border-[#E6E6E3] text-xs text-[#787774]">
+                  <span className="font-medium text-[#202124] flex items-center gap-1">
                     <Sparkles className="w-3.5 h-3.5 text-amber-600" />
                     Preview
                   </span>
@@ -986,12 +986,12 @@ export default function QuestionBankPage() {
                 <div className="mt-2.5 text-xs text-[#787774] flex items-center gap-2">
                   <Badge variant="gray">{formSubject}</Badge>
                   <span>{formTopic}</span>
-                  <span className="ml-auto font-mono text-[#37352f]">
+                  <span className="ml-auto font-mono text-[#202124]">
                     +{formMarks} / -{formNegativeMarks}
                   </span>
                 </div>
 
-                <div className="mt-2.5 text-xs text-[#37352f] leading-relaxed min-h-[40px]">
+                <div className="mt-2.5 text-xs text-[#202124] leading-relaxed min-h-[40px]">
                   {formText ? (
                     <FormattedMathText text={formText} />
                   ) : (
@@ -1009,7 +1009,7 @@ export default function QuestionBankPage() {
                         className={`p-2 rounded-md text-xs border flex items-start gap-2 ${
                           isCorrect
                             ? 'bg-[#ebf5e8] border-[#c4e2b8] text-[#2b593f] font-medium'
-                            : 'bg-white border-[#ebebeb] text-[#37352f]'
+                            : 'bg-white border-[#E6E6E3] text-[#202124]'
                         }`}
                       >
                         <span className="font-mono text-[10px]">{optKey}.</span>
@@ -1022,8 +1022,8 @@ export default function QuestionBankPage() {
                 </div>
 
                 {formExplanation && (
-                  <div className="mt-3 p-2.5 rounded-md bg-white border border-[#ebebeb] text-xs space-y-1">
-                    <div className="font-medium text-[#37352f]">Explanation:</div>
+                  <div className="mt-3 p-2.5 rounded-md bg-white border border-[#E6E6E3] text-xs space-y-1">
+                    <div className="font-medium text-[#202124]">Explanation:</div>
                     <div className="text-[#787774]">
                       <FormattedMathText text={formExplanation} />
                     </div>
@@ -1031,7 +1031,7 @@ export default function QuestionBankPage() {
                 )}
               </div>
 
-              <div className="pt-2 border-t border-[#ebebeb] text-[11px] text-[#787774] font-mono flex items-center justify-between">
+              <div className="pt-2 border-t border-[#E6E6E3] text-[11px] text-[#787774] font-mono flex items-center justify-between">
                 <span>Time: {formEstimatedSecs}s</span>
                 <span>Source: {formSource || 'Custom'}</span>
               </div>
@@ -1090,33 +1090,33 @@ export default function QuestionBankPage() {
           ) : (
             <div className="space-y-3 text-xs">
               <div>
-                <label className="block font-medium text-[#37352f] mb-1">Test Title</label>
+                <label className="block font-medium text-[#202124] mb-1">Test Title</label>
                 <input
                   type="text"
                   value={assembleTitle}
                   onChange={(e) => setAssembleTitle(e.target.value)}
                   placeholder="e.g. Quantitative Speed Drill #1"
-                  className="w-full px-2.5 py-1.5 rounded-md bg-white border border-[#ebebeb] text-[#37352f] focus:outline-none"
+                  className="w-full px-2.5 py-1.5 rounded-md bg-white border border-[#E6E6E3] text-[#202124] focus:outline-none"
                 />
               </div>
 
               <div>
-                <label className="block font-medium text-[#37352f] mb-1">Description</label>
+                <label className="block font-medium text-[#202124] mb-1">Description</label>
                 <textarea
                   rows={2}
                   value={assembleDescription}
                   onChange={(e) => setAssembleDescription(e.target.value)}
-                  className="w-full px-2.5 py-1.5 rounded-md bg-white border border-[#ebebeb] text-[#37352f] focus:outline-none"
+                  className="w-full px-2.5 py-1.5 rounded-md bg-white border border-[#E6E6E3] text-[#202124] focus:outline-none"
                 />
               </div>
 
               <div className="grid grid-cols-2 gap-2.5">
                 <div>
-                  <label className="block font-medium text-[#37352f] mb-1">Subject</label>
+                  <label className="block font-medium text-[#202124] mb-1">Subject</label>
                   <select
                     value={assembleSubject}
                     onChange={(e) => setAssembleSubject(e.target.value)}
-                    className="w-full px-2.5 py-1.5 rounded-md bg-white border border-[#ebebeb] text-[#37352f]"
+                    className="w-full px-2.5 py-1.5 rounded-md bg-white border border-[#E6E6E3] text-[#202124]"
                   >
                     {subjectsList.map((s) => (
                       <option key={s} value={s}>
@@ -1127,12 +1127,12 @@ export default function QuestionBankPage() {
                 </div>
 
                 <div>
-                  <label className="block font-medium text-[#37352f] mb-1">Duration (Minutes)</label>
+                  <label className="block font-medium text-[#202124] mb-1">Duration (Minutes)</label>
                   <input
                     type="number"
                     value={assembleDurationMins}
                     onChange={(e) => setAssembleDurationMins(Number(e.target.value))}
-                    className="w-full px-2.5 py-1.5 rounded-md bg-white border border-[#ebebeb] text-[#37352f]"
+                    className="w-full px-2.5 py-1.5 rounded-md bg-white border border-[#E6E6E3] text-[#202124]"
                   />
                 </div>
               </div>

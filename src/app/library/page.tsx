@@ -238,7 +238,7 @@ export default function PublicLibraryPage() {
     >
       {/* Toast Notification */}
       {shareToast && (
-        <div className="fixed bottom-6 right-6 z-50 bg-[#37352f] text-white text-xs px-3.5 py-2.5 rounded-md shadow-lg flex items-center gap-2 animate-in fade-in">
+        <div className="fixed bottom-6 right-6 z-50 bg-[#202124] text-white text-xs px-3.5 py-2.5 rounded-md shadow-lg flex items-center gap-2 animate-in fade-in">
           <Check className="w-3.5 h-3.5 text-emerald-400" />
           <span>{shareToast}</span>
         </div>
@@ -261,19 +261,19 @@ export default function PublicLibraryPage() {
         />
 
         {/* Tab Switcher */}
-        <div className="flex items-center justify-between border-b border-[#ebebeb] pb-2">
+        <div className="flex items-center justify-between border-b border-[#E6E6E3] pb-2">
           <div className="flex items-center gap-1.5">
             <button
               onClick={() => setActiveTab('tests')}
               className={`px-3 py-1.5 rounded-md text-xs font-medium flex items-center gap-1.5 transition-colors ${
                 activeTab === 'tests'
-                  ? 'bg-[#37352f] text-white'
-                  : 'bg-white border border-[#ebebeb] text-[#787774] hover:bg-[#f7f6f3]'
+                  ? 'bg-[#202124] text-white'
+                  : 'bg-white border border-[#E6E6E3] text-[#787774] hover:bg-[#F1F1EF]'
               }`}
             >
               <Layers className="w-3.5 h-3.5" />
               <span>Individual Tests</span>
-              <span className={`text-[10px] font-mono px-1 rounded ${activeTab === 'tests' ? 'bg-[#4f4d47]' : 'bg-[#f7f6f3]'}`}>
+              <span className={`text-[10px] font-mono px-1 rounded ${activeTab === 'tests' ? 'bg-[#4f4d47]' : 'bg-[#F1F1EF]'}`}>
                 {tests.length}
               </span>
             </button>
@@ -282,13 +282,13 @@ export default function PublicLibraryPage() {
               onClick={() => setActiveTab('series')}
               className={`px-3 py-1.5 rounded-md text-xs font-medium flex items-center gap-1.5 transition-colors ${
                 activeTab === 'series'
-                  ? 'bg-[#37352f] text-white'
-                  : 'bg-white border border-[#ebebeb] text-[#787774] hover:bg-[#f7f6f3]'
+                  ? 'bg-[#202124] text-white'
+                  : 'bg-white border border-[#E6E6E3] text-[#787774] hover:bg-[#F1F1EF]'
               }`}
             >
               <BookOpen className="w-3.5 h-3.5" />
               <span>Test Series</span>
-              <span className={`text-[10px] font-mono px-1 rounded ${activeTab === 'series' ? 'bg-[#4f4d47]' : 'bg-[#f7f6f3]'}`}>
+              <span className={`text-[10px] font-mono px-1 rounded ${activeTab === 'series' ? 'bg-[#4f4d47]' : 'bg-[#F1F1EF]'}`}>
                 {testSeries.length}
               </span>
             </button>
@@ -297,13 +297,13 @@ export default function PublicLibraryPage() {
               onClick={() => setActiveTab('creators')}
               className={`px-3 py-1.5 rounded-md text-xs font-medium flex items-center gap-1.5 transition-colors ${
                 activeTab === 'creators'
-                  ? 'bg-[#37352f] text-white'
-                  : 'bg-white border border-[#ebebeb] text-[#787774] hover:bg-[#f7f6f3]'
+                  ? 'bg-[#202124] text-white'
+                  : 'bg-white border border-[#E6E6E3] text-[#787774] hover:bg-[#F1F1EF]'
               }`}
             >
               <GraduationCap className="w-3.5 h-3.5" />
               <span>Verified Educators</span>
-              <span className={`text-[10px] font-mono px-1 rounded ${activeTab === 'creators' ? 'bg-[#4f4d47]' : 'bg-[#f7f6f3]'}`}>
+              <span className={`text-[10px] font-mono px-1 rounded ${activeTab === 'creators' ? 'bg-[#4f4d47]' : 'bg-[#F1F1EF]'}`}>
                 {creators.length}
               </span>
             </button>
@@ -323,7 +323,7 @@ export default function PublicLibraryPage() {
         {activeTab === 'tests' && (
           <div className="space-y-4">
             {/* Search & Filter Bar */}
-            <div className="bg-white border border-[#ebebeb] rounded-lg p-3 space-y-3">
+            <div className="bg-white border border-[#E6E6E3] rounded-lg p-3 space-y-3">
               <div className="flex flex-col sm:flex-row items-center gap-2.5">
                 <div className="relative flex-1 w-full">
                   <Search className="w-3.5 h-3.5 text-[#787774] absolute left-3 top-1/2 -translate-y-1/2" />
@@ -333,12 +333,12 @@ export default function PublicLibraryPage() {
                     onChange={(e) => setSearchQuery(e.target.value)}
                     placeholder="Search tests by title, subject, formula, or creator..."
                     aria-label="Search tests by title, subject, formula, or creator"
-                    className="w-full pl-8 pr-8 py-1.5 text-xs bg-[#fbfbfa] border border-[#ebebeb] rounded-md focus:bg-white focus:outline-none focus:border-[#37352f] text-[#37352f] placeholder-[#9b9a97]"
+                    className="w-full pl-8 pr-8 py-1.5 text-xs bg-[#F7F7F5] border border-[#E6E6E3] rounded-md focus:bg-white focus:outline-none focus:border-[#202124] text-[#202124] placeholder-[#9b9a97]"
                   />
                   {searchQuery && (
                     <button
                       onClick={() => setSearchQuery('')}
-                      className="absolute right-2.5 top-1/2 -translate-y-1/2 text-[#787774] hover:text-[#37352f]"
+                      className="absolute right-2.5 top-1/2 -translate-y-1/2 text-[#787774] hover:text-[#202124]"
                     >
                       <X className="w-3.5 h-3.5" />
                     </button>
@@ -350,7 +350,7 @@ export default function PublicLibraryPage() {
                   <select
                     value={selectedSort}
                     onChange={(e) => setSelectedSort(e.target.value)}
-                    className="px-2.5 py-1.5 text-xs bg-[#fbfbfa] border border-[#ebebeb] rounded-md text-[#37352f] focus:outline-none"
+                    className="px-2.5 py-1.5 text-xs bg-[#F7F7F5] border border-[#E6E6E3] rounded-md text-[#202124] focus:outline-none"
                   >
                     <option value="recently_published">Recently Published</option>
                     <option value="most_attempted">Most Attempted</option>
@@ -360,7 +360,7 @@ export default function PublicLibraryPage() {
               </div>
 
               {/* Faceted Filter Selectors */}
-              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2 pt-2 border-t border-[#ebebeb]">
+              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2 pt-2 border-t border-[#E6E6E3]">
                 <div>
                   <label className="block text-[10px] text-[#787774] uppercase tracking-wider mb-0.5">
                     Exam
@@ -368,7 +368,7 @@ export default function PublicLibraryPage() {
                   <select
                     value={selectedExam}
                     onChange={(e) => setSelectedExam(e.target.value)}
-                    className="w-full px-2 py-1 text-xs bg-[#fbfbfa] border border-[#ebebeb] rounded text-[#37352f] focus:outline-none"
+                    className="w-full px-2 py-1 text-xs bg-[#F7F7F5] border border-[#E6E6E3] rounded text-[#202124] focus:outline-none"
                   >
                     {EXAMS.map((e) => (
                       <option key={e.value} value={e.value}>
@@ -385,7 +385,7 @@ export default function PublicLibraryPage() {
                   <select
                     value={selectedSubject}
                     onChange={(e) => setSelectedSubject(e.target.value)}
-                    className="w-full px-2 py-1 text-xs bg-[#fbfbfa] border border-[#ebebeb] rounded text-[#37352f] focus:outline-none"
+                    className="w-full px-2 py-1 text-xs bg-[#F7F7F5] border border-[#E6E6E3] rounded text-[#202124] focus:outline-none"
                   >
                     {SUBJECTS.map((s) => (
                       <option key={s.value} value={s.value}>
@@ -402,7 +402,7 @@ export default function PublicLibraryPage() {
                   <select
                     value={selectedType}
                     onChange={(e) => setSelectedType(e.target.value)}
-                    className="w-full px-2 py-1 text-xs bg-[#fbfbfa] border border-[#ebebeb] rounded text-[#37352f] focus:outline-none"
+                    className="w-full px-2 py-1 text-xs bg-[#F7F7F5] border border-[#E6E6E3] rounded text-[#202124] focus:outline-none"
                   >
                     {TEST_TYPES.map((t) => (
                       <option key={t.value} value={t.value}>
@@ -419,7 +419,7 @@ export default function PublicLibraryPage() {
                   <select
                     value={selectedDifficulty}
                     onChange={(e) => setSelectedDifficulty(e.target.value)}
-                    className="w-full px-2 py-1 text-xs bg-[#fbfbfa] border border-[#ebebeb] rounded text-[#37352f] focus:outline-none"
+                    className="w-full px-2 py-1 text-xs bg-[#F7F7F5] border border-[#E6E6E3] rounded text-[#202124] focus:outline-none"
                   >
                     <option value="all">All Difficulties</option>
                     <option value="easy">Easy</option>
@@ -435,7 +435,7 @@ export default function PublicLibraryPage() {
                   <select
                     value={selectedDuration}
                     onChange={(e) => setSelectedDuration(e.target.value)}
-                    className="w-full px-2 py-1 text-xs bg-[#fbfbfa] border border-[#ebebeb] rounded text-[#37352f] focus:outline-none"
+                    className="w-full px-2 py-1 text-xs bg-[#F7F7F5] border border-[#E6E6E3] rounded text-[#202124] focus:outline-none"
                   >
                     <option value="all">Any Duration</option>
                     <option value="short">≤ 30 mins</option>
@@ -451,7 +451,7 @@ export default function PublicLibraryPage() {
                   <select
                     value={selectedTrust}
                     onChange={(e) => setSelectedTrust(e.target.value)}
-                    className="w-full px-2 py-1 text-xs bg-[#fbfbfa] border border-[#ebebeb] rounded text-[#37352f] focus:outline-none"
+                    className="w-full px-2 py-1 text-xs bg-[#F7F7F5] border border-[#E6E6E3] rounded text-[#202124] focus:outline-none"
                   >
                     {TRUST_LABELS.map((tl) => (
                       <option key={tl.value} value={tl.value}>
@@ -466,13 +466,13 @@ export default function PublicLibraryPage() {
             {/* Test Cards Grid */}
             {loading ? (
               <div className="py-20 flex flex-col items-center justify-center space-y-2">
-                <div className="w-5 h-5 border-2 border-[#37352f] border-t-transparent rounded-full animate-spin" />
+                <div className="w-5 h-5 border-2 border-[#202124] border-t-transparent rounded-full animate-spin" />
                 <p className="text-xs text-[#787774] font-mono">Filtering repositories...</p>
               </div>
             ) : tests.length === 0 ? (
-              <div className="bg-white border border-[#ebebeb] rounded-lg p-10 text-center space-y-3">
+              <div className="bg-white border border-[#E6E6E3] rounded-lg p-10 text-center space-y-3">
                 <Search className="w-8 h-8 text-[#9b9a97] mx-auto" />
-                <h3 className="font-semibold text-sm text-[#37352f]">No Tests Found</h3>
+                <h3 className="font-semibold text-sm text-[#202124]">No Tests Found</h3>
                 <p className="text-xs text-[#787774] max-w-sm mx-auto">
                   Try clearing some filter constraints or searching for broader subject keywords.
                 </p>
@@ -485,7 +485,7 @@ export default function PublicLibraryPage() {
                 {tests.map((test) => (
                   <div
                     key={test.id}
-                    className="bg-white rounded-lg border border-[#ebebeb] hover:border-[#d4d4d4] transition-colors flex flex-col justify-between p-4 space-y-3"
+                    className="bg-white rounded-lg border border-[#E6E6E3] hover:border-[#d4d4d4] transition-colors flex flex-col justify-between p-4 space-y-3"
                   >
                     <div className="space-y-2">
                       <div className="flex items-center justify-between gap-2">
@@ -497,7 +497,7 @@ export default function PublicLibraryPage() {
                             className={`p-1 rounded border text-xs transition-colors ${
                               test.is_bookmarked
                                 ? 'bg-[#fdf5e8] border-[#fae2be] text-[#8f4f00]'
-                                : 'bg-[#fbfbfa] border-[#ebebeb] text-[#787774] hover:bg-[#f7f6f3]'
+                                : 'bg-[#F7F7F5] border-[#E6E6E3] text-[#787774] hover:bg-[#F1F1EF]'
                             }`}
                           >
                             <Bookmark className={`w-3 h-3 ${test.is_bookmarked ? 'fill-amber-600' : ''}`} />
@@ -505,7 +505,7 @@ export default function PublicLibraryPage() {
                           <button
                             onClick={() => handleShare(test.id, test.title)}
                             title="Share test link"
-                            className="p-1 rounded border border-[#ebebeb] bg-[#fbfbfa] text-[#787774] hover:bg-[#f7f6f3] transition-colors"
+                            className="p-1 rounded border border-[#E6E6E3] bg-[#F7F7F5] text-[#787774] hover:bg-[#F1F1EF] transition-colors"
                           >
                             <Share2 className="w-3 h-3" />
                           </button>
@@ -513,7 +513,7 @@ export default function PublicLibraryPage() {
                       </div>
 
                       <div className="flex items-center gap-1.5 flex-wrap">
-                        <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-[#f7f6f3] text-[#787774] border border-[#ebebeb]">
+                        <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-[#F1F1EF] text-[#787774] border border-[#E6E6E3]">
                           {test.subject || 'General Studies'}
                         </span>
                         <Badge variant="blue" size="sm">
@@ -533,7 +533,7 @@ export default function PublicLibraryPage() {
                       <div>
                         <Link
                           href={`/tests/${test.id}`}
-                          className="font-medium text-xs sm:text-sm text-[#37352f] hover:underline line-clamp-1 leading-snug"
+                          className="font-medium text-xs sm:text-sm text-[#202124] hover:underline line-clamp-1 leading-snug"
                         >
                           {test.title}
                         </Link>
@@ -544,12 +544,12 @@ export default function PublicLibraryPage() {
                         )}
                       </div>
 
-                      <div className="pt-2 border-t border-[#f7f6f3] flex items-center justify-between text-xs">
+                      <div className="pt-2 border-t border-[#F1F1EF] flex items-center justify-between text-xs">
                         <Link
                           href={`/creators/${test.user_id}`}
-                          className="flex items-center gap-1.5 text-[#787774] hover:text-[#37352f]"
+                          className="flex items-center gap-1.5 text-[#787774] hover:text-[#202124]"
                         >
-                          <div className="w-4 h-4 rounded bg-[#f7f6f3] text-[#787774] border border-[#ebebeb] flex items-center justify-center font-bold text-[9px]">
+                          <div className="w-4 h-4 rounded bg-[#F1F1EF] text-[#787774] border border-[#E6E6E3] flex items-center justify-center font-bold text-[9px]">
                             {test.created_by_name?.charAt(0) || 'F'}
                           </div>
                           <span className="truncate max-w-[120px] text-[11px]">
@@ -557,26 +557,26 @@ export default function PublicLibraryPage() {
                           </span>
                         </Link>
 
-                        <div className="flex items-center gap-1 text-[11px] font-mono font-medium text-[#37352f]">
+                        <div className="flex items-center gap-1 text-[11px] font-mono font-medium text-[#202124]">
                           <Star className="w-3 h-3 fill-amber-500 text-amber-500" />
                           <span>{Number(test.rating || 4.8).toFixed(1)}</span>
                         </div>
                       </div>
                     </div>
 
-                    <div className="pt-2.5 border-t border-[#ebebeb] space-y-2">
+                    <div className="pt-2.5 border-t border-[#E6E6E3] space-y-2">
                       <div className="grid grid-cols-3 gap-1.5 text-center text-[#787774] text-[11px] font-mono">
-                        <div className="bg-[#fbfbfa] p-1 rounded border border-[#ebebeb]">
+                        <div className="bg-[#F7F7F5] p-1 rounded border border-[#E6E6E3]">
                           <span className="block text-[#9b9a97] text-[9px] uppercase font-sans">Qs</span>
-                          <span className="font-medium text-[#37352f]">{test.question_count || 25}</span>
+                          <span className="font-medium text-[#202124]">{test.question_count || 25}</span>
                         </div>
-                        <div className="bg-[#fbfbfa] p-1 rounded border border-[#ebebeb]">
+                        <div className="bg-[#F7F7F5] p-1 rounded border border-[#E6E6E3]">
                           <span className="block text-[#9b9a97] text-[9px] uppercase font-sans">Time</span>
-                          <span className="font-medium text-[#37352f]">{formatDuration(test.duration_seconds)}</span>
+                          <span className="font-medium text-[#202124]">{formatDuration(test.duration_seconds)}</span>
                         </div>
-                        <div className="bg-[#fbfbfa] p-1 rounded border border-[#ebebeb]">
+                        <div className="bg-[#F7F7F5] p-1 rounded border border-[#E6E6E3]">
                           <span className="block text-[#9b9a97] text-[9px] uppercase font-sans">Tries</span>
-                          <span className="font-medium text-[#37352f]">{test.attempts_count || 0}</span>
+                          <span className="font-medium text-[#202124]">{test.attempts_count || 0}</span>
                         </div>
                       </div>
 
@@ -607,13 +607,13 @@ export default function PublicLibraryPage() {
             {testSeries.map((s) => (
               <div
                 key={s.id}
-                className="p-4 bg-white rounded-lg border border-[#ebebeb] hover:border-[#d4d4d4] transition-colors flex flex-col justify-between space-y-3"
+                className="p-4 bg-white rounded-lg border border-[#E6E6E3] hover:border-[#d4d4d4] transition-colors flex flex-col justify-between space-y-3"
               >
                 <div className="space-y-2">
                   <div className="flex items-start justify-between gap-2">
                     <div>
                       <div className="flex items-center gap-1.5 mb-1 flex-wrap">
-                        <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-[#f7f6f3] text-[#787774] border border-[#ebebeb]">
+                        <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-[#F1F1EF] text-[#787774] border border-[#E6E6E3]">
                           {s.exam_title || 'SSC CGL 2026'}
                         </span>
                         <Badge variant={s.is_paid ? 'gray' : 'emerald'} size="sm">
@@ -623,12 +623,12 @@ export default function PublicLibraryPage() {
                           {s.total_tests || 10} Mock Exams
                         </span>
                       </div>
-                      <h3 className="text-xs sm:text-sm font-semibold text-[#37352f]">
+                      <h3 className="text-xs sm:text-sm font-semibold text-[#202124]">
                         {s.title}
                       </h3>
                     </div>
 
-                    <div className="flex items-center gap-1 text-[11px] font-mono font-medium text-[#37352f] shrink-0 bg-[#fbfbfa] px-1.5 py-0.5 rounded border border-[#ebebeb]">
+                    <div className="flex items-center gap-1 text-[11px] font-mono font-medium text-[#202124] shrink-0 bg-[#F7F7F5] px-1.5 py-0.5 rounded border border-[#E6E6E3]">
                       <Star className="w-3 h-3 fill-amber-500 text-amber-500" />
                       <span>{Number(s.rating || 4.9).toFixed(1)}</span>
                     </div>
@@ -644,7 +644,7 @@ export default function PublicLibraryPage() {
                   </p>
                 </div>
 
-                <div className="pt-3 border-t border-[#ebebeb] flex items-center justify-between gap-3">
+                <div className="pt-3 border-t border-[#E6E6E3] flex items-center justify-between gap-3">
                   <div className="text-xs text-[#787774] flex items-center gap-1 font-mono">
                     <Users className="w-3.5 h-3.5 text-[#9b9a97]" />
                     <span>{(s.enrolled_count || 1200).toLocaleString()} enrolled</span>
@@ -667,19 +667,19 @@ export default function PublicLibraryPage() {
             {creators.map((creator) => (
               <div
                 key={creator.id}
-                className="bg-white rounded-lg border border-[#ebebeb] p-4 hover:border-[#d4d4d4] transition-colors flex flex-col justify-between space-y-3"
+                className="bg-white rounded-lg border border-[#E6E6E3] p-4 hover:border-[#d4d4d4] transition-colors flex flex-col justify-between space-y-3"
               >
                 <div className="space-y-2.5">
                   <div className="flex items-start justify-between gap-2">
-                    <div className="w-9 h-9 rounded-md bg-[#f7f6f3] border border-[#ebebeb] text-[#37352f] flex items-center justify-center font-semibold text-sm">
+                    <div className="w-9 h-9 rounded-md bg-[#F1F1EF] border border-[#E6E6E3] text-[#202124] flex items-center justify-center font-semibold text-sm">
                       {creator.name?.charAt(0) || 'E'}
                     </div>
                     <button
                       onClick={() => handleFollowToggle(creator.id)}
                       className={`px-2.5 py-1 rounded-md text-xs font-medium transition-colors ${
                         creator.is_following
-                          ? 'bg-[#f7f6f3] text-[#787774] border border-[#ebebeb] hover:bg-[#fff0f0] hover:text-[#e03e3e]'
-                          : 'bg-[#37352f] text-white hover:bg-[#22211e]'
+                          ? 'bg-[#F1F1EF] text-[#787774] border border-[#E6E6E3] hover:bg-[#fff0f0] hover:text-[#e03e3e]'
+                          : 'bg-[#202124] text-white hover:bg-[#22211e]'
                       }`}
                     >
                       {creator.is_following ? 'Following' : 'Follow'}
@@ -688,7 +688,7 @@ export default function PublicLibraryPage() {
 
                   <div>
                     <div className="flex items-center gap-1">
-                      <h3 className="text-xs sm:text-sm font-semibold text-[#37352f]">{creator.name}</h3>
+                      <h3 className="text-xs sm:text-sm font-semibold text-[#202124]">{creator.name}</h3>
                       <ShieldCheck className="w-3.5 h-3.5 text-emerald-600" />
                     </div>
                     <p className="text-[11px] text-[#787774]">{creator.headline}</p>
@@ -703,7 +703,7 @@ export default function PublicLibraryPage() {
                     {(creator.specializations || []).slice(0, 3).map((subj: string) => (
                       <span
                         key={subj}
-                        className="text-[10px] px-1.5 py-0.5 rounded bg-[#f7f6f3] text-[#787774] border border-[#ebebeb] font-mono"
+                        className="text-[10px] px-1.5 py-0.5 rounded bg-[#F1F1EF] text-[#787774] border border-[#E6E6E3] font-mono"
                       >
                         {subj}
                       </span>
@@ -711,19 +711,19 @@ export default function PublicLibraryPage() {
                   </div>
                 </div>
 
-                <div className="pt-3 border-t border-[#ebebeb] space-y-2">
+                <div className="pt-3 border-t border-[#E6E6E3] space-y-2">
                   <div className="grid grid-cols-3 gap-1 text-center text-[10px] font-mono text-[#787774]">
-                    <div className="bg-[#fbfbfa] p-1 rounded border border-[#ebebeb]">
+                    <div className="bg-[#F7F7F5] p-1 rounded border border-[#E6E6E3]">
                       <span className="block text-[#9b9a97] text-[9px] uppercase font-sans">Students</span>
-                      <span className="font-medium text-[#37352f]">{creator.total_students || 1200}</span>
+                      <span className="font-medium text-[#202124]">{creator.total_students || 1200}</span>
                     </div>
-                    <div className="bg-[#fbfbfa] p-1 rounded border border-[#ebebeb]">
+                    <div className="bg-[#F7F7F5] p-1 rounded border border-[#E6E6E3]">
                       <span className="block text-[#9b9a97] text-[9px] uppercase font-sans">Papers</span>
-                      <span className="font-medium text-[#37352f]">{creator.published_tests_count || 12}</span>
+                      <span className="font-medium text-[#202124]">{creator.published_tests_count || 12}</span>
                     </div>
-                    <div className="bg-[#fbfbfa] p-1 rounded border border-[#ebebeb]">
+                    <div className="bg-[#F7F7F5] p-1 rounded border border-[#E6E6E3]">
                       <span className="block text-[#9b9a97] text-[9px] uppercase font-sans">Followers</span>
-                      <span className="font-medium text-[#37352f]">{creator.followers_count || 0}</span>
+                      <span className="font-medium text-[#202124]">{creator.followers_count || 0}</span>
                     </div>
                   </div>
 

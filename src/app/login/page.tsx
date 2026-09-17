@@ -104,13 +104,13 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-[85vh] flex items-center justify-center px-4 py-12 bg-[#fbfbfa]">
-      <div className="max-w-md w-full space-y-5 bg-white p-6 sm:p-8 rounded-md border border-[#ebebeb] shadow-xs">
+    <div className="min-h-[85vh] flex items-center justify-center px-4 py-12 bg-[#F7F7F5]">
+      <div className="max-w-md w-full space-y-5 bg-white p-6 sm:p-8 rounded-md border border-[#E6E6E3] shadow-xs">
         <div className="text-center space-y-1.5">
           <div className="flex justify-center mb-2">
             <Logo size="md" href="/" />
           </div>
-          <h2 className="text-xl font-bold text-[#37352f]">
+          <h2 className="text-xl font-bold text-[#202124]">
             Sign in to Nalanda
           </h2>
           <p className="text-xs text-[#787774] max-w-sm mx-auto">
@@ -135,7 +135,7 @@ export default function LoginPage() {
               type="button"
               onClick={() => handleDemoLogin('student')}
               disabled={Boolean(demoRoleLoading)}
-              className="p-2 rounded-[4px] border border-[#ebebeb] bg-[#fcfbf9] hover:bg-[#f7f6f3] text-[#37352f] transition-colors flex flex-col items-center text-center"
+              className="p-2 rounded-[4px] border border-[#E6E6E3] bg-[#fcfbf9] hover:bg-[#F1F1EF] text-[#202124] transition-colors flex flex-col items-center text-center"
             >
               <div className="w-6 h-6 rounded-[3px] bg-[#edf6f9] text-[#1e6074] flex items-center justify-center mb-1">
                 <GraduationCap className="w-3.5 h-3.5" />
@@ -148,9 +148,9 @@ export default function LoginPage() {
               type="button"
               onClick={() => handleDemoLogin('admin')}
               disabled={Boolean(demoRoleLoading)}
-              className="p-2 rounded-[4px] border border-[#ebebeb] bg-[#fcfbf9] hover:bg-[#f7f6f3] text-[#37352f] transition-colors flex flex-col items-center text-center"
+              className="p-2 rounded-[4px] border border-[#E6E6E3] bg-[#fcfbf9] hover:bg-[#F1F1EF] text-[#202124] transition-colors flex flex-col items-center text-center"
             >
-              <div className="w-6 h-6 rounded-[3px] bg-[#fbf3db] text-[#4d3800] flex items-center justify-center mb-1">
+              <div className="w-6 h-6 rounded-[3px] bg-[#FFFBEB] text-[#4d3800] flex items-center justify-center mb-1">
                 <Building2 className="w-3.5 h-3.5" />
               </div>
               <span className="text-xs font-medium leading-tight">Educator</span>
@@ -161,9 +161,9 @@ export default function LoginPage() {
               type="button"
               onClick={() => handleDemoLogin('superadmin')}
               disabled={Boolean(demoRoleLoading)}
-              className="p-2 rounded-[4px] border border-[#ebebeb] bg-[#fcfbf9] hover:bg-[#f7f6f3] text-[#37352f] transition-colors flex flex-col items-center text-center"
+              className="p-2 rounded-[4px] border border-[#E6E6E3] bg-[#fcfbf9] hover:bg-[#F1F1EF] text-[#202124] transition-colors flex flex-col items-center text-center"
             >
-              <div className="w-6 h-6 rounded-[3px] bg-[#f7f6f3] text-[#37352f] flex items-center justify-center mb-1 border border-[#ebebeb]">
+              <div className="w-6 h-6 rounded-[3px] bg-[#F1F1EF] text-[#202124] flex items-center justify-center mb-1 border border-[#E6E6E3]">
                 <Crown className="w-3.5 h-3.5" />
               </div>
               <span className="text-xs font-medium leading-tight">Superadmin</span>
@@ -173,7 +173,7 @@ export default function LoginPage() {
         </div>
 
         <div className="relative flex items-center justify-center">
-          <div className="border-t border-[#ebebeb] w-full" />
+          <div className="border-t border-[#E6E6E3] w-full" />
           <span className="bg-white px-2.5 text-[10px] uppercase font-medium text-[#787774] absolute">
             Or Credentials
           </span>
@@ -181,7 +181,7 @@ export default function LoginPage() {
 
         <form onSubmit={handleSubmit} className="space-y-3.5">
           <div>
-            <label className="block text-xs font-medium text-[#37352f] mb-1">
+            <label className="block text-xs font-medium text-[#202124] mb-1">
               Email Address
             </label>
             <div className="relative">
@@ -192,19 +192,19 @@ export default function LoginPage() {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="student@example.com"
-                className="w-full pl-8 pr-3 py-1.5 text-xs rounded-[4px] border border-[#ebebeb] focus:outline-none focus:border-[#37352f] bg-[#fcfbf9] focus:bg-white text-[#37352f]"
+                className="w-full pl-8 pr-3 py-1.5 text-xs rounded-[4px] border border-[#E6E6E3] focus:outline-none focus:border-[#202124] bg-[#fcfbf9] focus:bg-white text-[#202124]"
               />
             </div>
           </div>
 
           <div>
             <div className="flex items-center justify-between mb-1">
-              <label className="block text-xs font-medium text-[#37352f]">
+              <label className="block text-xs font-medium text-[#202124]">
                 Password
               </label>
               <Link
                 href="/forgot-password"
-                className="text-[11px] text-[#787774] hover:text-[#37352f] hover:underline"
+                className="text-[11px] text-[#787774] hover:text-[#202124] hover:underline"
               >
                 Forgot Password?
               </Link>
@@ -217,7 +217,7 @@ export default function LoginPage() {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="••••••••"
-                className="w-full pl-8 pr-3 py-1.5 text-xs rounded-[4px] border border-[#ebebeb] focus:outline-none focus:border-[#37352f] bg-[#fcfbf9] focus:bg-white text-[#37352f]"
+                className="w-full pl-8 pr-3 py-1.5 text-xs rounded-[4px] border border-[#E6E6E3] focus:outline-none focus:border-[#202124] bg-[#fcfbf9] focus:bg-white text-[#202124]"
               />
             </div>
           </div>
@@ -234,9 +234,9 @@ export default function LoginPage() {
           </Button>
         </form>
 
-        <div className="text-center text-xs text-[#787774] pt-2 border-t border-[#ebebeb]">
+        <div className="text-center text-xs text-[#787774] pt-2 border-t border-[#E6E6E3]">
           New to Nalanda?{' '}
-          <Link href="/signup" className="text-[#37352f] font-medium hover:underline">
+          <Link href="/signup" className="text-[#202124] font-medium hover:underline">
             Create an Aspirant Account
           </Link>
         </div>

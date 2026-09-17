@@ -258,7 +258,7 @@ export default function MistakeNotebookPage() {
         />
 
         {/* Forensic Properties Table */}
-        <div className="bg-white border border-[#ebebeb] rounded-lg p-3.5">
+        <div className="bg-white border border-[#E6E6E3] rounded-lg p-3.5">
           <PropertyTable>
             <PropertyRow icon={AlertCircle} label="Unresolved Errors">
               <div className="flex items-center gap-2">
@@ -273,7 +273,7 @@ export default function MistakeNotebookPage() {
 
             <PropertyRow icon={RotateCcw} label="Repeated Mistakes">
               <div className="flex items-center gap-2">
-                <span className="font-mono text-xs font-semibold text-[#37352f]">
+                <span className="font-mono text-xs font-semibold text-[#202124]">
                   {counts.repeated_count || 0}
                 </span>
                 <span className="text-xs text-[#787774]">Missed across multiple attempts</span>
@@ -282,7 +282,7 @@ export default function MistakeNotebookPage() {
 
             <PropertyRow icon={HelpCircle} label="Conceptual Gaps">
               <div className="flex items-center gap-2">
-                <span className="font-mono text-xs font-semibold text-[#37352f]">
+                <span className="font-mono text-xs font-semibold text-[#202124]">
                   {counts.concept_count || 0}
                 </span>
                 <span className="text-xs text-[#787774]">Requires theoretical re-derivation</span>
@@ -291,7 +291,7 @@ export default function MistakeNotebookPage() {
 
             <PropertyRow icon={Clock} label="Calculation Slips">
               <div className="flex items-center gap-2">
-                <span className="font-mono text-xs font-semibold text-[#37352f]">
+                <span className="font-mono text-xs font-semibold text-[#202124]">
                   {counts.calc_count || 0}
                 </span>
                 <span className="text-xs text-[#787774]">Arithmetic & precision slips</span>
@@ -301,7 +301,7 @@ export default function MistakeNotebookPage() {
         </div>
 
         {/* Status Tabs */}
-        <div className="flex border-b border-[#ebebeb] overflow-x-auto no-scrollbar gap-1">
+        <div className="flex border-b border-[#E6E6E3] overflow-x-auto no-scrollbar gap-1">
           {[
             { id: 'all', label: `All (${counts.total || 0})` },
             { id: 'unresolved', label: `Unresolved (${counts.unresolved_count || 0})` },
@@ -314,8 +314,8 @@ export default function MistakeNotebookPage() {
               onClick={() => setActiveStatus(tab.id)}
               className={`px-3 py-2 text-xs font-medium border-b-2 transition-colors whitespace-nowrap ${
                 activeStatus === tab.id
-                  ? 'border-[#37352f] text-[#37352f]'
-                  : 'border-transparent text-[#787774] hover:text-[#37352f]'
+                  ? 'border-[#202124] text-[#202124]'
+                  : 'border-transparent text-[#787774] hover:text-[#202124]'
               }`}
             >
               {tab.label}
@@ -347,12 +347,12 @@ export default function MistakeNotebookPage() {
                   onClick={() => setActiveCategory(cat.id)}
                   className={`px-2.5 py-1 text-xs rounded-md whitespace-nowrap transition-colors flex items-center gap-1.5 ${
                     isSelected
-                      ? 'bg-[#37352f] text-white font-medium'
-                      : 'bg-white border border-[#ebebeb] text-[#787774] hover:bg-[#f7f6f3]'
+                      ? 'bg-[#202124] text-white font-medium'
+                      : 'bg-white border border-[#E6E6E3] text-[#787774] hover:bg-[#F1F1EF]'
                   }`}
                 >
                   <span>{cat.label}</span>
-                  <span className={`text-[10px] font-mono px-1 rounded ${isSelected ? 'bg-[#4f4d47] text-white' : 'bg-[#f7f6f3] text-[#787774]'}`}>
+                  <span className={`text-[10px] font-mono px-1 rounded ${isSelected ? 'bg-[#4f4d47] text-white' : 'bg-[#F1F1EF] text-[#787774]'}`}>
                     {catCount}
                   </span>
                 </button>
@@ -367,7 +367,7 @@ export default function MistakeNotebookPage() {
               placeholder="Search errors or notes..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-8 pr-3 py-1.5 text-xs rounded-md border border-[#ebebeb] focus:outline-none focus:border-[#37352f] bg-white text-[#37352f] placeholder:text-[#9b9a97]"
+              className="w-full pl-8 pr-3 py-1.5 text-xs rounded-md border border-[#E6E6E3] focus:outline-none focus:border-[#202124] bg-white text-[#202124] placeholder:text-[#9b9a97]"
             />
           </form>
         </div>
@@ -378,9 +378,9 @@ export default function MistakeNotebookPage() {
             Loading error records...
           </div>
         ) : mistakes.length === 0 ? (
-          <div className="p-12 text-center bg-white border border-[#ebebeb] rounded-lg space-y-3">
+          <div className="p-12 text-center bg-white border border-[#E6E6E3] rounded-lg space-y-3">
             <CheckCircle2 className="w-8 h-8 text-emerald-600 mx-auto" />
-            <h3 className="font-semibold text-sm text-[#37352f]">No Mistakes In This Filter</h3>
+            <h3 className="font-semibold text-sm text-[#202124]">No Mistakes In This Filter</h3>
             <p className="text-xs text-[#787774] max-w-sm mx-auto">
               You have zero logged errors matching your current filter criteria.
             </p>
@@ -399,20 +399,20 @@ export default function MistakeNotebookPage() {
                   key={m.id}
                   className={`p-4 rounded-lg border transition-colors space-y-3 ${
                     m.is_resolved
-                      ? 'border-[#ebebeb] bg-[#fbfbfa] opacity-80'
-                      : 'border-[#ebebeb] bg-white hover:border-[#d4d4d4]'
+                      ? 'border-[#E6E6E3] bg-[#F7F7F5] opacity-80'
+                      : 'border-[#E6E6E3] bg-white hover:border-[#d4d4d4]'
                   }`}
                 >
                   {/* Card Header */}
                   <div className="flex items-center justify-between flex-wrap gap-2">
                     <div className="flex items-center gap-2">
                       {getCategoryBadge(m.error_category)}
-                      <span className="text-xs font-medium text-[#37352f]">
+                      <span className="text-xs font-medium text-[#202124]">
                         {m.subject_name}
                       </span>
                       {m.topic_title && (
                         <>
-                          <span className="text-[#ebebeb]">•</span>
+                          <span className="text-[#E6E6E3]">•</span>
                           <span className="text-xs text-[#787774]">{m.topic_title}</span>
                         </>
                       )}
@@ -431,7 +431,7 @@ export default function MistakeNotebookPage() {
                         className={`p-1 rounded-md border text-xs transition-colors ${
                           m.is_bookmarked
                             ? 'bg-[#fdf5e8] border-[#fae2be] text-[#8f4f00]'
-                            : 'bg-white border-[#ebebeb] text-[#787774] hover:bg-[#f7f6f3]'
+                            : 'bg-white border-[#E6E6E3] text-[#787774] hover:bg-[#F1F1EF]'
                         }`}
                       >
                         {m.is_bookmarked ? <BookmarkCheck className="w-3.5 h-3.5 text-amber-600" /> : <Bookmark className="w-3.5 h-3.5" />}
@@ -440,7 +440,7 @@ export default function MistakeNotebookPage() {
                       {/* Retry Action */}
                       <button
                         onClick={() => openRetryModal(m)}
-                        className="px-2 py-1 text-xs font-medium rounded-md bg-[#37352f] hover:bg-[#22211e] text-white transition-colors flex items-center gap-1"
+                        className="px-2 py-1 text-xs font-medium rounded-md bg-[#202124] hover:bg-[#22211e] text-white transition-colors flex items-center gap-1"
                       >
                         <RotateCcw className="w-3 h-3" />
                         <span>Retry</span>
@@ -452,7 +452,7 @@ export default function MistakeNotebookPage() {
                         className={`text-xs px-2 py-1 rounded-md font-medium transition-colors flex items-center gap-1 border ${
                           m.is_resolved
                             ? 'bg-[#ebf5e8] text-[#2b593f] border-[#c4e2b8]'
-                            : 'bg-white hover:bg-[#f7f6f3] text-[#787774] border-[#ebebeb]'
+                            : 'bg-white hover:bg-[#F1F1EF] text-[#787774] border-[#E6E6E3]'
                         }`}
                       >
                         {m.is_resolved ? (
@@ -468,7 +468,7 @@ export default function MistakeNotebookPage() {
                   </div>
 
                   {/* Question Stem */}
-                  <p className="text-xs sm:text-sm font-medium text-[#37352f] leading-relaxed">
+                  <p className="text-xs sm:text-sm font-medium text-[#202124] leading-relaxed">
                     {m.question_text}
                   </p>
 
@@ -479,7 +479,7 @@ export default function MistakeNotebookPage() {
                         const isSelected = opt.label === m.selected_answer;
                         const isCorrect = opt.label === m.correct_answer;
 
-                        let style = 'bg-[#fbfbfa] border-[#ebebeb] text-[#37352f]';
+                        let style = 'bg-[#F7F7F5] border-[#E6E6E3] text-[#202124]';
                         if (isSelected && !isCorrect) {
                           style = 'bg-[#fff0f0] border-[#f5c2c2] text-[#e03e3e] font-medium';
                         } else if (isCorrect) {
@@ -513,21 +513,21 @@ export default function MistakeNotebookPage() {
 
                   {/* Explanation */}
                   {m.explanation && (
-                    <div className="text-xs text-[#37352f] bg-[#fbfbfa] p-3 rounded-md border border-[#ebebeb] leading-relaxed">
+                    <div className="text-xs text-[#202124] bg-[#F7F7F5] p-3 rounded-md border border-[#E6E6E3] leading-relaxed">
                       <strong className="text-[#787774] block mb-0.5">Pedagogical Solution:</strong>
                       {m.explanation}
                     </div>
                   )}
 
                   {/* Reflection Notes & Controls */}
-                  <div className="pt-2 border-t border-[#ebebeb] flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 text-xs">
+                  <div className="pt-2 border-t border-[#E6E6E3] flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 text-xs">
                     {/* Category Reassignment */}
                     <div className="flex items-center gap-1.5">
                       <span className="text-[#9b9a97] font-mono text-[11px]">Reclassify:</span>
                       <select
                         value={m.error_category}
                         onChange={(e) => handleChangeCategory(m.id, e.target.value)}
-                        className="py-0.5 px-1.5 text-xs rounded border border-[#ebebeb] bg-[#fbfbfa] text-[#37352f] focus:outline-none"
+                        className="py-0.5 px-1.5 text-xs rounded border border-[#E6E6E3] bg-[#F7F7F5] text-[#202124] focus:outline-none"
                       >
                         {MISTAKE_CATEGORIES.filter(c => c.id !== 'all').map(c => (
                           <option key={c.id} value={c.id}>{c.label}</option>
@@ -549,7 +549,7 @@ export default function MistakeNotebookPage() {
                               setEditingNotesId(m.id);
                               setTempNotes(m.user_notes || '');
                             }}
-                            className="text-[#787774] hover:text-[#37352f] text-[11px] underline"
+                            className="text-[#787774] hover:text-[#202124] text-[11px] underline"
                           >
                             {m.user_notes ? 'Edit Note' : '+ Reflection Note'}
                           </button>
@@ -561,11 +561,11 @@ export default function MistakeNotebookPage() {
                             placeholder="Why did this mistake happen?..."
                             value={tempNotes}
                             onChange={(e) => setTempNotes(e.target.value)}
-                            className="px-2 py-1 text-xs border border-[#ebebeb] rounded focus:outline-none focus:border-[#37352f] sm:w-60 bg-white text-[#37352f]"
+                            className="px-2 py-1 text-xs border border-[#E6E6E3] rounded focus:outline-none focus:border-[#202124] sm:w-60 bg-white text-[#202124]"
                           />
                           <button
                             onClick={() => handleSaveNotes(m.id)}
-                            className="px-2 py-1 bg-[#37352f] text-white rounded text-xs"
+                            className="px-2 py-1 bg-[#202124] text-white rounded text-xs"
                           >
                             Save
                           </button>
@@ -588,17 +588,17 @@ export default function MistakeNotebookPage() {
         {/* Retry Modal */}
         {retryMistake && (
           <div className="fixed inset-0 z-50 bg-black/40 backdrop-blur-xs flex items-center justify-center p-4">
-            <div className="bg-white rounded-lg max-w-lg w-full p-5 shadow-xl border border-[#ebebeb] max-h-[90vh] overflow-y-auto space-y-4">
-              <div className="flex items-center justify-between border-b border-[#ebebeb] pb-2.5">
+            <div className="bg-white rounded-lg max-w-lg w-full p-5 shadow-xl border border-[#E6E6E3] max-h-[90vh] overflow-y-auto space-y-4">
+              <div className="flex items-center justify-between border-b border-[#E6E6E3] pb-2.5">
                 <div className="flex items-center gap-2">
-                  <RotateCcw className="w-4 h-4 text-[#37352f]" />
-                  <span className="font-semibold text-sm text-[#37352f]">
+                  <RotateCcw className="w-4 h-4 text-[#202124]" />
+                  <span className="font-semibold text-sm text-[#202124]">
                     Blind Retry Mode
                   </span>
                 </div>
                 <button
                   onClick={() => setRetryMistake(null)}
-                  className="text-[#787774] hover:text-[#37352f]"
+                  className="text-[#787774] hover:text-[#202124]"
                 >
                   <X className="w-4 h-4" />
                 </button>
@@ -608,7 +608,7 @@ export default function MistakeNotebookPage() {
                 Options randomized, previous answers hidden.
               </div>
 
-              <div className="p-3 bg-[#fbfbfa] rounded-md border border-[#ebebeb] text-xs text-[#37352f] leading-relaxed">
+              <div className="p-3 bg-[#F7F7F5] rounded-md border border-[#E6E6E3] text-xs text-[#202124] leading-relaxed">
                 {retryMistake.question_text}
               </div>
 
@@ -623,15 +623,15 @@ export default function MistakeNotebookPage() {
                         disabled={Boolean(retryResult)}
                         className={`w-full p-2.5 rounded-md border text-xs text-left flex items-center justify-between transition-colors ${
                           isSelected
-                            ? 'border-[#37352f] bg-[#f7f6f3] text-[#37352f] font-medium'
-                            : 'border-[#ebebeb] bg-white hover:bg-[#fbfbfa] text-[#37352f]'
+                            ? 'border-[#202124] bg-[#F1F1EF] text-[#202124] font-medium'
+                            : 'border-[#E6E6E3] bg-white hover:bg-[#F7F7F5] text-[#202124]'
                         }`}
                       >
                         <div className="flex items-center gap-2">
                           <span className="font-mono">{opt.label}.</span>
                           <span>{opt.text}</span>
                         </div>
-                        {isSelected && <span className="w-1.5 h-1.5 rounded-full bg-[#37352f]" />}
+                        {isSelected && <span className="w-1.5 h-1.5 rounded-full bg-[#202124]" />}
                       </button>
                     );
                   })}
@@ -662,7 +662,7 @@ export default function MistakeNotebookPage() {
                 </div>
               )}
 
-              <div className="flex items-center justify-end gap-2 pt-2 border-t border-[#ebebeb]">
+              <div className="flex items-center justify-end gap-2 pt-2 border-t border-[#E6E6E3]">
                 {!retryResult ? (
                   <>
                     <Button variant="outline" size="sm" onClick={() => setRetryMistake(null)}>
@@ -690,15 +690,15 @@ export default function MistakeNotebookPage() {
         {/* Remedial Mini-Test Generator Modal */}
         {showTestModal && (
           <div className="fixed inset-0 z-50 bg-black/40 backdrop-blur-xs flex items-center justify-center p-4">
-            <div className="bg-white rounded-lg max-w-sm w-full p-5 shadow-xl border border-[#ebebeb] space-y-3.5">
-              <div className="flex items-center justify-between border-b border-[#ebebeb] pb-2">
+            <div className="bg-white rounded-lg max-w-sm w-full p-5 shadow-xl border border-[#E6E6E3] space-y-3.5">
+              <div className="flex items-center justify-between border-b border-[#E6E6E3] pb-2">
                 <div className="flex items-center gap-1.5">
-                  <Zap className="w-4 h-4 text-[#37352f]" />
-                  <span className="font-semibold text-sm text-[#37352f]">
+                  <Zap className="w-4 h-4 text-[#202124]" />
+                  <span className="font-semibold text-sm text-[#202124]">
                     Remedial Mini-Test
                   </span>
                 </div>
-                <button onClick={() => setShowTestModal(false)} className="text-[#787774] hover:text-[#37352f]">
+                <button onClick={() => setShowTestModal(false)} className="text-[#787774] hover:text-[#202124]">
                   <X className="w-4 h-4" />
                 </button>
               </div>
@@ -708,7 +708,7 @@ export default function MistakeNotebookPage() {
               </p>
 
               <div className="space-y-2">
-                <label className="block text-xs font-medium text-[#37352f]">Question Volume:</label>
+                <label className="block text-xs font-medium text-[#202124]">Question Volume:</label>
                 <div className="grid grid-cols-3 gap-2">
                   {[5, 10, 15].map((cnt) => (
                     <button
@@ -716,8 +716,8 @@ export default function MistakeNotebookPage() {
                       onClick={() => setTestCount(cnt)}
                       className={`py-1.5 px-2 text-xs rounded-md border transition-colors ${
                         testCount === cnt
-                          ? 'border-[#37352f] bg-[#37352f] text-white font-medium'
-                          : 'border-[#ebebeb] bg-white text-[#37352f] hover:bg-[#f7f6f3]'
+                          ? 'border-[#202124] bg-[#202124] text-white font-medium'
+                          : 'border-[#E6E6E3] bg-white text-[#202124] hover:bg-[#F1F1EF]'
                       }`}
                     >
                       {cnt} Qs ({Math.round(cnt * 1.5)}m)
@@ -726,12 +726,12 @@ export default function MistakeNotebookPage() {
                 </div>
               </div>
 
-              <div className="p-2.5 bg-[#fbfbfa] rounded-md border border-[#ebebeb] text-[11px] text-[#787774] space-y-0.5 font-mono">
+              <div className="p-2.5 bg-[#F7F7F5] rounded-md border border-[#E6E6E3] text-[11px] text-[#787774] space-y-0.5 font-mono">
                 <div>• Section: Error Simulation</div>
                 <div>• Marking Scheme: +2.0 / -0.5</div>
               </div>
 
-              <div className="flex items-center justify-end gap-2 pt-2 border-t border-[#ebebeb]">
+              <div className="flex items-center justify-end gap-2 pt-2 border-t border-[#E6E6E3]">
                 <Button variant="outline" size="sm" onClick={() => setShowTestModal(false)}>
                   Cancel
                 </Button>

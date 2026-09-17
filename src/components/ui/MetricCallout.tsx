@@ -13,8 +13,8 @@ export interface MetricCalloutProps {
     neutral?: boolean;
   };
   icon?: any;
-  variant?: 'default' | 'saffron' | 'navy' | 'emerald' | 'stone' | 'rose';
-  accent?: 'saffron' | 'emerald' | 'navy' | 'stone' | 'rose' | 'default';
+  variant?: 'default' | 'indigo' | 'saffron' | 'navy' | 'emerald' | 'stone' | 'rose';
+  accent?: 'indigo' | 'saffron' | 'emerald' | 'navy' | 'stone' | 'rose' | 'default';
   className?: string;
 }
 
@@ -35,45 +35,25 @@ export default function MetricCallout({
     if (typeof icon === 'string' || typeof icon === 'number') return <span>{icon}</span>;
     if (typeof icon === 'function' || (typeof icon === 'object' && ('render' in icon || '$$typeof' in icon))) {
       const IconComponent = icon;
-      return <IconComponent className="w-4 h-4" />;
+      return <IconComponent className="w-3.5 h-3.5" />;
     }
     return null;
   };
 
   const renderedIcon = renderIcon();
-  const chosenStyle = variant || accent;
-
-  const borderVariants: Record<string, string> = {
-    default: 'border-stone-200/90 bg-white',
-    stone: 'border-stone-200/90 bg-white',
-    saffron: 'border-amber-200/90 bg-amber-50/25',
-    navy: 'border-slate-200/90 bg-slate-50/25',
-    emerald: 'border-emerald-200/90 bg-emerald-50/25',
-    rose: 'border-rose-200/90 bg-rose-50/25',
-  };
-
-  const accentPills: Record<string, string> = {
-    default: 'bg-stone-500',
-    stone: 'bg-stone-500',
-    saffron: 'bg-amber-600',
-    navy: 'bg-slate-700',
-    emerald: 'bg-emerald-600',
-    rose: 'bg-rose-600',
-  };
-
   const trendText = trend?.value || trend?.text;
   const isPos = trend?.isPositive ?? trend?.positive;
 
   return (
     <div
-      className={`p-3.5 sm:p-4 rounded-lg border border-[#ebebeb] bg-white text-[#37352f] flex flex-col justify-between ${className}`}
+      className={`p-3.5 sm:p-4 rounded-md border border-[#E6E6E3] bg-white text-[#202124] flex flex-col justify-between ${className}`}
     >
       <div className="flex items-start justify-between gap-2 mb-2">
-        <span className="text-[11px] font-medium text-[#787774] uppercase tracking-wider truncate">
+        <span className="text-[10px] font-semibold text-[#787774] uppercase tracking-wider truncate">
           {label}
         </span>
         {renderedIcon && (
-          <span className="text-[#9b9a97] shrink-0 opacity-80">
+          <span className="text-[#787774] shrink-0 opacity-80">
             {renderedIcon}
           </span>
         )}
@@ -81,11 +61,11 @@ export default function MetricCallout({
 
       <div className="space-y-0.5 my-auto">
         <div className="flex items-baseline gap-1.5 flex-wrap">
-          <span className="text-xl sm:text-2xl font-semibold text-[#37352f] tracking-tight font-sans">
+          <span className="text-xl sm:text-2xl font-semibold text-[#202124] tracking-tight font-sans">
             {value}
           </span>
           {max !== undefined && (
-            <span className="text-xs font-mono text-[#9b9a97]">
+            <span className="text-xs font-mono text-[#787774]">
               / {max}
             </span>
           )}
@@ -99,15 +79,17 @@ export default function MetricCallout({
       </div>
 
       {trendText && (
-        <div className="mt-2 pt-1.5 border-t border-[#f0f0ee] flex items-center text-[10px] font-medium">
+        <div className="pt-2 mt-2 border-t border-[#E6E6E3] flex items-center gap-1 text-[11px]">
           <span
-            className={
-              isPos
-                ? 'text-[#0f7b6c]'
-                : 'text-[#787774]'
-            }
+            className={`font-medium ${
+              trend?.neutral
+                ? 'text-[#787774]'
+                : isPos
+                ? 'text-[#1B5E20]'
+                : 'text-[#C53030]'
+            }`}
           >
-            {trendText}
+            {isPos ? '↑' : '↓'} {trendText}
           </span>
         </div>
       )}

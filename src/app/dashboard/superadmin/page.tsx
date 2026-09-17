@@ -340,16 +340,16 @@ export default function SuperadminDashboardPage() {
         )}
 
         {/* Superadmin Header */}
-        <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4 pb-6 border-b border-[#ebebeb]">
+        <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4 pb-6 border-b border-[#E6E6E3]">
           <div className="space-y-2">
             <div className="flex items-center gap-2">
-              <span className="px-2 py-0.5 rounded-[3px] text-[11px] font-medium bg-[#fbf3db] text-[#8f6b10] border border-[#fae6b4] flex items-center gap-1.5">
+              <span className="px-2 py-0.5 rounded-[3px] text-[11px] font-medium bg-[#FFFBEB] text-[#8f6b10] border border-[#fae6b4] flex items-center gap-1.5">
                 <Crown className="w-3 h-3 text-[#8f6b10]" />
                 Super Administrator Console
               </span>
               <span className="text-xs text-[#787774]">Absolute Platform Control</span>
             </div>
-            <h1 className="text-2xl sm:text-3xl font-bold text-[#37352f] tracking-tight">
+            <h1 className="text-2xl sm:text-3xl font-bold text-[#202124] tracking-tight">
               Platform Master Console
             </h1>
             <p className="text-xs sm:text-sm text-[#787774] max-w-2xl leading-relaxed">
@@ -360,7 +360,7 @@ export default function SuperadminDashboardPage() {
           <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 w-full sm:w-auto shrink-0">
             <button
               onClick={() => setShowAddSectionModal(true)}
-              className="inline-flex items-center justify-center gap-1.5 px-3 py-1.5 min-h-[36px] bg-[#37352f] hover:bg-[#201e1d] text-white font-medium rounded-md shadow-2xs transition-colors text-xs"
+              className="inline-flex items-center justify-center gap-1.5 px-3 py-1.5 min-h-[36px] bg-[#202124] hover:bg-[#201e1d] text-white font-medium rounded-md shadow-2xs transition-colors text-xs"
             >
               <FolderPlus className="w-3.5 h-3.5" />
               New Exam Section
@@ -368,7 +368,7 @@ export default function SuperadminDashboardPage() {
 
             <Link
               href="/tests/create"
-              className="inline-flex items-center justify-center gap-1.5 px-3 py-1.5 min-h-[36px] bg-white hover:bg-[#f7f6f3] text-[#37352f] font-medium rounded-md border border-[#ebebeb] shadow-2xs transition-colors text-xs"
+              className="inline-flex items-center justify-center gap-1.5 px-3 py-1.5 min-h-[36px] bg-white hover:bg-[#F1F1EF] text-[#202124] font-medium rounded-md border border-[#E6E6E3] shadow-2xs transition-colors text-xs"
             >
               <PlusCircle className="w-3.5 h-3.5 text-[#787774]" />
               Upload Test
@@ -378,40 +378,40 @@ export default function SuperadminDashboardPage() {
 
         {/* High-Level System Metrics */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4">
-          <div className="bg-white rounded-md p-4 border border-[#ebebeb] shadow-2xs">
+          <div className="bg-white rounded-md p-4 border border-[#E6E6E3] shadow-2xs">
             <div className="flex items-center justify-between text-[#787774] mb-1">
               <span className="text-[11px] font-medium uppercase tracking-wider">Total Users</span>
               <Users className="w-4 h-4 text-[#787774]" />
             </div>
-            <p className="text-2xl font-bold text-[#37352f] mt-1">{users.length}</p>
+            <p className="text-2xl font-bold text-[#202124] mt-1">{users.length}</p>
             <p className="text-[11px] text-[#787774] mt-0.5">
               {adminUsersCount} Admins • {studentUsersCount} Students
             </p>
           </div>
 
-          <div className="bg-white rounded-md p-4 border border-[#ebebeb] shadow-2xs">
+          <div className="bg-white rounded-md p-4 border border-[#E6E6E3] shadow-2xs">
             <div className="flex items-center justify-between text-[#787774] mb-1">
               <span className="text-[11px] font-medium uppercase tracking-wider">All Mock Tests</span>
               <Layers className="w-4 h-4 text-[#787774]" />
             </div>
-            <p className="text-2xl font-bold text-[#37352f] mt-1">{tests.length}</p>
+            <p className="text-2xl font-bold text-[#202124] mt-1">{tests.length}</p>
             <p className="text-[11px] text-[#787774] mt-0.5">
               {totalAttemptsCount} Student Attempts
             </p>
           </div>
 
-          <div className="bg-white rounded-md p-4 border border-[#ebebeb] shadow-2xs">
+          <div className="bg-white rounded-md p-4 border border-[#E6E6E3] shadow-2xs">
             <div className="flex items-center justify-between text-[#787774] mb-1">
               <span className="text-[11px] font-medium uppercase tracking-wider">Exam Sections</span>
               <FolderPlus className="w-4 h-4 text-[#787774]" />
             </div>
-            <p className="text-2xl font-bold text-[#37352f] mt-1">{sections.length}</p>
+            <p className="text-2xl font-bold text-[#202124] mt-1">{sections.length}</p>
             <p className="text-[11px] text-[#787774] mt-0.5">
               Active domain partitions
             </p>
           </div>
 
-          <div className="bg-white rounded-md p-4 border border-[#ebebeb] shadow-2xs">
+          <div className="bg-white rounded-md p-4 border border-[#E6E6E3] shadow-2xs">
             <div className="flex items-center justify-between text-[#787774] mb-1">
               <span className="text-[11px] font-medium uppercase tracking-wider">AI Coach Engine</span>
               <Sparkles className="w-4 h-4 text-[#8f6b10]" />
@@ -430,13 +430,13 @@ export default function SuperadminDashboardPage() {
 
         {/* Tabs Navigation */}
         <div className="space-y-6">
-          <div className="flex items-center border-b border-[#ebebeb] gap-1 sm:gap-2 overflow-x-auto no-scrollbar pb-px text-xs font-medium">
+          <div className="flex items-center border-b border-[#E6E6E3] gap-1 sm:gap-2 overflow-x-auto no-scrollbar pb-px text-xs font-medium">
             <button
               onClick={() => setActiveTab('users')}
               className={`px-3 py-2 flex items-center gap-1.5 border-b-2 transition-all shrink-0 min-h-[36px] ${
                 activeTab === 'users'
-                  ? 'border-[#37352f] text-[#37352f] font-semibold'
-                  : 'border-transparent text-[#787774] hover:text-[#37352f] hover:bg-[#f7f6f3] rounded-t-md'
+                  ? 'border-[#202124] text-[#202124] font-semibold'
+                  : 'border-transparent text-[#787774] hover:text-[#202124] hover:bg-[#F1F1EF] rounded-t-md'
               }`}
             >
               <Users className="w-3.5 h-3.5" />
@@ -450,8 +450,8 @@ export default function SuperadminDashboardPage() {
               onClick={() => setActiveTab('sections')}
               className={`px-3 py-2 flex items-center gap-1.5 border-b-2 transition-all shrink-0 min-h-[36px] ${
                 activeTab === 'sections'
-                  ? 'border-[#37352f] text-[#37352f] font-semibold'
-                  : 'border-transparent text-[#787774] hover:text-[#37352f] hover:bg-[#f7f6f3] rounded-t-md'
+                  ? 'border-[#202124] text-[#202124] font-semibold'
+                  : 'border-transparent text-[#787774] hover:text-[#202124] hover:bg-[#F1F1EF] rounded-t-md'
               }`}
             >
               <FolderPlus className="w-3.5 h-3.5" />
@@ -465,8 +465,8 @@ export default function SuperadminDashboardPage() {
               onClick={() => setActiveTab('tests')}
               className={`px-3 py-2 flex items-center gap-1.5 border-b-2 transition-all shrink-0 min-h-[36px] ${
                 activeTab === 'tests'
-                  ? 'border-[#37352f] text-[#37352f] font-semibold'
-                  : 'border-transparent text-[#787774] hover:text-[#37352f] hover:bg-[#f7f6f3] rounded-t-md'
+                  ? 'border-[#202124] text-[#202124] font-semibold'
+                  : 'border-transparent text-[#787774] hover:text-[#202124] hover:bg-[#F1F1EF] rounded-t-md'
               }`}
             >
               <Layers className="w-3.5 h-3.5" />
@@ -480,8 +480,8 @@ export default function SuperadminDashboardPage() {
               onClick={() => setActiveTab('system')}
               className={`px-3 py-2 flex items-center gap-1.5 border-b-2 transition-all shrink-0 min-h-[36px] ${
                 activeTab === 'system'
-                  ? 'border-[#37352f] text-[#37352f] font-semibold'
-                  : 'border-transparent text-[#787774] hover:text-[#37352f] hover:bg-[#f7f6f3] rounded-t-md'
+                  ? 'border-[#202124] text-[#202124] font-semibold'
+                  : 'border-transparent text-[#787774] hover:text-[#202124] hover:bg-[#F1F1EF] rounded-t-md'
               }`}
             >
               <Server className="w-3.5 h-3.5" />
@@ -500,7 +500,7 @@ export default function SuperadminDashboardPage() {
                       placeholder="Search users by name, email, or institute..."
                       value={userSearch}
                       onChange={(e) => setUserSearch(e.target.value)}
-                      className="w-full sm:w-80 pl-8 pr-3 py-1.5 min-h-[36px] border border-[#ebebeb] bg-white rounded-md text-xs text-[#37352f] placeholder-[#9b9a97] focus:outline-none focus:border-[#2383e2] focus:ring-1 focus:ring-[#2383e2]"
+                      className="w-full sm:w-80 pl-8 pr-3 py-1.5 min-h-[36px] border border-[#E6E6E3] bg-white rounded-md text-xs text-[#202124] placeholder-[#9b9a97] focus:outline-none focus:border-[#2383e2] focus:ring-1 focus:ring-[#2383e2]"
                     />
                     <Search className="w-3.5 h-3.5 text-[#9b9a97] absolute left-2.5 top-2.5" />
                   </div>
@@ -508,7 +508,7 @@ export default function SuperadminDashboardPage() {
                   <select
                     value={roleFilter}
                     onChange={(e) => setRoleFilter(e.target.value as any)}
-                    className="px-3 py-1.5 min-h-[36px] border border-[#ebebeb] rounded-md text-xs text-[#37352f] bg-white focus:outline-none focus:border-[#2383e2] focus:ring-1 focus:ring-[#2383e2]"
+                    className="px-3 py-1.5 min-h-[36px] border border-[#E6E6E3] rounded-md text-xs text-[#202124] bg-white focus:outline-none focus:border-[#2383e2] focus:ring-1 focus:ring-[#2383e2]"
                   >
                     <option value="all">All Roles</option>
                     <option value="student">Students</option>
@@ -519,7 +519,7 @@ export default function SuperadminDashboardPage() {
 
                 <button
                   onClick={fetchUsers}
-                  className="p-2 min-h-[36px] text-[#787774] hover:text-[#37352f] hover:bg-[#f7f6f3] rounded-md text-xs flex items-center justify-center gap-1 self-start sm:self-auto border border-[#ebebeb] transition-colors"
+                  className="p-2 min-h-[36px] text-[#787774] hover:text-[#202124] hover:bg-[#F1F1EF] rounded-md text-xs flex items-center justify-center gap-1 self-start sm:self-auto border border-[#E6E6E3] transition-colors"
                 >
                   <RefreshCw className="w-3.5 h-3.5" />
                   Refresh
@@ -528,18 +528,18 @@ export default function SuperadminDashboardPage() {
 
               {loadingUsers ? (
                 <div className="p-12 text-center text-[#787774] text-sm">
-                  <div className="w-6 h-6 border-2 border-[#37352f] border-t-transparent rounded-full animate-spin mx-auto mb-3" />
+                  <div className="w-6 h-6 border-2 border-[#202124] border-t-transparent rounded-full animate-spin mx-auto mb-3" />
                   Loading all platform accounts...
                 </div>
               ) : filteredUsers.length === 0 ? (
-                <div className="bg-white rounded-md p-10 text-center border border-dashed border-[#ebebeb] space-y-3">
+                <div className="bg-white rounded-md p-10 text-center border border-dashed border-[#E6E6E3] space-y-3">
                   <p className="text-xs text-[#787774]">No users match criteria</p>
                 </div>
               ) : (
-                <div className="bg-white rounded-md border border-[#ebebeb] overflow-hidden shadow-2xs">
+                <div className="bg-white rounded-md border border-[#E6E6E3] overflow-hidden shadow-2xs">
                   <div className="overflow-x-auto">
                     <table className="w-full text-left text-xs border-collapse">
-                      <thead className="bg-[#fbfbfa] border-b border-[#ebebeb] text-[11px] font-semibold text-[#787774] uppercase tracking-wider">
+                      <thead className="bg-[#F7F7F5] border-b border-[#E6E6E3] text-[11px] font-semibold text-[#787774] uppercase tracking-wider">
                         <tr>
                           <th className="px-4 py-2.5">User & Organization</th>
                           <th className="px-3 py-2.5">Role & Privilege</th>
@@ -549,24 +549,24 @@ export default function SuperadminDashboardPage() {
                           <th className="px-4 py-2.5 text-right">Superadmin Actions</th>
                         </tr>
                       </thead>
-                      <tbody className="divide-y divide-[#ebebeb] font-normal">
+                      <tbody className="divide-y divide-[#E6E6E3] font-normal">
                         {filteredUsers.map((u) => (
-                          <tr key={u.id} className="hover:bg-[#f7f6f3]/80 transition-colors">
+                          <tr key={u.id} className="hover:bg-[#F1F1EF]/80 transition-colors">
                             <td className="px-4 py-3">
                               <div className="flex items-center gap-2.5">
                                 <div
                                   className={`w-7 h-7 rounded-full font-medium flex items-center justify-center text-xs border ${
                                     u.role === 'superadmin'
-                                      ? 'bg-[#fbf3db] text-[#8f6b10] border-[#fae6b4]'
+                                      ? 'bg-[#FFFBEB] text-[#8f6b10] border-[#fae6b4]'
                                       : u.role === 'admin'
                                       ? 'bg-[#ebf5fe] text-[#2383e2] border-[#cce5fb]'
-                                      : 'bg-[#f1f1ef] text-[#787774] border-[#ebebeb]'
+                                      : 'bg-[#f1f1ef] text-[#787774] border-[#E6E6E3]'
                                   }`}
                                 >
                                   {u.name.charAt(0).toUpperCase()}
                                 </div>
                                 <div>
-                                  <p className="font-semibold text-[#37352f]">{u.name}</p>
+                                  <p className="font-semibold text-[#202124]">{u.name}</p>
                                   <p className="text-[11px] text-[#787774]">{u.email}</p>
                                   {u.institute_name && (
                                     <p className="text-[10px] text-[#8f6b10] font-medium mt-0.5">
@@ -582,7 +582,7 @@ export default function SuperadminDashboardPage() {
                                 value={u.role}
                                 onChange={(e) => handleQuickRoleChange(u.id, e.target.value as UserRole)}
                                 disabled={u.id === currentUser?.id}
-                                className="px-2 py-1 border border-[#ebebeb] rounded-md text-xs font-medium bg-white text-[#37352f] focus:outline-none focus:border-[#2383e2]"
+                                className="px-2 py-1 border border-[#E6E6E3] rounded-md text-xs font-medium bg-white text-[#202124] focus:outline-none focus:border-[#2383e2]"
                               >
                                 <option value="student">🎓 Student</option>
                                 <option value="admin">🏫 Administrator</option>
@@ -606,10 +606,10 @@ export default function SuperadminDashboardPage() {
 
                             <td className="px-3 py-3 text-[#787774] text-[11px]">
                               <div>
-                                <strong className="text-[#37352f]">{u.tests_created}</strong> tests created
+                                <strong className="text-[#202124]">{u.tests_created}</strong> tests created
                               </div>
                               <div className="text-[#9b9a97]">
-                                <strong className="text-[#37352f]">{u.attempts_made}</strong> attempts
+                                <strong className="text-[#202124]">{u.attempts_made}</strong> attempts
                               </div>
                             </td>
 
@@ -629,7 +629,7 @@ export default function SuperadminDashboardPage() {
                                     setEditPassword('');
                                   }}
                                   title="Edit User or Reset Password"
-                                  className="p-1.5 min-h-[30px] min-w-[30px] flex items-center justify-center border border-[#ebebeb] text-[#787774] hover:text-[#37352f] hover:bg-[#f7f6f3] rounded-md text-xs transition-colors"
+                                  className="p-1.5 min-h-[30px] min-w-[30px] flex items-center justify-center border border-[#E6E6E3] text-[#787774] hover:text-[#202124] hover:bg-[#F1F1EF] rounded-md text-xs transition-colors"
                                 >
                                   <Edit className="w-3.5 h-3.5" />
                                 </button>
@@ -638,7 +638,7 @@ export default function SuperadminDashboardPage() {
                                   <button
                                     onClick={() => handleDeleteUser(u.id)}
                                     title="Delete User"
-                                    className="p-1.5 min-h-[30px] min-w-[30px] flex items-center justify-center border border-[#ebebeb] text-[#9b9a97] hover:text-[#c43228] hover:bg-[#fbebe9] rounded-md text-xs transition-colors"
+                                    className="p-1.5 min-h-[30px] min-w-[30px] flex items-center justify-center border border-[#E6E6E3] text-[#9b9a97] hover:text-[#c43228] hover:bg-[#fbebe9] rounded-md text-xs transition-colors"
                                   >
                                     <Trash2 className="w-3.5 h-3.5" />
                                   </button>
@@ -660,7 +660,7 @@ export default function SuperadminDashboardPage() {
             <div className="space-y-4">
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                 <div>
-                  <h3 className="text-sm font-semibold text-[#37352f]">Exam Sections & Domain Categories</h3>
+                  <h3 className="text-sm font-semibold text-[#202124]">Exam Sections & Domain Categories</h3>
                   <p className="text-[11px] text-[#787774]">
                     Configure the official categories used to classify question papers and mock tests.
                   </p>
@@ -668,7 +668,7 @@ export default function SuperadminDashboardPage() {
 
                 <button
                   onClick={() => setShowAddSectionModal(true)}
-                  className="inline-flex items-center justify-center gap-1.5 px-3 py-1.5 min-h-[36px] bg-[#37352f] hover:bg-[#201e1d] text-white font-medium rounded-md text-xs shadow-2xs self-start sm:self-auto transition-colors"
+                  className="inline-flex items-center justify-center gap-1.5 px-3 py-1.5 min-h-[36px] bg-[#202124] hover:bg-[#201e1d] text-white font-medium rounded-md text-xs shadow-2xs self-start sm:self-auto transition-colors"
                 >
                   <FolderPlus className="w-3.5 h-3.5" />
                   Add New Section
@@ -677,7 +677,7 @@ export default function SuperadminDashboardPage() {
 
               {loadingSections ? (
                 <div className="p-12 text-center text-[#787774] text-sm">
-                  <div className="w-6 h-6 border-2 border-[#37352f] border-t-transparent rounded-full animate-spin mx-auto mb-3" />
+                  <div className="w-6 h-6 border-2 border-[#202124] border-t-transparent rounded-full animate-spin mx-auto mb-3" />
                   Loading exam sections...
                 </div>
               ) : (
@@ -685,11 +685,11 @@ export default function SuperadminDashboardPage() {
                   {sections.map((sec) => (
                     <div
                       key={sec.id}
-                      className="bg-white rounded-md border border-[#ebebeb] hover:border-[#d9d8d6] p-4 shadow-2xs space-y-3 flex flex-col justify-between transition-all"
+                      className="bg-white rounded-md border border-[#E6E6E3] hover:border-[#d9d8d6] p-4 shadow-2xs space-y-3 flex flex-col justify-between transition-all"
                     >
                       <div>
                         <div className="flex items-center justify-between mb-2">
-                          <span className="px-2 py-0.5 rounded-[3px] text-[10px] font-medium bg-[#f1f1ef] text-[#787774] border border-[#ebebeb]">
+                          <span className="px-2 py-0.5 rounded-[3px] text-[10px] font-medium bg-[#f1f1ef] text-[#787774] border border-[#E6E6E3]">
                             {sec.id}
                           </span>
                           <button
@@ -697,20 +697,20 @@ export default function SuperadminDashboardPage() {
                             className={`px-2 py-0.5 rounded-[3px] text-[10px] font-medium border transition-colors ${
                               sec.is_active
                                 ? 'bg-[#e6f6ee] text-[#1c7d49] border-[#c3eed7]'
-                                : 'bg-[#f1f1ef] text-[#787774] border-[#ebebeb]'
+                                : 'bg-[#f1f1ef] text-[#787774] border-[#E6E6E3]'
                             }`}
                           >
                             {sec.is_active ? 'Active' : 'Inactive'}
                           </button>
                         </div>
 
-                        <h4 className="text-sm font-semibold text-[#37352f]">{sec.name}</h4>
+                        <h4 className="text-sm font-semibold text-[#202124]">{sec.name}</h4>
                         <p className="text-xs text-[#787774] mt-1 leading-relaxed">
                           {sec.description || 'General examination section'}
                         </p>
                       </div>
 
-                      <div className="pt-3 border-t border-[#ebebeb] flex items-center justify-between text-xs">
+                      <div className="pt-3 border-t border-[#E6E6E3] flex items-center justify-between text-xs">
                         <span className="font-medium text-[#787774]">
                           {sec.test_count || 0} Tests Linked
                         </span>
@@ -739,7 +739,7 @@ export default function SuperadminDashboardPage() {
                     placeholder="Search across all tests and creators..."
                     value={testSearch}
                     onChange={(e) => setTestSearch(e.target.value)}
-                    className="w-full sm:w-80 pl-8 pr-3 py-1.5 min-h-[36px] border border-[#ebebeb] bg-white rounded-md text-xs text-[#37352f] placeholder-[#9b9a97] focus:outline-none focus:border-[#2383e2] focus:ring-1 focus:ring-[#2383e2]"
+                    className="w-full sm:w-80 pl-8 pr-3 py-1.5 min-h-[36px] border border-[#E6E6E3] bg-white rounded-md text-xs text-[#202124] placeholder-[#9b9a97] focus:outline-none focus:border-[#2383e2] focus:ring-1 focus:ring-[#2383e2]"
                   />
                   <Search className="w-3.5 h-3.5 text-[#9b9a97] absolute left-2.5 top-2.5" />
                 </div>
@@ -753,18 +753,18 @@ export default function SuperadminDashboardPage() {
                 {filteredTests.map((test) => (
                   <div
                     key={test.id}
-                    className="bg-white rounded-md border border-[#ebebeb] hover:border-[#d9d8d6] p-4 shadow-2xs transition-all flex flex-col lg:flex-row lg:items-center justify-between gap-4"
+                    className="bg-white rounded-md border border-[#E6E6E3] hover:border-[#d9d8d6] p-4 shadow-2xs transition-all flex flex-col lg:flex-row lg:items-center justify-between gap-4"
                   >
                     <div className="space-y-1.5 flex-1">
                       <div className="flex flex-wrap items-center gap-2">
-                        <span className="px-2 py-0.5 rounded-[3px] text-[10px] font-medium bg-[#f7f6f3] text-[#37352f] border border-[#ebebeb]">
+                        <span className="px-2 py-0.5 rounded-[3px] text-[10px] font-medium bg-[#F1F1EF] text-[#202124] border border-[#E6E6E3]">
                           {test.subject || 'General'}
                         </span>
                         <span className="text-xs text-[#9b9a97] font-mono">
                           By {test.created_by_name || 'User'} ({test.created_by_role || 'student'})
                         </span>
                       </div>
-                      <h4 className="text-sm font-semibold text-[#37352f]">{test.title}</h4>
+                      <h4 className="text-sm font-semibold text-[#202124]">{test.title}</h4>
                       <div className="flex flex-wrap items-center gap-3 sm:gap-4 text-xs text-[#787774]">
                         <span className="flex items-center gap-1 font-medium">
                           <Layers className="w-3.5 h-3.5 text-[#9b9a97]" />
@@ -781,17 +781,17 @@ export default function SuperadminDashboardPage() {
                       </div>
                     </div>
 
-                    <div className="flex flex-wrap items-center gap-2 pt-2 lg:pt-0 border-t lg:border-t-0 border-[#ebebeb]">
+                    <div className="flex flex-wrap items-center gap-2 pt-2 lg:pt-0 border-t lg:border-t-0 border-[#E6E6E3]">
                       <Link
                         href={`/tests/${test.id}/start`}
-                        className="flex-1 sm:flex-none justify-center px-3 py-1.5 min-h-[36px] bg-[#37352f] hover:bg-[#201e1d] text-white font-medium rounded-md text-xs flex items-center gap-1.5 shadow-2xs transition-colors"
+                        className="flex-1 sm:flex-none justify-center px-3 py-1.5 min-h-[36px] bg-[#202124] hover:bg-[#201e1d] text-white font-medium rounded-md text-xs flex items-center gap-1.5 shadow-2xs transition-colors"
                       >
                         <Play className="w-3.5 h-3.5 fill-white" />
                         Take Test
                       </Link>
                       <Link
                         href={`/tests/${test.id}`}
-                        className="p-2 min-h-[36px] min-w-[36px] flex items-center justify-center border border-[#ebebeb] hover:bg-[#f7f6f3] text-[#787774] hover:text-[#37352f] rounded-md text-xs transition-colors"
+                        className="p-2 min-h-[36px] min-w-[36px] flex items-center justify-center border border-[#E6E6E3] hover:bg-[#F1F1EF] text-[#787774] hover:text-[#202124] rounded-md text-xs transition-colors"
                         title="Inspect paper"
                       >
                         <Eye className="w-3.5 h-3.5" />
@@ -806,57 +806,57 @@ export default function SuperadminDashboardPage() {
           {/* TAB 4: System & AI Engine Health */}
           {activeTab === 'system' && (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="bg-white rounded-md border border-[#ebebeb] p-5 shadow-2xs space-y-4">
+              <div className="bg-white rounded-md border border-[#E6E6E3] p-5 shadow-2xs space-y-4">
                 <div className="flex items-center gap-3">
-                  <div className="w-9 h-9 rounded-md bg-[#fbf3db] text-[#8f6b10] flex items-center justify-center shrink-0">
+                  <div className="w-9 h-9 rounded-md bg-[#FFFBEB] text-[#8f6b10] flex items-center justify-center shrink-0">
                     <Sparkles className="w-4 h-4" />
                   </div>
                   <div>
-                    <h4 className="font-semibold text-[#37352f] text-sm">Google Gemini AI Engine</h4>
+                    <h4 className="font-semibold text-[#202124] text-sm">Google Gemini AI Engine</h4>
                     <p className="text-xs text-[#787774]">Autonomous performance analysis & parser</p>
                   </div>
                 </div>
 
                 <div className="space-y-2 text-xs">
-                  <div className="flex items-center justify-between p-2.5 bg-[#fbfbfa] rounded-md border border-[#ebebeb]">
+                  <div className="flex items-center justify-between p-2.5 bg-[#F7F7F5] rounded-md border border-[#E6E6E3]">
                     <span className="text-[#787774]">Target Model:</span>
-                    <span className="font-mono font-medium text-[#37352f]">gemini-3.6-flash</span>
+                    <span className="font-mono font-medium text-[#202124]">gemini-3.6-flash</span>
                   </div>
-                  <div className="flex items-center justify-between p-2.5 bg-[#fbfbfa] rounded-md border border-[#ebebeb]">
+                  <div className="flex items-center justify-between p-2.5 bg-[#F7F7F5] rounded-md border border-[#E6E6E3]">
                     <span className="text-[#787774]">Status:</span>
                     <span className="font-medium text-[#1c7d49] flex items-center gap-1">
                       <CheckCircle className="w-3 h-3" />
                       Verified & Operational
                     </span>
                   </div>
-                  <div className="flex items-center justify-between p-2.5 bg-[#fbfbfa] rounded-md border border-[#ebebeb]">
+                  <div className="flex items-center justify-between p-2.5 bg-[#F7F7F5] rounded-md border border-[#E6E6E3]">
                     <span className="text-[#787774]">Key Storage:</span>
-                    <span className="text-[#37352f] font-mono text-[11px]">Server Environment (.env.local)</span>
+                    <span className="text-[#202124] font-mono text-[11px]">Server Environment (.env.local)</span>
                   </div>
                 </div>
               </div>
 
-              <div className="bg-white rounded-md border border-[#ebebeb] p-5 shadow-2xs space-y-4">
+              <div className="bg-white rounded-md border border-[#E6E6E3] p-5 shadow-2xs space-y-4">
                 <div className="flex items-center gap-3">
                   <div className="w-9 h-9 rounded-md bg-[#ebf5fe] text-[#2383e2] flex items-center justify-center shrink-0">
                     <Database className="w-4 h-4" />
                   </div>
                   <div>
-                    <h4 className="font-semibold text-[#37352f] text-sm">Database & Persistence</h4>
+                    <h4 className="font-semibold text-[#202124] text-sm">Database & Persistence</h4>
                     <p className="text-xs text-[#787774]">Local High-Performance SQLite storage</p>
                   </div>
                 </div>
 
                 <div className="space-y-2 text-xs">
-                  <div className="flex items-center justify-between p-2.5 bg-[#fbfbfa] rounded-md border border-[#ebebeb]">
+                  <div className="flex items-center justify-between p-2.5 bg-[#F7F7F5] rounded-md border border-[#E6E6E3]">
                     <span className="text-[#787774]">Database Engine:</span>
-                    <span className="font-medium text-[#37352f]">better-sqlite3 (WAL Mode)</span>
+                    <span className="font-medium text-[#202124]">better-sqlite3 (WAL Mode)</span>
                   </div>
-                  <div className="flex items-center justify-between p-2.5 bg-[#fbfbfa] rounded-md border border-[#ebebeb]">
+                  <div className="flex items-center justify-between p-2.5 bg-[#F7F7F5] rounded-md border border-[#E6E6E3]">
                     <span className="text-[#787774]">Storage Location:</span>
-                    <span className="font-mono text-[#37352f] text-[11px]">./data/mocktest.db</span>
+                    <span className="font-mono text-[#202124] text-[11px]">./data/mocktest.db</span>
                   </div>
-                  <div className="flex items-center justify-between p-2.5 bg-[#fbfbfa] rounded-md border border-[#ebebeb]">
+                  <div className="flex items-center justify-between p-2.5 bg-[#F7F7F5] rounded-md border border-[#E6E6E3]">
                     <span className="text-[#787774]">Active Roles:</span>
                     <span className="font-medium text-[#8f6b10]">student, admin, superadmin</span>
                   </div>
@@ -868,18 +868,18 @@ export default function SuperadminDashboardPage() {
 
         {/* Add Exam Section Modal */}
         {showAddSectionModal && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#37352f]/40 backdrop-blur-xs p-4">
-            <div className="bg-white rounded-lg max-w-md w-full p-5 shadow-lg border border-[#ebebeb]">
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#202124]/40 backdrop-blur-xs p-4">
+            <div className="bg-white rounded-lg max-w-md w-full p-5 shadow-lg border border-[#E6E6E3]">
               <div className="flex items-center justify-between mb-4">
                 <div className="flex items-center gap-2">
-                  <div className="w-7 h-7 rounded-md bg-[#f1f1ef] text-[#37352f] flex items-center justify-center">
+                  <div className="w-7 h-7 rounded-md bg-[#f1f1ef] text-[#202124] flex items-center justify-center">
                     <FolderPlus className="w-3.5 h-3.5" />
                   </div>
-                  <h3 className="font-semibold text-[#37352f] text-sm">Create Exam Section</h3>
+                  <h3 className="font-semibold text-[#202124] text-sm">Create Exam Section</h3>
                 </div>
                 <button
                   onClick={() => setShowAddSectionModal(false)}
-                  className="text-[#9b9a97] hover:text-[#37352f] p-1 text-lg leading-none"
+                  className="text-[#9b9a97] hover:text-[#202124] p-1 text-lg leading-none"
                 >
                   &times;
                 </button>
@@ -893,7 +893,7 @@ export default function SuperadminDashboardPage() {
                     placeholder="e.g. UPSC Civil Services, Banking PO, NEET"
                     value={newSectionName}
                     onChange={(e) => setNewSectionName(e.target.value)}
-                    className="w-full px-3 py-2 min-h-[36px] border border-[#ebebeb] rounded-md text-xs bg-white text-[#37352f] placeholder-[#9b9a97] focus:outline-none focus:border-[#2383e2] focus:ring-1 focus:ring-[#2383e2]"
+                    className="w-full px-3 py-2 min-h-[36px] border border-[#E6E6E3] rounded-md text-xs bg-white text-[#202124] placeholder-[#9b9a97] focus:outline-none focus:border-[#2383e2] focus:ring-1 focus:ring-[#2383e2]"
                     required
                   />
                 </div>
@@ -904,23 +904,23 @@ export default function SuperadminDashboardPage() {
                     placeholder="Brief summary of syllabus or target audience..."
                     value={newSectionDescription}
                     onChange={(e) => setNewSectionDescription(e.target.value)}
-                    className="w-full px-3 py-2 border border-[#ebebeb] rounded-md text-xs bg-white text-[#37352f] placeholder-[#9b9a97] focus:outline-none focus:border-[#2383e2] focus:ring-1 focus:ring-[#2383e2]"
+                    className="w-full px-3 py-2 border border-[#E6E6E3] rounded-md text-xs bg-white text-[#202124] placeholder-[#9b9a97] focus:outline-none focus:border-[#2383e2] focus:ring-1 focus:ring-[#2383e2]"
                     rows={3}
                   />
                 </div>
 
-                <div className="flex items-center justify-end gap-2 pt-2 border-t border-[#ebebeb]">
+                <div className="flex items-center justify-end gap-2 pt-2 border-t border-[#E6E6E3]">
                   <button
                     type="button"
                     onClick={() => setShowAddSectionModal(false)}
-                    className="px-3 py-1.5 min-h-[36px] text-xs font-medium text-[#787774] hover:text-[#37352f] hover:bg-[#f7f6f3] rounded-md transition-colors"
+                    className="px-3 py-1.5 min-h-[36px] text-xs font-medium text-[#787774] hover:text-[#202124] hover:bg-[#F1F1EF] rounded-md transition-colors"
                   >
                     Cancel
                   </button>
                   <button
                     type="submit"
                     disabled={creatingSection}
-                    className="px-3.5 py-1.5 min-h-[36px] bg-[#37352f] hover:bg-[#201e1d] text-white rounded-md text-xs font-medium shadow-2xs transition-colors"
+                    className="px-3.5 py-1.5 min-h-[36px] bg-[#202124] hover:bg-[#201e1d] text-white rounded-md text-xs font-medium shadow-2xs transition-colors"
                   >
                     {creatingSection ? 'Creating...' : 'Create Section'}
                   </button>
@@ -932,18 +932,18 @@ export default function SuperadminDashboardPage() {
 
         {/* Edit User Modal */}
         {editingUser && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#37352f]/40 backdrop-blur-xs p-4">
-            <div className="bg-white rounded-lg max-w-md w-full p-5 shadow-lg border border-[#ebebeb]">
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#202124]/40 backdrop-blur-xs p-4">
+            <div className="bg-white rounded-lg max-w-md w-full p-5 shadow-lg border border-[#E6E6E3]">
               <div className="flex items-center justify-between mb-4">
                 <div className="flex items-center gap-2">
-                  <div className="w-7 h-7 rounded-md bg-[#f1f1ef] text-[#37352f] flex items-center justify-center">
+                  <div className="w-7 h-7 rounded-md bg-[#f1f1ef] text-[#202124] flex items-center justify-center">
                     <Edit className="w-3.5 h-3.5" />
                   </div>
-                  <h3 className="font-semibold text-[#37352f] text-sm">Modify User Account</h3>
+                  <h3 className="font-semibold text-[#202124] text-sm">Modify User Account</h3>
                 </div>
                 <button
                   onClick={() => setEditingUser(null)}
-                  className="text-[#9b9a97] hover:text-[#37352f] p-1 text-lg leading-none"
+                  className="text-[#9b9a97] hover:text-[#202124] p-1 text-lg leading-none"
                 >
                   &times;
                 </button>
@@ -956,7 +956,7 @@ export default function SuperadminDashboardPage() {
                     type="text"
                     value={editName}
                     onChange={(e) => setEditName(e.target.value)}
-                    className="w-full px-3 py-2 min-h-[36px] border border-[#ebebeb] rounded-md text-xs bg-white text-[#37352f] placeholder-[#9b9a97] focus:outline-none focus:border-[#2383e2] focus:ring-1 focus:ring-[#2383e2]"
+                    className="w-full px-3 py-2 min-h-[36px] border border-[#E6E6E3] rounded-md text-xs bg-white text-[#202124] placeholder-[#9b9a97] focus:outline-none focus:border-[#2383e2] focus:ring-1 focus:ring-[#2383e2]"
                     required
                   />
                 </div>
@@ -967,7 +967,7 @@ export default function SuperadminDashboardPage() {
                     type="email"
                     value={editEmail}
                     onChange={(e) => setEditEmail(e.target.value)}
-                    className="w-full px-3 py-2 min-h-[36px] border border-[#ebebeb] rounded-md text-xs bg-white text-[#37352f] placeholder-[#9b9a97] focus:outline-none focus:border-[#2383e2] focus:ring-1 focus:ring-[#2383e2]"
+                    className="w-full px-3 py-2 min-h-[36px] border border-[#E6E6E3] rounded-md text-xs bg-white text-[#202124] placeholder-[#9b9a97] focus:outline-none focus:border-[#2383e2] focus:ring-1 focus:ring-[#2383e2]"
                     required
                   />
                 </div>
@@ -977,7 +977,7 @@ export default function SuperadminDashboardPage() {
                   <select
                     value={editRole}
                     onChange={(e) => setEditRole(e.target.value as UserRole)}
-                    className="w-full px-3 py-2 min-h-[36px] border border-[#ebebeb] rounded-md text-xs bg-white text-[#37352f] focus:outline-none focus:border-[#2383e2] focus:ring-1 focus:ring-[#2383e2]"
+                    className="w-full px-3 py-2 min-h-[36px] border border-[#E6E6E3] rounded-md text-xs bg-white text-[#202124] focus:outline-none focus:border-[#2383e2] focus:ring-1 focus:ring-[#2383e2]"
                   >
                     <option value="student">🎓 Student</option>
                     <option value="admin">🏫 Administrator</option>
@@ -992,7 +992,7 @@ export default function SuperadminDashboardPage() {
                     placeholder="e.g. Apex Institute (optional)"
                     value={editInstitute}
                     onChange={(e) => setEditInstitute(e.target.value)}
-                    className="w-full px-3 py-2 min-h-[36px] border border-[#ebebeb] rounded-md text-xs bg-white text-[#37352f] placeholder-[#9b9a97] focus:outline-none focus:border-[#2383e2] focus:ring-1 focus:ring-[#2383e2]"
+                    className="w-full px-3 py-2 min-h-[36px] border border-[#E6E6E3] rounded-md text-xs bg-white text-[#202124] placeholder-[#9b9a97] focus:outline-none focus:border-[#2383e2] focus:ring-1 focus:ring-[#2383e2]"
                   />
                 </div>
 
@@ -1005,22 +1005,22 @@ export default function SuperadminDashboardPage() {
                     placeholder="Leave empty to keep unchanged"
                     value={editPassword}
                     onChange={(e) => setEditPassword(e.target.value)}
-                    className="w-full px-3 py-2 min-h-[36px] border border-[#ebebeb] rounded-md text-xs bg-white text-[#37352f] placeholder-[#9b9a97] focus:outline-none focus:border-[#2383e2] focus:ring-1 focus:ring-[#2383e2]"
+                    className="w-full px-3 py-2 min-h-[36px] border border-[#E6E6E3] rounded-md text-xs bg-white text-[#202124] placeholder-[#9b9a97] focus:outline-none focus:border-[#2383e2] focus:ring-1 focus:ring-[#2383e2]"
                   />
                 </div>
 
-                <div className="flex items-center justify-end gap-2 pt-2 border-t border-[#ebebeb]">
+                <div className="flex items-center justify-end gap-2 pt-2 border-t border-[#E6E6E3]">
                   <button
                     type="button"
                     onClick={() => setEditingUser(null)}
-                    className="px-3 py-1.5 min-h-[36px] text-xs font-medium text-[#787774] hover:text-[#37352f] hover:bg-[#f7f6f3] rounded-md transition-colors"
+                    className="px-3 py-1.5 min-h-[36px] text-xs font-medium text-[#787774] hover:text-[#202124] hover:bg-[#F1F1EF] rounded-md transition-colors"
                   >
                     Cancel
                   </button>
                   <button
                     type="submit"
                     disabled={updatingUser}
-                    className="px-3.5 py-1.5 min-h-[36px] bg-[#37352f] hover:bg-[#201e1d] text-white rounded-md text-xs font-medium shadow-2xs transition-colors"
+                    className="px-3.5 py-1.5 min-h-[36px] bg-[#202124] hover:bg-[#201e1d] text-white rounded-md text-xs font-medium shadow-2xs transition-colors"
                   >
                     {updatingUser ? 'Saving...' : 'Save Changes'}
                   </button>

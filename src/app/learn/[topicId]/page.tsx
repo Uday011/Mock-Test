@@ -159,7 +159,7 @@ export default function TopicLearningPage() {
     return (
       <AppShell>
         <div className="py-24 text-center space-y-4">
-          <h2 className="text-xl font-semibold text-[#37352f]">Topic Not Found</h2>
+          <h2 className="text-xl font-semibold text-[#202124]">Topic Not Found</h2>
           <p className="text-sm text-[#787774]">The requested topic does not exist or has been archived.</p>
           <Link href="/learn">
             <Button variant="outline" size="sm">
@@ -193,12 +193,12 @@ export default function TopicLearningPage() {
     >
       <div className="max-w-5xl mx-auto space-y-6 pb-16">
         {/* Top Header Bar */}
-        <div className="p-4 bg-white border border-[#ebebeb] rounded-lg flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div className="p-4 bg-white border border-[#E6E6E3] rounded-lg flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div className="flex items-center gap-3">
             <Link href="/learn">
               <button
                 type="button"
-                className="w-8 h-8 rounded-md border border-[#ebebeb] flex items-center justify-center text-[#787774] hover:text-[#37352f] hover:bg-[#f7f6f3] transition-colors"
+                className="w-8 h-8 rounded-md border border-[#E6E6E3] flex items-center justify-center text-[#787774] hover:text-[#202124] hover:bg-[#F1F1EF] transition-colors"
                 title="Back to Syllabus"
               >
                 <ArrowLeft className="w-4 h-4" />
@@ -207,13 +207,13 @@ export default function TopicLearningPage() {
 
             <div>
               <div className="flex items-center gap-2 flex-wrap">
-                <span className="font-mono text-[10px] px-1.5 py-0.5 rounded bg-[#f7f6f3] text-[#787774] border border-[#ebebeb]">
+                <span className="font-mono text-[10px] px-1.5 py-0.5 rounded bg-[#F1F1EF] text-[#787774] border border-[#E6E6E3]">
                   {topic.code || 'TOPIC'}
                 </span>
                 <span className="text-xs text-[#787774]">
                   {topic.subject_name}
                 </span>
-                <span className="text-[#ebebeb]">•</span>
+                <span className="text-[#E6E6E3]">•</span>
                 <Badge
                   variant={isMastered ? 'emerald' : isStudied ? 'blue' : 'amber'}
                   size="sm"
@@ -222,7 +222,7 @@ export default function TopicLearningPage() {
                   {isMastered ? `Mastered (${progress?.mastery_percentage}%)` : isStudied ? `Studied (${progress?.mastery_percentage}%)` : 'In Progress'}
                 </Badge>
               </div>
-              <h1 className="text-base sm:text-lg font-semibold text-[#37352f] mt-0.5">
+              <h1 className="text-base sm:text-lg font-semibold text-[#202124] mt-0.5">
                 {topic.title}
               </h1>
             </div>
@@ -236,7 +236,7 @@ export default function TopicLearningPage() {
               className={`px-2.5 py-1.5 rounded-md border flex items-center gap-1.5 text-xs font-medium transition-colors ${
                 isBookmarked
                   ? 'border-[#fae2be] bg-[#fdf5e8] text-[#8f4f00]'
-                  : 'border-[#ebebeb] text-[#787774] hover:bg-[#f7f6f3]'
+                  : 'border-[#E6E6E3] text-[#787774] hover:bg-[#F1F1EF]'
               }`}
             >
               <Bookmark className={`w-3.5 h-3.5 ${isBookmarked ? 'fill-amber-600 text-amber-600' : ''}`} />
@@ -264,16 +264,16 @@ export default function TopicLearningPage() {
         </div>
 
         {/* Metadata Properties Table */}
-        <div className="bg-white border border-[#ebebeb] rounded-lg p-3.5">
+        <div className="bg-white border border-[#E6E6E3] rounded-lg p-3.5">
           <PropertyTable>
             <PropertyRow icon={Clock} label="Estimated Time">
-              <span className="font-mono text-xs text-[#37352f]">
+              <span className="font-mono text-xs text-[#202124]">
                 {content.estimated_read_minutes || 35} minutes
               </span>
             </PropertyRow>
 
             <PropertyRow icon={Target} label="Exam Weightage">
-              <span className="font-mono text-xs text-[#37352f]">
+              <span className="font-mono text-xs text-[#202124]">
                 {topic.weightage_percentage}% of Tier-I marks
               </span>
             </PropertyRow>
@@ -317,10 +317,10 @@ export default function TopicLearningPage() {
                   <Sparkles className="w-3.5 h-3.5 text-amber-600" />
                   Learning Objectives
                 </h3>
-                <div className="p-4 bg-white border border-[#ebebeb] rounded-lg space-y-2">
+                <div className="p-4 bg-white border border-[#E6E6E3] rounded-lg space-y-2">
                   {content.learning_objectives.map((obj: string, i: number) => (
-                    <div key={i} className="flex items-start gap-2.5 text-xs text-[#37352f] leading-relaxed">
-                      <span className="w-4 h-4 rounded bg-[#f7f6f3] text-[#787774] border border-[#ebebeb] font-mono font-medium text-[10px] flex items-center justify-center shrink-0 mt-0.5">
+                    <div key={i} className="flex items-start gap-2.5 text-xs text-[#202124] leading-relaxed">
+                      <span className="w-4 h-4 rounded bg-[#F1F1EF] text-[#787774] border border-[#E6E6E3] font-mono font-medium text-[10px] flex items-center justify-center shrink-0 mt-0.5">
                         {i + 1}
                       </span>
                       <span>{obj}</span>
@@ -336,7 +336,7 @@ export default function TopicLearningPage() {
                 <BookOpen className="w-3.5 h-3.5 text-[#787774]" />
                 Conceptual Framework
               </h3>
-              <div className="p-4 bg-white border border-[#ebebeb] rounded-lg text-[#37352f] text-xs sm:text-sm leading-relaxed space-y-3">
+              <div className="p-4 bg-white border border-[#E6E6E3] rounded-lg text-[#202124] text-xs sm:text-sm leading-relaxed space-y-3">
                 <p>{content.overview}</p>
               </div>
             </div>
@@ -351,11 +351,11 @@ export default function TopicLearningPage() {
                   {content.key_concepts.map((kc: any) => (
                     <div
                       key={kc.id}
-                      className="p-3.5 bg-white border border-[#ebebeb] rounded-lg space-y-2 flex flex-col justify-between"
+                      className="p-3.5 bg-white border border-[#E6E6E3] rounded-lg space-y-2 flex flex-col justify-between"
                     >
                       <div>
                         <div className="flex items-center justify-between">
-                          <h4 className="font-medium text-xs text-[#37352f]">
+                          <h4 className="font-medium text-xs text-[#202124]">
                             {kc.title}
                           </h4>
                           <Badge variant={kc.importance === 'core' ? 'amber' : 'gray'} size="sm">
@@ -368,7 +368,7 @@ export default function TopicLearningPage() {
                       </div>
 
                       {kc.formula && (
-                        <div className="mt-2 p-2 bg-[#f7f6f3] rounded border border-[#ebebeb] font-mono text-xs text-[#37352f] overflow-x-auto">
+                        <div className="mt-2 p-2 bg-[#F1F1EF] rounded border border-[#E6E6E3] font-mono text-xs text-[#202124] overflow-x-auto">
                           {kc.formula}
                         </div>
                       )}
@@ -386,9 +386,9 @@ export default function TopicLearningPage() {
                     <h3 className="text-xs font-semibold text-[#787774] uppercase tracking-wider">
                       {tbl.title}
                     </h3>
-                    <div className="border border-[#ebebeb] rounded-lg overflow-x-auto bg-white">
+                    <div className="border border-[#E6E6E3] rounded-lg overflow-x-auto bg-white">
                       <table className="w-full text-xs text-left border-collapse">
-                        <thead className="bg-[#fbfbfa] border-b border-[#ebebeb] font-mono uppercase text-[10px] text-[#787774]">
+                        <thead className="bg-[#F7F7F5] border-b border-[#E6E6E3] font-mono uppercase text-[10px] text-[#787774]">
                           <tr>
                             {tbl.headers.map((h: string, hi: number) => (
                               <th key={hi} className="p-2.5 font-medium">
@@ -397,9 +397,9 @@ export default function TopicLearningPage() {
                             ))}
                           </tr>
                         </thead>
-                        <tbody className="divide-y divide-[#ebebeb] font-mono text-[#37352f]">
+                        <tbody className="divide-y divide-[#E6E6E3] font-mono text-[#202124]">
                           {tbl.rows.map((row: string[], ri: number) => (
-                            <tr key={ri} className="hover:bg-[#fbfbfa]">
+                            <tr key={ri} className="hover:bg-[#F7F7F5]">
                               {row.map((cell: string, ci: number) => (
                                 <td key={ci} className="p-2.5">
                                   {cell}
@@ -410,7 +410,7 @@ export default function TopicLearningPage() {
                         </tbody>
                       </table>
                       {tbl.caption && (
-                        <div className="p-2 bg-[#fbfbfa] border-t border-[#ebebeb] text-[11px] text-[#787774] font-mono">
+                        <div className="p-2 bg-[#F7F7F5] border-t border-[#E6E6E3] text-[11px] text-[#787774] font-mono">
                           {tbl.caption}
                         </div>
                       )}
@@ -431,17 +431,17 @@ export default function TopicLearningPage() {
                   {content.worked_examples.map((we: any, idx: number) => (
                     <div
                       key={we.id || idx}
-                      className="p-4 bg-white border border-[#ebebeb] rounded-lg space-y-3"
+                      className="p-4 bg-white border border-[#E6E6E3] rounded-lg space-y-3"
                     >
-                      <div className="flex items-center justify-between border-b border-[#ebebeb] pb-2">
+                      <div className="flex items-center justify-between border-b border-[#E6E6E3] pb-2">
                         <span className="font-mono text-xs font-medium text-[#787774]">
                           Demonstration {idx + 1}: {we.title}
                         </span>
                         <Badge variant="gray" size="sm">TCS Model</Badge>
                       </div>
 
-                      <div className="p-3 bg-[#fbfbfa] rounded-md border border-[#ebebeb] text-xs text-[#37352f] leading-relaxed">
-                        <strong className="text-[#37352f]">Problem:</strong> {we.problem_statement}
+                      <div className="p-3 bg-[#F7F7F5] rounded-md border border-[#E6E6E3] text-xs text-[#202124] leading-relaxed">
+                        <strong className="text-[#202124]">Problem:</strong> {we.problem_statement}
                       </div>
 
                       {we.examiner_angle && (
@@ -454,14 +454,14 @@ export default function TopicLearningPage() {
                       )}
 
                       {/* Steps */}
-                      <div className="space-y-2 pl-2 border-l-2 border-[#ebebeb]">
+                      <div className="space-y-2 pl-2 border-l-2 border-[#E6E6E3]">
                         {we.steps.map((st: any, si: number) => (
                           <div key={si} className="text-xs space-y-1">
                             <span className="font-mono font-medium text-[#787774] text-[11px] block">
                               Step {st.step_number}: {st.explanation}
                             </span>
                             {st.equation && (
-                              <div className="p-2 bg-[#f7f6f3] rounded font-mono text-xs text-[#37352f] border border-[#ebebeb]">
+                              <div className="p-2 bg-[#F1F1EF] rounded font-mono text-xs text-[#202124] border border-[#E6E6E3]">
                                 {st.equation}
                               </div>
                             )}
@@ -501,18 +501,18 @@ export default function TopicLearningPage() {
                         <span>{cm.mistake_title}</span>
                       </div>
 
-                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 text-[#37352f] pt-1">
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 text-[#202124] pt-1">
                         <div className="p-2.5 bg-[#fff0f0] rounded border border-[#f5c2c2]">
                           <strong className="text-[#e03e3e] block text-[11px] uppercase font-mono">
                             The Cognitive Trap:
                           </strong>
-                          <p className="mt-0.5 text-xs text-[#37352f]">{cm.error_trap}</p>
+                          <p className="mt-0.5 text-xs text-[#202124]">{cm.error_trap}</p>
                         </div>
                         <div className="p-2.5 bg-[#ebf5e8] rounded border border-[#c4e2b8]">
                           <strong className="text-[#2b593f] block text-[11px] uppercase font-mono">
                             The Prevention Rule:
                           </strong>
-                          <p className="mt-0.5 text-xs text-[#37352f]">{cm.prevention_rule}</p>
+                          <p className="mt-0.5 text-xs text-[#202124]">{cm.prevention_rule}</p>
                         </div>
                       </div>
                     </div>
@@ -527,20 +527,20 @@ export default function TopicLearningPage() {
                 <h3 className="text-xs font-semibold text-[#787774] uppercase tracking-wider">
                   Previous Year Examination References (PYQs)
                 </h3>
-                <div className="divide-y divide-[#ebebeb] border border-[#ebebeb] rounded-lg bg-white overflow-hidden">
+                <div className="divide-y divide-[#E6E6E3] border border-[#E6E6E3] rounded-lg bg-white overflow-hidden">
                   {content.pyq_references.map((pyq: any) => (
                     <div
                       key={pyq.id}
-                      className="p-3 flex items-start justify-between gap-3 text-xs hover:bg-[#fbfbfa]"
+                      className="p-3 flex items-start justify-between gap-3 text-xs hover:bg-[#F7F7F5]"
                     >
                       <div className="space-y-1">
                         <div className="flex items-center gap-2">
-                          <span className="font-mono text-[10px] px-1.5 py-0.5 rounded bg-[#f7f6f3] text-[#787774] border border-[#ebebeb]">
+                          <span className="font-mono text-[10px] px-1.5 py-0.5 rounded bg-[#F1F1EF] text-[#787774] border border-[#E6E6E3]">
                             {pyq.exam} {pyq.year}
                           </span>
                           <span className="text-[#787774]">{pyq.tier_or_stage}</span>
                         </div>
-                        <p className="text-[#37352f]">{pyq.question_summary}</p>
+                        <p className="text-[#202124]">{pyq.question_summary}</p>
                       </div>
                       <Badge variant={pyq.frequency_rating === 'very_high' ? 'amber' : 'gray'} size="sm">
                         {pyq.frequency_rating === 'very_high' ? 'Frequent' : 'Tested'}
@@ -564,10 +564,10 @@ export default function TopicLearningPage() {
                     return (
                       <div
                         key={ar.id}
-                        className="p-3.5 bg-white border border-[#ebebeb] rounded-lg space-y-2.5"
+                        className="p-3.5 bg-white border border-[#E6E6E3] rounded-lg space-y-2.5"
                       >
                         <div className="flex items-start justify-between gap-3 text-xs">
-                          <span className="font-medium text-[#37352f]">
+                          <span className="font-medium text-[#202124]">
                             Recall Check {idx + 1}: {ar.question}
                           </span>
                           <Badge variant="gray" size="sm">Mental Drill</Badge>
@@ -576,14 +576,14 @@ export default function TopicLearningPage() {
                         {ar.options && (
                           <div className="grid grid-cols-2 gap-2 text-xs">
                             {ar.options.map((opt: string, oi: number) => (
-                              <div key={oi} className="p-2 rounded bg-[#f7f6f3] text-[#37352f] border border-[#ebebeb] font-mono">
+                              <div key={oi} className="p-2 rounded bg-[#F1F1EF] text-[#202124] border border-[#E6E6E3] font-mono">
                                 {opt}
                               </div>
                             ))}
                           </div>
                         )}
 
-                        <div className="pt-2 flex items-center justify-between border-t border-[#ebebeb]">
+                        <div className="pt-2 flex items-center justify-between border-t border-[#E6E6E3]">
                           <span className="text-[11px] font-mono text-[#9b9a97]">
                             {ar.recall_hint}
                           </span>
@@ -601,7 +601,7 @@ export default function TopicLearningPage() {
                             <strong className="text-[#2b593f]">
                               Correct Answer: {ar.correct_answer}
                             </strong>
-                            <p className="text-[#37352f]">{ar.explanation}</p>
+                            <p className="text-[#202124]">{ar.explanation}</p>
                           </div>
                         )}
                       </div>
@@ -613,11 +613,11 @@ export default function TopicLearningPage() {
 
             {/* 9. Topic Recap Checklist */}
             {content.recap_points && content.recap_points.length > 0 && (
-              <div className="p-4 bg-[#fbfbfa] border border-[#ebebeb] rounded-lg space-y-2">
+              <div className="p-4 bg-[#F7F7F5] border border-[#E6E6E3] rounded-lg space-y-2">
                 <h4 className="text-xs font-semibold text-[#787774] uppercase tracking-wider">
                   Topic Recap & Key Takeaways
                 </h4>
-                <ul className="space-y-1.5 text-xs text-[#37352f]">
+                <ul className="space-y-1.5 text-xs text-[#202124]">
                   {content.recap_points.map((pt: string, pi: number) => (
                     <li key={pi} className="flex items-start gap-2">
                       <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 shrink-0 mt-0.5" />
@@ -629,14 +629,14 @@ export default function TopicLearningPage() {
             )}
 
             {/* 10. End-of-Topic Mastery Banner & Action */}
-            <div id="assessment" className="p-5 bg-white border border-[#ebebeb] rounded-lg space-y-3">
+            <div id="assessment" className="p-5 bg-white border border-[#E6E6E3] rounded-lg space-y-3">
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                 <div>
                   <div className="flex items-center gap-2">
                     <Badge variant="blue" size="sm">Assessment Bridge</Badge>
                     <span className="text-xs text-[#787774] font-mono">Official Pattern</span>
                   </div>
-                  <h3 className="text-sm font-semibold text-[#37352f] mt-1">
+                  <h3 className="text-sm font-semibold text-[#202124] mt-1">
                     Validate Mastery with Topic Assessment
                   </h3>
                   <p className="text-xs text-[#787774] mt-0.5 max-w-lg leading-relaxed">
@@ -662,10 +662,10 @@ export default function TopicLearningPage() {
               </div>
 
               {isMastered && (
-                <div className="pt-3 border-t border-[#ebebeb] flex items-center justify-between text-xs font-mono text-emerald-800">
+                <div className="pt-3 border-t border-[#E6E6E3] flex items-center justify-between text-xs font-mono text-emerald-800">
                   <span>✓ Mastered Status Earned ({progress?.mastery_percentage}%)</span>
                   {nextTopic && (
-                    <Link href={`/learn/${nextTopic.id}`} className="text-[#37352f] hover:underline font-medium flex items-center gap-1">
+                    <Link href={`/learn/${nextTopic.id}`} className="text-[#202124] hover:underline font-medium flex items-center gap-1">
                       Advance to Next Topic ({nextTopic.title}) →
                     </Link>
                   )}
@@ -677,11 +677,11 @@ export default function TopicLearningPage() {
           {/* Right Column: Personal Notes, Contextual Help, Subtopics (4 cols) */}
           <div className="lg:col-span-4 space-y-5">
             {/* Personal Student Notes Card */}
-            <div className="p-3.5 bg-white border border-[#ebebeb] rounded-lg space-y-2.5">
+            <div className="p-3.5 bg-white border border-[#E6E6E3] rounded-lg space-y-2.5">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-1.5">
                   <FileText className="w-3.5 h-3.5 text-[#787774]" />
-                  <h4 className="font-medium text-xs text-[#37352f]">
+                  <h4 className="font-medium text-xs text-[#202124]">
                     Personal Notes
                   </h4>
                 </div>
@@ -695,7 +695,7 @@ export default function TopicLearningPage() {
                 value={notes}
                 onChange={(e) => setNotes(e.target.value)}
                 placeholder="Write your mental models, formula derivations, or question traps for this topic..."
-                className="w-full text-xs p-2.5 rounded-md border border-[#ebebeb] focus:outline-none focus:border-[#37352f] bg-[#fbfbfa] text-[#37352f] placeholder:text-[#9b9a97] font-mono resize-none leading-relaxed"
+                className="w-full text-xs p-2.5 rounded-md border border-[#E6E6E3] focus:outline-none focus:border-[#202124] bg-[#F7F7F5] text-[#202124] placeholder:text-[#9b9a97] font-mono resize-none leading-relaxed"
               />
 
               <div className="flex items-center justify-between pt-1">
@@ -719,7 +719,7 @@ export default function TopicLearningPage() {
 
             {/* Structured Subtopics Checklist */}
             {subtopics.length > 0 && (
-              <div className="p-3.5 bg-white border border-[#ebebeb] rounded-lg space-y-2.5">
+              <div className="p-3.5 bg-white border border-[#E6E6E3] rounded-lg space-y-2.5">
                 <div className="flex items-center justify-between">
                   <h4 className="font-mono text-xs uppercase text-[#787774] flex items-center gap-1.5">
                     <Layers className="w-3.5 h-3.5" />
@@ -734,13 +734,13 @@ export default function TopicLearningPage() {
                   {subtopics.map((sub: any, idx: number) => (
                     <div
                       key={sub.id}
-                      className="p-2 rounded bg-[#fbfbfa] border border-[#ebebeb] flex items-start justify-between gap-2"
+                      className="p-2 rounded bg-[#F7F7F5] border border-[#E6E6E3] flex items-start justify-between gap-2"
                     >
                       <div>
                         <span className="font-mono text-[10px] text-[#9b9a97] block">
                           {sub.code || `Unit ${idx + 1}`}
                         </span>
-                        <span className="font-medium text-[#37352f] leading-snug">
+                        <span className="font-medium text-[#202124] leading-snug">
                           {sub.title}
                         </span>
                       </div>
@@ -755,9 +755,9 @@ export default function TopicLearningPage() {
 
             {/* Sectional Test Recommendation */}
             {content.recommended_sectional_test && (
-              <div className="p-4 bg-[#fbfbfa] border border-[#ebebeb] rounded-lg space-y-2">
+              <div className="p-4 bg-[#F7F7F5] border border-[#E6E6E3] rounded-lg space-y-2">
                 <Badge variant="blue" size="sm">Next Milestone</Badge>
-                <h5 className="font-semibold text-xs text-[#37352f]">
+                <h5 className="font-semibold text-xs text-[#202124]">
                   {content.recommended_sectional_test.title}
                 </h5>
                 <p className="text-[11px] text-[#787774] leading-relaxed">

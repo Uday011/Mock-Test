@@ -102,7 +102,7 @@ export default function TestInstructionsPage() {
       <AppShell>
         <div className="max-w-md mx-auto my-16 p-8 bg-white rounded-2xl border border-stone-200 text-center space-y-4 shadow-sm">
           <AlertCircle className="w-10 h-10 text-rose-500 mx-auto" />
-          <h3 className="font-serif font-bold text-lg text-stone-900">Exam Specification Not Found</h3>
+          <h3 className="font-sans font-bold text-lg text-stone-900">Exam Specification Not Found</h3>
           <p className="text-xs text-stone-600">{error || 'This test does not exist or has been modified.'}</p>
           <Link href="/tests">
             <Button variant="primary" size="sm">
@@ -140,7 +140,7 @@ export default function TestInstructionsPage() {
               <span className="text-[10px] font-mono uppercase font-bold text-amber-800 bg-amber-50 px-2 py-0.5 rounded border border-amber-200">
                 Premium Assessment Restricted
               </span>
-              <h2 className="font-serif font-bold text-xl text-stone-900">{test.title}</h2>
+              <h2 className="font-sans font-bold text-xl text-stone-900">{test.title}</h2>
               <p className="text-xs text-stone-500">
                 Authored by {test.creator_name || 'Verified Educator Faculty'} • ₹{test.price_inr}
               </p>
@@ -226,7 +226,7 @@ export default function TestInstructionsPage() {
     >
       <div className="max-w-4xl mx-auto space-y-6 pb-16">
         {/* Top Header Card */}
-        <div className="bg-white rounded-lg p-5 sm:p-6 border border-[#ebebeb] space-y-4">
+        <div className="bg-white rounded-lg p-5 sm:p-6 border border-[#E6E6E3] space-y-4">
           <div className="flex flex-wrap items-center justify-between gap-2">
             <div className="flex flex-wrap items-center gap-1.5">
               <Badge variant="saffron">{test.subject || 'Comprehensive'}</Badge>
@@ -238,18 +238,18 @@ export default function TestInstructionsPage() {
               </Badge>
               {test.source && (
                 <span className="text-[11px] text-[#787774] flex items-center gap-1">
-                  Source: <strong className="text-[#37352f] font-medium">{test.source}</strong>
+                  Source: <strong className="text-[#202124] font-medium">{test.source}</strong>
                 </span>
               )}
             </div>
 
-            <span className="text-[11px] font-mono text-[#787774] bg-[#f7f6f3] px-2 py-0.5 rounded border border-[#ebebeb]">
+            <span className="text-[11px] font-mono text-[#787774] bg-[#F1F1EF] px-2 py-0.5 rounded border border-[#E6E6E3]">
               CBE Guidelines v2.4
             </span>
           </div>
 
           <div className="space-y-1">
-            <h1 className="text-xl sm:text-2xl font-semibold text-[#37352f] tracking-tight">
+            <h1 className="text-xl sm:text-2xl font-semibold text-[#202124] tracking-tight">
               {test.title}
             </h1>
             {test.description && (
@@ -260,37 +260,37 @@ export default function TestInstructionsPage() {
           </div>
 
           {/* Quick Specifications Strip */}
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 pt-3 border-t border-[#ebebeb]">
-            <div className="p-3 bg-[#fbfbfa] rounded-md border border-[#ebebeb] space-y-0.5">
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 pt-3 border-t border-[#E6E6E3]">
+            <div className="p-3 bg-[#F7F7F5] rounded-md border border-[#E6E6E3] space-y-0.5">
               <span className="text-[10px] text-[#9b9a97] uppercase tracking-wider block">Duration</span>
-              <div className="flex items-center gap-1.5 text-xs sm:text-sm font-semibold text-[#37352f] font-mono">
-                <Clock className="w-3.5 h-3.5 text-[#d9730d] shrink-0" />
+              <div className="flex items-center gap-1.5 text-xs sm:text-sm font-semibold text-[#202124] font-mono">
+                <Clock className="w-3.5 h-3.5 text-[#B7791F] shrink-0" />
                 <span>{formatDuration(test.duration_seconds)}</span>
               </div>
             </div>
 
-            <div className="p-3 bg-[#fbfbfa] rounded-md border border-[#ebebeb] space-y-0.5">
+            <div className="p-3 bg-[#F7F7F5] rounded-md border border-[#E6E6E3] space-y-0.5">
               <span className="text-[10px] text-[#9b9a97] uppercase tracking-wider block">Questions</span>
-              <div className="flex items-center gap-1.5 text-xs sm:text-sm font-semibold text-[#37352f] font-mono">
+              <div className="flex items-center gap-1.5 text-xs sm:text-sm font-semibold text-[#202124] font-mono">
                 <Layers className="w-3.5 h-3.5 text-[#787774] shrink-0" />
                 <span>{questionCount} MCQs</span>
               </div>
             </div>
 
-            <div className="p-3 bg-[#fbfbfa] rounded-md border border-[#ebebeb] space-y-0.5">
+            <div className="p-3 bg-[#F7F7F5] rounded-md border border-[#E6E6E3] space-y-0.5">
               <span className="text-[10px] text-[#9b9a97] uppercase tracking-wider block">Total Marks</span>
-              <div className="flex items-center gap-1.5 text-xs sm:text-sm font-semibold text-[#37352f] font-mono">
-                <Award className="w-3.5 h-3.5 text-[#0f7b6c] shrink-0" />
+              <div className="flex items-center gap-1.5 text-xs sm:text-sm font-semibold text-[#202124] font-mono">
+                <Award className="w-3.5 h-3.5 text-[#1B5E20] shrink-0" />
                 <span>{maxPossibleMarks} Pts</span>
               </div>
             </div>
 
-            <div className="p-3 bg-[#fbfbfa] rounded-md border border-[#ebebeb] space-y-0.5">
+            <div className="p-3 bg-[#F7F7F5] rounded-md border border-[#E6E6E3] space-y-0.5">
               <span className="text-[10px] text-[#9b9a97] uppercase tracking-wider block">Marking Scheme</span>
-              <div className="flex items-center gap-1.5 text-xs sm:text-sm font-semibold text-[#37352f] font-mono">
-                <span className="text-[#0f7b6c]">+{test.default_correct_marks || 2}</span>
-                <span className="text-[#ebebeb]">/</span>
-                <span className="text-[#c93b3b]">-{test.default_negative_marks || 0.5}</span>
+              <div className="flex items-center gap-1.5 text-xs sm:text-sm font-semibold text-[#202124] font-mono">
+                <span className="text-[#1B5E20]">+{test.default_correct_marks || 2}</span>
+                <span className="text-[#E6E6E3]">/</span>
+                <span className="text-[#C53030]">-{test.default_negative_marks || 0.5}</span>
               </div>
             </div>
           </div>
@@ -298,9 +298,9 @@ export default function TestInstructionsPage() {
 
         {/* Section Breakdown Summary Table */}
         {sectionsList.length > 0 && (
-          <div className="bg-white rounded-lg p-5 sm:p-6 border border-[#ebebeb] space-y-3.5">
-            <div className="flex items-center justify-between border-b border-[#ebebeb] pb-2.5">
-              <h2 className="text-sm font-semibold text-[#37352f] flex items-center gap-2">
+          <div className="bg-white rounded-lg p-5 sm:p-6 border border-[#E6E6E3] space-y-3.5">
+            <div className="flex items-center justify-between border-b border-[#E6E6E3] pb-2.5">
+              <h2 className="text-sm font-semibold text-[#202124] flex items-center gap-2">
                 <Layers className="w-4 h-4 text-[#787774]" />
                 Section-Wise Exam Pattern & Marking Scheme
               </h2>
@@ -312,7 +312,7 @@ export default function TestInstructionsPage() {
             <div className="overflow-x-auto">
               <table className="w-full text-left text-xs border-collapse">
                 <thead>
-                  <tr className="border-b border-[#ebebeb] bg-[#fbfbfa] text-[#787774]">
+                  <tr className="border-b border-[#E6E6E3] bg-[#F7F7F5] text-[#787774]">
                     <th className="py-2 px-3 font-medium uppercase tracking-wider text-[10px]">Section / Subject</th>
                     <th className="py-2 px-3 font-medium uppercase tracking-wider text-[10px] text-center">Questions</th>
                     <th className="py-2 px-3 font-medium uppercase tracking-wider text-[10px] text-center">Max Marks</th>
@@ -320,29 +320,29 @@ export default function TestInstructionsPage() {
                     <th className="py-2 px-3 font-medium uppercase tracking-wider text-[10px] text-right">Time Limit</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-[#ebebeb]">
+                <tbody className="divide-y divide-[#E6E6E3]">
                   {sectionsList.map(([secTitle, data], idx) => (
-                    <tr key={idx} className="hover:bg-[#f7f6f3] transition-colors">
-                      <td className="py-2.5 px-3 font-medium text-[#37352f]">
+                    <tr key={idx} className="hover:bg-[#F1F1EF] transition-colors">
+                      <td className="py-2.5 px-3 font-medium text-[#202124]">
                         {secTitle}
                       </td>
-                      <td className="py-2.5 px-3 text-center font-mono text-[#37352f]">
+                      <td className="py-2.5 px-3 text-center font-mono text-[#202124]">
                         {data.count}
                       </td>
-                      <td className="py-2.5 px-3 text-center font-mono text-[#37352f]">
+                      <td className="py-2.5 px-3 text-center font-mono text-[#202124]">
                         {data.marks}
                       </td>
                       <td className="py-2.5 px-3 text-center font-mono">
-                        <span className="text-[#0f7b6c] font-medium">+{test.default_correct_marks || 2}</span>
-                        <span className="text-[#ebebeb] mx-1">/</span>
-                        <span className="text-[#c93b3b] font-medium">-{test.default_negative_marks || 0.5}</span>
+                        <span className="text-[#1B5E20] font-medium">+{test.default_correct_marks || 2}</span>
+                        <span className="text-[#E6E6E3] mx-1">/</span>
+                        <span className="text-[#C53030] font-medium">-{test.default_negative_marks || 0.5}</span>
                       </td>
                       <td className="py-2.5 px-3 text-right font-mono text-[#787774]">
                         Composite
                       </td>
                     </tr>
                   ))}
-                  <tr className="bg-[#fbfbfa] font-semibold border-t border-[#ebebeb] text-[#37352f]">
+                  <tr className="bg-[#F7F7F5] font-semibold border-t border-[#E6E6E3] text-[#202124]">
                     <td className="py-2.5 px-3">Total Composite Exam</td>
                     <td className="py-2.5 px-3 text-center font-mono">{questionCount}</td>
                     <td className="py-2.5 px-3 text-center font-mono">{maxPossibleMarks}</td>
@@ -356,17 +356,17 @@ export default function TestInstructionsPage() {
         )}
 
         {/* Detailed Examination Guidelines Card */}
-        <div className="bg-white rounded-lg p-5 sm:p-6 border border-[#ebebeb] space-y-5">
-          <div className="flex items-center gap-2 border-b border-[#ebebeb] pb-2.5">
+        <div className="bg-white rounded-lg p-5 sm:p-6 border border-[#E6E6E3] space-y-5">
+          <div className="flex items-center gap-2 border-b border-[#E6E6E3] pb-2.5">
             <FileText className="w-4 h-4 text-[#787774]" />
-            <h2 className="text-sm font-semibold text-[#37352f]">
+            <h2 className="text-sm font-semibold text-[#202124]">
               Standard Computer-Based Examination Rules
             </h2>
           </div>
 
-          <div className="space-y-3.5 text-xs text-[#37352f] leading-relaxed">
+          <div className="space-y-3.5 text-xs text-[#202124] leading-relaxed">
             <div className="flex items-start gap-2.5">
-              <span className="w-5 h-5 rounded bg-[#f1f1ef] text-[#37352f] font-mono font-medium flex items-center justify-center shrink-0 text-xs mt-0.5">
+              <span className="w-5 h-5 rounded bg-[#f1f1ef] text-[#202124] font-mono font-medium flex items-center justify-center shrink-0 text-xs mt-0.5">
                 1
               </span>
               <p>
@@ -375,7 +375,7 @@ export default function TestInstructionsPage() {
             </div>
 
             <div className="flex items-start gap-2.5">
-              <span className="w-5 h-5 rounded bg-[#f1f1ef] text-[#37352f] font-mono font-medium flex items-center justify-center shrink-0 text-xs mt-0.5">
+              <span className="w-5 h-5 rounded bg-[#f1f1ef] text-[#202124] font-mono font-medium flex items-center justify-center shrink-0 text-xs mt-0.5">
                 2
               </span>
               <p>
@@ -384,7 +384,7 @@ export default function TestInstructionsPage() {
             </div>
 
             <div className="flex items-start gap-2.5">
-              <span className="w-5 h-5 rounded bg-[#f1f1ef] text-[#37352f] font-mono font-medium flex items-center justify-center shrink-0 text-xs mt-0.5">
+              <span className="w-5 h-5 rounded bg-[#f1f1ef] text-[#202124] font-mono font-medium flex items-center justify-center shrink-0 text-xs mt-0.5">
                 3
               </span>
               <p>
@@ -393,7 +393,7 @@ export default function TestInstructionsPage() {
             </div>
 
             <div className="flex items-start gap-2.5">
-              <span className="w-5 h-5 rounded bg-[#f1f1ef] text-[#37352f] font-mono font-medium flex items-center justify-center shrink-0 text-xs mt-0.5">
+              <span className="w-5 h-5 rounded bg-[#f1f1ef] text-[#202124] font-mono font-medium flex items-center justify-center shrink-0 text-xs mt-0.5">
                 4
               </span>
               <p>
@@ -402,7 +402,7 @@ export default function TestInstructionsPage() {
             </div>
 
             <div className="flex items-start gap-2.5">
-              <span className="w-5 h-5 rounded bg-[#f1f1ef] text-[#37352f] font-mono font-medium flex items-center justify-center shrink-0 text-xs mt-0.5">
+              <span className="w-5 h-5 rounded bg-[#f1f1ef] text-[#202124] font-mono font-medium flex items-center justify-center shrink-0 text-xs mt-0.5">
                 5
               </span>
               <p>
@@ -412,63 +412,63 @@ export default function TestInstructionsPage() {
           </div>
 
           {/* Question Palette Legend Box */}
-          <div className="pt-3 border-t border-[#ebebeb] space-y-2.5">
+          <div className="pt-3 border-t border-[#E6E6E3] space-y-2.5">
             <h3 className="text-xs font-medium uppercase tracking-wider text-[#787774] flex items-center gap-1.5">
-              <Info className="w-3.5 h-3.5 text-[#d9730d]" />
+              <Info className="w-3.5 h-3.5 text-[#B7791F]" />
               Question Palette Color State Legend
             </h3>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">
-              <div className="flex items-center gap-2.5 p-2.5 rounded-md bg-[#fbfbfa] border border-[#ebebeb] text-xs">
+              <div className="flex items-center gap-2.5 p-2.5 rounded-md bg-[#F7F7F5] border border-[#E6E6E3] text-xs">
                 <span className="w-6 h-6 rounded bg-[#f1f1ef] text-[#787774] font-mono font-medium flex items-center justify-center shrink-0">
                   01
                 </span>
-                <span className="text-[#37352f]">Not Visited Yet</span>
+                <span className="text-[#202124]">Not Visited Yet</span>
               </div>
 
-              <div className="flex items-center gap-2.5 p-2.5 rounded-md bg-[#fbf3db]/50 border border-[#f6e5b4] text-xs">
+              <div className="flex items-center gap-2.5 p-2.5 rounded-md bg-[#FFFBEB]/50 border border-[#FEF3C7] text-xs">
                 <span className="w-6 h-6 rounded bg-[#8f6b10] text-white font-mono font-medium flex items-center justify-center shrink-0">
                   02
                 </span>
                 <span className="text-[#493a19] font-medium">Visited but Unanswered</span>
               </div>
 
-              <div className="flex items-center gap-2.5 p-2.5 rounded-md bg-[#edf3ec]/60 border border-[#d3e5d2] text-xs">
-                <span className="w-6 h-6 rounded bg-[#0f7b6c] text-white font-mono font-medium flex items-center justify-center shrink-0">
+              <div className="flex items-center gap-2.5 p-2.5 rounded-md bg-[#EDF7ED]/60 border border-[#C8E6C9] text-xs">
+                <span className="w-6 h-6 rounded bg-[#1B5E20] text-white font-mono font-medium flex items-center justify-center shrink-0">
                   03
                 </span>
                 <span className="text-[#1c3829] font-medium">Answered</span>
               </div>
 
-              <div className="flex items-center gap-2.5 p-2.5 rounded-md bg-[#f4f0f7]/60 border border-[#e5daf0] text-xs">
-                <span className="w-6 h-6 rounded bg-[#6940a5] text-white font-mono font-medium flex items-center justify-center shrink-0">
+              <div className="flex items-center gap-2.5 p-2.5 rounded-md bg-[#EEF0FB]/60 border border-[#DCDDF7] text-xs">
+                <span className="w-6 h-6 rounded bg-[#4F46A5] text-white font-mono font-medium flex items-center justify-center shrink-0">
                   04
                 </span>
                 <span className="text-[#3d2459] font-medium">Marked for Review</span>
               </div>
 
-              <div className="flex items-center gap-2.5 p-2.5 rounded-md bg-[#f4f0f7]/60 border border-[#e5daf0] text-xs sm:col-span-2 lg:col-span-2">
-                <span className="w-6 h-6 rounded bg-[#6940a5] text-white font-mono font-medium flex items-center justify-center shrink-0 relative">
+              <div className="flex items-center gap-2.5 p-2.5 rounded-md bg-[#EEF0FB]/60 border border-[#DCDDF7] text-xs sm:col-span-2 lg:col-span-2">
+                <span className="w-6 h-6 rounded bg-[#4F46A5] text-white font-mono font-medium flex items-center justify-center shrink-0 relative">
                   05
-                  <span className="absolute -top-0.5 -right-0.5 w-2 h-2 rounded-full bg-[#0f7b6c] border border-white" />
+                  <span className="absolute -top-0.5 -right-0.5 w-2 h-2 rounded-full bg-[#1B5E20] border border-white" />
                 </span>
                 <span className="text-[#3d2459] font-medium">
-                  Answered & Marked for Review <span className="font-semibold text-[#0f7b6c]">(evaluated)</span>
+                  Answered & Marked for Review <span className="font-semibold text-[#1B5E20]">(evaluated)</span>
                 </span>
               </div>
             </div>
           </div>
 
           {/* Declaration Checkbox and Start CTA */}
-          <div className="pt-4 border-t border-[#ebebeb] space-y-4">
-            <label className="flex items-start gap-3 p-3 rounded-md bg-[#fbf3db]/40 border border-[#f6e5b4] cursor-pointer select-none hover:bg-[#fbf3db]/60 transition-colors">
+          <div className="pt-4 border-t border-[#E6E6E3] space-y-4">
+            <label className="flex items-start gap-3 p-3 rounded-md bg-[#FFFBEB]/40 border border-[#FEF3C7] cursor-pointer select-none hover:bg-[#FFFBEB]/60 transition-colors">
               <input
                 type="checkbox"
                 checked={declared}
                 onChange={(e) => setDeclared(e.target.checked)}
-                className="mt-0.5 w-3.5 h-3.5 text-[#37352f] rounded border-[#ebebeb] shrink-0"
+                className="mt-0.5 w-3.5 h-3.5 text-[#202124] rounded border-[#E6E6E3] shrink-0"
               />
-              <span className="text-xs text-[#37352f] leading-relaxed">
+              <span className="text-xs text-[#202124] leading-relaxed">
                 I have read, understood, and agreed to follow all instructions and examination rules mentioned above. I confirm that all computer hardware and connectivity are verified and I will not engage in any unfair practices.
               </span>
             </label>
@@ -486,7 +486,7 @@ export default function TestInstructionsPage() {
                 disabled={!declared || starting}
                 className={`px-5 py-2 rounded-md text-xs font-medium flex items-center justify-center gap-1.5 transition-colors ${
                   declared && !starting
-                    ? 'bg-[#37352f] hover:bg-[#22211e] text-white'
+                    ? 'bg-[#202124] hover:bg-[#22211e] text-white'
                     : 'bg-[#f1f1ef] text-[#9b9a97] cursor-not-allowed'
                 }`}
               >

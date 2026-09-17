@@ -20,21 +20,21 @@ export function EmptyState({
 }: EmptyStateProps) {
   return (
     <div
-      className={`flex flex-col items-center justify-center text-center p-8 sm:p-12 border border-dashed border-stone-300 rounded-xl bg-stone-50/50 ${className}`}
+      className={`flex flex-col items-center justify-center text-center p-8 sm:p-12 border border-dashed border-[#E6E6E3] rounded-lg bg-[#F7F7F5]/50 ${className}`}
     >
       {Icon && (
-        <div className="w-12 h-12 rounded-full bg-stone-100 flex items-center justify-center text-stone-500 mb-4 border border-stone-200">
-          <Icon className="w-6 h-6 stroke-[1.5]" />
+        <div className="w-10 h-10 rounded-md bg-[#F1F1EF] flex items-center justify-center text-[#787774] mb-3.5 border border-[#E6E6E3]">
+          <Icon className="w-5 h-5 stroke-[1.75]" />
         </div>
       )}
-      <h3 className="text-base sm:text-lg font-serif font-semibold text-stone-900 mb-1.5">
+      <h3 className="text-sm sm:text-base font-semibold text-[#202124] mb-1 tracking-tight font-sans">
         {title}
       </h3>
-      <p className="text-sm text-stone-500 max-w-md mb-6 leading-relaxed">
+      <p className="text-xs sm:text-sm text-[#787774] max-w-md mb-5 leading-relaxed">
         {description}
       </p>
       {(action || secondaryAction) && (
-        <div className="flex items-center gap-3 flex-wrap justify-center">
+        <div className="flex items-center gap-2.5 flex-wrap justify-center">
           {action}
           {secondaryAction}
         </div>

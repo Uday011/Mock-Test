@@ -146,7 +146,7 @@ export default function ExamResultPage() {
       <AppShell>
         <div className="max-w-md mx-auto my-16 p-8 bg-white rounded-2xl border border-stone-200 text-center space-y-4 shadow-sm">
           <AlertCircle className="w-10 h-10 text-rose-500 mx-auto" />
-          <h3 className="font-serif font-bold text-lg text-stone-900">Scorecard Not Available</h3>
+          <h3 className="font-sans font-bold text-lg text-stone-900">Scorecard Not Available</h3>
           <p className="text-xs text-stone-600">{error || 'This exam attempt could not be retrieved.'}</p>
           <Link href="/tests">
             <Button variant="primary" size="sm">
@@ -189,13 +189,13 @@ export default function ExamResultPage() {
     >
       <div className="max-w-5xl mx-auto space-y-6 pb-16">
         {/* Top Title Banner & Quick Action Buttons */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-[#ebebeb] pb-4">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-[#E6E6E3] pb-4">
           <div className="space-y-1">
             <div className="flex items-center gap-2">
               <Badge variant="saffron">{attempt.subject || 'Comprehensive'}</Badge>
               <span className="text-[11px] font-mono text-[#787774]">Official Evaluation Report</span>
             </div>
-            <h1 className="text-xl sm:text-2xl font-semibold text-[#37352f] tracking-tight">
+            <h1 className="text-xl sm:text-2xl font-semibold text-[#202124] tracking-tight">
               {attempt.test_title}
             </h1>
             <p className="text-xs text-[#787774]">
@@ -234,14 +234,14 @@ export default function ExamResultPage() {
         </div>
 
         {/* Primary Scorecard Hero Card */}
-        <div className="bg-white rounded-lg p-5 sm:p-6 border border-[#ebebeb] grid grid-cols-1 md:grid-cols-3 gap-4 items-center">
+        <div className="bg-white rounded-lg p-5 sm:p-6 border border-[#E6E6E3] grid grid-cols-1 md:grid-cols-3 gap-4 items-center">
           {/* Left: Overall Score Dial */}
-          <div className="md:col-span-1 bg-[#fbfbfa] rounded-md p-5 text-center border border-[#ebebeb] space-y-2">
+          <div className="md:col-span-1 bg-[#F7F7F5] rounded-md p-5 text-center border border-[#E6E6E3] space-y-2">
             <span className="text-[10px] font-medium uppercase tracking-wider text-[#787774] block">
               Aggregate Score
             </span>
             <div className="flex items-baseline justify-center gap-1.5">
-              <span className="text-3xl sm:text-4xl font-semibold text-[#37352f] font-mono">
+              <span className="text-3xl sm:text-4xl font-semibold text-[#202124] font-mono">
                 {attempt.final_score}
               </span>
               <span className="text-xs text-[#787774] font-mono">
@@ -249,11 +249,11 @@ export default function ExamResultPage() {
               </span>
             </div>
 
-            <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded text-xs font-medium bg-white border border-[#ebebeb]">
+            <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded text-xs font-medium bg-white border border-[#E6E6E3]">
               <span
-                className={`w-1.5 h-1.5 rounded-full ${isPassing ? 'bg-[#0f7b6c]' : 'bg-[#c93b3b]'}`}
+                className={`w-1.5 h-1.5 rounded-full ${isPassing ? 'bg-[#1B5E20]' : 'bg-[#C53030]'}`}
               />
-              <span className={isPassing ? 'text-[#0f7b6c]' : 'text-[#c93b3b]'}>
+              <span className={isPassing ? 'text-[#1B5E20]' : 'text-[#C53030]'}>
                 {percentage}% Score ({isPassing ? 'Target Met' : 'Below Target'})
               </span>
             </div>
@@ -267,27 +267,27 @@ export default function ExamResultPage() {
 
           {/* Right: Detailed 4-Metric Grid */}
           <div className="md:col-span-2 grid grid-cols-2 sm:grid-cols-4 gap-2.5">
-            <div className="p-3.5 rounded-md bg-[#edf3ec]/60 border border-[#d3e5d2] text-center space-y-0.5">
+            <div className="p-3.5 rounded-md bg-[#EDF7ED]/60 border border-[#C8E6C9] text-center space-y-0.5">
               <span className="text-[10px] font-medium text-[#1c3829] uppercase tracking-wider block">Correct</span>
-              <p className="text-xl sm:text-2xl font-semibold text-[#0f7b6c] font-mono">{attempt.correct_answers}</p>
-              <span className="text-[11px] font-mono text-[#0f7b6c]">+{attempt.positive_marks} pts</span>
+              <p className="text-xl sm:text-2xl font-semibold text-[#1B5E20] font-mono">{attempt.correct_answers}</p>
+              <span className="text-[11px] font-mono text-[#1B5E20]">+{attempt.positive_marks} pts</span>
             </div>
 
-            <div className="p-3.5 rounded-md bg-[#fdebec]/60 border border-[#f7d4d6] text-center space-y-0.5">
+            <div className="p-3.5 rounded-md bg-[#FEF2F2]/60 border border-[#FEE2E2] text-center space-y-0.5">
               <span className="text-[10px] font-medium text-[#4d1f22] uppercase tracking-wider block">Incorrect</span>
-              <p className="text-xl sm:text-2xl font-semibold text-[#c93b3b] font-mono">{attempt.incorrect_answers}</p>
-              <span className="text-[11px] font-mono text-[#c93b3b]">-{attempt.negative_marks} pts</span>
+              <p className="text-xl sm:text-2xl font-semibold text-[#C53030] font-mono">{attempt.incorrect_answers}</p>
+              <span className="text-[11px] font-mono text-[#C53030]">-{attempt.negative_marks} pts</span>
             </div>
 
-            <div className="p-3.5 rounded-md bg-[#fbf3db]/60 border border-[#f6e5b4] text-center space-y-0.5">
+            <div className="p-3.5 rounded-md bg-[#FFFBEB]/60 border border-[#FEF3C7] text-center space-y-0.5">
               <span className="text-[10px] font-medium text-[#493a19] uppercase tracking-wider block">Unanswered</span>
               <p className="text-xl sm:text-2xl font-semibold text-[#8f6b10] font-mono">{attempt.unanswered_questions}</p>
               <span className="text-[11px] font-mono text-[#8f6b10]">0 deduction</span>
             </div>
 
-            <div className="p-3.5 rounded-md bg-[#f7f6f3] border border-[#ebebeb] text-center space-y-0.5">
+            <div className="p-3.5 rounded-md bg-[#F1F1EF] border border-[#E6E6E3] text-center space-y-0.5">
               <span className="text-[10px] font-medium text-[#787774] uppercase tracking-wider block">Accuracy</span>
-              <p className="text-xl sm:text-2xl font-semibold text-[#37352f] font-mono">{attempt.accuracy}%</p>
+              <p className="text-xl sm:text-2xl font-semibold text-[#202124] font-mono">{attempt.accuracy}%</p>
               <span className="text-[11px] font-mono text-[#787774]">
                 {formatSeconds(attempt.time_taken_seconds)} spent
               </span>
@@ -297,9 +297,9 @@ export default function ExamResultPage() {
 
         {/* Section-Wise Performance Breakdown Table */}
         {sectionPerformance.length > 0 && (
-          <div className="bg-white rounded-lg p-5 sm:p-6 border border-[#ebebeb] space-y-3.5">
-            <div className="flex items-center justify-between border-b border-[#ebebeb] pb-2.5">
-              <h2 className="text-sm font-semibold text-[#37352f] flex items-center gap-2">
+          <div className="bg-white rounded-lg p-5 sm:p-6 border border-[#E6E6E3] space-y-3.5">
+            <div className="flex items-center justify-between border-b border-[#E6E6E3] pb-2.5">
+              <h2 className="text-sm font-semibold text-[#202124] flex items-center gap-2">
                 <Layers className="w-4 h-4 text-[#787774]" />
                 Section-Wise Performance Breakdown
               </h2>
@@ -311,7 +311,7 @@ export default function ExamResultPage() {
             <div className="overflow-x-auto">
               <table className="w-full text-left text-xs border-collapse">
                 <thead>
-                  <tr className="border-b border-[#ebebeb] bg-[#fbfbfa] text-[#787774] font-medium text-[10px] uppercase tracking-wider">
+                  <tr className="border-b border-[#E6E6E3] bg-[#F7F7F5] text-[#787774] font-medium text-[10px] uppercase tracking-wider">
                     <th className="py-2 px-3">Section Name</th>
                     <th className="py-2 px-3 text-center">Questions</th>
                     <th className="py-2 px-3 text-center">Attempted</th>
@@ -321,30 +321,30 @@ export default function ExamResultPage() {
                     <th className="py-2 px-3 text-right">Net Score</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-[#ebebeb]">
+                <tbody className="divide-y divide-[#E6E6E3]">
                   {sectionPerformance.map((sec: any, idx: number) => (
-                    <tr key={idx} className="hover:bg-[#f7f6f3] transition-colors">
-                      <td className="py-2.5 px-3 font-medium text-[#37352f]">
+                    <tr key={idx} className="hover:bg-[#F1F1EF] transition-colors">
+                      <td className="py-2.5 px-3 font-medium text-[#202124]">
                         {sec.section_name}
                       </td>
-                      <td className="py-2.5 px-3 text-center font-mono text-[#37352f]">
+                      <td className="py-2.5 px-3 text-center font-mono text-[#202124]">
                         {sec.total_questions}
                       </td>
-                      <td className="py-2.5 px-3 text-center font-mono text-[#37352f]">
+                      <td className="py-2.5 px-3 text-center font-mono text-[#202124]">
                         {sec.attempted}
                       </td>
-                      <td className="py-2.5 px-3 text-center font-mono font-medium text-[#0f7b6c]">
+                      <td className="py-2.5 px-3 text-center font-mono font-medium text-[#1B5E20]">
                         {sec.correct}
                       </td>
-                      <td className="py-2.5 px-3 text-center font-mono font-medium text-[#c93b3b]">
+                      <td className="py-2.5 px-3 text-center font-mono font-medium text-[#C53030]">
                         {sec.incorrect}
                       </td>
                       <td className="py-2.5 px-3 text-center font-mono font-medium">
-                        <span className={sec.accuracy >= 70 ? 'text-[#0f7b6c]' : 'text-[#8f6b10]'}>
+                        <span className={sec.accuracy >= 70 ? 'text-[#1B5E20]' : 'text-[#8f6b10]'}>
                           {sec.accuracy}%
                         </span>
                       </td>
-                      <td className="py-2.5 px-3 text-right font-mono font-semibold text-[#37352f]">
+                      <td className="py-2.5 px-3 text-right font-mono font-semibold text-[#202124]">
                         {sec.score} pts
                       </td>
                     </tr>
@@ -357,10 +357,10 @@ export default function ExamResultPage() {
 
         {/* Topic-Wise Performance & Learning Pathway Impact */}
         {topicPerformance.length > 0 && (
-          <div className="bg-white rounded-lg p-5 sm:p-6 border border-[#ebebeb] space-y-3.5">
-            <div className="flex items-center justify-between border-b border-[#ebebeb] pb-2.5">
+          <div className="bg-white rounded-lg p-5 sm:p-6 border border-[#E6E6E3] space-y-3.5">
+            <div className="flex items-center justify-between border-b border-[#E6E6E3] pb-2.5">
               <div>
-                <h2 className="text-sm font-semibold text-[#37352f] flex items-center gap-2">
+                <h2 className="text-sm font-semibold text-[#202124] flex items-center gap-2">
                   <Target className="w-4 h-4 text-[#787774]" />
                   Syllabus Mastery & Topic Progress Updated
                 </h2>
@@ -376,12 +376,12 @@ export default function ExamResultPage() {
                   key={idx}
                   className={`p-3.5 rounded-lg border space-y-2 transition-colors ${
                     top.is_mastered
-                      ? 'bg-[#edf3ec]/40 border-[#d3e5d2]'
-                      : 'bg-[#fbf3db]/30 border-[#f6e5b4]'
+                      ? 'bg-[#EDF7ED]/40 border-[#C8E6C9]'
+                      : 'bg-[#FFFBEB]/30 border-[#FEF3C7]'
                   }`}
                 >
                   <div className="flex items-start justify-between gap-2">
-                    <h3 className="font-semibold text-xs text-[#37352f] line-clamp-1">
+                    <h3 className="font-semibold text-xs text-[#202124] line-clamp-1">
                       {top.topic_title}
                     </h3>
                     <Badge variant={top.is_mastered ? 'emerald' : 'saffron'} size="sm">
@@ -391,18 +391,18 @@ export default function ExamResultPage() {
 
                   <div className="flex items-center justify-between text-xs font-mono">
                     <span className="text-[#787774]">Accuracy:</span>
-                    <span className={`font-semibold ${top.is_mastered ? 'text-[#0f7b6c]' : 'text-[#8f6b10]'}`}>
+                    <span className={`font-semibold ${top.is_mastered ? 'text-[#1B5E20]' : 'text-[#8f6b10]'}`}>
                       {top.accuracy}% ({top.correct}/{top.total_questions})
                     </span>
                   </div>
 
-                  <div className="pt-2 border-t border-[#ebebeb] flex items-center justify-between text-[11px] text-[#787774]">
+                  <div className="pt-2 border-t border-[#E6E6E3] flex items-center justify-between text-[11px] text-[#787774]">
                     <span>
                       {top.is_mastered ? 'Review in 3 days' : 'Review tomorrow'}
                     </span>
                     <Link
                       href={top.topic_id ? `/learn/${top.topic_id}` : '/learn'}
-                      className="font-medium text-[#37352f] hover:underline flex items-center gap-0.5"
+                      className="font-medium text-[#202124] hover:underline flex items-center gap-0.5"
                     >
                       Study <ChevronRight className="w-3 h-3" />
                     </Link>
@@ -418,7 +418,7 @@ export default function ExamResultPage() {
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
             <div className="space-y-1">
               <div className="flex items-center gap-2">
-                <span className="px-2 py-0.5 rounded text-[10px] font-mono bg-white/10 text-[#fbf3db] border border-white/10 flex items-center gap-1">
+                <span className="px-2 py-0.5 rounded text-[10px] font-mono bg-white/10 text-[#FFFBEB] border border-white/10 flex items-center gap-1">
                   <Sparkles className="w-3 h-3 text-[#e8c67c]" />
                   POWERED BY GEMINI 3.6 FLASH
                 </span>
@@ -437,11 +437,11 @@ export default function ExamResultPage() {
                 size="sm"
                 onClick={handleGenerateInsights}
                 disabled={generatingAI}
-                className="bg-white hover:bg-[#f7f6f3] text-[#37352f] border-none font-medium self-start sm:self-auto"
+                className="bg-white hover:bg-[#F1F1EF] text-[#202124] border-none font-medium self-start sm:self-auto"
               >
                 {generatingAI ? (
                   <>
-                    <div className="w-3.5 h-3.5 border-2 border-[#37352f] border-t-transparent rounded-full animate-spin mr-1.5" />
+                    <div className="w-3.5 h-3.5 border-2 border-[#202124] border-t-transparent rounded-full animate-spin mr-1.5" />
                     Analyzing Forensics...
                   </>
                 ) : (
@@ -532,9 +532,9 @@ export default function ExamResultPage() {
 
         {/* QUESTION-WISE REVIEW SECTION */}
         <div className="space-y-4">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-[#ebebeb] pb-3">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-[#E6E6E3] pb-3">
             <div>
-              <h2 className="text-sm sm:text-base font-semibold text-[#37352f]">
+              <h2 className="text-sm sm:text-base font-semibold text-[#202124]">
                 Detailed Question-by-Question Solution & Review
               </h2>
               <p className="text-xs text-[#787774]">
@@ -556,8 +556,8 @@ export default function ExamResultPage() {
                   onClick={() => setFilterType(f.id as any)}
                   className={`px-2.5 py-1 rounded-md text-xs transition-colors ${
                     filterType === f.id
-                      ? 'bg-[#37352f] text-white font-medium'
-                      : 'bg-white text-[#787774] hover:bg-[#f7f6f3] border border-[#ebebeb]'
+                      ? 'bg-[#202124] text-white font-medium'
+                      : 'bg-white text-[#787774] hover:bg-[#F1F1EF] border border-[#E6E6E3]'
                   }`}
                 >
                   {f.label}
@@ -573,17 +573,17 @@ export default function ExamResultPage() {
               const isCorrect = isAnswered && q.is_correct;
               const isIncorrect = isAnswered && !q.is_correct;
 
-              let cardBorder = 'border-[#ebebeb]';
-              let badgeBg = 'bg-[#f1f1ef] text-[#787774] border-[#ebebeb]';
+              let cardBorder = 'border-[#E6E6E3]';
+              let badgeBg = 'bg-[#f1f1ef] text-[#787774] border-[#E6E6E3]';
               let statusText = 'Not Attempted (0 Marks)';
 
               if (isCorrect) {
                 cardBorder = 'border-[#c4e2b8]';
-                badgeBg = 'bg-[#edf3ec] text-[#0f7b6c] border-[#c4e2b8]';
+                badgeBg = 'bg-[#EDF7ED] text-[#1B5E20] border-[#c4e2b8]';
                 statusText = `Correct (+${q.marks_awarded} Marks)`;
               } else if (isIncorrect) {
                 cardBorder = 'border-[#f5c2c2]';
-                badgeBg = 'bg-[#fdebec] text-[#c93b3b] border-[#f5c2c2]';
+                badgeBg = 'bg-[#FEF2F2] text-[#C53030] border-[#f5c2c2]';
                 statusText = `Incorrect (-${q.negative_marks_deducted} Marks)`;
               }
 
@@ -595,7 +595,7 @@ export default function ExamResultPage() {
                   {/* Card Header */}
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
-                      <span className="font-mono font-medium text-xs bg-[#f1f1ef] text-[#37352f] px-2 py-0.5 rounded">
+                      <span className="font-mono font-medium text-xs bg-[#f1f1ef] text-[#202124] px-2 py-0.5 rounded">
                         Q{q.question_number}
                       </span>
                       <span className={`text-[11px] font-medium px-2 py-0.5 rounded border ${badgeBg}`}>
@@ -612,27 +612,27 @@ export default function ExamResultPage() {
                       {isIncorrect && (
                         <Link
                           href="/mistakes"
-                          className="text-[11px] font-medium text-[#8f6b10] hover:text-[#493a19] bg-[#fbf3db] px-2 py-0.5 rounded border border-[#f6e5b4] flex items-center gap-1"
+                          className="text-[11px] font-medium text-[#8f6b10] hover:text-[#493a19] bg-[#FFFBEB] px-2 py-0.5 rounded border border-[#FEF3C7] flex items-center gap-1"
                         >
                           <BookMarked className="w-3 h-3" /> Logged in Notebook
                         </Link>
                       )}
                       {q.is_marked_for_review && (
-                        <span className="text-[11px] font-medium text-[#6940a5] bg-[#f4f0f7] px-2 py-0.5 rounded flex items-center gap-1 border border-[#e5daf0]">
-                          <Flag className="w-3 h-3 text-[#6940a5]" /> Marked Review
+                        <span className="text-[11px] font-medium text-[#4F46A5] bg-[#EEF0FB] px-2 py-0.5 rounded flex items-center gap-1 border border-[#DCDDF7]">
+                          <Flag className="w-3 h-3 text-[#4F46A5]" /> Marked Review
                         </span>
                       )}
                     </div>
                   </div>
 
                   {/* Question Text */}
-                  <div className="text-xs sm:text-sm font-medium text-[#37352f] leading-relaxed whitespace-pre-line">
+                  <div className="text-xs sm:text-sm font-medium text-[#202124] leading-relaxed whitespace-pre-line">
                     {q.question_text}
                   </div>
 
                   {/* Diagram / Image */}
                   {q.question_image_url && (
-                    <div className="rounded-md overflow-hidden border border-[#ebebeb] max-h-72 max-w-md bg-[#fbfbfa] p-2">
+                    <div className="rounded-md overflow-hidden border border-[#E6E6E3] max-h-72 max-w-md bg-[#F7F7F5] p-2">
                       {/* eslint-disable-next-line @next/next/no-img-element */}
                       <img
                         src={q.question_image_url}
@@ -648,13 +648,13 @@ export default function ExamResultPage() {
                       const isCandidateAnswer = q.user_answer === opt.label;
                       const isOfficialCorrect = q.correct_answer === opt.label;
 
-                      let optClass = 'border-[#ebebeb] bg-[#fbfbfa] text-[#37352f]';
+                      let optClass = 'border-[#E6E6E3] bg-[#F7F7F5] text-[#202124]';
                       if (isOfficialCorrect && isCandidateAnswer) {
-                        optClass = 'border-[#c4e2b8] bg-[#edf3ec] text-[#1c3829] font-medium';
+                        optClass = 'border-[#c4e2b8] bg-[#EDF7ED] text-[#1c3829] font-medium';
                       } else if (isOfficialCorrect) {
-                        optClass = 'border-[#c4e2b8] bg-[#edf3ec]/60 text-[#1c3829] font-medium';
+                        optClass = 'border-[#c4e2b8] bg-[#EDF7ED]/60 text-[#1c3829] font-medium';
                       } else if (isCandidateAnswer) {
-                        optClass = 'border-[#f5c2c2] bg-[#fdebec] text-[#c93b3b] font-medium';
+                        optClass = 'border-[#f5c2c2] bg-[#FEF2F2] text-[#C53030] font-medium';
                       }
 
                       return (
@@ -666,10 +666,10 @@ export default function ExamResultPage() {
                             <span
                               className={`w-5 h-5 rounded text-xs font-mono font-medium flex items-center justify-center shrink-0 ${
                                 isOfficialCorrect
-                                  ? 'bg-[#0f7b6c] text-white'
+                                  ? 'bg-[#1B5E20] text-white'
                                   : isCandidateAnswer
-                                  ? 'bg-[#c93b3b] text-white'
-                                  : 'bg-[#f1f1ef] text-[#37352f]'
+                                  ? 'bg-[#C53030] text-white'
+                                  : 'bg-[#f1f1ef] text-[#202124]'
                               }`}
                             >
                               {opt.label}
@@ -679,13 +679,13 @@ export default function ExamResultPage() {
 
                           <div className="flex items-center gap-1 text-[10px] shrink-0 font-mono">
                             {isCandidateAnswer && (
-                              <span className={isCorrect ? 'text-[#0f7b6c]' : 'text-[#c93b3b]'}>
+                              <span className={isCorrect ? 'text-[#1B5E20]' : 'text-[#C53030]'}>
                                 (Your Pick)
                               </span>
                             )}
                             {isOfficialCorrect && (
-                              <span className="text-[#0f7b6c] flex items-center gap-0.5 font-medium">
-                                <Check className="w-3 h-3 text-[#0f7b6c]" /> Key
+                              <span className="text-[#1B5E20] flex items-center gap-0.5 font-medium">
+                                <Check className="w-3 h-3 text-[#1B5E20]" /> Key
                               </span>
                             )}
                           </div>
@@ -696,12 +696,12 @@ export default function ExamResultPage() {
 
                   {/* Step-by-Step Explanation */}
                   {q.explanation && (
-                    <div className="p-3 bg-[#fbfbfa] rounded-md border border-[#ebebeb] text-xs text-[#37352f] space-y-0.5">
+                    <div className="p-3 bg-[#F7F7F5] rounded-md border border-[#E6E6E3] text-xs text-[#202124] space-y-0.5">
                       <span className="font-semibold text-[#787774] flex items-center gap-1">
-                        <HelpCircle className="w-3.5 h-3.5 text-[#d9730d]" />
+                        <HelpCircle className="w-3.5 h-3.5 text-[#B7791F]" />
                         Solution & Rationale:
                       </span>
-                      <p className="leading-relaxed whitespace-pre-line text-[#37352f]">{q.explanation}</p>
+                      <p className="leading-relaxed whitespace-pre-line text-[#202124]">{q.explanation}</p>
                     </div>
                   )}
                 </div>
@@ -711,7 +711,7 @@ export default function ExamResultPage() {
         </div>
 
         {/* Bottom Action Footer */}
-        <div className="pt-4 border-t border-[#ebebeb] flex flex-col sm:flex-row items-center justify-between gap-3">
+        <div className="pt-4 border-t border-[#E6E6E3] flex flex-col sm:flex-row items-center justify-between gap-3">
           <Link href="/tests">
             <Button variant="outline" size="sm">
               <ArrowLeft className="w-3.5 h-3.5 mr-1.5" />

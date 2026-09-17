@@ -67,26 +67,26 @@ export default function LandingPage() {
   };
 
   return (
-    <div className="bg-[#ffffff] text-[#37352f] min-h-screen selection:bg-[#cce2ff] selection:text-[#183b56]">
-      <div className="space-y-20 sm:space-y-28 pb-20">
+    <div className="bg-[#F7F7F5] text-[#202124] min-h-screen selection:bg-[#EEF0FB] selection:text-[#4F46A5]">
+      <div className="space-y-16 sm:space-y-24 pb-20">
         {/* ========================================================================= */}
-        {/* 1. HERO SECTION (NOTION-INSPIRED WORKSPACE SHOWCASE & LIVE CBT SIMULATOR) */}
+        {/* 1. HERO SECTION (WORKSPACE SHOWCASE & LIVE CBT SIMULATOR) */}
         {/* ========================================================================= */}
         <section className="pt-10 sm:pt-16 md:pt-20">
           <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 text-center space-y-6">
             {/* Top Minimal Pill */}
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#f7f6f3] border border-[#ebebeb] text-xs text-[#787774]">
-              <span className="w-1.5 h-1.5 rounded-full bg-[#0f7b6c]" />
-              <span className="font-medium">Nalanda Academic Workspace &middot; Built for Serious Preparation</span>
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white border border-[#E6E6E3] text-xs text-[#787774] shadow-xs">
+              <span className="w-1.5 h-1.5 rounded-full bg-[#4F46A5]" />
+              <span className="font-medium text-[#202124]">Nalanda Learning Workspace &middot; Deliberate Practice, Measurable Progress</span>
             </div>
 
             {/* Editorial Headline */}
             <div className="space-y-3.5 max-w-3xl mx-auto">
-              <h1 className="text-4xl sm:text-5xl lg:text-6xl font-semibold tracking-tight text-[#37352f] leading-[1.15]">
+              <h1 className="text-3xl sm:text-5xl lg:text-5xl font-semibold tracking-tight text-[#202124] leading-[1.2]">
                 Master competitive examinations through structured intelligence.
               </h1>
-              <p className="text-base sm:text-lg text-[#787774] max-w-2xl mx-auto leading-relaxed font-normal">
-                An integrated, Notion-inspired learning and testing workspace unifying prerequisite-mapped syllabus trees, 100% authentic computer-based testing, mistake forensics, and spaced repetition.
+              <p className="text-sm sm:text-base text-[#787774] max-w-2xl mx-auto leading-relaxed font-normal">
+                A calm, intelligent knowledge workspace unifying prerequisite-mapped syllabus trees, 100% authentic computer-based testing, mistake forensics, and spaced repetition.
               </p>
             </div>
 
@@ -102,7 +102,7 @@ export default function LandingPage() {
               <button
                 onClick={handleStartQuickDemo}
                 disabled={loadingDemo}
-                className="w-full sm:w-auto px-3.5 py-2 rounded-md border border-[#ebebeb] bg-white hover:bg-[#f7f6f3] text-[#37352f] text-xs sm:text-sm font-medium transition-colors flex items-center justify-center gap-1.5"
+                className="w-full sm:w-auto px-3.5 py-1.5 rounded-md border border-[#E6E6E3] bg-white hover:bg-[#F1F1EF] text-[#202124] text-xs sm:text-sm font-medium transition-colors flex items-center justify-center gap-1.5 min-h-[34px]"
               >
                 {loadingDemo ? (
                   <>
@@ -118,7 +118,7 @@ export default function LandingPage() {
               </button>
 
               <Link href="/tests/create" className="w-full sm:w-auto">
-                <Button variant="ghost" size="md" className="w-full sm:w-auto text-[#787774] hover:text-[#37352f]">
+                <Button variant="ghost" size="md" className="w-full sm:w-auto text-[#787774] hover:text-[#202124]">
                   Test Studio
                 </Button>
               </Link>
@@ -126,32 +126,32 @@ export default function LandingPage() {
 
             {/* Interactive Live CBT Exam Sandbox Preview Document */}
             <div className="pt-6 sm:pt-8 max-w-3xl mx-auto text-left">
-              <div className="rounded-lg border border-[#ebebeb] bg-[#ffffff] shadow-[0_4px_20px_rgba(0,0,0,0.05)] overflow-hidden">
+              <div className="rounded-md border border-[#E6E6E3] bg-white shadow-xs overflow-hidden">
                 {/* Simulator Header Bar */}
-                <div className="bg-[#fbfbfa] border-b border-[#ebebeb] px-4 sm:px-5 py-2.5 flex flex-wrap items-center justify-between gap-2.5 text-xs">
+                <div className="bg-[#F1F1EF] border-b border-[#E6E6E3] px-4 sm:px-5 py-2.5 flex flex-wrap items-center justify-between gap-2.5 text-xs">
                   <div className="flex items-center gap-2">
-                    <span className="w-2 h-2 rounded-full bg-[#0f7b6c]" />
-                    <span className="font-medium text-[#37352f] tracking-tight">
+                    <span className="w-2 h-2 rounded-full bg-[#1B5E20]" />
+                    <span className="font-medium text-[#202124] tracking-tight">
                       CBT Simulator &middot; SSC CGL Tier-I
                     </span>
-                    <span className="hidden sm:inline px-1.5 py-0.5 rounded bg-[#f1f1ef] text-[#787774] text-[11px]">
+                    <span className="hidden sm:inline px-1.5 py-0.5 rounded bg-white text-[#787774] text-[11px] border border-[#E6E6E3]">
                       100 Qs &middot; 200 Marks
                     </span>
                   </div>
 
                   <div className="flex items-center gap-2.5">
-                    <div className="flex items-center gap-1 px-2 py-0.5 rounded bg-[#faece3] text-[#d9730d] font-mono text-xs font-semibold border border-[#f0d6c2]">
+                    <div className="flex items-center gap-1 px-2 py-0.5 rounded bg-[#FDF6EC] text-[#B7791F] font-mono text-xs font-semibold border border-[#F6E3C7]">
                       <Clock className="w-3 h-3" />
                       <span>{formatTimer(timerSeconds)}</span>
                     </div>
-                    <span className="px-1.5 py-0.5 rounded bg-[#f1f1ef] text-[#787774] text-[11px] font-mono">
+                    <span className="px-1.5 py-0.5 rounded bg-white text-[#787774] text-[11px] font-mono border border-[#E6E6E3]">
                       +2.0 / -0.50
                     </span>
                   </div>
                 </div>
 
                 {/* Section Switcher Tabs */}
-                <div className="bg-[#ffffff] border-b border-[#ebebeb] px-4 sm:px-5 py-1.5 flex items-center gap-1.5 overflow-x-auto text-xs">
+                <div className="bg-white border-b border-[#E6E6E3] px-4 sm:px-5 py-1.5 flex items-center gap-1.5 overflow-x-auto text-xs">
                   {[
                     { id: 'Quant', label: 'Quantitative Aptitude' },
                     { id: 'Reasoning', label: 'General Intelligence' },
@@ -167,8 +167,8 @@ export default function LandingPage() {
                       }}
                       className={`px-2.5 py-1 rounded text-xs transition-colors whitespace-nowrap ${
                         activeSection === sec.id
-                          ? 'bg-[#efefed] text-[#37352f] font-medium'
-                          : 'text-[#787774] hover:text-[#37352f] hover:bg-[#f7f6f3]'
+                          ? 'bg-[#EEF0FB] text-[#4F46A5] font-medium'
+                          : 'text-[#787774] hover:text-[#202124] hover:bg-[#F1F1EF]'
                       }`}
                     >
                       {sec.label}
@@ -182,12 +182,12 @@ export default function LandingPage() {
                     <span className="text-[11px] font-mono text-[#787774]">
                       Question 14 of 25 &middot; Geometry Circles
                     </span>
-                    <span className="text-[11px] text-[#9b9a97]">
+                    <span className="text-[11px] text-[#787774]">
                       Click an option to test instant evaluation:
                     </span>
                   </div>
 
-                  <p className="text-xs sm:text-sm font-normal text-[#37352f] leading-relaxed">
+                  <p className="text-xs sm:text-sm font-normal text-[#202124] leading-relaxed">
                     In a circle with centre O, two chords <strong>AB</strong> and <strong>CD</strong> intersect internally at point <strong>P</strong>. If <strong>AP = 6 cm</strong>, <strong>PB = 4 cm</strong>, and <strong>CP = 3 cm</strong>, find the length of segment <strong>PD</strong>.
                   </p>
 
@@ -200,16 +200,16 @@ export default function LandingPage() {
                       { label: 'D', text: '10.5 cm', isCorrect: false },
                     ].map((opt) => {
                       const isSelected = selectedOption === opt.label;
-                      let btnStyle = 'border-[#ebebeb] bg-white hover:bg-[#f7f6f3] text-[#37352f]';
+                      let btnStyle = 'border-[#E6E6E3] bg-white hover:bg-[#F1F1EF] text-[#202124]';
 
                       if (isAnswerRevealed) {
                         if (opt.isCorrect) {
-                          btnStyle = 'border-[#d3e5d2] bg-[#edf3ec] text-[#0f7b6c]';
+                          btnStyle = 'border-[#C8E6C9] bg-[#EDF7ED] text-[#1B5E20]';
                         } else if (isSelected && !opt.isCorrect) {
-                          btnStyle = 'border-[#f7d4d6] bg-[#fdebec] text-[#c93b3b]';
+                          btnStyle = 'border-[#FEE2E2] bg-[#FEF2F2] text-[#C53030]';
                         }
                       } else if (isSelected) {
-                        btnStyle = 'border-[#37352f] bg-[#f7f6f3] text-[#37352f]';
+                        btnStyle = 'border-[#4F46A5] bg-[#EEF0FB] text-[#4F46A5]';
                       }
 
                       return (
@@ -222,19 +222,19 @@ export default function LandingPage() {
                           className={`p-2.5 rounded-md border text-left flex items-center justify-between gap-2 text-xs font-normal transition-colors ${btnStyle}`}
                         >
                           <div className="flex items-center gap-2">
-                            <span className="w-5 h-5 rounded bg-[#f1f1ef] font-mono text-xs flex items-center justify-center text-[#787774] shrink-0">
+                            <span className="w-5 h-5 rounded bg-[#F1F1EF] font-mono text-xs flex items-center justify-center text-[#787774] shrink-0">
                               {opt.label}
                             </span>
                             <span>{opt.text}</span>
                           </div>
 
                           {isAnswerRevealed && opt.isCorrect && (
-                            <span className="text-[#0f7b6c] text-[11px] font-medium flex items-center gap-0.5">
+                            <span className="text-[#1B5E20] text-[11px] font-medium flex items-center gap-0.5">
                               <Check className="w-3 h-3" /> Correct (+2.0)
                             </span>
                           )}
                           {isAnswerRevealed && isSelected && !opt.isCorrect && (
-                            <span className="text-[#c93b3b] text-[11px] font-medium">
+                            <span className="text-[#C53030] text-[11px] font-medium">
                               Incorrect (-0.50)
                             </span>
                           )}
@@ -246,8 +246,8 @@ export default function LandingPage() {
                   {/* Immediate Feedback Callout Block */}
                   {isAnswerRevealed && (
                     <CalloutBlock
-                      variant="amber"
-                      icon={<Sparkles className="w-4 h-4 text-[#d9730d]" />}
+                      variant="saffron"
+                      icon={<Sparkles className="w-4 h-4 text-[#B7791F]" />}
                       title="Intersecting Chords Theorem Derivation"
                     >
                       <p className="text-xs leading-relaxed">
@@ -258,7 +258,7 @@ export default function LandingPage() {
                         </span>
                       </p>
                       {selectedOption !== 'B' && (
-                        <p className="text-[11px] text-[#c93b3b] pt-1 font-medium">
+                        <p className="text-[11px] text-[#C53030] pt-1 font-medium">
                           &bull; Automatically logged to Mistake Notebook under &ldquo;Calculation Slip&rdquo; for spaced review.
                         </p>
                       )}
@@ -267,15 +267,15 @@ export default function LandingPage() {
                 </div>
 
                 {/* Simulator Footer Dock */}
-                <div className="bg-[#fbfbfa] border-t border-[#ebebeb] px-4 sm:px-5 py-2.5 flex flex-wrap items-center justify-between gap-2 text-xs text-[#787774]">
+                <div className="bg-[#F1F1EF] border-t border-[#E6E6E3] px-4 sm:px-5 py-2.5 flex flex-wrap items-center justify-between gap-2 text-xs text-[#787774]">
                   <div className="flex items-center gap-2">
-                    <ShieldCheck className="w-3.5 h-3.5 text-[#0f7b6c]" />
+                    <ShieldCheck className="w-3.5 h-3.5 text-[#1B5E20]" />
                     <span>Autosave active &middot; 5-state question palette enabled</span>
                   </div>
 
                   <button
                     onClick={handleStartQuickDemo}
-                    className="text-xs text-[#37352f] hover:text-black font-medium flex items-center gap-1 transition-colors"
+                    className="text-xs text-[#4F46A5] hover:underline font-medium flex items-center gap-1 transition-colors"
                   >
                     <span>Launch 100-Q Exam</span>
                     <ChevronRight className="w-3 h-3" />
@@ -287,45 +287,45 @@ export default function LandingPage() {
         </section>
 
         {/* ========================================================================= */}
-        {/* 2. STATS & OPERATIONAL PROOF METRICS (CLEAN NOTION BORDERED STRIP) */}
+        {/* 2. STATS & OPERATIONAL PROOF METRICS (CLEAN BORDERED STRIP) */}
         {/* ========================================================================= */}
         <section className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 p-5 rounded-lg border border-[#ebebeb] bg-[#fbfbfa]">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 p-5 rounded-md border border-[#E6E6E3] bg-white">
             <div className="space-y-0.5 text-center sm:text-left">
-              <span className="text-2xl sm:text-3xl font-semibold text-[#37352f] font-sans">12+</span>
+              <span className="text-2xl sm:text-3xl font-semibold text-[#202124] font-sans">12+</span>
               <p className="text-xs font-medium text-[#787774]">Test Frameworks</p>
-              <span className="text-[11px] text-[#9b9a97] block">Full Mocks, PYQs, Drills</span>
+              <span className="text-[11px] text-[#787774] block">Full Mocks, PYQs, Drills</span>
             </div>
 
             <div className="space-y-0.5 text-center sm:text-left">
-              <span className="text-2xl sm:text-3xl font-semibold text-[#0f7b6c] font-sans">100%</span>
+              <span className="text-2xl sm:text-3xl font-semibold text-[#1B5E20] font-sans">100%</span>
               <p className="text-xs font-medium text-[#787774]">CBT Simulation Fidelity</p>
-              <span className="text-[11px] text-[#9b9a97] block">Official TCS iON compliance</span>
+              <span className="text-[11px] text-[#787774] block">Official TCS iON compliance</span>
             </div>
 
             <div className="space-y-0.5 text-center sm:text-left">
-              <span className="text-2xl sm:text-3xl font-semibold text-[#d9730d] font-sans">5-Tier</span>
+              <span className="text-2xl sm:text-3xl font-semibold text-[#B7791F] font-sans">5-Tier</span>
               <p className="text-xs font-medium text-[#787774]">Syllabus Depth</p>
-              <span className="text-[11px] text-[#9b9a97] block">Exam &rarr; Subject &rarr; Topic</span>
+              <span className="text-[11px] text-[#787774] block">Exam &rarr; Subject &rarr; Topic</span>
             </div>
 
             <div className="space-y-0.5 text-center sm:text-left">
-              <span className="text-2xl sm:text-3xl font-semibold text-[#0b6e99] font-sans">3-Day</span>
+              <span className="text-2xl sm:text-3xl font-semibold text-[#4F46A5] font-sans">3-Day</span>
               <p className="text-xs font-medium text-[#787774]">Active Recall Cadence</p>
-              <span className="text-[11px] text-[#9b9a97] block">Spaced repetition engine</span>
+              <span className="text-[11px] text-[#787774] block">Spaced repetition engine</span>
             </div>
           </div>
         </section>
 
         {/* ========================================================================= */}
-        {/* 3. THE 4 ARCHITECTURAL PILLARS (MODULAR NOTION CONTENT BLOCKS) */}
+        {/* 3. THE 4 ARCHITECTURAL PILLARS (MODULAR CONTENT BLOCKS) */}
         {/* ========================================================================= */}
-        <section className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8">
+        <section className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 space-y-6">
           <div className="space-y-1">
-            <span className="text-[11px] font-medium uppercase tracking-wider text-[#787774]">
+            <span className="text-[10px] font-semibold uppercase tracking-wider text-[#787774]">
               Platform Architecture
             </span>
-            <h2 className="text-xl sm:text-2xl font-semibold text-[#37352f] tracking-tight">
+            <h2 className="text-xl sm:text-2xl font-semibold text-[#202124] tracking-tight">
               The Four Architectural Pillars of Nalanda
             </h2>
             <p className="text-xs sm:text-sm text-[#787774] leading-relaxed max-w-2xl">
@@ -335,92 +335,92 @@ export default function LandingPage() {
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {/* Pillar 1 */}
-            <div className="rounded-lg border border-[#ebebeb] bg-white p-5 space-y-3 hover:border-stone-400 transition-colors">
+            <div className="rounded-md border border-[#E6E6E3] bg-white p-5 space-y-3 hover:border-[#CBD5E1] transition-colors">
               <div className="flex items-center justify-between text-xs">
-                <span className="px-2 py-0.5 rounded bg-[#e7f3f8] text-[#0b6e99] font-medium text-[11px]">
+                <span className="px-2 py-0.5 rounded bg-[#EEF0FB] text-[#4F46A5] font-medium text-[11px]">
                   Pillar 01 &middot; Pedagogy
                 </span>
                 <span className="text-[11px] text-[#787774]">14 Units</span>
               </div>
-              <h3 className="text-sm sm:text-base font-semibold text-[#37352f] flex items-center gap-2">
-                <BookOpen className="w-4 h-4 text-[#0b6e99]" />
+              <h3 className="text-sm sm:text-base font-semibold text-[#202124] flex items-center gap-2">
+                <BookOpen className="w-4 h-4 text-[#4F46A5]" />
                 Prerequisite-Mapped Knowledge Trees
               </h3>
               <p className="text-xs text-[#787774] leading-relaxed">
                 Foundational concepts unlock complex multi-step problems in a directed syllabus graph, eliminating cognitive overload.
               </p>
-              <div className="pt-2 border-t border-[#ebebeb] flex items-center justify-between text-xs">
+              <div className="pt-2 border-t border-[#E6E6E3] flex items-center justify-between text-xs">
                 <span className="text-[#787774]">Structured hierarchy</span>
-                <Link href="/learn" className="text-[#37352f] hover:underline font-medium flex items-center gap-0.5">
+                <Link href="/learn" className="text-[#4F46A5] hover:underline font-medium flex items-center gap-0.5">
                   Explore Syllabus <ChevronRight className="w-3 h-3" />
                 </Link>
               </div>
             </div>
 
             {/* Pillar 2 */}
-            <div className="rounded-lg border border-[#ebebeb] bg-white p-5 space-y-3 hover:border-stone-400 transition-colors">
+            <div className="rounded-md border border-[#E6E6E3] bg-white p-5 space-y-3 hover:border-[#CBD5E1] transition-colors">
               <div className="flex items-center justify-between text-xs">
-                <span className="px-2 py-0.5 rounded bg-[#faece3] text-[#d9730d] font-medium text-[11px]">
+                <span className="px-2 py-0.5 rounded bg-[#FDF6EC] text-[#B7791F] font-medium text-[11px]">
                   Pillar 02 &middot; Testing
                 </span>
                 <span className="text-[11px] text-[#787774]">TCS Standard</span>
               </div>
-              <h3 className="text-sm sm:text-base font-semibold text-[#37352f] flex items-center gap-2">
-                <ShieldCheck className="w-4 h-4 text-[#d9730d]" />
+              <h3 className="text-sm sm:text-base font-semibold text-[#202124] flex items-center gap-2">
+                <ShieldCheck className="w-4 h-4 text-[#B7791F]" />
                 High-Fidelity CBT Test Simulator
               </h3>
               <p className="text-xs text-[#787774] leading-relaxed">
                 Realistic exam conditions featuring the official 5-state question palette, composite section switches, autosave, and negative marking discipline.
               </p>
-              <div className="pt-2 border-t border-[#ebebeb] flex items-center justify-between text-xs">
+              <div className="pt-2 border-t border-[#E6E6E3] flex items-center justify-between text-xs">
                 <span className="text-[#787774]">Real time pressure</span>
-                <Link href="/tests" className="text-[#37352f] hover:underline font-medium flex items-center gap-0.5">
+                <Link href="/tests" className="text-[#4F46A5] hover:underline font-medium flex items-center gap-0.5">
                   Browse Tests <ChevronRight className="w-3 h-3" />
                 </Link>
               </div>
             </div>
 
             {/* Pillar 3 */}
-            <div className="rounded-lg border border-[#ebebeb] bg-white p-5 space-y-3 hover:border-stone-400 transition-colors">
+            <div className="rounded-md border border-[#E6E6E3] bg-white p-5 space-y-3 hover:border-[#CBD5E1] transition-colors">
               <div className="flex items-center justify-between text-xs">
-                <span className="px-2 py-0.5 rounded bg-[#fdebec] text-[#c93b3b] font-medium text-[11px]">
+                <span className="px-2 py-0.5 rounded bg-[#FEF2F2] text-[#C53030] font-medium text-[11px]">
                   Pillar 03 &middot; Forensics
                 </span>
                 <span className="text-[11px] text-[#787774]">8 Categories</span>
               </div>
-              <h3 className="text-sm sm:text-base font-semibold text-[#37352f] flex items-center gap-2">
-                <BookMarked className="w-4 h-4 text-[#c93b3b]" />
+              <h3 className="text-sm sm:text-base font-semibold text-[#202124] flex items-center gap-2">
+                <BookMarked className="w-4 h-4 text-[#C53030]" />
                 Autonomous Mistake Notebook
               </h3>
               <p className="text-xs text-[#787774] leading-relaxed">
                 Every incorrect pick is logged automatically with error classifications: calculation slips, conceptual gaps, and question misreads with blind retries.
               </p>
-              <div className="pt-2 border-t border-[#ebebeb] flex items-center justify-between text-xs">
+              <div className="pt-2 border-t border-[#E6E6E3] flex items-center justify-between text-xs">
                 <span className="text-[#787774]">Continuous revision</span>
-                <Link href="/mistakes" className="text-[#37352f] hover:underline font-medium flex items-center gap-0.5">
+                <Link href="/mistakes" className="text-[#4F46A5] hover:underline font-medium flex items-center gap-0.5">
                   Open Notebook <ChevronRight className="w-3 h-3" />
                 </Link>
               </div>
             </div>
 
             {/* Pillar 4 */}
-            <div className="rounded-lg border border-[#ebebeb] bg-white p-5 space-y-3 hover:border-stone-400 transition-colors">
+            <div className="rounded-md border border-[#E6E6E3] bg-white p-5 space-y-3 hover:border-[#CBD5E1] transition-colors">
               <div className="flex items-center justify-between text-xs">
-                <span className="px-2 py-0.5 rounded bg-[#edf3ec] text-[#0f7b6c] font-medium text-[11px]">
+                <span className="px-2 py-0.5 rounded bg-[#EDF7ED] text-[#1B5E20] font-medium text-[11px]">
                   Pillar 04 &middot; Intelligence
                 </span>
                 <span className="text-[11px] text-[#787774]">Gemini 3.6</span>
               </div>
-              <h3 className="text-sm sm:text-base font-semibold text-[#37352f] flex items-center gap-2">
-                <Sparkles className="w-4 h-4 text-[#0f7b6c]" />
+              <h3 className="text-sm sm:text-base font-semibold text-[#202124] flex items-center gap-2">
+                <Sparkles className="w-4 h-4 text-[#1B5E20]" />
                 Scientific Spaced Repetition & Coach
               </h3>
               <p className="text-xs text-[#787774] leading-relaxed">
                 Topic accuracy updates mastery across 6 stages. High scores extend recall intervals; weak areas trigger immediate remedial drills.
               </p>
-              <div className="pt-2 border-t border-[#ebebeb] flex items-center justify-between text-xs">
+              <div className="pt-2 border-t border-[#E6E6E3] flex items-center justify-between text-xs">
                 <span className="text-[#787774]">Leitner intervals</span>
-                <Link href="/dashboard" className="text-[#37352f] hover:underline font-medium flex items-center gap-0.5">
+                <Link href="/dashboard" className="text-[#4F46A5] hover:underline font-medium flex items-center gap-0.5">
                   View Readiness <ChevronRight className="w-3 h-3" />
                 </Link>
               </div>
@@ -431,18 +431,18 @@ export default function LandingPage() {
         {/* ========================================================================= */}
         {/* 4. SUPPORTED EXAM ECOSYSTEMS (DATABASE PREVIEW) */}
         {/* ========================================================================= */}
-        <section className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 space-y-6">
-          <div className="flex items-end justify-between border-b border-[#ebebeb] pb-3">
+        <section className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 space-y-4">
+          <div className="flex items-end justify-between border-b border-[#E6E6E3] pb-2.5">
             <div>
-              <span className="text-[11px] font-medium uppercase tracking-wider text-[#787774]">
+              <span className="text-[10px] font-semibold uppercase tracking-wider text-[#787774]">
                 Exam Coverage
               </span>
-              <h2 className="text-xl sm:text-2xl font-semibold text-[#37352f] tracking-tight mt-0.5">
+              <h2 className="text-xl font-semibold text-[#202124] tracking-tight mt-0.5">
                 National Exam Ecosystems
               </h2>
             </div>
-            <Link href="/exams" className="text-xs font-medium text-[#787774] hover:text-[#37352f] flex items-center gap-1">
-              View All <ChevronRight className="w-3.5 h-3.5" />
+            <Link href="/exams" className="text-xs font-medium text-[#4F46A5] hover:underline flex items-center gap-1">
+              View All <ChevronRight className="w-3 h-3" />
             </Link>
           </div>
 
@@ -475,20 +475,20 @@ export default function LandingPage() {
             ].map((ex, i) => (
               <div
                 key={i}
-                className="p-4 rounded-lg border border-[#ebebeb] bg-white space-y-2 hover:border-stone-400 transition-colors flex flex-col justify-between"
+                className="p-4 rounded-md border border-[#E6E6E3] bg-white space-y-2 hover:border-[#CBD5E1] transition-colors flex flex-col justify-between"
               >
                 <div className="space-y-1.5">
                   <div className="flex items-center justify-between">
-                    <span className="text-[11px] font-mono px-1.5 py-0.2 rounded bg-[#f1f1ef] text-[#787774]">
+                    <span className="text-[10px] font-mono px-1.5 py-0.2 rounded bg-[#F1F1EF] text-[#787774] border border-[#E6E6E3]">
                       {ex.tag}
                     </span>
                   </div>
-                  <h3 className="font-semibold text-sm text-[#37352f]">{ex.title}</h3>
-                  <p className="text-[11px] text-[#787774]">{ex.subtitle}</p>
-                  <p className="text-xs text-[#787774] leading-relaxed pt-1">{ex.desc}</p>
+                  <h3 className="font-semibold text-sm text-[#202124]">{ex.title}</h3>
+                  <p className="text-[10px] text-[#787774]">{ex.subtitle}</p>
+                  <p className="text-xs text-[#787774] leading-relaxed pt-0.5">{ex.desc}</p>
                 </div>
-                <div className="pt-2 border-t border-[#ebebeb] mt-2">
-                  <Link href="/tests" className="text-xs font-medium text-[#37352f] hover:underline flex items-center gap-1">
+                <div className="pt-2 border-t border-[#E6E6E3] mt-2">
+                  <Link href="/tests" className="text-xs font-medium text-[#4F46A5] hover:underline flex items-center gap-1">
                     Start Mocks <ArrowRight className="w-3 h-3" />
                   </Link>
                 </div>
@@ -501,68 +501,68 @@ export default function LandingPage() {
         {/* 5. OFFICIAL 5-STATE QUESTION PALETTE */}
         {/* ========================================================================= */}
         <section className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="rounded-lg border border-[#ebebeb] bg-[#fbfbfa] p-5 sm:p-6 space-y-4">
+          <div className="rounded-md border border-[#E6E6E3] bg-white p-5 sm:p-6 space-y-3.5">
             <div className="space-y-0.5">
-              <span className="text-[11px] font-medium uppercase tracking-wider text-[#787774]">
+              <span className="text-[10px] font-semibold uppercase tracking-wider text-[#787774]">
                 TCS iON Examination Standards
               </span>
-              <h2 className="text-lg font-semibold text-[#37352f]">
+              <h2 className="text-base font-semibold text-[#202124]">
                 Official 5-State Question Palette Protocol
               </h2>
               <p className="text-xs text-[#787774]">
-                Nalanda trains candidates to navigate the exact 5-state color-coded palette used in Indian government examinations.
+                Nalanda trains candidates to navigate the exact 5-state color-coded palette used in national CBT examinations.
               </p>
             </div>
 
             <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2.5">
-              <div className="p-2.5 rounded-md bg-white border border-[#ebebeb] flex items-center gap-2.5 text-xs">
-                <span className="w-6 h-6 rounded bg-[#f1f1ef] text-[#787774] font-mono text-xs font-medium flex items-center justify-center shrink-0">
+              <div className="p-2.5 rounded-md bg-[#F1F1EF] border border-[#E6E6E3] flex items-center gap-2.5 text-xs">
+                <span className="w-5 h-5 rounded-[3px] bg-white text-[#787774] font-mono text-xs font-medium flex items-center justify-center shrink-0 border border-[#E6E6E3]">
                   01
                 </span>
                 <div>
-                  <span className="font-medium text-[#37352f] block text-xs">Not Visited</span>
+                  <span className="font-medium text-[#202124] block text-xs">Not Visited</span>
                   <span className="text-[10px] text-[#787774]">Unopened</span>
                 </div>
               </div>
 
-              <div className="p-2.5 rounded-md bg-white border border-[#ebebeb] flex items-center gap-2.5 text-xs">
-                <span className="w-6 h-6 rounded bg-[#faece3] text-[#d9730d] font-mono text-xs font-medium flex items-center justify-center shrink-0">
+              <div className="p-2.5 rounded-md bg-[#FFFBEB] border border-[#FEF3C7] flex items-center gap-2.5 text-xs">
+                <span className="w-5 h-5 rounded-[3px] bg-[#B7791F] text-white font-mono text-xs font-medium flex items-center justify-center shrink-0">
                   02
                 </span>
                 <div>
-                  <span className="font-medium text-[#d9730d] block text-xs">Unanswered</span>
+                  <span className="font-medium text-[#B7791F] block text-xs">Unanswered</span>
                   <span className="text-[10px] text-[#787774]">Visited, left blank</span>
                 </div>
               </div>
 
-              <div className="p-2.5 rounded-md bg-white border border-[#ebebeb] flex items-center gap-2.5 text-xs">
-                <span className="w-6 h-6 rounded bg-[#edf3ec] text-[#0f7b6c] font-mono text-xs font-medium flex items-center justify-center shrink-0">
+              <div className="p-2.5 rounded-md bg-[#EDF7ED] border border-[#C8E6C9] flex items-center gap-2.5 text-xs">
+                <span className="w-5 h-5 rounded-[3px] bg-[#1B5E20] text-white font-mono text-xs font-medium flex items-center justify-center shrink-0">
                   03
                 </span>
                 <div>
-                  <span className="font-medium text-[#0f7b6c] block text-xs">Answered</span>
+                  <span className="font-medium text-[#1B5E20] block text-xs">Answered</span>
                   <span className="text-[10px] text-[#787774]">Saved in score</span>
                 </div>
               </div>
 
-              <div className="p-2.5 rounded-md bg-white border border-[#ebebeb] flex items-center gap-2.5 text-xs">
-                <span className="w-6 h-6 rounded bg-[#f4f0f7] text-[#6940a5] font-mono text-xs font-medium flex items-center justify-center shrink-0">
+              <div className="p-2.5 rounded-md bg-[#EEF0FB] border border-[#DCDDF7] flex items-center gap-2.5 text-xs">
+                <span className="w-5 h-5 rounded-[3px] bg-[#4F46A5] text-white font-mono text-xs font-medium flex items-center justify-center shrink-0">
                   04
                 </span>
                 <div>
-                  <span className="font-medium text-[#6940a5] block text-xs">Review Flag</span>
+                  <span className="font-medium text-[#4F46A5] block text-xs">Review Flag</span>
                   <span className="text-[10px] text-[#787774]">For later review</span>
                 </div>
               </div>
 
-              <div className="p-2.5 rounded-md bg-white border border-[#ebebeb] flex items-center gap-2.5 text-xs col-span-2 sm:col-span-1">
-                <span className="w-6 h-6 rounded bg-[#f4f0f7] text-[#6940a5] font-mono text-xs font-medium flex items-center justify-center shrink-0 relative">
+              <div className="p-2.5 rounded-md bg-[#EEF0FB] border border-[#DCDDF7] flex items-center gap-2.5 text-xs col-span-2 sm:col-span-1">
+                <span className="w-5 h-5 rounded-[3px] bg-[#4F46A5] text-white font-mono text-xs font-medium flex items-center justify-center shrink-0 relative">
                   05
-                  <span className="w-1.5 h-1.5 rounded-full bg-[#0f7b6c] absolute -top-0.5 -right-0.5" />
+                  <span className="w-1.5 h-1.5 rounded-full bg-[#1B5E20] absolute -top-0.5 -right-0.5" />
                 </span>
                 <div>
-                  <span className="font-medium text-[#37352f] block text-xs">Answered & Review</span>
-                  <span className="text-[10px] text-[#0f7b6c]">Evaluated</span>
+                  <span className="font-medium text-[#202124] block text-xs">Answered & Review</span>
+                  <span className="text-[10px] text-[#1B5E20]">Evaluated</span>
                 </div>
               </div>
             </div>
@@ -570,16 +570,16 @@ export default function LandingPage() {
         </section>
 
         {/* ========================================================================= */}
-        {/* 6. EDUCATOR & INSTITUTIONAL PUBLISHING STUDIO */}
+        {/* 6. EDUCATOR & PUBLISHING STUDIO */}
         {/* ========================================================================= */}
         <section className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="rounded-lg border border-[#ebebeb] bg-white p-6 sm:p-8 flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
-            <div className="space-y-2 max-w-xl">
-              <span className="inline-flex items-center gap-1.5 text-xs font-medium text-[#d9730d] bg-[#faece3] px-2 py-0.5 rounded">
+          <div className="rounded-md border border-[#E6E6E3] bg-white p-6 sm:p-7 flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
+            <div className="space-y-1.5 max-w-xl">
+              <span className="inline-flex items-center gap-1.5 text-xs font-medium text-[#4F46A5] bg-[#EEF0FB] px-2 py-0.5 rounded border border-[#DCDDF7]">
                 <Building2 className="w-3.5 h-3.5" /> Educator & Publishing Hub
               </span>
-              <h2 className="text-xl sm:text-2xl font-semibold text-[#37352f] tracking-tight">
-                Publish tests, ingest question papers, and run student batches
+              <h2 className="text-lg sm:text-xl font-semibold text-[#202124] tracking-tight">
+                Publish tests, ingest question papers, and run student cohorts
               </h2>
               <p className="text-xs sm:text-sm text-[#787774] leading-relaxed">
                 Upload existing PDFs or DOCX files to automatically generate structured CBE assessments, manage curriculum series, and publish free or paid resources to the public library.
@@ -594,7 +594,7 @@ export default function LandingPage() {
                 </Button>
               </Link>
               <Link href="/dashboard/educator" className="w-full">
-                <Button variant="secondary" size="md" className="w-full text-[#787774] hover:text-[#37352f]">
+                <Button variant="secondary" size="md" className="w-full text-[#787774] hover:text-[#202124]">
                   Educator Dashboard
                 </Button>
               </Link>
@@ -605,9 +605,9 @@ export default function LandingPage() {
         {/* ========================================================================= */}
         {/* 7. BOTTOM CALLOUT */}
         {/* ========================================================================= */}
-        <section className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 text-center space-y-4">
-          <h2 className="text-2xl sm:text-3xl font-semibold text-[#37352f] tracking-tight">
-            Begin your systematic exam preparation.
+        <section className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 text-center space-y-3.5">
+          <h2 className="text-2xl sm:text-3xl font-semibold text-[#202124] tracking-tight">
+            Begin your deliberate exam preparation.
           </h2>
           <p className="text-xs sm:text-sm text-[#787774] leading-relaxed">
             Explore the SSC CGL syllabus tree, take official previous-year papers, and diagnose your conceptual blindspots in real time.

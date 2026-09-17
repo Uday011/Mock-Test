@@ -413,10 +413,10 @@ export default function AdminDashboardPage() {
         )}
 
         {/* Top Header */}
-        <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4 pb-6 border-b border-[#ebebeb]">
+        <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4 pb-6 border-b border-[#E6E6E3]">
           <div className="space-y-2">
             <div className="flex items-center gap-2">
-              <span className="px-2 py-0.5 rounded-[3px] text-[11px] font-medium bg-[#fbf3db] text-[#8f6b10] border border-[#fae6b4] flex items-center gap-1.5">
+              <span className="px-2 py-0.5 rounded-[3px] text-[11px] font-medium bg-[#FFFBEB] text-[#8f6b10] border border-[#fae6b4] flex items-center gap-1.5">
                 <Building2 className="w-3 h-3 text-[#8f6b10]" />
                 Administrator & Coaching Hub
               </span>
@@ -424,7 +424,7 @@ export default function AdminDashboardPage() {
                 {currentUser?.institute_name || 'Apex Institute Platform'}
               </span>
             </div>
-            <h1 className="text-2xl sm:text-3xl font-bold text-[#37352f] tracking-tight">
+            <h1 className="text-2xl sm:text-3xl font-bold text-[#202124] tracking-tight">
               Teacher & Institute Dashboard
             </h1>
             <p className="text-xs sm:text-sm text-[#787774] max-w-2xl leading-relaxed">
@@ -435,7 +435,7 @@ export default function AdminDashboardPage() {
           <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 w-full sm:w-auto shrink-0">
             <button
               onClick={() => setShowAddModal(true)}
-              className="inline-flex items-center justify-center gap-1.5 px-3 py-1.5 min-h-[36px] bg-[#37352f] hover:bg-[#201e1d] text-white font-medium rounded-md shadow-2xs transition-colors text-xs"
+              className="inline-flex items-center justify-center gap-1.5 px-3 py-1.5 min-h-[36px] bg-[#202124] hover:bg-[#201e1d] text-white font-medium rounded-md shadow-2xs transition-colors text-xs"
             >
               <UserPlus className="w-3.5 h-3.5" />
               Add Student
@@ -443,7 +443,7 @@ export default function AdminDashboardPage() {
 
             <Link
               href="/tests/create"
-              className="inline-flex items-center justify-center gap-1.5 px-3 py-1.5 min-h-[36px] bg-white hover:bg-[#f7f6f3] text-[#37352f] font-medium rounded-md border border-[#ebebeb] shadow-2xs transition-colors text-xs"
+              className="inline-flex items-center justify-center gap-1.5 px-3 py-1.5 min-h-[36px] bg-white hover:bg-[#F1F1EF] text-[#202124] font-medium rounded-md border border-[#E6E6E3] shadow-2xs transition-colors text-xs"
             >
               <PlusCircle className="w-3.5 h-3.5 text-[#787774]" />
               Create Official Mock
@@ -453,23 +453,23 @@ export default function AdminDashboardPage() {
 
         {/* Overview Analytics Cards */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4">
-          <div className="bg-white rounded-md p-4 border border-[#ebebeb] shadow-2xs">
+          <div className="bg-white rounded-md p-4 border border-[#E6E6E3] shadow-2xs">
             <div className="flex items-center justify-between text-[#787774] mb-1">
               <span className="text-[11px] font-medium uppercase tracking-wider">Enrolled Students</span>
               <Users className="w-4 h-4 text-[#787774]" />
             </div>
-            <p className="text-2xl font-bold text-[#37352f] mt-1">{totalStudentsCount}</p>
+            <p className="text-2xl font-bold text-[#202124] mt-1">{totalStudentsCount}</p>
           </div>
 
-          <div className="bg-white rounded-md p-4 border border-[#ebebeb] shadow-2xs">
+          <div className="bg-white rounded-md p-4 border border-[#E6E6E3] shadow-2xs">
             <div className="flex items-center justify-between text-[#787774] mb-1">
               <span className="text-[11px] font-medium uppercase tracking-wider">Institute Mocks</span>
               <Layers className="w-4 h-4 text-[#787774]" />
             </div>
-            <p className="text-2xl font-bold text-[#37352f] mt-1">{totalTestsCount}</p>
+            <p className="text-2xl font-bold text-[#202124] mt-1">{totalTestsCount}</p>
           </div>
 
-          <div className="bg-white rounded-md p-4 border border-[#ebebeb] shadow-2xs">
+          <div className="bg-white rounded-md p-4 border border-[#E6E6E3] shadow-2xs">
             <div className="flex items-center justify-between text-[#787774] mb-1">
               <span className="text-[11px] font-medium uppercase tracking-wider">Batch Submissions</span>
               <CheckCircle className="w-4 h-4 text-[#1c7d49]" />
@@ -477,7 +477,7 @@ export default function AdminDashboardPage() {
             <p className="text-2xl font-bold text-[#1c7d49] mt-1">{totalSubmissionsCount}</p>
           </div>
 
-          <div className="bg-white rounded-md p-4 border border-[#ebebeb] shadow-2xs">
+          <div className="bg-white rounded-md p-4 border border-[#E6E6E3] shadow-2xs">
             <div className="flex items-center justify-between text-[#787774] mb-1">
               <span className="text-[11px] font-medium uppercase tracking-wider">Avg Batch Accuracy</span>
               <Award className="w-4 h-4 text-[#2383e2]" />
@@ -488,13 +488,13 @@ export default function AdminDashboardPage() {
 
         {/* Tabs Navigation */}
         <div className="space-y-6">
-          <div className="flex items-center border-b border-[#ebebeb] gap-1 sm:gap-2 overflow-x-auto no-scrollbar pb-px text-xs font-medium">
+          <div className="flex items-center border-b border-[#E6E6E3] gap-1 sm:gap-2 overflow-x-auto no-scrollbar pb-px text-xs font-medium">
             <button
               onClick={() => setActiveTab('students')}
               className={`px-3 py-2 flex items-center gap-1.5 border-b-2 transition-all shrink-0 min-h-[36px] ${
                 activeTab === 'students'
-                  ? 'border-[#37352f] text-[#37352f] font-semibold'
-                  : 'border-transparent text-[#787774] hover:text-[#37352f] hover:bg-[#f7f6f3] rounded-t-md'
+                  ? 'border-[#202124] text-[#202124] font-semibold'
+                  : 'border-transparent text-[#787774] hover:text-[#202124] hover:bg-[#F1F1EF] rounded-t-md'
               }`}
             >
               <Users className="w-3.5 h-3.5" />
@@ -508,8 +508,8 @@ export default function AdminDashboardPage() {
               onClick={() => setActiveTab('tests')}
               className={`px-3 py-2 flex items-center gap-1.5 border-b-2 transition-all shrink-0 min-h-[36px] ${
                 activeTab === 'tests'
-                  ? 'border-[#37352f] text-[#37352f] font-semibold'
-                  : 'border-transparent text-[#787774] hover:text-[#37352f] hover:bg-[#f7f6f3] rounded-t-md'
+                  ? 'border-[#202124] text-[#202124] font-semibold'
+                  : 'border-transparent text-[#787774] hover:text-[#202124] hover:bg-[#F1F1EF] rounded-t-md'
               }`}
             >
               <Layers className="w-3.5 h-3.5" />
@@ -523,8 +523,8 @@ export default function AdminDashboardPage() {
               onClick={() => setActiveTab('submissions')}
               className={`px-3 py-2 flex items-center gap-1.5 border-b-2 transition-all shrink-0 min-h-[36px] ${
                 activeTab === 'submissions'
-                  ? 'border-[#37352f] text-[#37352f] font-semibold'
-                  : 'border-transparent text-[#787774] hover:text-[#37352f] hover:bg-[#f7f6f3] rounded-t-md'
+                  ? 'border-[#202124] text-[#202124] font-semibold'
+                  : 'border-transparent text-[#787774] hover:text-[#202124] hover:bg-[#F1F1EF] rounded-t-md'
               }`}
             >
               <FileSpreadsheet className="w-3.5 h-3.5" />
@@ -538,13 +538,13 @@ export default function AdminDashboardPage() {
               onClick={() => setActiveTab('review_queue')}
               className={`px-3 py-2 flex items-center gap-1.5 border-b-2 transition-all shrink-0 min-h-[36px] ${
                 activeTab === 'review_queue'
-                  ? 'border-[#37352f] text-[#37352f] font-semibold'
-                  : 'border-transparent text-[#787774] hover:text-[#37352f] hover:bg-[#f7f6f3] rounded-t-md'
+                  ? 'border-[#202124] text-[#202124] font-semibold'
+                  : 'border-transparent text-[#787774] hover:text-[#202124] hover:bg-[#F1F1EF] rounded-t-md'
               }`}
             >
               <ShieldAlert className="w-3.5 h-3.5 text-[#8f6b10]" />
               Review Queue
-              <span className="px-1.5 py-0.2 rounded-full bg-[#fbf3db] text-[10px] text-[#8f6b10] font-bold">
+              <span className="px-1.5 py-0.2 rounded-full bg-[#FFFBEB] text-[10px] text-[#8f6b10] font-bold">
                 {reviewQueue.filter((r) => r.status === 'under_review').length}
               </span>
             </button>
@@ -553,8 +553,8 @@ export default function AdminDashboardPage() {
               onClick={() => setActiveTab('educators')}
               className={`px-3 py-2 flex items-center gap-1.5 border-b-2 transition-all shrink-0 min-h-[36px] ${
                 activeTab === 'educators'
-                  ? 'border-[#37352f] text-[#37352f] font-semibold'
-                  : 'border-transparent text-[#787774] hover:text-[#37352f] hover:bg-[#f7f6f3] rounded-t-md'
+                  ? 'border-[#202124] text-[#202124] font-semibold'
+                  : 'border-transparent text-[#787774] hover:text-[#202124] hover:bg-[#F1F1EF] rounded-t-md'
               }`}
             >
               <GraduationCap className="w-3.5 h-3.5 text-[#2383e2]" />
@@ -577,7 +577,7 @@ export default function AdminDashboardPage() {
                       placeholder="Search students by name or email..."
                       value={studentSearch}
                       onChange={(e) => setStudentSearch(e.target.value)}
-                      className="w-full sm:w-72 pl-8 pr-3 py-1.5 min-h-[36px] border border-[#ebebeb] bg-white rounded-md text-xs text-[#37352f] placeholder-[#9b9a97] focus:outline-none focus:border-[#2383e2] focus:ring-1 focus:ring-[#2383e2]"
+                      className="w-full sm:w-72 pl-8 pr-3 py-1.5 min-h-[36px] border border-[#E6E6E3] bg-white rounded-md text-xs text-[#202124] placeholder-[#9b9a97] focus:outline-none focus:border-[#2383e2] focus:ring-1 focus:ring-[#2383e2]"
                     />
                     <Search className="w-3.5 h-3.5 text-[#9b9a97] absolute left-2.5 top-2.5" />
                   </div>
@@ -585,7 +585,7 @@ export default function AdminDashboardPage() {
                   <select
                     value={statusFilter}
                     onChange={(e) => setStatusFilter(e.target.value as any)}
-                    className="px-3 py-1.5 min-h-[36px] border border-[#ebebeb] rounded-md text-xs text-[#37352f] bg-white focus:outline-none focus:border-[#2383e2] focus:ring-1 focus:ring-[#2383e2]"
+                    className="px-3 py-1.5 min-h-[36px] border border-[#E6E6E3] rounded-md text-xs text-[#202124] bg-white focus:outline-none focus:border-[#2383e2] focus:ring-1 focus:ring-[#2383e2]"
                   >
                     <option value="all">All Statuses</option>
                     <option value="active">Active Only</option>
@@ -595,7 +595,7 @@ export default function AdminDashboardPage() {
 
                 <button
                   onClick={fetchStudents}
-                  className="p-2 min-h-[36px] text-[#787774] hover:text-[#37352f] hover:bg-[#f7f6f3] rounded-md text-xs flex items-center justify-center gap-1 self-start sm:self-auto border border-[#ebebeb] transition-colors"
+                  className="p-2 min-h-[36px] text-[#787774] hover:text-[#202124] hover:bg-[#F1F1EF] rounded-md text-xs flex items-center justify-center gap-1 self-start sm:self-auto border border-[#E6E6E3] transition-colors"
                   title="Refresh student list"
                 >
                   <RefreshCw className="w-3.5 h-3.5" />
@@ -605,15 +605,15 @@ export default function AdminDashboardPage() {
 
               {loadingStudents ? (
                 <div className="p-12 text-center text-[#787774] text-sm">
-                  <div className="w-6 h-6 border-2 border-[#37352f] border-t-transparent rounded-full animate-spin mx-auto mb-3" />
+                  <div className="w-6 h-6 border-2 border-[#202124] border-t-transparent rounded-full animate-spin mx-auto mb-3" />
                   Loading enrolled students...
                 </div>
               ) : filteredStudents.length === 0 ? (
-                <div className="bg-white rounded-md p-10 text-center border border-dashed border-[#ebebeb] space-y-3">
+                <div className="bg-white rounded-md p-10 text-center border border-dashed border-[#E6E6E3] space-y-3">
                   <div className="w-10 h-10 rounded-full bg-[#f1f1ef] text-[#787774] flex items-center justify-center mx-auto">
                     <Users className="w-5 h-5" />
                   </div>
-                  <h3 className="text-sm font-semibold text-[#37352f]">No students found</h3>
+                  <h3 className="text-sm font-semibold text-[#202124]">No students found</h3>
                   <p className="text-xs text-[#787774] max-w-sm mx-auto">
                     {studentSearch
                       ? 'No students matched your search criteria.'
@@ -621,17 +621,17 @@ export default function AdminDashboardPage() {
                   </p>
                   <button
                     onClick={() => setShowAddModal(true)}
-                    className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-[#37352f] hover:bg-[#201e1d] text-white rounded-md text-xs font-medium shadow-2xs transition-colors"
+                    className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-[#202124] hover:bg-[#201e1d] text-white rounded-md text-xs font-medium shadow-2xs transition-colors"
                   >
                     <UserPlus className="w-3.5 h-3.5" />
                     Enroll First Student
                   </button>
                 </div>
               ) : (
-                <div className="bg-white rounded-md border border-[#ebebeb] overflow-hidden shadow-2xs">
+                <div className="bg-white rounded-md border border-[#E6E6E3] overflow-hidden shadow-2xs">
                   <div className="overflow-x-auto">
                     <table className="w-full text-left text-xs border-collapse">
-                      <thead className="bg-[#fbfbfa] border-b border-[#ebebeb] text-[11px] font-semibold text-[#787774] uppercase tracking-wider">
+                      <thead className="bg-[#F7F7F5] border-b border-[#E6E6E3] text-[11px] font-semibold text-[#787774] uppercase tracking-wider">
                         <tr>
                           <th className="px-4 py-2.5">Student</th>
                           <th className="px-3 py-2.5">Status</th>
@@ -642,16 +642,16 @@ export default function AdminDashboardPage() {
                           <th className="px-4 py-2.5 text-right">Actions</th>
                         </tr>
                       </thead>
-                      <tbody className="divide-y divide-[#ebebeb] font-normal">
+                      <tbody className="divide-y divide-[#E6E6E3] font-normal">
                         {filteredStudents.map((s) => (
-                          <tr key={s.id} className="hover:bg-[#f7f6f3]/80 transition-colors">
+                          <tr key={s.id} className="hover:bg-[#F1F1EF]/80 transition-colors">
                             <td className="px-4 py-3">
                               <div className="flex items-center gap-2.5">
-                                <div className="w-7 h-7 rounded-full bg-[#f1f1ef] text-[#37352f] font-semibold flex items-center justify-center text-xs border border-[#ebebeb]">
+                                <div className="w-7 h-7 rounded-full bg-[#f1f1ef] text-[#202124] font-semibold flex items-center justify-center text-xs border border-[#E6E6E3]">
                                   {s.name.charAt(0).toUpperCase()}
                                 </div>
                                 <div>
-                                  <p className="font-semibold text-[#37352f]">{s.name}</p>
+                                  <p className="font-semibold text-[#202124]">{s.name}</p>
                                   <p className="text-[11px] text-[#787774]">{s.email}</p>
                                 </div>
                               </div>
@@ -669,13 +669,13 @@ export default function AdminDashboardPage() {
                                 </span>
                               )}
                             </td>
-                            <td className="px-3 py-3 font-medium text-[#37352f]">
+                            <td className="px-3 py-3 font-medium text-[#202124]">
                               {s.total_attempts} tests
                             </td>
                             <td className="px-3 py-3 font-semibold text-[#1c7d49]">
                               {s.avg_score != null ? `${s.avg_score}%` : '—'}
                             </td>
-                            <td className="px-3 py-3 font-semibold text-[#37352f]">
+                            <td className="px-3 py-3 font-semibold text-[#202124]">
                               {s.best_score != null ? `${s.best_score}%` : '—'}
                             </td>
                             <td className="px-3 py-3 text-[#787774] font-mono text-[11px]">
@@ -688,8 +688,8 @@ export default function AdminDashboardPage() {
                                   title={s.status === 'active' ? 'Suspend Account' : 'Activate Account'}
                                   className={`p-1.5 min-h-[30px] min-w-[30px] rounded-md border text-xs transition-colors flex items-center justify-center ${
                                     s.status === 'active'
-                                      ? 'border-[#ebebeb] text-[#c43228] hover:bg-[#fbebe9]'
-                                      : 'border-[#ebebeb] text-[#1c7d49] hover:bg-[#e6f6ee]'
+                                      ? 'border-[#E6E6E3] text-[#c43228] hover:bg-[#fbebe9]'
+                                      : 'border-[#E6E6E3] text-[#1c7d49] hover:bg-[#e6f6ee]'
                                   }`}
                                 >
                                   {s.status === 'active' ? <ShieldAlert className="w-3.5 h-3.5" /> : <ShieldCheck className="w-3.5 h-3.5" />}
@@ -702,7 +702,7 @@ export default function AdminDashboardPage() {
                                     setEditPassword('');
                                   }}
                                   title="Edit Student or Reset Password"
-                                  className="p-1.5 min-h-[30px] min-w-[30px] border border-[#ebebeb] text-[#787774] hover:text-[#37352f] hover:bg-[#f7f6f3] rounded-md text-xs transition-colors flex items-center justify-center"
+                                  className="p-1.5 min-h-[30px] min-w-[30px] border border-[#E6E6E3] text-[#787774] hover:text-[#202124] hover:bg-[#F1F1EF] rounded-md text-xs transition-colors flex items-center justify-center"
                                 >
                                   <Edit className="w-3.5 h-3.5" />
                                 </button>
@@ -710,7 +710,7 @@ export default function AdminDashboardPage() {
                                 <button
                                   onClick={() => handleDeleteStudent(s.id)}
                                   title="Remove Student"
-                                  className="p-1.5 min-h-[30px] min-w-[30px] border border-[#ebebeb] text-[#9b9a97] hover:text-[#c43228] hover:bg-[#fbebe9] rounded-md text-xs transition-colors flex items-center justify-center"
+                                  className="p-1.5 min-h-[30px] min-w-[30px] border border-[#E6E6E3] text-[#9b9a97] hover:text-[#c43228] hover:bg-[#fbebe9] rounded-md text-xs transition-colors flex items-center justify-center"
                                 >
                                   <Trash2 className="w-3.5 h-3.5" />
                                 </button>
@@ -736,14 +736,14 @@ export default function AdminDashboardPage() {
                     placeholder="Search mock tests..."
                     value={testSearch}
                     onChange={(e) => setTestSearch(e.target.value)}
-                    className="w-full sm:w-72 pl-8 pr-3 py-1.5 min-h-[36px] border border-[#ebebeb] bg-white rounded-md text-xs text-[#37352f] placeholder-[#9b9a97] focus:outline-none focus:border-[#2383e2] focus:ring-1 focus:ring-[#2383e2]"
+                    className="w-full sm:w-72 pl-8 pr-3 py-1.5 min-h-[36px] border border-[#E6E6E3] bg-white rounded-md text-xs text-[#202124] placeholder-[#9b9a97] focus:outline-none focus:border-[#2383e2] focus:ring-1 focus:ring-[#2383e2]"
                   />
                   <Search className="w-3.5 h-3.5 text-[#9b9a97] absolute left-2.5 top-2.5" />
                 </div>
 
                 <Link
                   href="/tests/create"
-                  className="inline-flex items-center justify-center gap-1.5 px-3 py-1.5 min-h-[36px] bg-[#37352f] hover:bg-[#201e1d] text-white font-medium rounded-md text-xs shadow-2xs transition-colors"
+                  className="inline-flex items-center justify-center gap-1.5 px-3 py-1.5 min-h-[36px] bg-[#202124] hover:bg-[#201e1d] text-white font-medium rounded-md text-xs shadow-2xs transition-colors"
                 >
                   <PlusCircle className="w-3.5 h-3.5" />
                   Upload New Mock Paper
@@ -752,21 +752,21 @@ export default function AdminDashboardPage() {
 
               {loadingTests ? (
                 <div className="p-12 text-center text-[#787774] text-sm">
-                  <div className="w-6 h-6 border-2 border-[#37352f] border-t-transparent rounded-full animate-spin mx-auto mb-3" />
+                  <div className="w-6 h-6 border-2 border-[#202124] border-t-transparent rounded-full animate-spin mx-auto mb-3" />
                   Loading tests...
                 </div>
               ) : filteredTests.length === 0 ? (
-                <div className="bg-white rounded-md p-10 text-center border border-dashed border-[#ebebeb] space-y-3">
+                <div className="bg-white rounded-md p-10 text-center border border-dashed border-[#E6E6E3] space-y-3">
                   <div className="w-10 h-10 rounded-full bg-[#f1f1ef] text-[#787774] flex items-center justify-center mx-auto">
                     <Layers className="w-5 h-5" />
                   </div>
-                  <h3 className="text-sm font-semibold text-[#37352f]">No mock tests published yet</h3>
+                  <h3 className="text-sm font-semibold text-[#202124]">No mock tests published yet</h3>
                   <p className="text-xs text-[#787774] max-w-sm mx-auto">
                     Upload an exam question paper and answer key to create an official mock for your enrolled students.
                   </p>
                   <Link
                     href="/tests/create"
-                    className="inline-flex items-center justify-center gap-1.5 px-3 py-1.5 min-h-[36px] bg-[#37352f] hover:bg-[#201e1d] text-white rounded-md text-xs font-medium shadow-2xs transition-colors"
+                    className="inline-flex items-center justify-center gap-1.5 px-3 py-1.5 min-h-[36px] bg-[#202124] hover:bg-[#201e1d] text-white rounded-md text-xs font-medium shadow-2xs transition-colors"
                   >
                     <PlusCircle className="w-3.5 h-3.5" />
                     Create First Mock
@@ -777,18 +777,18 @@ export default function AdminDashboardPage() {
                   {filteredTests.map((test) => (
                     <div
                       key={test.id}
-                      className="bg-white rounded-md border border-[#ebebeb] hover:border-[#d9d8d6] p-4 shadow-2xs transition-all flex flex-col lg:flex-row lg:items-center justify-between gap-4"
+                      className="bg-white rounded-md border border-[#E6E6E3] hover:border-[#d9d8d6] p-4 shadow-2xs transition-all flex flex-col lg:flex-row lg:items-center justify-between gap-4"
                     >
                       <div className="space-y-1.5 flex-1">
                         <div className="flex flex-wrap items-center gap-2">
-                          <span className="px-2 py-0.5 rounded-[3px] text-[10px] font-medium bg-[#f7f6f3] text-[#37352f] border border-[#ebebeb]">
+                          <span className="px-2 py-0.5 rounded-[3px] text-[10px] font-medium bg-[#F1F1EF] text-[#202124] border border-[#E6E6E3]">
                             {test.subject || 'General'}
                           </span>
                           <span className="text-xs text-[#9b9a97] font-mono">
                             {new Date(test.created_at).toLocaleDateString()}
                           </span>
                         </div>
-                        <h4 className="text-sm font-semibold text-[#37352f]">{test.title}</h4>
+                        <h4 className="text-sm font-semibold text-[#202124]">{test.title}</h4>
                         <div className="flex flex-wrap items-center gap-3 sm:gap-4 text-xs text-[#787774]">
                           <span className="flex items-center gap-1 font-medium">
                             <Layers className="w-3.5 h-3.5 text-[#9b9a97]" />
@@ -809,17 +809,17 @@ export default function AdminDashboardPage() {
                         </div>
                       </div>
 
-                      <div className="flex flex-wrap items-center gap-2 pt-2 lg:pt-0 border-t lg:border-t-0 border-[#ebebeb]">
+                      <div className="flex flex-wrap items-center gap-2 pt-2 lg:pt-0 border-t lg:border-t-0 border-[#E6E6E3]">
                         <Link
                           href={`/tests/${test.id}/start`}
-                          className="flex-1 sm:flex-none justify-center px-3 py-1.5 min-h-[36px] bg-[#37352f] hover:bg-[#201e1d] text-white font-medium rounded-md text-xs flex items-center gap-1.5 shadow-2xs transition-colors"
+                          className="flex-1 sm:flex-none justify-center px-3 py-1.5 min-h-[36px] bg-[#202124] hover:bg-[#201e1d] text-white font-medium rounded-md text-xs flex items-center gap-1.5 shadow-2xs transition-colors"
                         >
                           <Play className="w-3.5 h-3.5 fill-white" />
                           Preview Exam
                         </Link>
                         <Link
                           href={`/tests/${test.id}`}
-                          className="p-2 min-h-[36px] min-w-[36px] flex items-center justify-center border border-[#ebebeb] hover:bg-[#f7f6f3] text-[#787774] hover:text-[#37352f] rounded-md text-xs transition-colors"
+                          className="p-2 min-h-[36px] min-w-[36px] flex items-center justify-center border border-[#E6E6E3] hover:bg-[#F1F1EF] text-[#787774] hover:text-[#202124] rounded-md text-xs transition-colors"
                           title="View Details & Questions"
                         >
                           <History className="w-4 h-4" />
@@ -835,10 +835,10 @@ export default function AdminDashboardPage() {
           {/* TAB 3: Batch Submissions Gradebook */}
           {activeTab === 'submissions' && (
             <div className="space-y-4">
-              <div className="bg-white rounded-md border border-[#ebebeb] overflow-hidden shadow-2xs">
-                <div className="p-3.5 bg-[#fbfbfa] border-b border-[#ebebeb] flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+              <div className="bg-white rounded-md border border-[#E6E6E3] overflow-hidden shadow-2xs">
+                <div className="p-3.5 bg-[#F7F7F5] border-b border-[#E6E6E3] flex flex-col sm:flex-row sm:items-center justify-between gap-2">
                   <div>
-                    <h3 className="text-sm font-semibold text-[#37352f]">Student Attempts Gradebook</h3>
+                    <h3 className="text-sm font-semibold text-[#202124]">Student Attempts Gradebook</h3>
                     <p className="text-[11px] text-[#787774]">
                       Review each student's exam responses, marks, accuracy, and Gemini AI coaching insights.
                     </p>
@@ -853,16 +853,16 @@ export default function AdminDashboardPage() {
                     No student submissions recorded yet. Once students attempt your mock tests, their scores will appear here.
                   </div>
                 ) : (
-                  <div className="divide-y divide-[#ebebeb]">
+                  <div className="divide-y divide-[#E6E6E3]">
                     {allSubmissions.map((att) => (
                       <div
                         key={att.id}
-                        className="p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4 hover:bg-[#f7f6f3]/60 transition-colors"
+                        className="p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4 hover:bg-[#F1F1EF]/60 transition-colors"
                       >
                         <div className="space-y-1">
                           <div className="flex items-center gap-2">
-                            <span className="font-semibold text-[#37352f] text-sm">{att.student_name || 'Student'}</span>
-                            <span className="px-2 py-0.5 rounded-[3px] text-[10px] font-medium bg-[#f1f1ef] text-[#787774] border border-[#ebebeb]">
+                            <span className="font-semibold text-[#202124] text-sm">{att.student_name || 'Student'}</span>
+                            <span className="px-2 py-0.5 rounded-[3px] text-[10px] font-medium bg-[#f1f1ef] text-[#787774] border border-[#E6E6E3]">
                               {att.testSubject || 'General'}
                             </span>
                           </div>
@@ -872,9 +872,9 @@ export default function AdminDashboardPage() {
                           </p>
                         </div>
 
-                        <div className="flex items-center justify-between sm:justify-end gap-4 pt-2 sm:pt-0 border-t sm:border-t-0 border-[#ebebeb]">
+                        <div className="flex items-center justify-between sm:justify-end gap-4 pt-2 sm:pt-0 border-t sm:border-t-0 border-[#E6E6E3]">
                           <div className="text-left sm:text-right">
-                            <span className="text-base font-bold text-[#37352f]">
+                            <span className="text-base font-bold text-[#202124]">
                               {att.final_score} / {att.maximum_marks}
                             </span>
                             <p className="text-[11px] font-medium text-[#1c7d49]">{att.percentage}% Score</p>
@@ -882,7 +882,7 @@ export default function AdminDashboardPage() {
 
                           <Link
                             href={`/exam/${att.id}/result`}
-                            className="px-3 py-1.5 min-h-[36px] bg-white hover:bg-[#f7f6f3] text-[#37352f] font-medium rounded-md text-xs border border-[#ebebeb] transition-colors flex items-center justify-center gap-1.5 shadow-2xs"
+                            className="px-3 py-1.5 min-h-[36px] bg-white hover:bg-[#F1F1EF] text-[#202124] font-medium rounded-md text-xs border border-[#E6E6E3] transition-colors flex items-center justify-center gap-1.5 shadow-2xs"
                           >
                             <Sparkles className="w-3.5 h-3.5 text-[#8f6b10]" />
                             Review Paper
@@ -900,16 +900,16 @@ export default function AdminDashboardPage() {
           {/* TAB 4: Content Moderation & Review Queue */}
           {activeTab === 'review_queue' && (
             <div className="space-y-4">
-              <div className="p-4 bg-white rounded-md border border-[#ebebeb] flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-2xs">
+              <div className="p-4 bg-white rounded-md border border-[#E6E6E3] flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-2xs">
                 <div>
-                  <h3 className="font-semibold text-[#37352f] text-sm">Educational Assessment Moderation Queue</h3>
+                  <h3 className="font-semibold text-[#202124] text-sm">Educational Assessment Moderation Queue</h3>
                   <p className="text-[11px] text-[#787774]">
                     Review submitted tests for syllabus alignment, marking key accuracy, copyright compliance, and pedagogical quality.
                   </p>
                 </div>
                 <button
                   onClick={fetchReviewQueue}
-                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md border border-[#ebebeb] text-xs font-medium text-[#787774] hover:text-[#37352f] hover:bg-[#f7f6f3] transition-colors"
+                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md border border-[#E6E6E3] text-xs font-medium text-[#787774] hover:text-[#202124] hover:bg-[#F1F1EF] transition-colors"
                 >
                   <RefreshCw className={`w-3.5 h-3.5 ${loadingReviewQueue ? 'animate-spin' : ''}`} />
                   Refresh Queue
@@ -922,7 +922,7 @@ export default function AdminDashboardPage() {
                   Loading moderation queue...
                 </div>
               ) : reviewQueue.length === 0 ? (
-                <div className="p-12 text-center text-[#787774] bg-white rounded-md border border-[#ebebeb] text-xs">
+                <div className="p-12 text-center text-[#787774] bg-white rounded-md border border-[#E6E6E3] text-xs">
                   No assessments currently waiting in the review queue.
                 </div>
               ) : (
@@ -930,14 +930,14 @@ export default function AdminDashboardPage() {
                   {reviewQueue.map((item) => (
                     <div
                       key={item.id}
-                      className="p-4 bg-white rounded-md border border-[#ebebeb] shadow-2xs space-y-3 hover:border-[#d9d8d6] transition-all"
+                      className="p-4 bg-white rounded-md border border-[#E6E6E3] shadow-2xs space-y-3 hover:border-[#d9d8d6] transition-all"
                     >
                       <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-3">
                         <div className="space-y-1.5 flex-1">
                           <div className="flex items-center gap-2 flex-wrap">
                             <span className={`text-[10px] font-mono font-medium px-2 py-0.5 rounded-[3px] uppercase ${
                               item.status === 'under_review'
-                                ? 'bg-[#fbf3db] text-[#8f6b10] border border-[#fae6b4]'
+                                ? 'bg-[#FFFBEB] text-[#8f6b10] border border-[#fae6b4]'
                                 : item.status === 'revisions_requested'
                                 ? 'bg-[#fbebe9] text-[#c43228] border border-[#fad2cf]'
                                 : 'bg-[#e6f6ee] text-[#1c7d49] border border-[#c3eed7]'
@@ -948,7 +948,7 @@ export default function AdminDashboardPage() {
                             <span className={`text-[10px] font-mono font-medium px-2 py-0.5 rounded-[3px] ${
                               item.is_paid
                                 ? 'bg-[#ebf5fe] text-[#2383e2] border border-[#cce5fb]'
-                                : 'bg-[#f1f1ef] text-[#787774] border border-[#ebebeb]'
+                                : 'bg-[#f1f1ef] text-[#787774] border border-[#E6E6E3]'
                             }`}>
                               {item.is_paid ? `₹${item.price_inr}` : 'Free'}
                             </span>
@@ -958,21 +958,21 @@ export default function AdminDashboardPage() {
                             </span>
                           </div>
 
-                          <h4 className="font-semibold text-[#37352f] text-sm">{item.title}</h4>
+                          <h4 className="font-semibold text-[#202124] text-sm">{item.title}</h4>
                           {item.description && (
                             <p className="text-xs text-[#787774] line-clamp-2">{item.description}</p>
                           )}
 
                           <div className="flex items-center gap-2 pt-1 text-xs text-[#787774]">
                             <GraduationCap className="w-3.5 h-3.5 text-[#8f6b10]" />
-                            <span className="font-medium text-[#37352f]">{item.creator?.name}</span>
+                            <span className="font-medium text-[#202124]">{item.creator?.name}</span>
                             <span className="text-[#9b9a97] font-mono">({item.creator?.email})</span>
-                            <span className="text-[#ebebeb]">•</span>
+                            <span className="text-[#E6E6E3]">•</span>
                             <span className="text-[#787774]">{item.creator?.institute}</span>
                           </div>
 
                           {item.review_notes && (
-                            <div className="p-2.5 bg-[#fbf3db] rounded-md text-xs text-[#8f6b10] border border-[#fae6b4] mt-2">
+                            <div className="p-2.5 bg-[#FFFBEB] rounded-md text-xs text-[#8f6b10] border border-[#fae6b4] mt-2">
                               <strong>Previous Review Note:</strong> {item.review_notes}
                             </div>
                           )}
@@ -980,7 +980,7 @@ export default function AdminDashboardPage() {
 
                         <div className="flex sm:flex-col items-center sm:items-end gap-2 shrink-0">
                           <Link href={`/tests/${item.id}`}>
-                            <button className="px-3 py-1.5 bg-white hover:bg-[#f7f6f3] text-[#37352f] font-medium rounded-md text-xs border border-[#ebebeb] transition-colors flex items-center gap-1 shadow-2xs">
+                            <button className="px-3 py-1.5 bg-white hover:bg-[#F1F1EF] text-[#202124] font-medium rounded-md text-xs border border-[#E6E6E3] transition-colors flex items-center gap-1 shadow-2xs">
                               <Eye className="w-3.5 h-3.5 text-[#787774]" /> Preview Test
                             </button>
                           </Link>
@@ -988,7 +988,7 @@ export default function AdminDashboardPage() {
                       </div>
 
                       {/* Moderation Controls & Feedback Input */}
-                      <div className="pt-3 border-t border-[#ebebeb] space-y-3">
+                      <div className="pt-3 border-t border-[#E6E6E3] space-y-3">
                         <div>
                           <label className="block text-[11px] font-medium text-[#787774] mb-1">
                             Review Feedback / Revision Instructions (Optional):
@@ -1000,7 +1000,7 @@ export default function AdminDashboardPage() {
                             onChange={(e) =>
                               setReviewActionNote((prev) => ({ ...prev, [item.id]: e.target.value }))
                             }
-                            className="w-full px-3 py-1.5 rounded-md border border-[#ebebeb] text-xs bg-white text-[#37352f] placeholder-[#9b9a97] focus:border-[#2383e2] focus:ring-1 focus:ring-[#2383e2] focus:outline-none"
+                            className="w-full px-3 py-1.5 rounded-md border border-[#E6E6E3] text-xs bg-white text-[#202124] placeholder-[#9b9a97] focus:border-[#2383e2] focus:ring-1 focus:ring-[#2383e2] focus:outline-none"
                           />
                         </div>
 
@@ -1008,14 +1008,14 @@ export default function AdminDashboardPage() {
                           <button
                             disabled={actionProcessing === item.id}
                             onClick={() => handleReviewAction(item.id, 'reject')}
-                            className="px-3 py-1.5 text-xs font-medium rounded-md border border-[#ebebeb] text-[#787774] hover:bg-[#f7f6f3] hover:text-[#37352f] transition-colors"
+                            className="px-3 py-1.5 text-xs font-medium rounded-md border border-[#E6E6E3] text-[#787774] hover:bg-[#F1F1EF] hover:text-[#202124] transition-colors"
                           >
                             Reject to Draft
                           </button>
                           <button
                             disabled={actionProcessing === item.id}
                             onClick={() => handleReviewAction(item.id, 'revisions_requested')}
-                            className="px-3 py-1.5 text-xs font-medium rounded-md bg-[#fbf3db] text-[#8f6b10] border border-[#fae6b4] hover:bg-[#fae6b4] transition-colors"
+                            className="px-3 py-1.5 text-xs font-medium rounded-md bg-[#FFFBEB] text-[#8f6b10] border border-[#fae6b4] hover:bg-[#fae6b4] transition-colors"
                           >
                             Request Revisions
                           </button>
@@ -1039,16 +1039,16 @@ export default function AdminDashboardPage() {
           {/* TAB 5: Educators & Faculty Accreditation */}
           {activeTab === 'educators' && (
             <div className="space-y-4">
-              <div className="p-4 bg-white rounded-md border border-[#ebebeb] flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-2xs">
+              <div className="p-4 bg-white rounded-md border border-[#E6E6E3] flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-2xs">
                 <div>
-                  <h3 className="font-semibold text-[#37352f] text-sm">Educators & Creator Accreditation Registry</h3>
+                  <h3 className="font-semibold text-[#202124] text-sm">Educators & Creator Accreditation Registry</h3>
                   <p className="text-[11px] text-[#787774]">
                     Manage educator verification status, credentials, and publishing permissions across the Nalanda ecosystem.
                   </p>
                 </div>
                 <button
                   onClick={fetchEducators}
-                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md border border-[#ebebeb] text-xs font-medium text-[#787774] hover:text-[#37352f] hover:bg-[#f7f6f3] transition-colors"
+                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md border border-[#E6E6E3] text-xs font-medium text-[#787774] hover:text-[#202124] hover:bg-[#F1F1EF] transition-colors"
                 >
                   <RefreshCw className={`w-3.5 h-3.5 ${loadingEducators ? 'animate-spin' : ''}`} />
                   Refresh Registry
@@ -1061,7 +1061,7 @@ export default function AdminDashboardPage() {
                   Loading educators...
                 </div>
               ) : educators.length === 0 ? (
-                <div className="p-12 text-center text-[#787774] bg-white rounded-md border border-[#ebebeb] text-xs">
+                <div className="p-12 text-center text-[#787774] bg-white rounded-md border border-[#E6E6E3] text-xs">
                   No educators or creator accounts registered yet.
                 </div>
               ) : (
@@ -1069,17 +1069,17 @@ export default function AdminDashboardPage() {
                   {educators.map((edu) => (
                     <div
                       key={edu.user_id}
-                      className="p-4 bg-white rounded-md border border-[#ebebeb] shadow-2xs flex flex-col sm:flex-row sm:items-center justify-between gap-4 hover:border-[#d9d8d6] transition-all"
+                      className="p-4 bg-white rounded-md border border-[#E6E6E3] shadow-2xs flex flex-col sm:flex-row sm:items-center justify-between gap-4 hover:border-[#d9d8d6] transition-all"
                     >
                       <div className="space-y-1 flex-1">
                         <div className="flex items-center gap-2 flex-wrap">
-                          <span className="font-semibold text-[#37352f] text-sm">{edu.name}</span>
+                          <span className="font-semibold text-[#202124] text-sm">{edu.name}</span>
                           <span className={`text-[10px] font-mono font-medium px-2 py-0.5 rounded-[3px] uppercase ${
                             edu.verification_status === 'verified'
                               ? 'bg-[#e6f6ee] text-[#1c7d49] border border-[#c3eed7]'
                               : edu.verification_status === 'pending'
-                              ? 'bg-[#fbf3db] text-[#8f6b10] border border-[#fae6b4]'
-                              : 'bg-[#f1f1ef] text-[#787774] border border-[#ebebeb]'
+                              ? 'bg-[#FFFBEB] text-[#8f6b10] border border-[#fae6b4]'
+                              : 'bg-[#f1f1ef] text-[#787774] border border-[#E6E6E3]'
                           }`}>
                             {edu.verification_status}
                           </span>
@@ -1093,7 +1093,7 @@ export default function AdminDashboardPage() {
                         </p>
 
                         <div className="flex items-center gap-3 text-[11px] text-[#9b9a97] font-mono flex-wrap">
-                          <span>Email: <strong className="text-[#37352f] font-medium">{edu.email}</strong></span>
+                          <span>Email: <strong className="text-[#202124] font-medium">{edu.email}</strong></span>
                           <span>•</span>
                           <span>{edu.authored_tests_count} Tests Authored</span>
                           <span>•</span>
@@ -1103,9 +1103,9 @@ export default function AdminDashboardPage() {
                         </div>
                       </div>
 
-                      <div className="flex items-center gap-2 shrink-0 pt-2 sm:pt-0 border-t sm:border-t-0 border-[#ebebeb] flex-wrap">
+                      <div className="flex items-center gap-2 shrink-0 pt-2 sm:pt-0 border-t sm:border-t-0 border-[#E6E6E3] flex-wrap">
                         <Link href={`/creators/${edu.user_id}`}>
-                          <button className="px-3 py-1.5 text-xs font-medium rounded-md border border-[#ebebeb] text-[#787774] hover:text-[#37352f] hover:bg-[#f7f6f3] transition-colors flex items-center gap-1">
+                          <button className="px-3 py-1.5 text-xs font-medium rounded-md border border-[#E6E6E3] text-[#787774] hover:text-[#202124] hover:bg-[#F1F1EF] transition-colors flex items-center gap-1">
                             <Eye className="w-3.5 h-3.5" /> Profile
                           </button>
                         </Link>
@@ -1139,7 +1139,7 @@ export default function AdminDashboardPage() {
 
         {/* Admin Toast Notification */}
         {adminToast && (
-          <div className="fixed bottom-6 right-6 z-50 bg-[#37352f] text-white text-xs px-3.5 py-2.5 rounded-md shadow-lg flex items-center gap-2">
+          <div className="fixed bottom-6 right-6 z-50 bg-[#202124] text-white text-xs px-3.5 py-2.5 rounded-md shadow-lg flex items-center gap-2">
             <CheckCircle className="w-4 h-4 text-[#2eaadc]" />
             <span>{adminToast}</span>
           </div>
@@ -1147,18 +1147,18 @@ export default function AdminDashboardPage() {
 
         {/* Add Student Modal */}
         {showAddModal && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#37352f]/40 backdrop-blur-xs p-4">
-            <div className="bg-white rounded-lg max-w-md w-full p-5 shadow-lg border border-[#ebebeb]">
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#202124]/40 backdrop-blur-xs p-4">
+            <div className="bg-white rounded-lg max-w-md w-full p-5 shadow-lg border border-[#E6E6E3]">
               <div className="flex items-center justify-between mb-4">
                 <div className="flex items-center gap-2">
-                  <div className="w-7 h-7 rounded-md bg-[#f1f1ef] text-[#37352f] flex items-center justify-center">
+                  <div className="w-7 h-7 rounded-md bg-[#f1f1ef] text-[#202124] flex items-center justify-center">
                     <UserPlus className="w-3.5 h-3.5" />
                   </div>
-                  <h3 className="font-semibold text-[#37352f] text-sm">Enroll New Student</h3>
+                  <h3 className="font-semibold text-[#202124] text-sm">Enroll New Student</h3>
                 </div>
                 <button
                   onClick={() => setShowAddModal(false)}
-                  className="text-[#9b9a97] hover:text-[#37352f] p-1 text-lg leading-none"
+                  className="text-[#9b9a97] hover:text-[#202124] p-1 text-lg leading-none"
                 >
                   &times;
                 </button>
@@ -1178,7 +1178,7 @@ export default function AdminDashboardPage() {
                     placeholder="e.g. Rahul Sharma"
                     value={newStudentName}
                     onChange={(e) => setNewStudentName(e.target.value)}
-                    className="w-full px-3 py-2 min-h-[36px] border border-[#ebebeb] rounded-md text-xs bg-white text-[#37352f] placeholder-[#9b9a97] focus:outline-none focus:border-[#2383e2] focus:ring-1 focus:ring-[#2383e2]"
+                    className="w-full px-3 py-2 min-h-[36px] border border-[#E6E6E3] rounded-md text-xs bg-white text-[#202124] placeholder-[#9b9a97] focus:outline-none focus:border-[#2383e2] focus:ring-1 focus:ring-[#2383e2]"
                     required
                   />
                 </div>
@@ -1190,7 +1190,7 @@ export default function AdminDashboardPage() {
                     placeholder="student@coaching.com"
                     value={newStudentEmail}
                     onChange={(e) => setNewStudentEmail(e.target.value)}
-                    className="w-full px-3 py-2 min-h-[36px] border border-[#ebebeb] rounded-md text-xs bg-white text-[#37352f] placeholder-[#9b9a97] focus:outline-none focus:border-[#2383e2] focus:ring-1 focus:ring-[#2383e2]"
+                    className="w-full px-3 py-2 min-h-[36px] border border-[#E6E6E3] rounded-md text-xs bg-white text-[#202124] placeholder-[#9b9a97] focus:outline-none focus:border-[#2383e2] focus:ring-1 focus:ring-[#2383e2]"
                     required
                   />
                 </div>
@@ -1202,23 +1202,23 @@ export default function AdminDashboardPage() {
                     placeholder="At least 6 characters"
                     value={newStudentPassword}
                     onChange={(e) => setNewStudentPassword(e.target.value)}
-                    className="w-full px-3 py-2 min-h-[36px] border border-[#ebebeb] rounded-md text-xs bg-white text-[#37352f] placeholder-[#9b9a97] focus:outline-none focus:border-[#2383e2] focus:ring-1 focus:ring-[#2383e2]"
+                    className="w-full px-3 py-2 min-h-[36px] border border-[#E6E6E3] rounded-md text-xs bg-white text-[#202124] placeholder-[#9b9a97] focus:outline-none focus:border-[#2383e2] focus:ring-1 focus:ring-[#2383e2]"
                     required
                   />
                 </div>
 
-                <div className="flex items-center justify-end gap-2 pt-2 border-t border-[#ebebeb]">
+                <div className="flex items-center justify-end gap-2 pt-2 border-t border-[#E6E6E3]">
                   <button
                     type="button"
                     onClick={() => setShowAddModal(false)}
-                    className="px-3 py-1.5 min-h-[36px] text-xs font-medium text-[#787774] hover:text-[#37352f] hover:bg-[#f7f6f3] rounded-md transition-colors"
+                    className="px-3 py-1.5 min-h-[36px] text-xs font-medium text-[#787774] hover:text-[#202124] hover:bg-[#F1F1EF] rounded-md transition-colors"
                   >
                     Cancel
                   </button>
                   <button
                     type="submit"
                     disabled={creatingStudent}
-                    className="px-3.5 py-1.5 min-h-[36px] bg-[#37352f] hover:bg-[#201e1d] text-white rounded-md text-xs font-medium shadow-2xs transition-colors"
+                    className="px-3.5 py-1.5 min-h-[36px] bg-[#202124] hover:bg-[#201e1d] text-white rounded-md text-xs font-medium shadow-2xs transition-colors"
                   >
                     {creatingStudent ? 'Enrolling...' : 'Enroll Student'}
                   </button>
@@ -1230,18 +1230,18 @@ export default function AdminDashboardPage() {
 
         {/* Edit Student / Password Modal */}
         {editingStudent && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#37352f]/40 backdrop-blur-xs p-4">
-            <div className="bg-white rounded-lg max-w-md w-full p-5 shadow-lg border border-[#ebebeb]">
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#202124]/40 backdrop-blur-xs p-4">
+            <div className="bg-white rounded-lg max-w-md w-full p-5 shadow-lg border border-[#E6E6E3]">
               <div className="flex items-center justify-between mb-4">
                 <div className="flex items-center gap-2">
-                  <div className="w-7 h-7 rounded-md bg-[#f1f1ef] text-[#37352f] flex items-center justify-center">
+                  <div className="w-7 h-7 rounded-md bg-[#f1f1ef] text-[#202124] flex items-center justify-center">
                     <Edit className="w-3.5 h-3.5" />
                   </div>
-                  <h3 className="font-semibold text-[#37352f] text-sm">Edit Student Account</h3>
+                  <h3 className="font-semibold text-[#202124] text-sm">Edit Student Account</h3>
                 </div>
                 <button
                   onClick={() => setEditingStudent(null)}
-                  className="text-[#9b9a97] hover:text-[#37352f] p-1 text-lg leading-none"
+                  className="text-[#9b9a97] hover:text-[#202124] p-1 text-lg leading-none"
                 >
                   &times;
                 </button>
@@ -1254,7 +1254,7 @@ export default function AdminDashboardPage() {
                     type="text"
                     value={editName}
                     onChange={(e) => setEditName(e.target.value)}
-                    className="w-full px-3 py-2 min-h-[36px] border border-[#ebebeb] rounded-md text-xs bg-white text-[#37352f] placeholder-[#9b9a97] focus:outline-none focus:border-[#2383e2] focus:ring-1 focus:ring-[#2383e2]"
+                    className="w-full px-3 py-2 min-h-[36px] border border-[#E6E6E3] rounded-md text-xs bg-white text-[#202124] placeholder-[#9b9a97] focus:outline-none focus:border-[#2383e2] focus:ring-1 focus:ring-[#2383e2]"
                     required
                   />
                 </div>
@@ -1268,22 +1268,22 @@ export default function AdminDashboardPage() {
                     placeholder="New password"
                     value={editPassword}
                     onChange={(e) => setEditPassword(e.target.value)}
-                    className="w-full px-3 py-2 min-h-[36px] border border-[#ebebeb] rounded-md text-xs bg-white text-[#37352f] placeholder-[#9b9a97] focus:outline-none focus:border-[#2383e2] focus:ring-1 focus:ring-[#2383e2]"
+                    className="w-full px-3 py-2 min-h-[36px] border border-[#E6E6E3] rounded-md text-xs bg-white text-[#202124] placeholder-[#9b9a97] focus:outline-none focus:border-[#2383e2] focus:ring-1 focus:ring-[#2383e2]"
                   />
                 </div>
 
-                <div className="flex items-center justify-end gap-2 pt-2 border-t border-[#ebebeb]">
+                <div className="flex items-center justify-end gap-2 pt-2 border-t border-[#E6E6E3]">
                   <button
                     type="button"
                     onClick={() => setEditingStudent(null)}
-                    className="px-3 py-1.5 min-h-[36px] text-xs font-medium text-[#787774] hover:text-[#37352f] hover:bg-[#f7f6f3] rounded-md transition-colors"
+                    className="px-3 py-1.5 min-h-[36px] text-xs font-medium text-[#787774] hover:text-[#202124] hover:bg-[#F1F1EF] rounded-md transition-colors"
                   >
                     Cancel
                   </button>
                   <button
                     type="submit"
                     disabled={updatingStudent}
-                    className="px-3.5 py-1.5 min-h-[36px] bg-[#37352f] hover:bg-[#201e1d] text-white rounded-md text-xs font-medium shadow-2xs transition-colors"
+                    className="px-3.5 py-1.5 min-h-[36px] bg-[#202124] hover:bg-[#201e1d] text-white rounded-md text-xs font-medium shadow-2xs transition-colors"
                   >
                     {updatingStudent ? 'Saving...' : 'Update Account'}
                   </button>

@@ -57,13 +57,13 @@ export default function SignUpPage() {
   };
 
   return (
-    <div className="min-h-[85vh] flex items-center justify-center px-4 py-12 bg-[#fbfbfa]">
-      <div className="max-w-md w-full space-y-5 bg-white p-6 sm:p-8 rounded-md border border-[#ebebeb] shadow-xs">
+    <div className="min-h-[85vh] flex items-center justify-center px-4 py-12 bg-[#F7F7F5]">
+      <div className="max-w-md w-full space-y-5 bg-white p-6 sm:p-8 rounded-md border border-[#E6E6E3] shadow-xs">
         <div className="text-center space-y-1.5">
           <div className="flex justify-center mb-2">
             <Logo size="md" href="/" />
           </div>
-          <h2 className="text-xl font-bold text-[#37352f]">
+          <h2 className="text-xl font-bold text-[#202124]">
             Create an Account
           </h2>
           <p className="text-xs text-[#787774] max-w-sm mx-auto">
@@ -80,7 +80,7 @@ export default function SignUpPage() {
 
         <form onSubmit={handleSubmit} className="space-y-3.5">
           <div>
-            <label className="block text-xs font-medium text-[#37352f] mb-1">
+            <label className="block text-xs font-medium text-[#202124] mb-1">
               Full Name
             </label>
             <div className="relative">
@@ -91,13 +91,13 @@ export default function SignUpPage() {
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 placeholder="e.g. Priya Sharma"
-                className="w-full pl-8 pr-3 py-1.5 text-xs rounded-[4px] border border-[#ebebeb] focus:outline-none focus:border-[#37352f] bg-[#fcfbf9] focus:bg-white text-[#37352f]"
+                className="w-full pl-8 pr-3 py-1.5 text-xs rounded-[4px] border border-[#E6E6E3] focus:outline-none focus:border-[#202124] bg-[#fcfbf9] focus:bg-white text-[#202124]"
               />
             </div>
           </div>
 
           <div>
-            <label className="block text-xs font-medium text-[#37352f] mb-1">
+            <label className="block text-xs font-medium text-[#202124] mb-1">
               Email Address
             </label>
             <div className="relative">
@@ -108,13 +108,13 @@ export default function SignUpPage() {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="name@example.com"
-                className="w-full pl-8 pr-3 py-1.5 text-xs rounded-[4px] border border-[#ebebeb] focus:outline-none focus:border-[#37352f] bg-[#fcfbf9] focus:bg-white text-[#37352f]"
+                className="w-full pl-8 pr-3 py-1.5 text-xs rounded-[4px] border border-[#E6E6E3] focus:outline-none focus:border-[#202124] bg-[#fcfbf9] focus:bg-white text-[#202124]"
               />
             </div>
           </div>
 
           <div>
-            <label className="block text-xs font-medium text-[#37352f] mb-1">
+            <label className="block text-xs font-medium text-[#202124] mb-1">
               Password
             </label>
             <div className="relative">
@@ -126,13 +126,13 @@ export default function SignUpPage() {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="Minimum 6 characters"
-                className="w-full pl-8 pr-3 py-1.5 text-xs rounded-[4px] border border-[#ebebeb] focus:outline-none focus:border-[#37352f] bg-[#fcfbf9] focus:bg-white text-[#37352f]"
+                className="w-full pl-8 pr-3 py-1.5 text-xs rounded-[4px] border border-[#E6E6E3] focus:outline-none focus:border-[#202124] bg-[#fcfbf9] focus:bg-white text-[#202124]"
               />
             </div>
           </div>
 
           <div>
-            <label className="block text-xs font-medium text-[#37352f] mb-1">
+            <label className="block text-xs font-medium text-[#202124] mb-1">
               Primary Role
             </label>
             <div className="grid grid-cols-2 gap-2">
@@ -141,8 +141,8 @@ export default function SignUpPage() {
                 onClick={() => setRole('student')}
                 className={`py-1.5 px-2.5 text-xs font-medium rounded-[4px] border transition-colors flex items-center justify-center gap-1.5 ${
                   role === 'student'
-                    ? 'border-[#37352f] bg-[#f7f6f3] text-[#37352f]'
-                    : 'border-[#ebebeb] text-[#787774] hover:bg-[#fcfbf9]'
+                    ? 'border-[#202124] bg-[#F1F1EF] text-[#202124]'
+                    : 'border-[#E6E6E3] text-[#787774] hover:bg-[#fcfbf9]'
                 }`}
               >
                 <GraduationCap className="w-3.5 h-3.5" />
@@ -154,8 +154,8 @@ export default function SignUpPage() {
                 onClick={() => setRole('educator')}
                 className={`py-1.5 px-2.5 text-xs font-medium rounded-[4px] border transition-colors flex items-center justify-center gap-1.5 ${
                   role === 'educator'
-                    ? 'border-[#37352f] bg-[#f7f6f3] text-[#37352f]'
-                    : 'border-[#ebebeb] text-[#787774] hover:bg-[#fcfbf9]'
+                    ? 'border-[#202124] bg-[#F1F1EF] text-[#202124]'
+                    : 'border-[#E6E6E3] text-[#787774] hover:bg-[#fcfbf9]'
                 }`}
               >
                 <Building2 className="w-3.5 h-3.5" />
@@ -176,9 +176,9 @@ export default function SignUpPage() {
           </Button>
         </form>
 
-        <div className="text-center text-xs text-[#787774] pt-2 border-t border-[#ebebeb]">
+        <div className="text-center text-xs text-[#787774] pt-2 border-t border-[#E6E6E3]">
           Already have an account?{' '}
-          <Link href="/login" className="text-[#37352f] font-medium hover:underline">
+          <Link href="/login" className="text-[#202124] font-medium hover:underline">
             Sign In
           </Link>
         </div>

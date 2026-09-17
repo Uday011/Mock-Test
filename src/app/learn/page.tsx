@@ -141,18 +141,18 @@ export default function LearningDashboardPage() {
         />
 
         {/* Top Properties / Stat Tiles */}
-        <div className="bg-white border border-[#ebebeb] rounded-lg p-4">
+        <div className="bg-white border border-[#E6E6E3] rounded-lg p-4">
           <PropertyTable>
             <PropertyRow icon={Target} label="Curriculum Stage">
               <div className="flex items-center gap-2">
-                <span className="font-medium text-[#37352f]">Arithmetic & Logic Foundations</span>
+                <span className="font-medium text-[#202124]">Arithmetic & Logic Foundations</span>
                 <Badge variant="gray" size="sm">Sprint 1</Badge>
               </div>
             </PropertyRow>
 
             <PropertyRow icon={BookOpen} label="Syllabus Coverage">
               <div className="flex items-center gap-3 w-full max-w-md">
-                <span className="font-mono text-xs font-semibold text-[#37352f]">
+                <span className="font-mono text-xs font-semibold text-[#202124]">
                   {stats.completion_percentage}%
                 </span>
                 <div className="flex-1">
@@ -179,7 +179,7 @@ export default function LearningDashboardPage() {
 
             <PropertyRow icon={Flame} label="Consistency Streak">
               <div className="flex items-center gap-2 font-mono text-xs">
-                <span className="font-semibold text-[#37352f]">4 Days Active</span>
+                <span className="font-semibold text-[#202124]">4 Days Active</span>
                 <span className="text-[#787774]">(14.5 hours focused study logged this week)</span>
               </div>
             </PropertyRow>
@@ -201,7 +201,7 @@ export default function LearningDashboardPage() {
           }
         >
           <div className="space-y-1.5">
-            <p className="text-xs text-[#37352f] leading-relaxed">
+            <p className="text-xs text-[#202124] leading-relaxed">
               Quantitative Aptitude • Reciprocal fractional multipliers, marked price golden ratio, and false weight calculation traps.
             </p>
             <div className="flex items-center gap-4 text-xs font-mono text-[#787774] pt-1">
@@ -209,7 +209,7 @@ export default function LearningDashboardPage() {
               <span>•</span>
               <span>Est. Remaining: 25 mins</span>
               <span>•</span>
-              <Link href="/learn/topic-cgl-percentages#assessment" className="text-[#37352f] hover:underline font-medium">
+              <Link href="/learn/topic-cgl-percentages#assessment" className="text-[#202124] hover:underline font-medium">
                 Take Topic Test →
               </Link>
             </div>
@@ -224,13 +224,13 @@ export default function LearningDashboardPage() {
             title={`Active Recall Revision Due (${revisionTopics.length} Topics)`}
           >
             <div className="space-y-2">
-              <p className="text-xs text-[#37352f] leading-relaxed">
+              <p className="text-xs text-[#202124] leading-relaxed">
                 Learning science requires periodic retrieval before memory decay sets in. Review these concepts:
               </p>
               <div className="flex items-center gap-2 flex-wrap">
                 {revisionTopics.map((rt) => (
                   <Link key={rt.id} href={`/learn/${rt.id}`}>
-                    <Button variant="outline" size="sm" className="bg-white hover:bg-[#fbfbfa]">
+                    <Button variant="outline" size="sm" className="bg-white hover:bg-[#F7F7F5]">
                       {rt.title}
                     </Button>
                   </Link>
@@ -241,15 +241,15 @@ export default function LearningDashboardPage() {
         )}
 
         {/* Mode Switcher Tabs */}
-        <div className="flex items-center justify-between border-b border-[#ebebeb] pb-2 flex-wrap gap-3">
+        <div className="flex items-center justify-between border-b border-[#E6E6E3] pb-2 flex-wrap gap-3">
           <div className="flex items-center gap-1.5">
             <button
               type="button"
               onClick={() => setActiveTab('recommended')}
               className={`px-3 py-1.5 rounded-md text-xs font-medium transition-colors ${
                 activeTab === 'recommended'
-                  ? 'bg-[#37352f] text-white'
-                  : 'bg-white text-[#787774] hover:bg-[#f7f6f3] border border-[#ebebeb]'
+                  ? 'bg-[#202124] text-white'
+                  : 'bg-white text-[#787774] hover:bg-[#F1F1EF] border border-[#E6E6E3]'
               }`}
             >
               Recommended Learning Order
@@ -259,8 +259,8 @@ export default function LearningDashboardPage() {
               onClick={() => setActiveTab('official_syllabus')}
               className={`px-3 py-1.5 rounded-md text-xs font-medium transition-colors ${
                 activeTab === 'official_syllabus'
-                  ? 'bg-[#37352f] text-white'
-                  : 'bg-white text-[#787774] hover:bg-[#f7f6f3] border border-[#ebebeb]'
+                  ? 'bg-[#202124] text-white'
+                  : 'bg-white text-[#787774] hover:bg-[#F1F1EF] border border-[#E6E6E3]'
               }`}
             >
               Official Syllabus Structure
@@ -270,8 +270,8 @@ export default function LearningDashboardPage() {
               onClick={() => setActiveTab('revision_queue')}
               className={`px-3 py-1.5 rounded-md text-xs font-medium transition-colors ${
                 activeTab === 'revision_queue'
-                  ? 'bg-[#37352f] text-white'
-                  : 'bg-white text-[#787774] hover:bg-[#f7f6f3] border border-[#ebebeb]'
+                  ? 'bg-[#202124] text-white'
+                  : 'bg-white text-[#787774] hover:bg-[#F1F1EF] border border-[#E6E6E3]'
               }`}
             >
               Spaced Repetition & Revision Queue
@@ -297,7 +297,7 @@ export default function LearningDashboardPage() {
             </CalloutBlock>
 
             {/* Sequential Units */}
-            <div className="divide-y divide-[#ebebeb] border border-[#ebebeb] rounded-lg bg-white overflow-hidden">
+            <div className="divide-y divide-[#E6E6E3] border border-[#E6E6E3] rounded-lg bg-white overflow-hidden">
               {units.map((u: any, idx: number) => {
                 const isCompleted = idx < 4;
                 const isCurrent = idx === 4;
@@ -306,7 +306,7 @@ export default function LearningDashboardPage() {
                   <div
                     key={u.id}
                     className={`p-4 flex flex-col md:flex-row md:items-center justify-between gap-4 transition-colors ${
-                      isCurrent ? 'bg-[#fbfbfa]' : 'hover:bg-[#fbfbfa]'
+                      isCurrent ? 'bg-[#F7F7F5]' : 'hover:bg-[#F7F7F5]'
                     }`}
                   >
                     <div className="flex items-start gap-3">
@@ -316,7 +316,7 @@ export default function LearningDashboardPage() {
                             ? 'bg-[#ebf5e8] text-[#2b593f] border-[#c4e2b8]'
                             : isCurrent
                             ? 'bg-[#fdf5e8] text-[#8f4f00] border-[#fae2be]'
-                            : 'bg-[#f7f6f3] text-[#787774] border-[#ebebeb]'
+                            : 'bg-[#F1F1EF] text-[#787774] border-[#E6E6E3]'
                         }`}
                       >
                         {isCompleted ? <CheckCircle2 className="w-4 h-4" /> : idx + 1}
@@ -324,13 +324,13 @@ export default function LearningDashboardPage() {
 
                       <div className="space-y-1">
                         <div className="flex items-center gap-2 flex-wrap">
-                          <span className="font-mono text-[10px] px-1.5 py-0.5 rounded bg-[#f7f6f3] text-[#787774] border border-[#ebebeb]">
+                          <span className="font-mono text-[10px] px-1.5 py-0.5 rounded bg-[#F1F1EF] text-[#787774] border border-[#E6E6E3]">
                             Unit {idx + 1}
                           </span>
                           <span className="text-xs font-medium text-[#787774]">
                             {u.subject_name}
                           </span>
-                          <span className="text-[#ebebeb]">•</span>
+                          <span className="text-[#E6E6E3]">•</span>
                           <span className="text-xs font-mono text-[#9b9a97]">
                             Weightage: {u.weightage_percentage || 8}%
                           </span>
@@ -339,7 +339,7 @@ export default function LearningDashboardPage() {
                           </Badge>
                         </div>
 
-                        <h3 className="text-xs sm:text-sm font-semibold text-[#37352f]">
+                        <h3 className="text-xs sm:text-sm font-semibold text-[#202124]">
                           {u.topic_title}
                         </h3>
 
@@ -374,11 +374,11 @@ export default function LearningDashboardPage() {
         {/* Tab 2: Official Syllabus Structure */}
         {activeTab === 'official_syllabus' && (
           <div className="space-y-4">
-            <div className="p-3 bg-[#fbfbfa] border border-[#ebebeb] rounded-lg text-xs text-[#787774] flex items-center justify-between">
+            <div className="p-3 bg-[#F7F7F5] border border-[#E6E6E3] rounded-lg text-xs text-[#787774] flex items-center justify-between">
               <span>
                 Formal curriculum taxonomy organized strictly according to the official conducting body.
               </span>
-              <span className="font-mono text-[11px] font-medium text-[#37352f]">
+              <span className="font-mono text-[11px] font-medium text-[#202124]">
                 4 Subjects • Tier-I & Tier-II Scope
               </span>
             </div>
@@ -397,7 +397,7 @@ export default function LearningDashboardPage() {
 
         {/* Subject-Wise Coverage Breakdown Section */}
         <div className="space-y-3 pt-4">
-          <h3 className="font-semibold text-[#37352f] text-sm">
+          <h3 className="font-semibold text-[#202124] text-sm">
             Subject-Wise Syllabus Coverage
           </h3>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
@@ -406,17 +406,17 @@ export default function LearningDashboardPage() {
               const total = subj.topics.length;
               const pct = total > 0 ? Math.round((completed / total) * 100) : 0;
               return (
-                <div key={subj.id} className="p-3.5 bg-white border border-[#ebebeb] rounded-lg space-y-2.5">
+                <div key={subj.id} className="p-3.5 bg-white border border-[#E6E6E3] rounded-lg space-y-2.5">
                   <div className="flex items-center justify-between">
-                    <span className="font-mono text-[10px] px-1.5 py-0.5 rounded bg-[#f7f6f3] text-[#787774] border border-[#ebebeb]">
+                    <span className="font-mono text-[10px] px-1.5 py-0.5 rounded bg-[#F1F1EF] text-[#787774] border border-[#E6E6E3]">
                       {subj.code}
                     </span>
-                    <span className="font-mono text-xs font-semibold text-[#37352f]">
+                    <span className="font-mono text-xs font-semibold text-[#202124]">
                       {pct}%
                     </span>
                   </div>
                   <div>
-                    <h4 className="font-medium text-xs text-[#37352f]">{subj.name}</h4>
+                    <h4 className="font-medium text-xs text-[#202124]">{subj.name}</h4>
                     <span className="text-[11px] text-[#787774]">
                       {completed} of {total} Topics Covered
                     </span>

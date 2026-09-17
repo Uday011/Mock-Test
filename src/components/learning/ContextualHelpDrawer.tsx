@@ -63,7 +63,7 @@ export function ContextualHelpDrawer({ topicId, topicTitle }: ContextualHelpDraw
             <Sparkles className="w-3.5 h-3.5" />
           </div>
           <div>
-            <h4 className="font-serif font-bold text-xs text-stone-900">
+            <h4 className="font-sans font-bold text-xs text-stone-900">
               Pedagogical Assistance
             </h4>
             <span className="text-[10px] text-stone-500">
@@ -111,7 +111,7 @@ export function ContextualHelpDrawer({ topicId, topicTitle }: ContextualHelpDraw
       {response && !loading && (
         <div className="p-3.5 bg-white rounded-xl border border-stone-200 space-y-2 text-xs text-stone-800 animate-fade-in shadow-inner">
           <div className="flex items-center justify-between border-b border-stone-100 pb-2">
-            <h5 className="font-serif font-bold text-stone-900 text-xs flex items-center gap-1.5">
+            <h5 className="font-sans font-bold text-stone-900 text-xs flex items-center gap-1.5">
               <CheckCircle2 className="w-3.5 h-3.5 text-amber-600" />
               {response.title}
             </h5>

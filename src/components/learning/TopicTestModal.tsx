@@ -108,7 +108,7 @@ export function TopicTestModal({
                 {questions.length} Questions • +2.0 / -0.50 TCS Marking
               </span>
             </div>
-            <h2 className="text-base font-serif font-bold text-stone-900 mt-1">
+            <h2 className="text-base font-sans font-bold text-stone-900 mt-1">
               {topicTitle}
             </h2>
           </div>
@@ -221,7 +221,7 @@ export function TopicTestModal({
                     <Award className="w-6 h-6" />
                   </div>
                   <div>
-                    <h3 className="font-serif font-bold text-lg">
+                    <h3 className="font-sans font-bold text-lg">
                       {result.is_mastered
                         ? 'Mastery Validated! 🎉'
                         : 'Topic Studied — Reinforcement Required'}
@@ -273,7 +273,7 @@ export function TopicTestModal({
                     <span className="font-mono text-[10px] text-amber-400 font-bold uppercase">
                       Next Recommended Milestone
                     </span>
-                    <h4 className="font-serif font-bold text-sm text-stone-100">
+                    <h4 className="font-sans font-bold text-sm text-stone-100">
                       {result.recommend_sectional_test.title}
                     </h4>
                     <p className="text-xs text-stone-400">
@@ -290,7 +290,7 @@ export function TopicTestModal({
 
               {/* Forensic Answer Key & Explanations */}
               <div className="space-y-4 pt-2">
-                <h4 className="font-serif font-bold text-stone-900 text-sm flex items-center gap-2">
+                <h4 className="font-sans font-bold text-stone-900 text-sm flex items-center gap-2">
                   <span>Questions & Forensic Explanations</span>
                   <Badge variant="stone" size="sm">
                     {questions.length} Qs

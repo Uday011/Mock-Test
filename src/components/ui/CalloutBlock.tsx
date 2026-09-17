@@ -4,7 +4,7 @@ export interface CalloutBlockProps {
   icon?: any;
   title?: string;
   children: React.ReactNode;
-  variant?: 'default' | 'amber' | 'emerald' | 'rose' | 'blue' | 'purple' | 'neutral' | 'stone' | 'gray';
+  variant?: 'default' | 'indigo' | 'saffron' | 'amber' | 'emerald' | 'rose' | 'blue' | 'purple' | 'neutral' | 'stone' | 'gray';
   action?: React.ReactNode;
   className?: string;
 }
@@ -18,22 +18,24 @@ export function CalloutBlock({
   className = '',
 }: CalloutBlockProps) {
   const variantStyles: Record<string, string> = {
-    default: 'bg-[#f7f6f3] border-[#ebebeb] text-[#37352f]',
-    neutral: 'bg-[#f7f6f3] border-[#ebebeb] text-[#37352f]',
-    stone: 'bg-[#f7f6f3] border-[#ebebeb] text-[#37352f]',
-    gray: 'bg-[#f7f6f3] border-[#ebebeb] text-[#37352f]',
-    amber: 'bg-[#fbf3db]/60 border-[#f6e5b4] text-[#493a19]',
-    emerald: 'bg-[#edf3ec]/70 border-[#d3e5d2] text-[#1c3829]',
-    rose: 'bg-[#fdebec]/60 border-[#f7d4d6] text-[#4d1f22]',
-    blue: 'bg-[#e7f3f8]/70 border-[#cfe5f0] text-[#193b4d]',
-    purple: 'bg-[#f4f0f7]/70 border-[#e5daf0] text-[#3d2459]',
+    default: 'bg-[#F1F1EF] border-[#E6E6E3] text-[#202124]',
+    neutral: 'bg-[#F1F1EF] border-[#E6E6E3] text-[#202124]',
+    stone: 'bg-[#F1F1EF] border-[#E6E6E3] text-[#202124]',
+    gray: 'bg-[#F1F1EF] border-[#E6E6E3] text-[#202124]',
+    indigo: 'bg-[#EEF0FB] border-[#DCDDF7] text-[#4F46A5]',
+    saffron: 'bg-[#FDF6EC] border-[#F6E3C7] text-[#B7791F]',
+    amber: 'bg-[#FFFBEB] border-[#FEF3C7] text-[#B7791F]',
+    emerald: 'bg-[#EDF7ED] border-[#C8E6C9] text-[#1B5E20]',
+    rose: 'bg-[#FEF2F2] border-[#FEE2E2] text-[#C53030]',
+    blue: 'bg-[#EEF0FB] border-[#DCDDF7] text-[#4F46A5]',
+    purple: 'bg-[#EEF0FB] border-[#DCDDF7] text-[#4F46A5]',
   };
 
   const renderIcon = () => {
     if (!icon) return null;
     if (React.isValidElement(icon)) return icon;
     if (typeof icon === 'string' || typeof icon === 'number') {
-      return <span className="text-base sm:text-lg leading-none">{icon}</span>;
+      return <span className="text-sm sm:text-base leading-none">{icon}</span>;
     }
     if (typeof icon === 'function' || (typeof icon === 'object' && ('render' in icon || '$$typeof' in icon))) {
       const IconComponent = icon;
@@ -46,7 +48,7 @@ export function CalloutBlock({
 
   return (
     <div
-      className={`rounded-lg border p-3.5 sm:p-4 flex items-start gap-3 text-xs sm:text-sm leading-relaxed transition-colors ${
+      className={`rounded-md border p-3.5 sm:p-4 flex items-start gap-3 text-xs sm:text-sm leading-relaxed transition-colors ${
         variantStyles[variant] || variantStyles.default
       } ${className}`}
     >

@@ -127,7 +127,7 @@ export function ReportModal({
       {success ? (
         <div className="p-6 text-center space-y-3 bg-emerald-50 border border-emerald-200 rounded-xl">
           <CheckCircle2 className="w-10 h-10 text-emerald-600 mx-auto" />
-          <h4 className="font-serif font-bold text-stone-900 text-sm">Report Submitted Successfully</h4>
+          <h4 className="font-sans font-bold text-stone-900 text-sm">Report Submitted Successfully</h4>
           <p className="text-xs text-stone-600 leading-relaxed max-w-sm mx-auto">
             Thank you for helping maintain rigorous academic standards in Nalanda. Our moderation team has been notified and will audit the item.
           </p>

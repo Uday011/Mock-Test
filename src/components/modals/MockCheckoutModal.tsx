@@ -114,7 +114,7 @@ export function MockCheckoutModal({
             <div className="w-12 h-12 rounded-full bg-emerald-100 text-emerald-700 flex items-center justify-center mx-auto shadow-2xs">
               <CheckCircle2 className="w-6 h-6" />
             </div>
-            <h3 className="font-serif font-bold text-base text-emerald-950">
+            <h3 className="font-sans font-bold text-base text-emerald-950">
               Access Granted & Verified
             </h3>
             <p className="text-xs text-emerald-800 max-w-sm mx-auto">
@@ -195,7 +195,7 @@ export function MockCheckoutModal({
                 <span className="text-[10px] font-mono uppercase font-bold text-stone-400 block">
                   {itemType === 'test_series' ? 'Test Series Package' : 'Individual Examination'}
                 </span>
-                <h4 className="font-serif font-bold text-stone-900 text-sm mt-0.5">
+                <h4 className="font-sans font-bold text-stone-900 text-sm mt-0.5">
                   {itemTitle}
                 </h4>
                 {creatorName && (

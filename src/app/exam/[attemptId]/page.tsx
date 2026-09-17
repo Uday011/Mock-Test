@@ -457,8 +457,8 @@ export default function ExamPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex flex-col items-center justify-center bg-[#fbfbfa] text-[#37352f] space-y-3">
-        <div className="w-8 h-8 border-2 border-[#37352f] border-t-transparent rounded-full animate-spin" />
+      <div className="min-h-screen flex flex-col items-center justify-center bg-[#F7F7F5] text-[#202124] space-y-3">
+        <div className="w-8 h-8 border-2 border-[#202124] border-t-transparent rounded-full animate-spin" />
         <p className="text-xs text-[#787774] font-medium">
           Initializing Examination Environment...
         </p>
@@ -467,7 +467,7 @@ export default function ExamPage() {
   }
 
   return (
-    <div className="min-h-screen min-h-[100dvh] flex flex-col bg-[#fbfbfa] pb-20 lg:pb-6 text-[#37352f] select-none">
+    <div className="min-h-screen min-h-[100dvh] flex flex-col bg-[#F7F7F5] pb-20 lg:pb-6 text-[#202124] select-none">
       {/* NOTION EXAM STICKY HEADER */}
       <header className="sticky top-0 z-40 bg-[#2f2d28] text-white border-b border-[#3e3b35] px-4 sm:px-6 py-2.5 flex items-center justify-between shadow-xs">
         <div className="flex items-center gap-2.5 min-w-0">
@@ -519,7 +519,7 @@ export default function ExamPage() {
 
       {/* SECTION SWITCHER BAR */}
       {sections.length > 1 && (
-        <div className="bg-white border-b border-[#ebebeb] px-4 sm:px-6 py-1.5 flex items-center gap-1.5 overflow-x-auto scrollbar-none">
+        <div className="bg-white border-b border-[#E6E6E3] px-4 sm:px-6 py-1.5 flex items-center gap-1.5 overflow-x-auto scrollbar-none">
           <span className="text-[10px] uppercase font-semibold text-[#787774] shrink-0 mr-1">
             Sections:
           </span>
@@ -531,14 +531,14 @@ export default function ExamPage() {
                 onClick={() => setCurrentIndex(sec.firstIndex)}
                 className={`px-2.5 py-1 rounded-[4px] text-xs transition-colors flex items-center gap-1.5 whitespace-nowrap ${
                   isActive
-                    ? 'bg-[#37352f] text-white font-medium'
-                    : 'bg-[#f7f6f3] text-[#787774] hover:text-[#37352f] hover:bg-[#ebebeb] border border-[#ebebeb]'
+                    ? 'bg-[#202124] text-white font-medium'
+                    : 'bg-[#F1F1EF] text-[#787774] hover:text-[#202124] hover:bg-[#E6E6E3] border border-[#E6E6E3]'
                 }`}
               >
                 <span>{sec.name}</span>
                 <span
                   className={`text-[10px] font-mono px-1 rounded-[2px] ${
-                    isActive ? 'bg-[#22211e] text-stone-300' : 'bg-[#ebebeb] text-[#787774]'
+                    isActive ? 'bg-[#22211e] text-stone-300' : 'bg-[#E6E6E3] text-[#787774]'
                   }`}
                 >
                   {sec.count}
@@ -550,9 +550,9 @@ export default function ExamPage() {
       )}
 
       {/* SUB-HEADER PROGRESS STRIP */}
-      <div className="bg-[#fcfbf9] border-b border-[#ebebeb] px-4 sm:px-6 py-2 flex items-center justify-between text-xs text-[#787774]">
+      <div className="bg-[#fcfbf9] border-b border-[#E6E6E3] px-4 sm:px-6 py-2 flex items-center justify-between text-xs text-[#787774]">
         <div className="flex items-center gap-2 sm:gap-3">
-          <span className="font-semibold text-[#37352f] font-mono">
+          <span className="font-semibold text-[#202124] font-mono">
             Q {currentIndex + 1} of {questions.length}
           </span>
           <span className="text-[#787774] hidden md:inline">
@@ -567,7 +567,7 @@ export default function ExamPage() {
         <div className="flex items-center gap-2">
           <button
             onClick={() => setShowMobilePalette(true)}
-            className="lg:hidden px-2 py-1 rounded-[4px] bg-white hover:bg-[#f7f6f3] text-[#37352f] text-xs font-medium flex items-center gap-1 border border-[#ebebeb]"
+            className="lg:hidden px-2 py-1 rounded-[4px] bg-white hover:bg-[#F1F1EF] text-[#202124] text-xs font-medium flex items-center gap-1 border border-[#E6E6E3]"
           >
             <LayoutGrid className="w-3.5 h-3.5 text-[#787774]" />
             <span>Palette ({answeredCount}/{questions.length})</span>
@@ -596,12 +596,12 @@ export default function ExamPage() {
       {/* MAIN EXAM BODY (Split: Question View + Desktop Palette Sidebar) */}
       <div className="flex-1 max-w-7xl w-full mx-auto p-4 sm:p-6 grid grid-cols-1 lg:grid-cols-4 gap-4 sm:gap-6 items-start">
         {/* LEFT / CENTER: QUESTION DISPLAY (Span 3 on desktop) */}
-        <div className="lg:col-span-3 bg-white rounded-md border border-[#ebebeb] flex flex-col min-h-[480px] justify-between overflow-hidden">
+        <div className="lg:col-span-3 bg-white rounded-md border border-[#E6E6E3] flex flex-col min-h-[480px] justify-between overflow-hidden">
           {/* Question Text Area */}
           <div className="p-5 sm:p-6 space-y-5">
             <div className="flex items-start justify-between gap-3">
               <div className="flex items-center gap-2">
-                <span className="px-2.5 py-0.5 bg-[#37352f] text-white text-xs font-medium rounded-[3px] font-mono">
+                <span className="px-2.5 py-0.5 bg-[#202124] text-white text-xs font-medium rounded-[3px] font-mono">
                   Question {currentQ?.question_number || currentIndex + 1}
                 </span>
                 <span className="text-xs text-[#787774]">
@@ -610,20 +610,20 @@ export default function ExamPage() {
               </div>
 
               {currentResp?.is_marked_for_review && (
-                <span className="px-2 py-0.5 bg-[#fbf3db] text-[#4d3800] text-xs font-medium rounded-[3px] flex items-center gap-1 border border-[#f1e0b5]">
-                  <Flag className="w-3 h-3 text-[#d9730d]" /> Marked for Review
+                <span className="px-2 py-0.5 bg-[#FFFBEB] text-[#4d3800] text-xs font-medium rounded-[3px] flex items-center gap-1 border border-[#f1e0b5]">
+                  <Flag className="w-3 h-3 text-[#B7791F]" /> Marked for Review
                 </span>
               )}
             </div>
 
             {/* Question Text */}
-            <div className="text-sm sm:text-base font-normal text-[#37352f] leading-relaxed whitespace-pre-line">
+            <div className="text-sm sm:text-base font-normal text-[#202124] leading-relaxed whitespace-pre-line">
               {currentQ?.question_text}
             </div>
 
             {/* Optional Question Image */}
             {currentQ?.question_image_url && (
-              <div className="rounded-md overflow-hidden border border-[#ebebeb] max-h-80 max-w-md bg-[#fcfbf9] p-2">
+              <div className="rounded-md overflow-hidden border border-[#E6E6E3] max-h-80 max-w-md bg-[#fcfbf9] p-2">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
                   src={currentQ.question_image_url}
@@ -643,22 +643,22 @@ export default function ExamPage() {
                     onClick={() => handleSelectOption(opt.label)}
                     className={`p-3 rounded-md border transition-colors cursor-pointer flex items-center gap-3 ${
                       isSelected
-                        ? 'border-[#37352f] bg-[#f7f6f3]'
-                        : 'border-[#ebebeb] bg-white hover:bg-[#fcfbf9]'
+                        ? 'border-[#202124] bg-[#F1F1EF]'
+                        : 'border-[#E6E6E3] bg-white hover:bg-[#fcfbf9]'
                     }`}
                   >
                     <div
                       className={`w-7 h-7 rounded-[4px] text-xs font-semibold flex items-center justify-center shrink-0 font-mono transition-colors ${
                         isSelected
-                          ? 'bg-[#37352f] text-white'
-                          : 'bg-[#f7f6f3] text-[#37352f] border border-[#ebebeb]'
+                          ? 'bg-[#202124] text-white'
+                          : 'bg-[#F1F1EF] text-[#202124] border border-[#E6E6E3]'
                       }`}
                     >
                       {opt.label}
                     </div>
                     <span
                       className={`text-xs sm:text-sm leading-relaxed ${
-                        isSelected ? 'font-medium text-[#37352f]' : 'text-[#37352f]'
+                        isSelected ? 'font-medium text-[#202124]' : 'text-[#202124]'
                       }`}
                     >
                       {opt.text}
@@ -670,13 +670,13 @@ export default function ExamPage() {
           </div>
 
           {/* DESKTOP / TABLET CONTROLS & NAVIGATION BAR */}
-          <div className="hidden sm:flex p-3.5 sm:p-4 bg-[#fcfbf9] border-t border-[#ebebeb] flex-wrap items-center justify-between gap-3">
+          <div className="hidden sm:flex p-3.5 sm:p-4 bg-[#fcfbf9] border-t border-[#E6E6E3] flex-wrap items-center justify-between gap-3">
             <div className="flex items-center gap-2">
               <button
                 type="button"
                 onClick={handleClearResponse}
                 disabled={!currentResp?.selected_answer}
-                className="px-3 py-1.5 rounded-[4px] text-xs text-[#787774] hover:text-[#37352f] hover:bg-[#ebebeb] disabled:opacity-30 transition-colors"
+                className="px-3 py-1.5 rounded-[4px] text-xs text-[#787774] hover:text-[#202124] hover:bg-[#E6E6E3] disabled:opacity-30 transition-colors"
               >
                 Clear Response
               </button>
@@ -686,11 +686,11 @@ export default function ExamPage() {
                 onClick={handleToggleMarkForReview}
                 className={`px-3 py-1.5 rounded-[4px] text-xs font-medium transition-colors flex items-center gap-1.5 border ${
                   currentResp?.is_marked_for_review
-                    ? 'bg-[#fbf3db] text-[#4d3800] border-[#f1e0b5]'
-                    : 'bg-white text-[#787774] border-[#ebebeb] hover:bg-[#f7f6f3]'
+                    ? 'bg-[#FFFBEB] text-[#4d3800] border-[#f1e0b5]'
+                    : 'bg-white text-[#787774] border-[#E6E6E3] hover:bg-[#F1F1EF]'
                 }`}
               >
-                <Flag className="w-3 h-3 text-[#d9730d]" />
+                <Flag className="w-3 h-3 text-[#B7791F]" />
                 {currentResp?.is_marked_for_review ? 'Unmark Review' : 'Mark for Review'}
               </button>
             </div>
@@ -700,7 +700,7 @@ export default function ExamPage() {
                 type="button"
                 onClick={() => setCurrentIndex(Math.max(0, currentIndex - 1))}
                 disabled={currentIndex === 0}
-                className="px-3 py-1.5 rounded-[4px] border border-[#ebebeb] bg-white hover:bg-[#f7f6f3] text-[#37352f] text-xs disabled:opacity-30 flex items-center gap-1 transition-colors"
+                className="px-3 py-1.5 rounded-[4px] border border-[#E6E6E3] bg-white hover:bg-[#F1F1EF] text-[#202124] text-xs disabled:opacity-30 flex items-center gap-1 transition-colors"
               >
                 <ChevronLeft className="w-3.5 h-3.5" />
                 Previous
@@ -709,7 +709,7 @@ export default function ExamPage() {
               <button
                 type="button"
                 onClick={handleMarkAndNext}
-                className="px-3 py-1.5 rounded-[4px] bg-[#f7f6f3] hover:bg-[#ebebeb] text-[#37352f] border border-[#ebebeb] text-xs font-medium transition-colors"
+                className="px-3 py-1.5 rounded-[4px] bg-[#F1F1EF] hover:bg-[#E6E6E3] text-[#202124] border border-[#E6E6E3] text-xs font-medium transition-colors"
               >
                 Mark & Next
               </button>
@@ -717,7 +717,7 @@ export default function ExamPage() {
               <button
                 type="button"
                 onClick={handleSaveAndNext}
-                className="px-4 py-1.5 rounded-[4px] bg-[#37352f] hover:bg-[#2f2d28] text-white text-xs font-medium flex items-center gap-1 transition-colors"
+                className="px-4 py-1.5 rounded-[4px] bg-[#202124] hover:bg-[#2f2d28] text-white text-xs font-medium flex items-center gap-1 transition-colors"
               >
                 Save & Next
                 <ChevronRight className="w-3.5 h-3.5" />
@@ -727,13 +727,13 @@ export default function ExamPage() {
         </div>
 
         {/* RIGHT: DESKTOP QUESTION PALETTE SIDEBAR */}
-        <div className="hidden lg:block bg-white rounded-md border border-[#ebebeb] p-4 space-y-3.5">
-          <div className="flex items-center justify-between border-b border-[#ebebeb] pb-2.5">
-            <h3 className="text-xs font-semibold text-[#37352f] flex items-center gap-1.5">
+        <div className="hidden lg:block bg-white rounded-md border border-[#E6E6E3] p-4 space-y-3.5">
+          <div className="flex items-center justify-between border-b border-[#E6E6E3] pb-2.5">
+            <h3 className="text-xs font-semibold text-[#202124] flex items-center gap-1.5">
               <Layers className="w-3.5 h-3.5 text-[#787774]" />
               Question Palette
             </h3>
-            <span className="text-[11px] font-mono text-[#787774] bg-[#f7f6f3] px-2 py-0.5 rounded-[3px] border border-[#ebebeb]">
+            <span className="text-[11px] font-mono text-[#787774] bg-[#F1F1EF] px-2 py-0.5 rounded-[3px] border border-[#E6E6E3]">
               {answeredCount}/{questions.length}
             </span>
           </div>
@@ -744,7 +744,7 @@ export default function ExamPage() {
               <select
                 value={paletteSectionFilter}
                 onChange={(e) => setPaletteSectionFilter(e.target.value)}
-                className="w-full text-xs py-1 px-2 bg-[#fcfbf9] border border-[#ebebeb] rounded-[4px] text-[#37352f] focus:outline-none"
+                className="w-full text-xs py-1 px-2 bg-[#fcfbf9] border border-[#E6E6E3] rounded-[4px] text-[#202124] focus:outline-none"
               >
                 <option value="all">Filter: All Sections ({questions.length})</option>
                 {sections.map((s) => (
@@ -758,26 +758,26 @@ export default function ExamPage() {
 
           {/* Palette Status Legend Grid */}
           <div className="grid grid-cols-2 gap-1.5 text-[11px] font-medium text-[#787774]">
-            <div className="flex items-center gap-1.5 p-1 rounded-[3px] bg-[#fcfbf9] border border-[#ebebeb]">
+            <div className="flex items-center gap-1.5 p-1 rounded-[3px] bg-[#fcfbf9] border border-[#E6E6E3]">
               <span className="w-4 h-4 rounded-[2px] bg-emerald-600 text-white font-bold flex items-center justify-center text-[10px] font-mono">
                 {answeredCount}
               </span>
               <span>Answered</span>
             </div>
-            <div className="flex items-center gap-1.5 p-1 rounded-[3px] bg-[#fcfbf9] border border-[#ebebeb]">
+            <div className="flex items-center gap-1.5 p-1 rounded-[3px] bg-[#fcfbf9] border border-[#E6E6E3]">
               <span className="w-4 h-4 rounded-[2px] bg-amber-500 text-white font-bold flex items-center justify-center text-[10px] font-mono">
                 {unansweredVisitedCount}
               </span>
               <span>Unanswered</span>
             </div>
-            <div className="flex items-center gap-1.5 p-1 rounded-[3px] bg-[#fcfbf9] border border-[#ebebeb]">
+            <div className="flex items-center gap-1.5 p-1 rounded-[3px] bg-[#fcfbf9] border border-[#E6E6E3]">
               <span className="w-4 h-4 rounded-[2px] bg-purple-600 text-white font-bold flex items-center justify-center text-[10px] font-mono">
                 {markedCount}
               </span>
               <span>Review</span>
             </div>
-            <div className="flex items-center gap-1.5 p-1 rounded-[3px] bg-[#fcfbf9] border border-[#ebebeb]">
-              <span className="w-4 h-4 rounded-[2px] bg-[#ebebeb] text-[#787774] font-bold flex items-center justify-center text-[10px] font-mono">
+            <div className="flex items-center gap-1.5 p-1 rounded-[3px] bg-[#fcfbf9] border border-[#E6E6E3]">
+              <span className="w-4 h-4 rounded-[2px] bg-[#E6E6E3] text-[#787774] font-bold flex items-center justify-center text-[10px] font-mono">
                 {notVisitedCount}
               </span>
               <span>Not Visited</span>
@@ -794,7 +794,7 @@ export default function ExamPage() {
                 const state = getQuestionState(q.id);
                 const isCurrent = currentIndex === index;
 
-                let styleClass = 'bg-[#f7f6f3] text-[#787774] border border-[#ebebeb]';
+                let styleClass = 'bg-[#F1F1EF] text-[#787774] border border-[#E6E6E3]';
                 if (state === 'answered') {
                   styleClass = 'bg-emerald-600 text-white font-medium';
                 } else if (state === 'visited_unanswered') {
@@ -811,7 +811,7 @@ export default function ExamPage() {
                     type="button"
                     onClick={() => setCurrentIndex(index)}
                     className={`h-8 rounded-[4px] text-xs font-mono font-medium transition-colors relative flex items-center justify-center ${styleClass} ${
-                      isCurrent ? 'ring-2 ring-[#37352f] ring-offset-1' : 'hover:opacity-90'
+                      isCurrent ? 'ring-2 ring-[#202124] ring-offset-1' : 'hover:opacity-90'
                     }`}
                   >
                     {index + 1}
@@ -825,11 +825,11 @@ export default function ExamPage() {
           </div>
 
           {/* Quick Submit Test CTA */}
-          <div className="pt-2 border-t border-[#ebebeb]">
+          <div className="pt-2 border-t border-[#E6E6E3]">
             <button
               onClick={() => setShowSubmitModal(true)}
               disabled={isSubmitting}
-              className="w-full py-2 bg-[#37352f] hover:bg-[#2f2d28] text-white font-medium rounded-[4px] text-xs transition-colors flex items-center justify-center gap-1.5"
+              className="w-full py-2 bg-[#202124] hover:bg-[#2f2d28] text-white font-medium rounded-[4px] text-xs transition-colors flex items-center justify-center gap-1.5"
             >
               <Send className="w-3 h-3" />
               Submit Examination
@@ -839,12 +839,12 @@ export default function ExamPage() {
       </div>
 
       {/* MOBILE STICKY BOTTOM DOCK */}
-      <div className="sm:hidden fixed bottom-0 inset-x-0 bg-white border-t border-[#ebebeb] px-3 py-2 z-30 flex items-center justify-between gap-1.5 shadow-lg pb-safe">
+      <div className="sm:hidden fixed bottom-0 inset-x-0 bg-white border-t border-[#E6E6E3] px-3 py-2 z-30 flex items-center justify-between gap-1.5 shadow-lg pb-safe">
         <button
           type="button"
           onClick={() => setCurrentIndex(Math.max(0, currentIndex - 1))}
           disabled={currentIndex === 0}
-          className="p-2 rounded-[4px] border border-[#ebebeb] bg-[#f7f6f3] text-[#37352f] disabled:opacity-30 min-h-[40px] min-w-[40px] flex items-center justify-center"
+          className="p-2 rounded-[4px] border border-[#E6E6E3] bg-[#F1F1EF] text-[#202124] disabled:opacity-30 min-h-[40px] min-w-[40px] flex items-center justify-center"
           aria-label="Previous Question"
         >
           <ChevronLeft className="w-4 h-4" />
@@ -855,8 +855,8 @@ export default function ExamPage() {
           onClick={handleToggleMarkForReview}
           className={`p-2 rounded-[4px] border transition-colors min-h-[40px] min-w-[40px] flex items-center justify-center ${
             currentResp?.is_marked_for_review
-              ? 'bg-[#fbf3db] text-[#4d3800] border-[#f1e0b5]'
-              : 'bg-[#f7f6f3] text-[#787774] border-[#ebebeb]'
+              ? 'bg-[#FFFBEB] text-[#4d3800] border-[#f1e0b5]'
+              : 'bg-[#F1F1EF] text-[#787774] border-[#E6E6E3]'
           }`}
           title="Mark for Review"
         >
@@ -866,7 +866,7 @@ export default function ExamPage() {
         <button
           type="button"
           onClick={() => setShowMobilePalette(true)}
-          className="px-3 py-2 rounded-[4px] bg-[#f7f6f3] border border-[#ebebeb] text-[#37352f] text-xs font-medium flex items-center gap-1 min-h-[40px]"
+          className="px-3 py-2 rounded-[4px] bg-[#F1F1EF] border border-[#E6E6E3] text-[#202124] text-xs font-medium flex items-center gap-1 min-h-[40px]"
         >
           <LayoutGrid className="w-3.5 h-3.5 text-[#787774]" />
           <span>Palette ({answeredCount}/{questions.length})</span>
@@ -875,7 +875,7 @@ export default function ExamPage() {
         <button
           type="button"
           onClick={handleSaveAndNext}
-          className="px-3.5 py-2 rounded-[4px] bg-[#37352f] text-white text-xs font-medium flex items-center gap-1 min-h-[40px]"
+          className="px-3.5 py-2 rounded-[4px] bg-[#202124] text-white text-xs font-medium flex items-center gap-1 min-h-[40px]"
         >
           <span>{currentIndex === questions.length - 1 ? 'Finish' : 'Next'}</span>
           <ChevronRight className="w-3.5 h-3.5" />
@@ -885,19 +885,19 @@ export default function ExamPage() {
       {/* MOBILE QUESTION PALETTE DRAWER */}
       {showMobilePalette && (
         <div className="lg:hidden fixed inset-0 z-50 bg-black/40 flex flex-col justify-end animate-fade-in">
-          <div className="bg-white rounded-t-lg border-t border-[#ebebeb] p-4 shadow-xl max-h-[80dvh] overflow-y-auto space-y-3.5 pb-safe">
-            <div className="flex items-center justify-between border-b border-[#ebebeb] pb-2.5">
+          <div className="bg-white rounded-t-lg border-t border-[#E6E6E3] p-4 shadow-xl max-h-[80dvh] overflow-y-auto space-y-3.5 pb-safe">
+            <div className="flex items-center justify-between border-b border-[#E6E6E3] pb-2.5">
               <div className="flex items-center gap-2">
                 <LayoutGrid className="w-4 h-4 text-[#787774]" />
-                <h3 className="text-sm font-semibold text-[#37352f]">Question Palette</h3>
+                <h3 className="text-sm font-semibold text-[#202124]">Question Palette</h3>
               </div>
               <div className="flex items-center gap-2">
-                <span className="text-xs font-mono text-[#787774] bg-[#f7f6f3] px-2 py-0.5 rounded-[3px] border border-[#ebebeb]">
+                <span className="text-xs font-mono text-[#787774] bg-[#F1F1EF] px-2 py-0.5 rounded-[3px] border border-[#E6E6E3]">
                   {answeredCount}/{questions.length}
                 </span>
                 <button
                   onClick={() => setShowMobilePalette(false)}
-                  className="p-1 rounded text-[#787774] hover:text-[#37352f] min-h-[32px] min-w-[32px] flex items-center justify-center"
+                  className="p-1 rounded text-[#787774] hover:text-[#202124] min-h-[32px] min-w-[32px] flex items-center justify-center"
                 >
                   <X className="w-4 h-4" />
                 </button>
@@ -906,26 +906,26 @@ export default function ExamPage() {
 
             {/* Legend */}
             <div className="grid grid-cols-2 gap-1.5 text-xs font-medium">
-              <div className="flex items-center gap-1.5 p-1.5 rounded-[3px] bg-[#fcfbf9] border border-[#ebebeb] text-[#37352f]">
+              <div className="flex items-center gap-1.5 p-1.5 rounded-[3px] bg-[#fcfbf9] border border-[#E6E6E3] text-[#202124]">
                 <span className="w-4 h-4 rounded-[2px] bg-emerald-600 text-white font-mono text-[10px] flex items-center justify-center font-bold">
                   {answeredCount}
                 </span>
                 <span>Answered</span>
               </div>
-              <div className="flex items-center gap-1.5 p-1.5 rounded-[3px] bg-[#fcfbf9] border border-[#ebebeb] text-[#37352f]">
+              <div className="flex items-center gap-1.5 p-1.5 rounded-[3px] bg-[#fcfbf9] border border-[#E6E6E3] text-[#202124]">
                 <span className="w-4 h-4 rounded-[2px] bg-amber-500 text-white font-mono text-[10px] flex items-center justify-center font-bold">
                   {unansweredVisitedCount}
                 </span>
                 <span>Unanswered</span>
               </div>
-              <div className="flex items-center gap-1.5 p-1.5 rounded-[3px] bg-[#fcfbf9] border border-[#ebebeb] text-[#37352f]">
+              <div className="flex items-center gap-1.5 p-1.5 rounded-[3px] bg-[#fcfbf9] border border-[#E6E6E3] text-[#202124]">
                 <span className="w-4 h-4 rounded-[2px] bg-purple-600 text-white font-mono text-[10px] flex items-center justify-center font-bold">
                   {markedCount}
                 </span>
                 <span>Marked</span>
               </div>
-              <div className="flex items-center gap-1.5 p-1.5 rounded-[3px] bg-[#fcfbf9] border border-[#ebebeb] text-[#37352f]">
-                <span className="w-4 h-4 rounded-[2px] bg-[#ebebeb] text-[#787774] font-mono text-[10px] flex items-center justify-center font-bold">
+              <div className="flex items-center gap-1.5 p-1.5 rounded-[3px] bg-[#fcfbf9] border border-[#E6E6E3] text-[#202124]">
+                <span className="w-4 h-4 rounded-[2px] bg-[#E6E6E3] text-[#787774] font-mono text-[10px] flex items-center justify-center font-bold">
                   {notVisitedCount}
                 </span>
                 <span>Not Visited</span>
@@ -939,7 +939,7 @@ export default function ExamPage() {
                   const state = getQuestionState(q.id);
                   const isCurrent = currentIndex === idx;
 
-                  let styleClass = 'bg-[#f7f6f3] text-[#787774] border border-[#ebebeb]';
+                  let styleClass = 'bg-[#F1F1EF] text-[#787774] border border-[#E6E6E3]';
                   if (state === 'answered') {
                     styleClass = 'bg-emerald-600 text-white font-medium';
                   } else if (state === 'visited_unanswered') {
@@ -959,7 +959,7 @@ export default function ExamPage() {
                         setShowMobilePalette(false);
                       }}
                       className={`h-9 rounded-[4px] text-xs font-mono font-medium transition-colors relative flex items-center justify-center ${styleClass} ${
-                        isCurrent ? 'ring-2 ring-[#37352f] ring-offset-1' : ''
+                        isCurrent ? 'ring-2 ring-[#202124] ring-offset-1' : ''
                       }`}
                     >
                       {idx + 1}
@@ -978,7 +978,7 @@ export default function ExamPage() {
                   setShowMobilePalette(false);
                   setShowSubmitModal(true);
                 }}
-                className="w-full py-2.5 bg-[#37352f] text-white font-medium rounded-[4px] text-xs flex items-center justify-center gap-1.5"
+                className="w-full py-2.5 bg-[#202124] text-white font-medium rounded-[4px] text-xs flex items-center justify-center gap-1.5"
               >
                 <Send className="w-3.5 h-3.5" />
                 Submit Examination
@@ -991,22 +991,22 @@ export default function ExamPage() {
       {/* CONFIRMATION MODAL */}
       {showSubmitModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
-          <div className="bg-white rounded-md max-w-md w-full p-6 shadow-xl border border-[#ebebeb] space-y-4 animate-in fade-in zoom-in-95">
+          <div className="bg-white rounded-md max-w-md w-full p-6 shadow-xl border border-[#E6E6E3] space-y-4 animate-in fade-in zoom-in-95">
             <div className="text-center space-y-1.5">
-              <div className="w-10 h-10 rounded-[4px] bg-[#fbf3db] text-[#4d3800] flex items-center justify-center mx-auto mb-1 border border-[#f1e0b5]">
+              <div className="w-10 h-10 rounded-[4px] bg-[#FFFBEB] text-[#4d3800] flex items-center justify-center mx-auto mb-1 border border-[#f1e0b5]">
                 <Send className="w-4 h-4" />
               </div>
-              <h3 className="text-base font-semibold text-[#37352f]">Confirm Test Submission</h3>
+              <h3 className="text-base font-semibold text-[#202124]">Confirm Test Submission</h3>
               <p className="text-xs text-[#787774] leading-relaxed">
                 Are you ready to submit your test? Once confirmed, your answers will be evaluated server-side against the official answer key.
               </p>
             </div>
 
             {/* Summary Statistics Table */}
-            <div className="bg-[#fcfbf9] rounded-[4px] p-3 border border-[#ebebeb] divide-y divide-[#ebebeb] text-xs">
+            <div className="bg-[#fcfbf9] rounded-[4px] p-3 border border-[#E6E6E3] divide-y divide-[#E6E6E3] text-xs">
               <div className="flex items-center justify-between py-1.5">
                 <span className="text-[#787774]">Total Questions</span>
-                <span className="font-semibold font-mono text-[#37352f]">{questions.length}</span>
+                <span className="font-semibold font-mono text-[#202124]">{questions.length}</span>
               </div>
               <div className="flex items-center justify-between py-1.5">
                 <span className="text-emerald-700">Answered</span>
@@ -1034,7 +1034,7 @@ export default function ExamPage() {
               <button
                 type="button"
                 onClick={() => setShowSubmitModal(false)}
-                className="px-3 py-1.5 text-xs text-[#787774] hover:bg-[#f7f6f3] rounded-[4px] transition-colors"
+                className="px-3 py-1.5 text-xs text-[#787774] hover:bg-[#F1F1EF] rounded-[4px] transition-colors"
               >
                 Return to Exam
               </button>
@@ -1042,7 +1042,7 @@ export default function ExamPage() {
                 type="button"
                 onClick={handleSubmitTest}
                 disabled={isSubmitting}
-                className="px-4 py-1.5 bg-[#37352f] hover:bg-[#2f2d28] text-white font-medium rounded-[4px] text-xs transition-colors flex items-center gap-1.5"
+                className="px-4 py-1.5 bg-[#202124] hover:bg-[#2f2d28] text-white font-medium rounded-[4px] text-xs transition-colors flex items-center gap-1.5"
               >
                 {isSubmitting ? (
                   <>
