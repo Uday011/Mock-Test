@@ -1,10 +1,12 @@
-export type UserRole = 'student' | 'admin' | 'superadmin';
+export type UserRole = 'student' | 'learner' | 'creator' | 'educator' | 'admin' | 'superadmin';
 
 export interface User {
   id: string;
   name: string;
   email: string;
   role: UserRole;
+  roles?: UserRole[];
+  active_role?: UserRole;
   status?: 'active' | 'suspended';
   institute_name?: string | null;
   created_at: string;
@@ -94,11 +96,17 @@ export interface Test {
   visibility?: 'private' | 'unlisted' | 'shared' | 'public';
   is_paid?: boolean;
   price_inr?: number;
+  status?: 'draft' | 'under_review' | 'published' | 'revisions_requested' | 'rejected';
+  series_id?: string | null;
+  review_notes?: string | null;
+  has_access?: boolean;
+  is_bookmarked?: boolean;
   created_at: string;
   updated_at: string;
   // Computed aggregations
   created_by_name?: string;
   created_by_role?: UserRole;
+  creator_institute?: string;
   question_count?: number;
   attempts_count?: number;
   best_score?: number | null;
@@ -452,11 +460,17 @@ export interface EducatorProfile {
   headline: string;
   bio: string;
   institute_name?: string | null;
+  profile_image_url?: string | null;
   verification_status: 'unverified' | 'pending' | 'verified';
   specialization_subjects: string[];
   total_students: number;
   average_rating: number;
   published_tests_count: number;
+  draft_tests_count?: number;
+  followers_count?: number;
+  free_resources_count?: number;
+  paid_resources_count?: number;
+  publication_status?: 'active' | 'paused' | 'under_review';
   created_at: string;
 }
 
@@ -553,8 +567,54 @@ export interface TestSeries {
   price_inr: number;
   rating: number;
   enrolled_count: number;
-  status: 'draft' | 'published' | 'archived';
+  status: 'draft' | 'under_review' | 'published' | 'archived';
+  visibility?: 'public' | 'unlisted' | 'private';
+  creator_name?: string;
+  creator_institute?: string;
+  exam_title?: string;
+  free_preview_count?: number;
+  items?: TestSeriesItem[];
+  has_access?: boolean;
+  user_progress?: {
+    completed_tests_count: number;
+    progress_percentage: number;
+    access_tier: string;
+  };
   created_at: string;
+}
+
+export interface TestSeriesItem {
+  id: string;
+  series_id: string;
+  test_id: string;
+  sequence_order: number;
+  is_free_preview: boolean;
+  unlock_rule: 'immediate' | 'previous_completed' | 'date_scheduled';
+  // Computed helpers
+  test_title?: string;
+  duration_seconds?: number;
+  question_count?: number;
+  difficulty?: string;
+  is_attempted?: boolean;
+  score?: number | null;
+  created_at: string;
+}
+
+export interface UserSeriesEnrollment {
+  id: string;
+  user_id: string;
+  series_id: string;
+  access_tier: 'free_preview' | 'paid' | 'granted';
+  payment_order_id?: string | null;
+  progress_percentage: number;
+  completed_tests_count: number;
+  enrolled_at: string;
+  last_activity_at?: string | null;
+  // Computed helpers
+  series_title?: string;
+  exam_title?: string;
+  total_tests?: number;
+  next_test_id?: string | null;
 }
 
 export interface Publication {
@@ -567,4 +627,109 @@ export interface Publication {
   visibility: 'public' | 'unlisted' | 'private' | 'institutional';
   is_monetized: boolean;
   published_at: string;
+}
+
+export type PaymentStatus = 'pending' | 'completed' | 'failed' | 'refunded';
+export type PaymentMethod = 'upi' | 'card' | 'netbanking' | 'mock_gateway';
+export type ItemType = 'test' | 'test_series' | 'subscription';
+
+export interface Order {
+  id: string;
+  user_id: string;
+  item_type: ItemType;
+  item_id: string;
+  amount_inr: number;
+  platform_fee_inr: number;
+  creator_earnings_inr: number;
+  tax_inr: number;
+  currency: string;
+  payment_status: PaymentStatus;
+  payment_method?: PaymentMethod | string;
+  gateway_transaction_id?: string | null;
+  receipt_number: string;
+  item_title?: string;
+  user_name?: string;
+  user_email?: string;
+  created_at: string;
+  completed_at?: string | null;
+}
+
+export interface Purchase {
+  id: string;
+  order_id: string;
+  user_id: string;
+  item_type: ItemType;
+  item_id: string;
+  access_status: 'active' | 'revoked' | 'expired';
+  granted_at: string;
+  expires_at?: string | null;
+}
+
+export interface Subscription {
+  id: string;
+  user_id: string;
+  creator_id?: string | null;
+  tier_code: 'monthly' | 'quarterly' | 'annual';
+  amount_inr: number;
+  status: 'active' | 'cancelled' | 'past_due' | 'expired';
+  started_at: string;
+  current_period_end: string;
+  cancel_at_period_end: boolean;
+}
+
+export interface Refund {
+  id: string;
+  order_id: string;
+  user_id: string;
+  amount_inr: number;
+  reason: string;
+  status: 'requested' | 'approved' | 'processed' | 'rejected';
+  requested_at: string;
+  processed_at?: string | null;
+}
+
+export interface CreatorPayout {
+  id: string;
+  creator_id: string;
+  period_start: string;
+  period_end: string;
+  gross_sales_inr: number;
+  platform_fee_deducted_inr: number;
+  tax_withheld_inr: number;
+  net_payout_inr: number;
+  status: 'accrued' | 'processing' | 'paid' | 'on_hold';
+  payout_method: 'bank_transfer' | 'upi';
+  payout_reference?: string | null;
+  created_at: string;
+  paid_at?: string | null;
+}
+
+export interface PlatformFee {
+  id: string;
+  fee_tier_name: string;
+  platform_commission_pct: number;
+  payment_gateway_fee_pct: number;
+  tax_gst_pct: number;
+  is_active: boolean;
+  effective_from: string;
+}
+
+export interface ReviewQueueItem {
+  id: string;
+  item_type: 'test' | 'test_series';
+  item_id: string;
+  title: string;
+  creator_id: string;
+  creator_name: string;
+  creator_email: string;
+  creator_institute?: string | null;
+  subject?: string;
+  exam_id?: string | null;
+  exam_title?: string;
+  question_count?: number;
+  is_paid: boolean;
+  price_inr: number;
+  submitted_at: string;
+  status: 'under_review' | 'revisions_requested' | 'approved' | 'rejected';
+  admin_notes?: string | null;
 }

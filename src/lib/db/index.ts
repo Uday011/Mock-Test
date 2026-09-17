@@ -414,6 +414,116 @@ export function getDb(): DatabaseSync {
       FOREIGN KEY (creator_id) REFERENCES users(id) ON DELETE CASCADE
     );
 
+    CREATE TABLE IF NOT EXISTS test_series_items (
+      id TEXT PRIMARY KEY,
+      series_id TEXT NOT NULL,
+      test_id TEXT NOT NULL,
+      sequence_order INTEGER NOT NULL DEFAULT 1,
+      is_free_preview INTEGER NOT NULL DEFAULT 0,
+      unlock_rule TEXT DEFAULT 'immediate',
+      created_at TEXT NOT NULL,
+      FOREIGN KEY (series_id) REFERENCES test_series(id) ON DELETE CASCADE,
+      FOREIGN KEY (test_id) REFERENCES tests(id) ON DELETE CASCADE
+    );
+
+    CREATE TABLE IF NOT EXISTS user_series_enrollments (
+      id TEXT PRIMARY KEY,
+      user_id TEXT NOT NULL,
+      series_id TEXT NOT NULL,
+      access_tier TEXT NOT NULL DEFAULT 'free_preview',
+      payment_order_id TEXT,
+      progress_percentage REAL NOT NULL DEFAULT 0.0,
+      completed_tests_count INTEGER NOT NULL DEFAULT 0,
+      enrolled_at TEXT NOT NULL,
+      last_activity_at TEXT,
+      FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+      FOREIGN KEY (series_id) REFERENCES test_series(id) ON DELETE CASCADE,
+      UNIQUE(user_id, series_id)
+    );
+
+    CREATE TABLE IF NOT EXISTS orders (
+      id TEXT PRIMARY KEY,
+      user_id TEXT NOT NULL,
+      item_type TEXT NOT NULL,
+      item_id TEXT NOT NULL,
+      amount_inr REAL NOT NULL,
+      platform_fee_inr REAL NOT NULL DEFAULT 0.0,
+      creator_earnings_inr REAL NOT NULL DEFAULT 0.0,
+      tax_inr REAL NOT NULL DEFAULT 0.0,
+      currency TEXT NOT NULL DEFAULT 'INR',
+      payment_status TEXT NOT NULL DEFAULT 'pending',
+      payment_method TEXT DEFAULT 'mock_gateway',
+      gateway_transaction_id TEXT,
+      receipt_number TEXT NOT NULL,
+      created_at TEXT NOT NULL,
+      completed_at TEXT,
+      FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+    );
+
+    CREATE TABLE IF NOT EXISTS purchases (
+      id TEXT PRIMARY KEY,
+      order_id TEXT NOT NULL,
+      user_id TEXT NOT NULL,
+      item_type TEXT NOT NULL,
+      item_id TEXT NOT NULL,
+      access_status TEXT NOT NULL DEFAULT 'active',
+      granted_at TEXT NOT NULL,
+      expires_at TEXT,
+      FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+    );
+
+    CREATE TABLE IF NOT EXISTS subscriptions (
+      id TEXT PRIMARY KEY,
+      user_id TEXT NOT NULL,
+      creator_id TEXT,
+      tier_code TEXT NOT NULL DEFAULT 'monthly',
+      amount_inr REAL NOT NULL,
+      status TEXT NOT NULL DEFAULT 'active',
+      started_at TEXT NOT NULL,
+      current_period_end TEXT NOT NULL,
+      cancel_at_period_end INTEGER NOT NULL DEFAULT 0,
+      FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+    );
+
+    CREATE TABLE IF NOT EXISTS refunds (
+      id TEXT PRIMARY KEY,
+      order_id TEXT NOT NULL,
+      user_id TEXT NOT NULL,
+      amount_inr REAL NOT NULL,
+      reason TEXT NOT NULL,
+      status TEXT NOT NULL DEFAULT 'requested',
+      requested_at TEXT NOT NULL,
+      processed_at TEXT,
+      FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+    );
+
+    CREATE TABLE IF NOT EXISTS creator_payouts (
+      id TEXT PRIMARY KEY,
+      creator_id TEXT NOT NULL,
+      period_start TEXT NOT NULL,
+      period_end TEXT NOT NULL,
+      gross_sales_inr REAL NOT NULL,
+      platform_fee_deducted_inr REAL NOT NULL,
+      tax_withheld_inr REAL NOT NULL DEFAULT 0.0,
+      net_payout_inr REAL NOT NULL,
+      status TEXT NOT NULL DEFAULT 'accrued',
+      payout_method TEXT DEFAULT 'bank_transfer',
+      payout_reference TEXT,
+      created_at TEXT NOT NULL,
+      paid_at TEXT,
+      FOREIGN KEY (creator_id) REFERENCES users(id) ON DELETE CASCADE
+    );
+
+    CREATE TABLE IF NOT EXISTS platform_fees (
+      id TEXT PRIMARY KEY,
+      fee_tier_name TEXT NOT NULL,
+      platform_commission_pct REAL NOT NULL DEFAULT 15.0,
+      payment_gateway_fee_pct REAL NOT NULL DEFAULT 2.0,
+      tax_gst_pct REAL NOT NULL DEFAULT 18.0,
+      is_active INTEGER NOT NULL DEFAULT 1,
+      effective_from TEXT NOT NULL
+    );
+
     CREATE INDEX IF NOT EXISTS idx_tests_user_id ON tests(user_id);
     CREATE INDEX IF NOT EXISTS idx_questions_test_id ON questions(test_id);
     CREATE INDEX IF NOT EXISTS idx_test_attempts_test_id ON test_attempts(test_id);
@@ -429,11 +539,16 @@ export function getDb(): DatabaseSync {
     CREATE INDEX IF NOT EXISTS idx_test_reports_test ON test_reports(test_id);
     CREATE INDEX IF NOT EXISTS idx_saved_tests_user ON saved_tests(user_id);
     CREATE INDEX IF NOT EXISTS idx_creator_follows_creator ON creator_follows(creator_id);
+    CREATE INDEX IF NOT EXISTS idx_series_items_series ON test_series_items(series_id);
+    CREATE INDEX IF NOT EXISTS idx_series_enroll_user ON user_series_enrollments(user_id);
+    CREATE INDEX IF NOT EXISTS idx_orders_user ON orders(user_id);
+    CREATE INDEX IF NOT EXISTS idx_purchases_user ON purchases(user_id);
   `);
 
   // Safe schema migrations for existing database files
   try { db.exec('ALTER TABLE users ADD COLUMN status TEXT NOT NULL DEFAULT "active";'); } catch {}
   try { db.exec('ALTER TABLE users ADD COLUMN institute_name TEXT;'); } catch {}
+  try { db.exec('ALTER TABLE users ADD COLUMN roles_json TEXT NOT NULL DEFAULT "[\'learner\']";'); } catch {}
   try { db.exec('ALTER TABLE tests ADD COLUMN section_id TEXT;'); } catch {}
   try { db.exec('ALTER TABLE tests ADD COLUMN test_type TEXT NOT NULL DEFAULT "custom_practice";'); } catch {}
   try { db.exec('ALTER TABLE tests ADD COLUMN exam_id TEXT;'); } catch {}
@@ -483,7 +598,12 @@ export function getDb(): DatabaseSync {
   try { db.exec('ALTER TABLE tests ADD COLUMN trust_label TEXT NOT NULL DEFAULT "Community Created";'); } catch {}
   try { db.exec('ALTER TABLE tests ADD COLUMN rating REAL NOT NULL DEFAULT 4.8;'); } catch {}
   try { db.exec('ALTER TABLE tests ADD COLUMN ratings_count INTEGER NOT NULL DEFAULT 0;'); } catch {}
+  try { db.exec('ALTER TABLE tests ADD COLUMN series_id TEXT;'); } catch {}
+  try { db.exec('ALTER TABLE tests ADD COLUMN review_notes TEXT;'); } catch {}
+  try { db.exec('ALTER TABLE test_series ADD COLUMN review_notes TEXT;'); } catch {}
   try { db.exec('ALTER TABLE educator_profiles ADD COLUMN followers_count INTEGER NOT NULL DEFAULT 0;'); } catch {}
+  try { db.exec('ALTER TABLE educator_profiles ADD COLUMN profile_image_url TEXT;'); } catch {}
+  try { db.exec('ALTER TABLE educator_profiles ADD COLUMN publication_status TEXT NOT NULL DEFAULT "active";'); } catch {}
 
   dbInstance = db;
   return dbInstance;

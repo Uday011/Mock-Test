@@ -38,6 +38,7 @@ export default function CreatorProfilePage() {
   const [creator, setCreator] = useState<any | null>(null);
   const [tests, setTests] = useState<any[]>([]);
   const [testSeries, setTestSeries] = useState<any[]>([]);
+  const [contentFilter, setContentFilter] = useState<'all' | 'free' | 'paid'>('all');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
@@ -251,12 +252,24 @@ export default function CreatorProfilePage() {
 
             <div className="p-3.5 rounded-xl bg-stone-50 border border-stone-200/70">
               <span className="text-[10px] font-mono text-stone-400 uppercase tracking-wider block">
-                Published Papers
+                Free Resources
               </span>
               <div className="flex items-center gap-1.5 mt-0.5">
                 <Layers className="w-4 h-4 text-stone-600" />
                 <span className="font-serif font-bold text-base text-stone-900">
-                  {tests.length || creator.published_tests_count || 12} Tests
+                  {creator.free_resources_count ?? tests.filter((t: any) => !t.is_paid).length} Free
+                </span>
+              </div>
+            </div>
+
+            <div className="p-3.5 rounded-xl bg-stone-50 border border-stone-200/70">
+              <span className="text-[10px] font-mono text-stone-400 uppercase tracking-wider block">
+                Paid / Master Series
+              </span>
+              <div className="flex items-center gap-1.5 mt-0.5">
+                <Award className="w-4 h-4 text-amber-600" />
+                <span className="font-serif font-bold text-base text-amber-900">
+                  {creator.paid_resources_count ?? (tests.filter((t: any) => t.is_paid).length + testSeries.length)} Premium
                 </span>
               </div>
             </div>
@@ -272,54 +285,88 @@ export default function CreatorProfilePage() {
                 </span>
               </div>
             </div>
-
-            <div className="p-3.5 rounded-xl bg-stone-50 border border-stone-200/70">
-              <span className="text-[10px] font-mono text-stone-400 uppercase tracking-wider block">
-                Community Followers
-              </span>
-              <div className="flex items-center gap-1.5 mt-0.5">
-                <Users className="w-4 h-4 text-emerald-600" />
-                <span className="font-serif font-bold text-base text-stone-900">
-                  {creator.followers_count || 0}
-                </span>
-              </div>
-            </div>
           </div>
         </div>
 
+        {/* Content Type Filter Bar */}
+        <div className="p-2 bg-white rounded-2xl border border-stone-200 flex items-center justify-between gap-3 text-xs">
+          <div className="flex items-center gap-2">
+            <span className="font-mono text-stone-400 uppercase text-[10px] font-bold px-2">Catalog Filter:</span>
+            {[
+              { id: 'all', label: 'All Catalog' },
+              { id: 'free', label: 'Free Resources' },
+              { id: 'paid', label: 'Paid Series & Mocks' },
+            ].map((f) => (
+              <button
+                key={f.id}
+                onClick={() => setContentFilter(f.id as any)}
+                className={`px-3.5 py-1.5 rounded-xl font-bold transition-colors ${
+                  contentFilter === f.id
+                    ? 'bg-stone-900 text-white shadow-2xs'
+                    : 'bg-stone-100 text-stone-600 hover:bg-stone-200'
+                }`}
+              >
+                {f.label}
+              </button>
+            ))}
+          </div>
+          <span className="text-stone-400 font-mono text-[11px] pr-3 hidden sm:inline">
+            Showing curated pedagogical assessments
+          </span>
+        </div>
+
         {/* Test Series by this Creator */}
-        {testSeries.length > 0 && (
+        {testSeries.filter((s: any) => {
+          if (contentFilter === 'free' && s.is_paid) return false;
+          if (contentFilter === 'paid' && !s.is_paid) return false;
+          return true;
+        }).length > 0 && (
           <div className="space-y-4">
             <h2 className="text-base sm:text-lg font-serif font-bold text-stone-900 flex items-center gap-2">
               <BookOpen className="w-4 h-4 text-stone-700" />
-              Published Master Test Series ({testSeries.length})
+              Published Master Test Series
             </h2>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {testSeries.map((s) => (
-                <Card key={s.id} className="p-5 bg-white border-stone-200 flex flex-col justify-between">
-                  <div className="space-y-2">
-                    <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded bg-amber-50 text-amber-800 border border-amber-200">
-                      {s.exam_title || 'Target Exam 2026'}
-                    </span>
-                    <h3 className="text-sm font-serif font-bold text-stone-900">
-                      {s.title}
-                    </h3>
-                    <p className="text-xs text-stone-500 line-clamp-2">
-                      {s.description}
-                    </p>
-                  </div>
+              {testSeries
+                .filter((s: any) => {
+                  if (contentFilter === 'free' && s.is_paid) return false;
+                  if (contentFilter === 'paid' && !s.is_paid) return false;
+                  return true;
+                })
+                .map((s) => (
+                  <Card key={s.id} className="p-5 bg-white border-stone-200 flex flex-col justify-between space-y-4 shadow-2xs">
+                    <div className="space-y-2">
+                      <div className="flex items-center justify-between">
+                        <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded bg-amber-50 text-amber-800 border border-amber-200">
+                          {s.exam_title || 'Target Exam 2026'}
+                        </span>
+                        <span className={`text-[10px] font-mono font-bold px-2.5 py-0.5 rounded ${
+                          s.is_paid
+                            ? 'bg-emerald-50 text-emerald-800 border border-emerald-200'
+                            : 'bg-stone-100 text-stone-700 border border-stone-200'
+                        }`}>
+                          {s.is_paid ? `₹${s.price_inr}` : 'Free Access'}
+                        </span>
+                      </div>
+                      <h3 className="text-sm font-serif font-bold text-stone-900">
+                        {s.title}
+                      </h3>
+                      <p className="text-xs text-stone-500 line-clamp-2">
+                        {s.description}
+                      </p>
+                    </div>
 
-                  <div className="pt-4 border-t border-stone-100 flex items-center justify-between text-xs mt-3">
-                    <span className="font-mono text-stone-500">{s.total_tests || 10} Full Mocks</span>
-                    <Link href="/tests">
-                      <Button variant="secondary" size="sm" className="text-xs">
-                        Access Series <ChevronRight className="w-3 h-3 ml-1" />
-                      </Button>
-                    </Link>
-                  </div>
-                </Card>
-              ))}
+                    <div className="pt-3 border-t border-stone-100 flex items-center justify-between text-xs mt-3">
+                      <span className="font-mono text-stone-500">{s.total_tests || 5} Full Mocks</span>
+                      <Link href={`/series/${s.id}`}>
+                        <Button variant="secondary" size="sm" className="text-xs">
+                          Explore Series <ChevronRight className="w-3 h-3 ml-1" />
+                        </Button>
+                      </Link>
+                    </div>
+                  </Card>
+                ))}
             </div>
           </div>
         )}
@@ -329,73 +376,98 @@ export default function CreatorProfilePage() {
           <div className="flex items-center justify-between">
             <h2 className="text-base sm:text-lg font-serif font-bold text-stone-900 flex items-center gap-2">
               <Layers className="w-4 h-4 text-stone-700" />
-              Published Diagnostic Test Papers ({tests.length})
+              Individual Diagnostic Papers
             </h2>
           </div>
 
-          {tests.length === 0 ? (
+          {tests.filter((t: any) => {
+            if (contentFilter === 'free' && t.is_paid) return false;
+            if (contentFilter === 'paid' && !t.is_paid) return false;
+            return true;
+          }).length === 0 ? (
             <div className="bg-white border border-stone-200 rounded-2xl p-8 text-center text-xs text-stone-500">
-              No individual tests published under this educator profile currently.
+              No individual test papers match the current filter.
             </div>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {tests.map((test) => (
-                <div
-                  key={test.id}
-                  className="bg-white rounded-2xl border border-stone-200 p-5 shadow-2xs hover:border-stone-300 transition-all flex flex-col justify-between space-y-4"
-                >
-                  <div className="space-y-2.5">
-                    <div className="flex items-center justify-between gap-2">
-                      <TrustLabel label={test.trust_label} size="sm" showTooltip />
-                      <span className="text-[10px] font-mono text-stone-400">
-                        {test.question_count || 25} Qs
-                      </span>
-                    </div>
+              {tests
+                .filter((t: any) => {
+                  if (contentFilter === 'free' && t.is_paid) return false;
+                  if (contentFilter === 'paid' && !t.is_paid) return false;
+                  return true;
+                })
+                .map((test) => (
+                  <div
+                    key={test.id}
+                    className="bg-white rounded-2xl border border-stone-200 p-5 shadow-2xs hover:border-stone-300 transition-all flex flex-col justify-between space-y-4"
+                  >
+                    <div className="space-y-2.5">
+                      <div className="flex items-center justify-between gap-2">
+                        <TrustLabel label={test.trust_label} size="sm" showTooltip />
+                        <span className={`text-[10px] font-mono font-bold px-2 py-0.5 rounded ${
+                          test.is_paid
+                            ? 'bg-blue-50 text-blue-800 border border-blue-200'
+                            : 'bg-emerald-50 text-emerald-800 border border-emerald-200'
+                        }`}>
+                          {test.is_paid ? `₹${test.price_inr}` : 'Free'}
+                        </span>
+                      </div>
 
-                    <Link
-                      href={`/tests/${test.id}`}
-                      className="font-serif font-bold text-sm text-stone-900 hover:text-amber-800 transition-colors line-clamp-2"
-                    >
-                      {test.title}
-                    </Link>
-
-                    {test.description && (
-                      <p className="text-xs text-stone-500 line-clamp-2">
-                        {test.description}
-                      </p>
-                    )}
-
-                    <div className="flex items-center gap-2 pt-1">
-                      <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded bg-stone-100 text-stone-700 border border-stone-200">
-                        {test.subject || 'General Studies'}
-                      </span>
-                      <span className="text-[10px] font-mono text-stone-500">
-                        {formatDuration(test.duration_seconds)}
-                      </span>
-                    </div>
-                  </div>
-
-                  <div className="pt-3 border-t border-stone-100 flex items-center gap-2">
-                    <Link href={`/tests/${test.id}`} className="flex-1">
-                      <Button variant="secondary" size="sm" className="w-full text-xs">
-                        Details
-                      </Button>
-                    </Link>
-                    <Link href={`/tests/${test.id}/start`} className="flex-1">
-                      <Button
-                        variant="primary"
-                        size="sm"
-                        className="w-full text-xs"
-                        icon={<Play className="w-3 h-3 fill-current" />}
+                      <Link
+                        href={`/tests/${test.id}`}
+                        className="font-serif font-bold text-sm text-stone-900 hover:text-amber-800 transition-colors line-clamp-2"
                       >
-                        Attempt
-                      </Button>
-                    </Link>
+                        {test.title}
+                      </Link>
+
+                      {test.description && (
+                        <p className="text-xs text-stone-500 line-clamp-2">
+                          {test.description}
+                        </p>
+                      )}
+
+                      <div className="flex items-center gap-2 pt-1">
+                        <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded bg-stone-100 text-stone-700 border border-stone-200">
+                          {test.subject || 'General Studies'}
+                        </span>
+                        <span className="text-[10px] font-mono text-stone-500">
+                          {test.question_count || 25} Qs • {formatDuration(test.duration_seconds)}
+                        </span>
+                      </div>
+                    </div>
+
+                    <div className="pt-3 border-t border-stone-100 flex items-center gap-2">
+                      <Link href={`/tests/${test.id}`} className="flex-1">
+                        <Button variant="secondary" size="sm" className="w-full text-xs">
+                          Details
+                        </Button>
+                      </Link>
+                      <Link href={`/tests/${test.id}/start`} className="flex-1">
+                        <Button
+                          variant="primary"
+                          size="sm"
+                          className="w-full text-xs"
+                          icon={<Play className="w-3 h-3 fill-current" />}
+                        >
+                          {test.is_paid ? 'Unlock Test' : 'Attempt Free'}
+                        </Button>
+                      </Link>
+                    </div>
                   </div>
-                </div>
-              ))}
+                ))}
             </div>
           )}
+        </div>
+
+        {/* Academic Trust & Copyright Integrity Notice */}
+        <div className="p-4 bg-stone-50 rounded-2xl border border-stone-200 text-xs text-stone-600 flex items-start gap-3">
+          <ShieldCheck className="w-4 h-4 text-amber-700 shrink-0 mt-0.5" />
+          <div className="space-y-1">
+            <span className="font-bold text-stone-900">Academic Pedagogy & Copyright Integrity Notice</span>
+            <p className="text-[11px] text-stone-500 leading-relaxed">
+              All questions, solutions, and forensic explanations on this faculty portfolio are authored under the Nalanda Educational Code of Honor. Authors retain copyright for original assessment compilations; unverified copying, scraping, or external monetization without permission is subject to intellectual property enforcement.
+            </p>
+          </div>
         </div>
       </div>
     </AppShell>

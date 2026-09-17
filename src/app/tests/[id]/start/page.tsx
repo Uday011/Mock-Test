@@ -16,11 +16,13 @@ import {
   HelpCircle,
   Info,
   ArrowLeft,
+  Lock,
 } from 'lucide-react';
 import { AppShell } from '@/components/layout/AppShell';
 import { Badge } from '@/components/ui/Badge';
 import { Card } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
+import { MockCheckoutModal } from '@/components/modals/MockCheckoutModal';
 
 export default function TestInstructionsPage() {
   const params = useParams();
@@ -32,8 +34,9 @@ export default function TestInstructionsPage() {
   const [error, setError] = useState('');
   const [declared, setDeclared] = useState(false);
   const [starting, setStarting] = useState(false);
+  const [checkoutOpen, setCheckoutOpen] = useState(false);
 
-  useEffect(() => {
+  const fetchTest = () => {
     fetch(`/api/tests/${testId}`)
       .then((res) => {
         if (!res.ok) throw new Error('Failed to load test details');
@@ -44,6 +47,10 @@ export default function TestInstructionsPage() {
       })
       .catch((err) => setError(err.message))
       .finally(() => setLoading(false));
+  };
+
+  useEffect(() => {
+    fetchTest();
   }, [testId]);
 
   const handleStartExam = async () => {
@@ -102,6 +109,85 @@ export default function TestInstructionsPage() {
               Return to Test Catalog
             </Button>
           </Link>
+        </div>
+      </AppShell>
+    );
+  }
+
+  // Access Restriction State for unpurchased paid tests
+  if (test.is_paid && !test.has_access) {
+    return (
+      <AppShell>
+        <MockCheckoutModal
+          isOpen={checkoutOpen}
+          onClose={() => setCheckoutOpen(false)}
+          itemType="test"
+          itemId={test.id}
+          itemTitle={test.title}
+          creatorName={test.creator_name}
+          priceInr={test.price_inr}
+          onSuccess={() => {
+            fetchTest();
+          }}
+        />
+
+        <div className="max-w-2xl mx-auto my-12 p-8 bg-white rounded-3xl border border-stone-200 shadow-sm space-y-6">
+          <div className="flex items-start gap-4">
+            <div className="w-14 h-14 rounded-2xl bg-amber-50 text-amber-900 border border-amber-200 flex items-center justify-center shrink-0 shadow-2xs">
+              <Lock className="w-7 h-7 text-amber-800" />
+            </div>
+            <div className="space-y-1">
+              <span className="text-[10px] font-mono uppercase font-bold text-amber-800 bg-amber-50 px-2 py-0.5 rounded border border-amber-200">
+                Premium Assessment Restricted
+              </span>
+              <h2 className="font-serif font-bold text-xl text-stone-900">{test.title}</h2>
+              <p className="text-xs text-stone-500">
+                Authored by {test.creator_name || 'Verified Educator Faculty'} • ₹{test.price_inr}
+              </p>
+            </div>
+          </div>
+
+          <div className="p-4 rounded-2xl bg-stone-50 border border-stone-200 text-xs text-stone-600 space-y-2">
+            <h4 className="font-bold text-stone-800 uppercase tracking-wider text-[10px] font-mono">
+              Included with Premium Access:
+            </h4>
+            <ul className="space-y-1.5 text-stone-600">
+              <li className="flex items-center gap-2">
+                <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
+                <span>Standard TCS Computer-Based Examination interface with full timing controls</span>
+              </li>
+              <li className="flex items-center gap-2">
+                <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
+                <span>Complete pedagogical derivations and examiner trap annotations for all questions</span>
+              </li>
+              <li className="flex items-center gap-2">
+                <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
+                <span>All-India percentile rankings and sectional cognitive speed analytics</span>
+              </li>
+              <li className="flex items-center gap-2">
+                <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
+                <span>Automatic integration into your Nalanda Spaced Repetition Mistake Notebook</span>
+              </li>
+            </ul>
+          </div>
+
+          <div className="flex flex-col sm:flex-row items-center justify-between gap-4 pt-2 border-t border-stone-100">
+            <Link href={`/tests/${test.id}`} className="w-full sm:w-auto">
+              <Button variant="secondary" size="md" className="w-full text-xs" icon={<ArrowLeft className="w-3.5 h-3.5" />}>
+                Back to Test Overview
+              </Button>
+            </Link>
+
+            <Button
+              variant="primary"
+              size="md"
+              onClick={() => setCheckoutOpen(true)}
+              className="w-full sm:w-auto text-xs px-6 shadow-md"
+              icon={<Lock className="w-3.5 h-3.5" />}
+            >
+              Unlock Assessment (₹{test.price_inr})
+            </Button>
+          </div>
         </div>
       </AppShell>
     );

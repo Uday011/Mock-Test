@@ -51,10 +51,36 @@ export async function GET(
       ORDER BY created_at DESC
     `);
     const attempts = attemptsStmt.all(id) as any[];
+    const isOwner = user.id === test.user_id;
+    const isFree = !test.is_paid || Number(test.price_inr) === 0;
+    let hasAccess = isOwner || isFree;
+
+    if (!hasAccess) {
+      // Check direct purchases
+      const directPurchase = db.prepare(`
+        SELECT id FROM purchases WHERE user_id = ? AND item_id = ? AND access_status = 'active'
+      `).get(user.id, id);
+
+      if (directPurchase) {
+        hasAccess = true;
+      } else {
+        // Check if covered by an active test series enrollment or free preview item
+        const seriesCheck = db.prepare(`
+          SELECT tsi.id
+          FROM test_series_items tsi
+          LEFT JOIN user_series_enrollments use ON use.series_id = tsi.series_id AND use.user_id = ?
+          WHERE tsi.test_id = ? AND (use.access_tier IN ('paid', 'granted') OR tsi.is_free_preview = 1)
+        `).get(user.id, id);
+        if (seriesCheck) {
+          hasAccess = true;
+        }
+      }
+    }
 
     return NextResponse.json({
       test: {
         ...test,
+        has_access: hasAccess,
         is_bookmarked: Boolean(test.is_bookmarked),
         is_paid: Boolean(test.is_paid),
         trust_label: test.trust_label || 'Community Created',

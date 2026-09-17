@@ -57,6 +57,7 @@ export async function GET(
         t.rating,
         t.ratings_count,
         t.is_paid,
+        t.price_inr,
         t.created_at,
         COUNT(DISTINCT q.id) as question_count,
         COUNT(DISTINCT a.id) as attempts_count,
@@ -92,6 +93,11 @@ export async function GET(
       specializations = ['Quantitative Aptitude', 'General Intelligence'];
     }
 
+    const freeTestsCount = tests.filter((t) => !t.is_paid).length;
+    const paidTestsCount = tests.filter((t) => Boolean(t.is_paid)).length;
+    const freeSeriesCount = testSeries.filter((s) => !s.is_paid).length;
+    const paidSeriesCount = testSeries.filter((s) => Boolean(s.is_paid)).length;
+
     return NextResponse.json({
       success: true,
       creator: {
@@ -106,6 +112,8 @@ export async function GET(
         total_students: creator.total_students,
         average_rating: creator.average_rating,
         published_tests_count: tests.length || creator.published_tests_count,
+        free_resources_count: freeTestsCount + freeSeriesCount,
+        paid_resources_count: paidTestsCount + paidSeriesCount,
         followers_count: creator.followers_count,
         is_following: Boolean(followCheck),
       },
@@ -113,10 +121,15 @@ export async function GET(
         ...t,
         is_bookmarked: Boolean(t.is_bookmarked),
         is_paid: Boolean(t.is_paid),
+        price_inr: Number(t.price_inr || 0),
         trust_label: t.trust_label || 'Community Created',
         rating: t.rating || 4.8,
       })),
-      test_series: testSeries,
+      test_series: testSeries.map((s) => ({
+        ...s,
+        is_paid: Boolean(s.is_paid),
+        price_inr: Number(s.price_inr || 0),
+      })),
     });
   } catch (err: any) {
     console.error('Error fetching creator profile:', err);

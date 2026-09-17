@@ -1,0 +1,426 @@
+'use client';
+
+import React, { useState, useEffect } from 'react';
+import { useParams, useRouter } from 'next/navigation';
+import Link from 'next/link';
+import {
+  Layers,
+  Star,
+  Users,
+  ShieldCheck,
+  Clock,
+  Award,
+  Play,
+  Lock,
+  Unlock,
+  CheckCircle2,
+  ArrowLeft,
+  ArrowRight,
+  Share2,
+  Bookmark,
+  Calendar,
+  Sparkles,
+  BookOpen,
+  AlertCircle,
+  HelpCircle,
+} from 'lucide-react';
+import { AppShell } from '@/components/layout/AppShell';
+import { Card } from '@/components/ui/Card';
+import { Badge } from '@/components/ui/Badge';
+import { Button } from '@/components/ui/Button';
+import { ProgressBar } from '@/components/ui/ProgressBar';
+import { MockCheckoutModal } from '@/components/modals/MockCheckoutModal';
+
+export default function TestSeriesDetailPage() {
+  const params = useParams();
+  const router = useRouter();
+  const seriesId = params.id as string;
+
+  const [series, setSeries] = useState<any | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [checkoutOpen, setCheckoutOpen] = useState(false);
+  const [toastMessage, setToastMessage] = useState<string | null>(null);
+  const [enrolling, setEnrolling] = useState(false);
+
+  const fetchSeriesData = () => {
+    fetch(`/api/series/${seriesId}`)
+      .then((res) => {
+        if (!res.ok) throw new Error('Test series could not be found');
+        return res.json();
+      })
+      .then((data) => {
+        if (data.success) {
+          setSeries(data.series);
+        }
+      })
+      .catch((err) => setError(err.message))
+      .finally(() => setLoading(false));
+  };
+
+  useEffect(() => {
+    fetchSeriesData();
+  }, [seriesId]);
+
+  const showToast = (msg: string) => {
+    setToastMessage(msg);
+    setTimeout(() => setToastMessage(null), 3000);
+  };
+
+  const handleShare = () => {
+    const url = window.location.href;
+    if (navigator.clipboard) {
+      navigator.clipboard.writeText(url);
+      showToast('Series link copied to clipboard');
+    }
+  };
+
+  const handleEnrollFree = async () => {
+    setEnrolling(true);
+    try {
+      const res = await fetch(`/api/series/${seriesId}/enroll`, { method: 'POST' });
+      const data = await res.json();
+      if (data.success) {
+        showToast('Enrolled successfully!');
+        fetchSeriesData();
+      } else {
+        showToast(data.error || 'Failed to enroll');
+      }
+    } catch {
+      showToast('Error during enrollment');
+    } finally {
+      setEnrolling(false);
+    }
+  };
+
+  const formatDuration = (seconds: number) => {
+    if (!seconds || seconds <= 0) return 'Untimed';
+    const hrs = Math.floor(seconds / 3600);
+    const mins = Math.floor((seconds % 3600) / 60);
+    if (hrs > 0 && mins > 0) return `${hrs}h ${mins}m`;
+    if (hrs > 0) return `${hrs}h`;
+    return `${mins}m`;
+  };
+
+  if (loading) {
+    return (
+      <AppShell>
+        <div className="min-h-[60vh] flex flex-col items-center justify-center space-y-3">
+          <div className="w-8 h-8 border-3 border-stone-900 border-t-transparent rounded-full animate-spin" />
+          <p className="text-xs text-stone-500 font-medium">Loading test series curriculum...</p>
+        </div>
+      </AppShell>
+    );
+  }
+
+  if (error || !series) {
+    return (
+      <AppShell>
+        <div className="max-w-md mx-auto my-16 p-8 bg-white rounded-2xl border border-stone-200 text-center space-y-4">
+          <AlertCircle className="w-10 h-10 text-rose-500 mx-auto" />
+          <h3 className="font-bold text-stone-900 font-serif text-lg">Test Series Not Found</h3>
+          <p className="text-xs text-stone-500">{error || 'This series does not exist or has been unpublished.'}</p>
+          <Link href="/library" className="inline-block">
+            <Button variant="primary" size="sm">
+              Return to Public Library
+            </Button>
+          </Link>
+        </div>
+      </AppShell>
+    );
+  }
+
+  const items = series.items || [];
+  const nextIncompleteTest = items.find((it: any) => it.has_access && !it.is_attempted) || items[0];
+
+  return (
+    <AppShell
+      breadcrumbs={[
+        { label: 'Public Library', href: '/library' },
+        { label: 'Test Series', href: '/library' },
+        { label: series.title, href: `/series/${series.id}` },
+      ]}
+    >
+      {/* Toast Notification */}
+      {toastMessage && (
+        <div className="fixed bottom-6 right-6 z-50 bg-stone-900 text-white text-xs px-4 py-3 rounded-xl shadow-2xl flex items-center gap-2 animate-in fade-in slide-in-from-bottom-2">
+          <CheckCircle2 className="w-4 h-4 text-emerald-400" />
+          <span>{toastMessage}</span>
+        </div>
+      )}
+
+      {/* Checkout Modal */}
+      <MockCheckoutModal
+        isOpen={checkoutOpen}
+        onClose={() => setCheckoutOpen(false)}
+        itemType="test_series"
+        itemId={series.id}
+        itemTitle={series.title}
+        creatorName={series.creator_name}
+        priceInr={series.price_inr}
+        onSuccess={() => {
+          showToast('Payment confirmed! Series unlocked.');
+          fetchSeriesData();
+        }}
+      />
+
+      <div className="space-y-6 max-w-5xl mx-auto">
+        {/* Back Link & Utility Buttons */}
+        <div className="flex items-center justify-between">
+          <Link
+            href="/library"
+            className="inline-flex items-center gap-1.5 text-xs font-bold text-stone-500 hover:text-stone-900 transition-colors"
+          >
+            <ArrowLeft className="w-3.5 h-3.5" /> Back to Assessment Library
+          </Link>
+
+          <div className="flex items-center gap-2">
+            <button
+              onClick={handleShare}
+              className="px-3 py-1.5 rounded-xl border border-stone-200 bg-white text-stone-600 hover:bg-stone-50 text-xs font-medium flex items-center gap-1.5 transition-colors"
+            >
+              <Share2 className="w-3.5 h-3.5" />
+              <span>Share</span>
+            </button>
+          </div>
+        </div>
+
+        {/* Hero Card */}
+        <div className="bg-white rounded-3xl p-6 sm:p-8 border border-stone-200 shadow-2xs space-y-6">
+          <div className="flex flex-col md:flex-row md:items-start justify-between gap-6">
+            <div className="space-y-3 flex-1">
+              <div className="flex items-center gap-2 flex-wrap">
+                <span className="text-xs font-mono font-bold px-2.5 py-0.5 rounded-full bg-amber-50 text-amber-900 border border-amber-200">
+                  {series.exam_title || 'SSC CGL 2026'}
+                </span>
+                <span className="text-xs font-medium px-2.5 py-0.5 rounded-full bg-stone-100 text-stone-700 border border-stone-200">
+                  {items.length} Mock Examinations
+                </span>
+                <span className="text-xs font-bold px-2.5 py-0.5 rounded-full bg-emerald-50 text-emerald-800 border border-emerald-200">
+                  {series.is_paid ? `₹${series.price_inr} Premium Access` : 'Free Public Series'}
+                </span>
+              </div>
+
+              <h1 className="text-2xl sm:text-3xl font-serif font-bold text-stone-900 tracking-tight">
+                {series.title}
+              </h1>
+
+              <p className="text-xs sm:text-sm text-stone-600 leading-relaxed max-w-3xl">
+                {series.description}
+              </p>
+
+              {/* Creator Attribution */}
+              <div className="pt-2 flex items-center gap-3">
+                <Link
+                  href={`/creators/${series.creator_id}`}
+                  className="flex items-center gap-2 text-xs text-stone-700 hover:text-stone-900 group"
+                >
+                  <div className="w-8 h-8 rounded-full bg-amber-100 text-amber-900 flex items-center justify-center font-bold text-xs border border-amber-200">
+                    {series.creator_name?.charAt(0) || 'F'}
+                  </div>
+                  <div>
+                    <div className="font-semibold text-stone-900 flex items-center gap-1 group-hover:underline">
+                      <span>{series.creator_name || 'Academic Faculty'}</span>
+                      <ShieldCheck className="w-3.5 h-3.5 text-emerald-600" />
+                    </div>
+                    <div className="text-[10px] text-stone-400">
+                      {series.creator_institute || 'Nalanda Faculty Board'}
+                    </div>
+                  </div>
+                </Link>
+              </div>
+            </div>
+
+            {/* CTA Pricing & Action Box */}
+            <div className="bg-stone-50 p-5 rounded-2xl border border-stone-200 text-center space-y-3 shrink-0 w-full md:w-64">
+              <div>
+                <span className="text-[10px] font-mono uppercase font-bold text-stone-400 block">
+                  Series Enrollment
+                </span>
+                <div className="font-serif font-bold text-2xl text-stone-900 mt-1">
+                  {series.is_paid ? `₹${series.price_inr}` : 'Free'}
+                </div>
+                {series.is_paid && (
+                  <p className="text-[10px] text-stone-500">Includes all {items.length} mock tests & forensics</p>
+                )}
+              </div>
+
+              {series.has_access ? (
+                <div className="space-y-2">
+                  <div className="inline-flex items-center gap-1 text-xs font-bold text-emerald-800 bg-emerald-50 px-3 py-1 rounded-full border border-emerald-200">
+                    <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
+                    <span>Access Active</span>
+                  </div>
+                  {nextIncompleteTest && (
+                    <Link href={`/tests/${nextIncompleteTest.test_id}/start`} className="block">
+                      <Button variant="primary" size="sm" className="w-full text-xs" icon={<Play className="w-3 h-3 fill-current" />}>
+                        Continue Series
+                      </Button>
+                    </Link>
+                  )}
+                </div>
+              ) : series.is_paid ? (
+                <Button
+                  variant="primary"
+                  size="md"
+                  onClick={() => setCheckoutOpen(true)}
+                  className="w-full text-xs shadow-md"
+                  icon={<Lock className="w-3.5 h-3.5" />}
+                >
+                  Unlock Series Access
+                </Button>
+              ) : (
+                <Button
+                  variant="primary"
+                  size="md"
+                  onClick={handleEnrollFree}
+                  disabled={enrolling}
+                  className="w-full text-xs shadow-md"
+                >
+                  {enrolling ? 'Enrolling...' : 'Enroll in Free Series'}
+                </Button>
+              )}
+
+              <div className="flex items-center justify-center gap-3 pt-2 border-t border-stone-200/70 text-[11px] text-stone-500 font-mono">
+                <div className="flex items-center gap-1">
+                  <Star className="w-3 h-3 fill-amber-500 text-amber-500" />
+                  <span>{Number(series.rating || 4.9).toFixed(2)}</span>
+                </div>
+                <span>•</span>
+                <div className="flex items-center gap-1">
+                  <Users className="w-3 h-3 text-stone-400" />
+                  <span>{(series.enrolled_count || 500).toLocaleString()} Enrolled</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Learner Progression Bar (if enrolled) */}
+          {series.user_progress && (
+            <div className="p-4 rounded-2xl bg-amber-50/60 border border-amber-200/80 space-y-2">
+              <div className="flex items-center justify-between text-xs">
+                <span className="font-bold text-stone-800">Your Series Completion Progress</span>
+                <span className="font-mono font-bold text-amber-900">
+                  {series.user_progress.completed_tests_count} of {series.user_progress.total_tests} Tests Completed ({series.user_progress.progress_percentage}%)
+                </span>
+              </div>
+              <ProgressBar value={series.user_progress.progress_percentage} max={100} variant="saffron" size="sm" />
+            </div>
+          )}
+        </div>
+
+        {/* Ordered Test Curriculum List */}
+        <div className="space-y-4">
+          <div className="flex items-center justify-between">
+            <div>
+              <h3 className="text-base font-serif font-bold text-stone-900">
+                Recommended Examination Sequence
+              </h3>
+              <p className="text-xs text-stone-500">
+                Tests are structured in progressive cognitive difficulty according to syllabus coverage.
+              </p>
+            </div>
+            <span className="text-xs font-mono text-stone-400">
+              {items.length} Test Units
+            </span>
+          </div>
+
+          <div className="space-y-3">
+            {items.map((item: any, idx: number) => {
+              const isLocked = !item.has_access;
+
+              return (
+                <div
+                  key={item.id}
+                  className={`bg-white rounded-2xl border p-4 sm:p-5 transition-all flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 ${
+                    isLocked
+                      ? 'border-stone-200/80 opacity-90'
+                      : 'border-stone-200 hover:border-stone-300 shadow-2xs'
+                  }`}
+                >
+                  <div className="flex items-start gap-3.5">
+                    <div className="w-8 h-8 rounded-xl bg-stone-100 text-stone-700 flex items-center justify-center font-mono font-bold text-xs shrink-0 mt-0.5">
+                      {String(item.sequence_order || idx + 1).padStart(2, '0')}
+                    </div>
+
+                    <div className="space-y-1">
+                      <div className="flex items-center gap-2 flex-wrap">
+                        <h4 className="font-serif font-bold text-stone-900 text-sm">
+                          {item.test_title}
+                        </h4>
+
+                        {item.is_free_preview && (
+                          <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-800 border border-emerald-200">
+                            Free Preview
+                          </span>
+                        )}
+
+                        {isLocked && (
+                          <span className="inline-flex items-center gap-1 text-[10px] font-bold px-2 py-0.5 rounded-full bg-stone-100 text-stone-600 border border-stone-200">
+                            <Lock className="w-2.5 h-2.5" />
+                            Locked (Requires Series Access)
+                          </span>
+                        )}
+
+                        {item.is_attempted && (
+                          <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-amber-50 text-amber-800 border border-amber-200 font-mono">
+                            Attempted • Score: {item.best_score}
+                          </span>
+                        )}
+                      </div>
+
+                      {item.test_description && (
+                        <p className="text-xs text-stone-500 line-clamp-1">
+                          {item.test_description}
+                        </p>
+                      )}
+
+                      <div className="flex items-center gap-3 text-[11px] text-stone-500 font-mono pt-1">
+                        <span>{item.question_count || 25} Questions</span>
+                        <span>•</span>
+                        <span>{formatDuration(item.duration_seconds)}</span>
+                        <span>•</span>
+                        <span className="capitalize">{item.difficulty || 'Medium'}</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center gap-2 w-full sm:w-auto shrink-0 justify-end">
+                    <Link href={`/tests/${item.test_id}`}>
+                      <Button variant="secondary" size="sm" className="text-xs">
+                        Details
+                      </Button>
+                    </Link>
+
+                    {item.has_access ? (
+                      <Link href={`/tests/${item.test_id}/start`}>
+                        <Button
+                          variant="primary"
+                          size="sm"
+                          className="text-xs"
+                          icon={<Play className="w-3 h-3 fill-current" />}
+                        >
+                          {item.is_attempted ? 'Retake' : 'Start Mock'}
+                        </Button>
+                      </Link>
+                    ) : (
+                      <Button
+                        variant="secondary"
+                        size="sm"
+                        onClick={() => setCheckoutOpen(true)}
+                        className="text-xs border-amber-300 text-amber-900 bg-amber-50 hover:bg-amber-100"
+                        icon={<Lock className="w-3 h-3 text-amber-700" />}
+                      >
+                        Unlock Test
+                      </Button>
+                    )}
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      </div>
+    </AppShell>
+  );
+}

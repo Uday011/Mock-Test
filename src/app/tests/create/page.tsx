@@ -36,6 +36,7 @@ import {
   Info,
   ExternalLink,
   Award,
+  ShieldCheck,
 } from 'lucide-react';
 import { AppShell } from '@/components/layout/AppShell';
 import { PageHeader } from '@/components/ui/PageHeader';
@@ -149,7 +150,12 @@ export default function CreateTestPage() {
   const [testType, setTestType] = useState('full_mock');
   const [difficulty, setDifficulty] = useState('medium');
   const [visibility, setVisibility] = useState('public');
-  const [status, setStatus] = useState<'published' | 'draft'>('published');
+  const [status, setStatus] = useState<'published' | 'draft' | 'under_review'>('published');
+  const [isPaid, setIsPaid] = useState(false);
+  const [priceInr, setPriceInr] = useState<number>(99);
+  const [selectedSeriesId, setSelectedSeriesId] = useState<string>('');
+  const [seriesList, setSeriesList] = useState<any[]>([]);
+  const [copyrightConfirmed, setCopyrightConfirmed] = useState(true);
   const [resultAvailability, setResultAvailability] = useState('immediate');
   const [tagsStr, setTagsStr] = useState('Mock Test, Practice, Tier-1');
   const [saveToQuestionBank, setSaveToQuestionBank] = useState(true);
@@ -173,7 +179,7 @@ export default function CreateTestPage() {
   const [showImmediateResults, setShowImmediateResults] = useState(true);
 
   // Saving state
-  const [savingAction, setSavingAction] = useState<'draft' | 'publish' | 'attempt' | null>(null);
+  const [savingAction, setSavingAction] = useState<'draft' | 'publish' | 'review' | 'attempt' | null>(null);
   const [saveError, setSaveError] = useState('');
 
   // Live CBE Preview Modal
@@ -246,6 +252,17 @@ export default function CreateTestPage() {
 
   const criticalIssuesCount = linterIssues.filter((i) => i.type === 'critical').length;
   const warningIssuesCount = linterIssues.filter((i) => i.type === 'warning').length;
+
+  useEffect(() => {
+    fetch('/api/series')
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.success && Array.isArray(data.series)) {
+          setSeriesList(data.series);
+        }
+      })
+      .catch(() => {});
+  }, []);
 
   // Active question being edited in Split-Screen
   const currentQ = questions[activeQuestionIdx] || null;
@@ -648,7 +665,7 @@ Explanation: Binary search halves the search space at every comparison, giving $
   };
 
   // Final Test Submission / Publishing
-  const handleSaveTest = async (action: 'draft' | 'publish' | 'attempt') => {
+  const handleSaveTest = async (action: 'draft' | 'publish' | 'review' | 'attempt') => {
     setSaveError('');
     if (!title.trim()) {
       setSaveError('Please enter a test title.');
@@ -659,6 +676,16 @@ Explanation: Binary search halves the search space at every comparison, giving $
       return;
     }
 
+    if (isPaid && Number(priceInr) <= 0) {
+      setSaveError('Please set a valid price greater than ₹0 for paid tests.');
+      return;
+    }
+
+    if (!copyrightConfirmed && (action === 'publish' || action === 'review')) {
+      setSaveError('Please confirm the intellectual property and copyright declaration.');
+      return;
+    }
+
     if (action === 'publish' && criticalIssuesCount > 0) {
       setSaveError(`Please resolve all ${criticalIssuesCount} critical linter issue(s) before publishing.`);
       return;
@@ -666,7 +693,11 @@ Explanation: Binary search halves the search space at every comparison, giving $
 
     setSavingAction(action);
     try {
-      const finalStatus = action === 'draft' ? 'draft' : 'published';
+      let finalStatus: 'draft' | 'under_review' | 'published' = 'published';
+      if (action === 'draft') finalStatus = 'draft';
+      else if (action === 'review') finalStatus = 'under_review';
+      else finalStatus = 'published';
+
       const parsedTags = tagsStr
         .split(',')
         .map((t) => t.trim())
@@ -682,6 +713,9 @@ Explanation: Binary search halves the search space at every comparison, giving $
         test_type: testType,
         difficulty,
         visibility,
+        is_paid: isPaid ? 1 : 0,
+        price_inr: isPaid ? Number(priceInr) : 0,
+        series_id: selectedSeriesId || null,
         status: finalStatus,
         result_availability: resultAvailability,
         tags: parsedTags,
@@ -1735,6 +1769,74 @@ Explanation: Binary search halves the search space at every comparison, giving $
                 </label>
               </div>
 
+              {/* Visibility & Pricing Controls */}
+              <div className="grid grid-cols-2 gap-3 pt-1">
+                <div>
+                  <label className="block text-xs font-bold text-stone-800 mb-1">Catalog Visibility</label>
+                  <select
+                    value={visibility}
+                    onChange={(e) => setVisibility(e.target.value)}
+                    className="w-full px-3 py-2 rounded-xl bg-white border border-stone-300 text-xs text-stone-900"
+                  >
+                    <option value="public">Public (Listed in Public Library)</option>
+                    <option value="unlisted">Unlisted (Accessible via Direct Link)</option>
+                    <option value="shared">Shared (Enrolled Institute Only)</option>
+                    <option value="private">Private (Author Only)</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label className="block text-xs font-bold text-stone-800 mb-1">Access & Pricing</label>
+                  <select
+                    value={isPaid ? 'paid' : 'free'}
+                    onChange={(e) => setIsPaid(e.target.value === 'paid')}
+                    className="w-full px-3 py-2 rounded-xl bg-white border border-stone-300 text-xs text-stone-900"
+                  >
+                    <option value="free">Free Open Access</option>
+                    <option value="paid">Paid Premium Access</option>
+                  </select>
+                </div>
+              </div>
+
+              {isPaid && (
+                <div className="p-3.5 bg-amber-50/70 rounded-xl border border-amber-200 text-xs space-y-2">
+                  <div className="flex items-center justify-between">
+                    <label className="font-bold text-amber-950">Tuition Price (₹ INR)</label>
+                    <span className="text-[10px] text-amber-800 font-mono">Platform fee: 15%</span>
+                  </div>
+                  <div className="relative">
+                    <span className="absolute left-3 top-1/2 -translate-y-1/2 font-mono font-bold text-stone-500">₹</span>
+                    <input
+                      type="number"
+                      min={1}
+                      value={priceInr}
+                      onChange={(e) => setPriceInr(Math.max(1, Number(e.target.value)))}
+                      className="w-full pl-8 pr-3 py-2 rounded-xl bg-white border border-amber-300 text-xs text-stone-900 font-bold font-mono"
+                    />
+                  </div>
+                  <p className="text-[11px] text-stone-500">
+                    Learners will unlock this test via Nalanda checkout. Payouts accrue to your Educator Ledger.
+                  </p>
+                </div>
+              )}
+
+              {/* Test Series Assignment */}
+              <div>
+                <label className="block text-xs font-bold text-stone-800 mb-1">Attach to Test Series</label>
+                <select
+                  value={selectedSeriesId}
+                  onChange={(e) => setSelectedSeriesId(e.target.value)}
+                  className="w-full px-3 py-2 rounded-xl bg-white border border-stone-300 text-xs text-stone-900"
+                >
+                  <option value="">Standalone Test (Not in a Series)</option>
+                  {seriesList.map((s: any) => (
+                    <option key={s.id} value={s.id}>
+                      {s.title} ({s.is_paid ? `Paid ₹${s.price_inr}` : 'Free'})
+                    </option>
+                  ))}
+                </select>
+              </div>
+
               <div>
                 <label className="block text-xs font-bold text-stone-800 mb-1">Tags (comma separated)</label>
                 <input
@@ -1745,6 +1847,21 @@ Explanation: Binary search halves the search space at every comparison, giving $
                   className="w-full px-3 py-2 rounded-xl bg-white border border-stone-300 text-xs text-stone-900"
                 />
               </div>
+
+              {/* Copyright & Originality Declaration */}
+              <div className="p-3 bg-stone-50 rounded-xl border border-stone-200">
+                <label className="flex items-start gap-2 cursor-pointer text-xs text-stone-700">
+                  <input
+                    type="checkbox"
+                    checked={copyrightConfirmed}
+                    onChange={(e) => setCopyrightConfirmed(e.target.checked)}
+                    className="mt-0.5 rounded border-stone-300 text-stone-900 focus:ring-stone-900"
+                  />
+                  <span>
+                    I confirm that this assessment conforms to Nalanda academic guidelines, contains verified answer keys, and respects intellectual property rights.
+                  </span>
+                </label>
+              </div>
             </div>
           </div>
 
@@ -1754,14 +1871,24 @@ Explanation: Binary search halves the search space at every comparison, giving $
               Back to Question Editor
             </Button>
 
-            <div className="flex items-center gap-3 w-full sm:w-auto justify-end">
+            <div className="flex items-center gap-2.5 w-full sm:w-auto justify-end flex-wrap">
               <Button
                 variant="secondary"
                 onClick={() => handleSaveTest('draft')}
                 disabled={savingAction !== null}
                 icon={<Save className="w-4 h-4" />}
               >
-                {savingAction === 'draft' ? 'Saving Draft...' : 'Save as Draft'}
+                {savingAction === 'draft' ? 'Saving...' : 'Save Draft'}
+              </Button>
+
+              <Button
+                variant="secondary"
+                onClick={() => handleSaveTest('review')}
+                disabled={savingAction !== null}
+                className="border-amber-300 bg-amber-50/60 hover:bg-amber-100 text-amber-900 font-semibold"
+                icon={<ShieldCheck className="w-4 h-4 text-amber-700" />}
+              >
+                {savingAction === 'review' ? 'Submitting...' : 'Submit for Review'}
               </Button>
 
               <Button

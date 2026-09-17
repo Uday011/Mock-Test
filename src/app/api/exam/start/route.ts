@@ -23,6 +23,35 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Test not found' }, { status: 404 });
     }
 
+    // Access authorization check for paid content
+    if (test.is_paid && Number(test.price_inr) > 0 && test.user_id !== user.id) {
+      const directPurchase = db.prepare(`
+        SELECT id FROM purchases WHERE user_id = ? AND item_id = ? AND access_status = 'active'
+      `).get(user.id, testId);
+
+      if (!directPurchase) {
+        // Check if covered by an enrolled test series or free preview item
+        const seriesItemCheck = db.prepare(`
+          SELECT tsi.id, tsi.is_free_preview, use.access_tier
+          FROM test_series_items tsi
+          LEFT JOIN user_series_enrollments use ON use.series_id = tsi.series_id AND use.user_id = ?
+          WHERE tsi.test_id = ? AND (use.access_tier IN ('paid', 'granted') OR tsi.is_free_preview = 1)
+        `).get(user.id, testId) as any;
+
+        if (!seriesItemCheck) {
+          return NextResponse.json(
+            {
+              error: 'Access restricted: This is a premium assessment. Please unlock access to continue.',
+              is_paid: true,
+              price_inr: test.price_inr,
+              test_title: test.title,
+            },
+            { status: 402 }
+          );
+        }
+      }
+    }
+
     const questionsStmt = db.prepare('SELECT * FROM questions WHERE test_id = ? ORDER BY question_number ASC');
     const rawQuestions = questionsStmt.all(testId) as any[];
 

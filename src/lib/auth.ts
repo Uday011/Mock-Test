@@ -13,6 +13,8 @@ export interface AuthSessionUser {
   name: string;
   email: string;
   role: UserRole;
+  roles?: UserRole[];
+  active_role?: UserRole;
   institute_name?: string | null;
 }
 
@@ -33,12 +35,16 @@ export function verifyPassword(password: string, hash: string): boolean {
 }
 
 export function createToken(user: AuthSessionUser): string {
+  const effectiveRoles = user.roles && user.roles.length > 0 ? user.roles : [user.role];
+  const effectiveActiveRole = user.active_role || user.role;
   return jwt.sign(
     {
       id: user.id,
       name: user.name,
       email: user.email,
       role: user.role,
+      roles: effectiveRoles,
+      active_role: effectiveActiveRole,
       institute_name: user.institute_name,
     },
     JWT_SECRET,
@@ -49,6 +55,12 @@ export function createToken(user: AuthSessionUser): string {
 export function verifyToken(token: string): AuthSessionUser | null {
   try {
     const payload = jwt.verify(token, JWT_SECRET) as AuthSessionUser;
+    if (!payload.roles) {
+      payload.roles = [payload.role];
+    }
+    if (!payload.active_role) {
+      payload.active_role = payload.role;
+    }
     return payload;
   } catch {
     return null;
@@ -68,25 +80,44 @@ export function getOrCreateRoleDemoUser(requestedRole: UserRole = 'student'): Au
   let demoEmail = 'candidate@mocktest.platform';
   let demoName = 'Alex Mercer (Student)';
   let instituteName: string | null = null;
+  let userRoles: UserRole[] = ['learner', 'student'];
 
   if (requestedRole === 'superadmin') {
     demoEmail = 'superadmin@examcraft.platform';
     demoName = 'Platform Super Administrator';
+    userRoles = ['superadmin', 'admin', 'educator', 'creator', 'learner'];
   } else if (requestedRole === 'admin') {
     demoEmail = 'admin@examcraft.platform';
     demoName = 'Dr. Rajesh Sharma (Institute Admin)';
     instituteName = 'Apex Medical & Engineering Academy';
+    userRoles = ['admin', 'educator', 'learner'];
+  } else if (requestedRole === 'educator') {
+    demoEmail = 'prof.sen@nalanda.platform';
+    demoName = 'Prof. Vikramaditya Sen (Senior Faculty)';
+    instituteName = 'Nalanda Faculty of Advanced Studies';
+    userRoles = ['educator', 'creator', 'learner'];
+  } else if (requestedRole === 'creator') {
+    demoEmail = 'creator@nalanda.platform';
+    demoName = 'Ananya Roy (Top-Ranked Creator)';
+    instituteName = 'Independent Education Collective';
+    userRoles = ['creator', 'learner'];
   }
 
-  const query = db.prepare('SELECT id, name, email, role, institute_name FROM users WHERE email = ?');
+  const query = db.prepare('SELECT id, name, email, role, roles_json, institute_name FROM users WHERE email = ?');
   const existing = query.get(demoEmail) as any;
 
   if (existing) {
+    let parsedRoles: UserRole[] = userRoles;
+    try {
+      if (existing.roles_json) parsedRoles = JSON.parse(existing.roles_json);
+    } catch {}
     return {
       id: existing.id,
       name: existing.name,
       email: existing.email,
       role: existing.role as UserRole,
+      roles: parsedRoles,
+      active_role: requestedRole,
       institute_name: existing.institute_name,
     };
   }
@@ -97,9 +128,9 @@ export function getOrCreateRoleDemoUser(requestedRole: UserRole = 'student'): Au
 
   try {
     const insert = db.prepare(
-      'INSERT OR IGNORE INTO users (id, name, email, password_hash, role, status, institute_name, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?)'
+      'INSERT OR IGNORE INTO users (id, name, email, password_hash, role, roles_json, status, institute_name, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)'
     );
-    insert.run(newId, demoName, demoEmail, hashed, requestedRole, 'active', instituteName, now);
+    insert.run(newId, demoName, demoEmail, hashed, requestedRole, JSON.stringify(userRoles), 'active', instituteName, now);
   } catch (err) {
     console.warn('[Auth] Ignored insert race condition:', err);
   }
@@ -111,6 +142,8 @@ export function getOrCreateRoleDemoUser(requestedRole: UserRole = 'student'): Au
       name: resolved.name,
       email: resolved.email,
       role: resolved.role as UserRole,
+      roles: userRoles,
+      active_role: requestedRole,
       institute_name: resolved.institute_name,
     };
   }
@@ -120,6 +153,8 @@ export function getOrCreateRoleDemoUser(requestedRole: UserRole = 'student'): Au
     name: demoName,
     email: demoEmail,
     role: requestedRole,
+    roles: userRoles,
+    active_role: requestedRole,
     institute_name: instituteName,
   };
 }

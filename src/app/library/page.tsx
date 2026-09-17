@@ -579,6 +579,13 @@ export default function PublicLibraryPage() {
                         >
                           {test.difficulty || 'medium'}
                         </span>
+                        <span className={`text-[10px] font-mono font-bold px-2 py-0.5 rounded ${
+                          test.is_paid
+                            ? 'bg-blue-50 text-blue-800 border border-blue-200'
+                            : 'bg-emerald-50 text-emerald-800 border border-emerald-200'
+                        }`}>
+                          {test.is_paid ? `₹${test.price_inr || 149}` : 'Free'}
+                        </span>
                       </div>
 
                       {/* Title & Description */}
@@ -673,11 +680,18 @@ export default function PublicLibraryPage() {
               <div className="space-y-3">
                 <div className="flex items-start justify-between gap-3">
                   <div>
-                    <div className="flex items-center gap-2 mb-1">
+                    <div className="flex items-center gap-2 mb-1 flex-wrap">
                       <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded bg-amber-50 text-amber-800 border border-amber-200">
                         {s.exam_title || 'SSC CGL 2026'}
                       </span>
-                      <span className="text-xs text-stone-500 font-medium">
+                      <span className={`text-[10px] font-mono font-bold px-2 py-0.5 rounded ${
+                        s.is_paid
+                          ? 'bg-emerald-50 text-emerald-800 border border-emerald-200'
+                          : 'bg-stone-100 text-stone-700 border border-stone-200'
+                      }`}>
+                        {s.is_paid ? `₹${s.price_inr}` : 'Free Access'}
+                      </span>
+                      <span className="text-xs text-stone-500 font-medium font-mono">
                         {s.total_tests || 10} Mock Exams
                       </span>
                     </div>
@@ -723,7 +737,7 @@ export default function PublicLibraryPage() {
                   <span>{(s.enrolled_count || 1200).toLocaleString()} Aspirants Enrolled</span>
                 </div>
 
-                <Link href="/tests">
+                <Link href={`/series/${s.id}`}>
                   <Button variant="saffron" size="sm">
                     Access Series <ArrowRight className="w-3.5 h-3.5 ml-1" />
                   </Button>

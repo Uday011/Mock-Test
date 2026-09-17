@@ -29,6 +29,7 @@ import {
   HelpCircle,
   Users,
   Star,
+  Lock,
 } from 'lucide-react';
 import { AppShell } from '@/components/layout/AppShell';
 import { PageHeader } from '@/components/ui/PageHeader';
@@ -37,11 +38,13 @@ import { Badge } from '@/components/ui/Badge';
 import { Button } from '@/components/ui/Button';
 import { TrustLabel } from '@/components/ui/TrustLabel';
 import { ReportModal } from '@/components/modals/ReportModal';
+import { MockCheckoutModal } from '@/components/modals/MockCheckoutModal';
 
 export default function TestDetailsPage() {
   const params = useParams();
   const router = useRouter();
   const testId = params.id as string;
+  const [isCheckoutModalOpen, setIsCheckoutModalOpen] = useState(false);
 
   const [test, setTest] = useState<any | null>(null);
   const [loading, setLoading] = useState(true);
@@ -279,18 +282,32 @@ export default function TestDetailsPage() {
 
             {/* Primary Action Button */}
             <div className="flex flex-col sm:flex-row md:flex-col gap-2 shrink-0">
-              <Link href={`/tests/${test.id}/start`}>
+              {test.is_paid && !test.has_access ? (
                 <Button
                   variant="primary"
                   size="lg"
+                  onClick={() => setIsCheckoutModalOpen(true)}
                   className="w-full min-h-[48px] px-8 text-sm font-bold shadow-md flex items-center justify-center gap-2"
-                  icon={<Play className="w-4 h-4 fill-current" />}
+                  icon={<Lock className="w-4 h-4" />}
                 >
-                  {attempts.length > 0 ? 'Retake Exam Paper' : 'Start Assessment'}
+                  Unlock Assessment (₹{test.price_inr})
                 </Button>
-              </Link>
+              ) : (
+                <Link href={`/tests/${test.id}/start`}>
+                  <Button
+                    variant="primary"
+                    size="lg"
+                    className="w-full min-h-[48px] px-8 text-sm font-bold shadow-md flex items-center justify-center gap-2"
+                    icon={<Play className="w-4 h-4 fill-current" />}
+                  >
+                    {attempts.length > 0 ? 'Retake Exam Paper' : 'Start Assessment'}
+                  </Button>
+                </Link>
+              )}
               <p className="text-[11px] text-center text-stone-400 font-medium">
-                Full CBT interface with countdown timer
+                {test.is_paid && !test.has_access
+                  ? 'Premium access required to launch paper'
+                  : 'Full CBT interface with countdown timer'}
               </p>
             </div>
           </div>
@@ -523,6 +540,21 @@ export default function TestDetailsPage() {
             </div>
           )}
         </div>
+
+        {/* Mock Checkout Modal for Paid Tests */}
+        <MockCheckoutModal
+          isOpen={isCheckoutModalOpen}
+          onClose={() => setIsCheckoutModalOpen(false)}
+          itemType="test"
+          itemId={test.id}
+          itemTitle={test.title}
+          creatorName={test.creator_name}
+          priceInr={test.price_inr}
+          onSuccess={() => {
+            showToast('Access granted! Assessment unlocked.');
+            fetchTestDetails();
+          }}
+        />
       </div>
     </AppShell>
   );

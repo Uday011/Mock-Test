@@ -143,17 +143,18 @@ export function AppShell({
       ],
     },
     {
-      title: 'STUDIO & REPOSITORY',
+      title: 'STUDIO & PUBLISHING',
       items: [
+        { label: 'Educator Dashboard', href: '/dashboard/educator', icon: GraduationCap },
         { label: 'Test Studio', href: '/tests/create', icon: PenTool },
         { label: 'Question Bank', href: '/question-bank', icon: Layers },
         { label: 'Public Library', href: '/library', icon: Library },
       ],
     },
     {
-      title: 'PLATFORM & ACCOUNT',
+      title: 'PLATFORM & CONTROL',
       items: [
-        { label: 'Educator Publishing', href: '/dashboard/admin', icon: GraduationCap },
+        { label: 'Admin Review Center', href: '/dashboard/admin', icon: ShieldCheck },
         { label: 'Target Exam Catalog', href: '/exams', icon: Target },
         { label: 'Account Settings', href: '/settings', icon: Settings },
       ],
@@ -436,28 +437,59 @@ export function AppShell({
               </button>
 
               {roleDropdownOpen && (
-                <div className="absolute right-0 mt-2 w-48 bg-white rounded-xl shadow-xl border border-stone-200 py-1.5 z-50 animate-in fade-in zoom-in-95">
+                <div className="absolute right-0 mt-2 w-56 bg-white rounded-xl shadow-xl border border-stone-200 py-1.5 z-50 animate-in fade-in zoom-in-95">
                   <div className="px-3 py-1.5 text-[10px] font-bold uppercase tracking-wider text-stone-400 border-b border-stone-100">
-                    Switch Test Persona
+                    Active Workspace Role
                   </div>
                   <button
                     onClick={() => handleSwitchRole('student')}
-                    className="w-full text-left px-3 py-2 text-xs hover:bg-stone-50 text-stone-700 font-medium"
+                    className="w-full text-left px-3 py-2 text-xs hover:bg-stone-50 text-stone-700 font-medium flex items-center justify-between"
                   >
-                    Aspirant (Student)
+                    <span>Learner (Aspirant)</span>
+                    {user?.role === 'student' && <Check className="w-3.5 h-3.5 text-emerald-600" />}
+                  </button>
+                  <button
+                    onClick={() => handleSwitchRole('educator')}
+                    className="w-full text-left px-3 py-2 text-xs hover:bg-stone-50 text-stone-700 font-medium flex items-center justify-between"
+                  >
+                    <span>Educator (Senior Faculty)</span>
+                    {user?.role === 'educator' && <Check className="w-3.5 h-3.5 text-emerald-600" />}
+                  </button>
+                  <button
+                    onClick={() => handleSwitchRole('creator')}
+                    className="w-full text-left px-3 py-2 text-xs hover:bg-stone-50 text-stone-700 font-medium flex items-center justify-between"
+                  >
+                    <span>Creator (Author)</span>
+                    {user?.role === 'creator' && <Check className="w-3.5 h-3.5 text-emerald-600" />}
                   </button>
                   <button
                     onClick={() => handleSwitchRole('admin')}
-                    className="w-full text-left px-3 py-2 text-xs hover:bg-stone-50 text-stone-700 font-medium"
+                    className="w-full text-left px-3 py-2 text-xs hover:bg-stone-50 text-stone-700 font-medium flex items-center justify-between"
                   >
-                    Educator / Faculty
+                    <span>Administrator</span>
+                    {user?.role === 'admin' && <Check className="w-3.5 h-3.5 text-emerald-600" />}
                   </button>
-                  <button
-                    onClick={() => handleSwitchRole('superadmin')}
-                    className="w-full text-left px-3 py-2 text-xs hover:bg-stone-50 text-stone-700 font-medium"
-                  >
-                    Super Administrator
-                  </button>
+                  
+                  <div className="p-2 border-t border-stone-100 mt-1">
+                    <button
+                      onClick={async () => {
+                        try {
+                          await fetch('/api/user/roles', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ role: 'educator' }),
+                          });
+                          window.location.href = '/dashboard/educator';
+                        } catch (e) {
+                          console.error(e);
+                        }
+                      }}
+                      className="w-full py-1.5 px-2.5 rounded-lg bg-amber-50 hover:bg-amber-100 text-amber-900 text-[11px] font-bold flex items-center justify-center gap-1.5 transition-colors border border-amber-200"
+                    >
+                      <Sparkles className="w-3 h-3 text-amber-600" />
+                      <span>Become an Educator</span>
+                    </button>
+                  </div>
                 </div>
               )}
             </div>

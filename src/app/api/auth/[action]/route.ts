@@ -32,7 +32,7 @@ export async function POST(
       }
       
       let validRole: UserRole = 'student';
-      if (queryRole === 'superadmin' || queryRole === 'admin') {
+      if (['superadmin', 'admin', 'educator', 'creator', 'student', 'learner'].includes(queryRole || '')) {
         validRole = queryRole as UserRole;
       }
 

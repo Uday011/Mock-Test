@@ -30,6 +30,7 @@ import {
   Tag,
   History,
   FileSpreadsheet,
+  Eye,
 } from 'lucide-react';
 import { UserRole } from '@/lib/types';
 
@@ -50,7 +51,18 @@ interface StudentData {
 export default function AdminDashboardPage() {
   const router = useRouter();
   const [currentUser, setCurrentUser] = useState<any | null>(null);
-  const [activeTab, setActiveTab] = useState<'students' | 'tests' | 'submissions'>('students');
+  const [activeTab, setActiveTab] = useState<'students' | 'tests' | 'submissions' | 'review_queue' | 'educators'>('students');
+
+  // Review Queue state
+  const [reviewQueue, setReviewQueue] = useState<any[]>([]);
+  const [loadingReviewQueue, setLoadingReviewQueue] = useState(false);
+  const [reviewActionNote, setReviewActionNote] = useState<{ [testId: string]: string }>({});
+  const [actionProcessing, setActionProcessing] = useState<string | null>(null);
+
+  // Educator Verification state
+  const [educators, setEducators] = useState<any[]>([]);
+  const [loadingEducators, setLoadingEducators] = useState(false);
+  const [adminToast, setAdminToast] = useState<string | null>(null);
 
   // Students state
   const [students, setStudents] = useState<StudentData[]>([]);
@@ -122,12 +134,102 @@ export default function AdminDashboardPage() {
     }
   };
 
+  const fetchReviewQueue = async () => {
+    setLoadingReviewQueue(true);
+    try {
+      const res = await fetch('/api/admin/review-queue');
+      const data = await res.json();
+      if (data.items) {
+        setReviewQueue(data.items);
+      }
+    } catch (e) {
+      console.error('Error fetching review queue:', e);
+    } finally {
+      setLoadingReviewQueue(false);
+    }
+  };
+
+  const fetchEducators = async () => {
+    setLoadingEducators(true);
+    try {
+      const res = await fetch('/api/admin/educators/verify');
+      const data = await res.json();
+      if (data.educators) {
+        setEducators(data.educators);
+      }
+    } catch (e) {
+      console.error('Error fetching educators:', e);
+    } finally {
+      setLoadingEducators(false);
+    }
+  };
+
+  const showAdminToast = (msg: string) => {
+    setAdminToast(msg);
+    setTimeout(() => setAdminToast(null), 3500);
+  };
+
+  const handleReviewAction = async (testId: string, action: 'approve' | 'revisions_requested' | 'reject') => {
+    setActionProcessing(testId);
+    try {
+      const notes = reviewActionNote[testId] || '';
+      const res = await fetch('/api/admin/review-queue', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          test_id: testId,
+          action,
+          review_notes: notes,
+        }),
+      });
+      const data = await res.json();
+      if (data.success) {
+        showAdminToast(data.message || 'Review action recorded');
+        fetchReviewQueue();
+        fetchTests();
+      } else {
+        showAdminToast(data.error || 'Failed to update review');
+      }
+    } catch (err: any) {
+      showAdminToast(err.message || 'Error processing review action');
+    } finally {
+      setActionProcessing(null);
+    }
+  };
+
+  const handleVerifyEducator = async (userId: string, status: 'verified' | 'unverified' | 'pending') => {
+    setActionProcessing(userId);
+    try {
+      const res = await fetch('/api/admin/educators/verify', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          user_id: userId,
+          verification_status: status,
+        }),
+      });
+      const data = await res.json();
+      if (data.success) {
+        showAdminToast(data.message || 'Educator verification updated');
+        fetchEducators();
+      } else {
+        showAdminToast(data.error || 'Failed to update educator status');
+      }
+    } catch (err: any) {
+      showAdminToast(err.message || 'Error updating verification');
+    } finally {
+      setActionProcessing(null);
+    }
+  };
+
   const [showSavedBanner, setShowSavedBanner] = useState(false);
 
   useEffect(() => {
     fetchCurrentUser();
     fetchStudents();
     fetchTests();
+    fetchReviewQueue();
+    fetchEducators();
     if (typeof window !== 'undefined' && window.location.search.includes('saved=true')) {
       setShowSavedBanner(true);
     }
@@ -424,6 +526,30 @@ export default function AdminDashboardPage() {
           >
             <FileSpreadsheet className="w-4 h-4" />
             Batch Gradebook ({allSubmissions.length})
+          </button>
+
+          <button
+            onClick={() => setActiveTab('review_queue')}
+            className={`pb-3 text-xs sm:text-sm font-bold flex items-center gap-2 border-b-2 transition-all shrink-0 min-h-[44px] ${
+              activeTab === 'review_queue'
+                ? 'border-amber-600 text-amber-900'
+                : 'border-transparent text-slate-500 hover:text-slate-800'
+            }`}
+          >
+            <ShieldAlert className="w-4 h-4 text-amber-600" />
+            Review Queue ({reviewQueue.filter((r) => r.status === 'under_review').length})
+          </button>
+
+          <button
+            onClick={() => setActiveTab('educators')}
+            className={`pb-3 text-xs sm:text-sm font-bold flex items-center gap-2 border-b-2 transition-all shrink-0 min-h-[44px] ${
+              activeTab === 'educators'
+                ? 'border-amber-600 text-amber-900'
+                : 'border-transparent text-slate-500 hover:text-slate-800'
+            }`}
+          >
+            <GraduationCap className="w-4 h-4 text-indigo-600" />
+            Educators ({educators.length})
           </button>
         </div>
 
@@ -758,7 +884,254 @@ export default function AdminDashboardPage() {
             </div>
           </div>
         )}
+
+        {/* TAB 4: Content Moderation & Review Queue */}
+        {activeTab === 'review_queue' && (
+          <div className="space-y-4">
+            <div className="p-4 bg-white rounded-2xl border border-slate-200 flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-2xs">
+              <div>
+                <h3 className="font-bold text-slate-900 text-sm">Educational Assessment Moderation Queue</h3>
+                <p className="text-[11px] text-slate-500">
+                  Review submitted tests for syllabus alignment, marking key accuracy, copyright compliance, and pedagogical quality.
+                </p>
+              </div>
+              <button
+                onClick={fetchReviewQueue}
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-slate-200 text-xs font-bold text-slate-700 hover:bg-slate-50"
+              >
+                <RefreshCw className={`w-3.5 h-3.5 ${loadingReviewQueue ? 'animate-spin' : ''}`} />
+                Refresh Queue
+              </button>
+            </div>
+
+            {loadingReviewQueue ? (
+              <div className="p-12 text-center text-slate-400 text-xs">
+                <RefreshCw className="w-5 h-5 animate-spin mx-auto mb-2 text-slate-400" />
+                Loading moderation queue...
+              </div>
+            ) : reviewQueue.length === 0 ? (
+              <div className="p-12 text-center text-slate-500 bg-white rounded-2xl border border-slate-200 text-xs">
+                No assessments currently waiting in the review queue.
+              </div>
+            ) : (
+              <div className="space-y-3">
+                {reviewQueue.map((item) => (
+                  <div
+                    key={item.id}
+                    className="p-5 bg-white rounded-2xl border border-slate-200 shadow-2xs space-y-4 hover:border-slate-300 transition-all"
+                  >
+                    <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-3">
+                      <div className="space-y-1.5 flex-1">
+                        <div className="flex items-center gap-2 flex-wrap">
+                          <span className={`text-[10px] font-mono font-bold px-2 py-0.5 rounded uppercase ${
+                            item.status === 'under_review'
+                              ? 'bg-amber-100 text-amber-900 border border-amber-300'
+                              : item.status === 'revisions_requested'
+                              ? 'bg-rose-100 text-rose-900 border border-rose-200'
+                              : 'bg-emerald-100 text-emerald-900 border border-emerald-200'
+                          }`}>
+                            {item.status?.replace('_', ' ')}
+                          </span>
+
+                          <span className={`text-[10px] font-mono font-bold px-2 py-0.5 rounded ${
+                            item.is_paid
+                              ? 'bg-blue-50 text-blue-800 border border-blue-200'
+                              : 'bg-slate-100 text-slate-700 border border-slate-200'
+                          }`}>
+                            {item.is_paid ? `₹${item.price_inr}` : 'Free'}
+                          </span>
+
+                          <span className="text-[11px] text-slate-500 font-mono">
+                            {item.subject || 'General'} • {item.difficulty || 'Medium'} • {item.question_count} Questions
+                          </span>
+                        </div>
+
+                        <h4 className="font-bold text-slate-900 text-base">{item.title}</h4>
+                        {item.description && (
+                          <p className="text-xs text-slate-500 line-clamp-2">{item.description}</p>
+                        )}
+
+                        <div className="flex items-center gap-2 pt-1 text-xs text-slate-600">
+                          <GraduationCap className="w-4 h-4 text-amber-700" />
+                          <span className="font-bold text-slate-900">{item.creator?.name}</span>
+                          <span className="text-slate-400 font-mono">({item.creator?.email})</span>
+                          <span className="text-slate-400">•</span>
+                          <span className="text-slate-500">{item.creator?.institute}</span>
+                        </div>
+
+                        {item.review_notes && (
+                          <div className="p-2.5 bg-amber-50 rounded-xl text-xs text-amber-950 border border-amber-200 mt-2">
+                            <strong>Previous Review Note:</strong> {item.review_notes}
+                          </div>
+                        )}
+                      </div>
+
+                      <div className="flex sm:flex-col items-center sm:items-end gap-2 shrink-0">
+                        <Link href={`/tests/${item.id}`}>
+                          <button className="px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold rounded-xl text-xs border border-slate-300 transition-colors flex items-center gap-1">
+                            <Eye className="w-3.5 h-3.5" /> Preview Test
+                          </button>
+                        </Link>
+                      </div>
+                    </div>
+
+                    {/* Moderation Controls & Feedback Input */}
+                    <div className="pt-3 border-t border-slate-100 space-y-3">
+                      <div>
+                        <label className="block text-[11px] font-bold text-slate-700 mb-1">
+                          Review Feedback / Revision Instructions (Optional):
+                        </label>
+                        <input
+                          type="text"
+                          placeholder="e.g. Verified syllabus alignment and key accuracy. Approved for publishing."
+                          value={reviewActionNote[item.id] || ''}
+                          onChange={(e) =>
+                            setReviewActionNote((prev) => ({ ...prev, [item.id]: e.target.value }))
+                          }
+                          className="w-full px-3 py-2 rounded-xl border border-slate-300 text-xs bg-white text-slate-900 focus:ring-2 focus:ring-amber-500 focus:outline-hidden"
+                        />
+                      </div>
+
+                      <div className="flex items-center justify-end gap-2 flex-wrap">
+                        <button
+                          disabled={actionProcessing === item.id}
+                          onClick={() => handleReviewAction(item.id, 'reject')}
+                          className="px-3.5 py-1.5 text-xs font-bold rounded-xl border border-slate-300 text-slate-700 hover:bg-slate-100 transition-colors"
+                        >
+                          Reject to Draft
+                        </button>
+                        <button
+                          disabled={actionProcessing === item.id}
+                          onClick={() => handleReviewAction(item.id, 'revisions_requested')}
+                          className="px-3.5 py-1.5 text-xs font-bold rounded-xl bg-amber-50 text-amber-900 border border-amber-300 hover:bg-amber-100 transition-colors"
+                        >
+                          Request Revisions
+                        </button>
+                        <button
+                          disabled={actionProcessing === item.id}
+                          onClick={() => handleReviewAction(item.id, 'approve')}
+                          className="px-4 py-1.5 text-xs font-bold rounded-xl bg-emerald-600 text-white hover:bg-emerald-700 transition-colors shadow-2xs flex items-center gap-1.5"
+                        >
+                          <CheckCircle className="w-3.5 h-3.5" />
+                          Approve & Publish
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* TAB 5: Educators & Faculty Accreditation */}
+        {activeTab === 'educators' && (
+          <div className="space-y-4">
+            <div className="p-4 bg-white rounded-2xl border border-slate-200 flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-2xs">
+              <div>
+                <h3 className="font-bold text-slate-900 text-sm">Educators & Creator Accreditation Registry</h3>
+                <p className="text-[11px] text-slate-500">
+                  Manage educator verification status, credentials, and publishing permissions across the Nalanda ecosystem.
+                </p>
+              </div>
+              <button
+                onClick={fetchEducators}
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-slate-200 text-xs font-bold text-slate-700 hover:bg-slate-50"
+              >
+                <RefreshCw className={`w-3.5 h-3.5 ${loadingEducators ? 'animate-spin' : ''}`} />
+                Refresh Registry
+              </button>
+            </div>
+
+            {loadingEducators ? (
+              <div className="p-12 text-center text-slate-400 text-xs">
+                <RefreshCw className="w-5 h-5 animate-spin mx-auto mb-2 text-slate-400" />
+                Loading educators...
+              </div>
+            ) : educators.length === 0 ? (
+              <div className="p-12 text-center text-slate-500 bg-white rounded-2xl border border-slate-200 text-xs">
+                No educators or creator accounts registered yet.
+              </div>
+            ) : (
+              <div className="space-y-3">
+                {educators.map((edu) => (
+                  <div
+                    key={edu.user_id}
+                    className="p-5 bg-white rounded-2xl border border-slate-200 shadow-2xs flex flex-col sm:flex-row sm:items-center justify-between gap-4 hover:border-slate-300 transition-all"
+                  >
+                    <div className="space-y-1.5 flex-1">
+                      <div className="flex items-center gap-2 flex-wrap">
+                        <span className="font-bold text-slate-900 text-base">{edu.name}</span>
+                        <span className={`text-[10px] font-mono font-bold px-2 py-0.5 rounded uppercase ${
+                          edu.verification_status === 'verified'
+                            ? 'bg-emerald-100 text-emerald-900 border border-emerald-300'
+                            : edu.verification_status === 'pending'
+                            ? 'bg-amber-100 text-amber-900 border border-amber-300'
+                            : 'bg-slate-100 text-slate-700 border border-slate-200'
+                        }`}>
+                          {edu.verification_status}
+                        </span>
+                        <span className="text-[10px] font-mono text-slate-500 uppercase">
+                          Role: {edu.role}
+                        </span>
+                      </div>
+
+                      <p className="text-xs text-slate-600 font-medium">
+                        {edu.headline} • <span className="text-slate-500">{edu.institute_name}</span>
+                      </p>
+
+                      <div className="flex items-center gap-3 text-[11px] text-slate-500 font-mono flex-wrap">
+                        <span>Email: <strong className="text-slate-800">{edu.email}</strong></span>
+                        <span>•</span>
+                        <span>{edu.authored_tests_count} Tests Authored</span>
+                        <span>•</span>
+                        <span>{edu.series_count} Series</span>
+                        <span>•</span>
+                        <span>{edu.total_students} Learners Enrolled</span>
+                      </div>
+                    </div>
+
+                    <div className="flex items-center gap-2 shrink-0 pt-2 sm:pt-0 border-t sm:border-t-0 border-slate-100 flex-wrap">
+                      <Link href={`/creators/${edu.user_id}`}>
+                        <button className="px-3 py-1.5 text-xs font-bold rounded-xl border border-slate-300 text-slate-700 hover:bg-slate-100 transition-colors flex items-center gap-1">
+                          <Eye className="w-3.5 h-3.5" /> Profile
+                        </button>
+                      </Link>
+
+                      {edu.verification_status !== 'verified' ? (
+                        <button
+                          disabled={actionProcessing === edu.user_id}
+                          onClick={() => handleVerifyEducator(edu.user_id, 'verified')}
+                          className="px-3.5 py-1.5 text-xs font-bold rounded-xl bg-emerald-600 text-white hover:bg-emerald-700 transition-colors shadow-2xs flex items-center gap-1"
+                        >
+                          <ShieldCheck className="w-3.5 h-3.5" />
+                          Verify Faculty
+                        </button>
+                      ) : (
+                        <button
+                          disabled={actionProcessing === edu.user_id}
+                          onClick={() => handleVerifyEducator(edu.user_id, 'unverified')}
+                          className="px-3.5 py-1.5 text-xs font-bold rounded-xl border border-rose-300 text-rose-700 hover:bg-rose-50 transition-colors"
+                        >
+                          Revoke Verification
+                        </button>
+                      )}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        )}
       </div>
+
+      {/* Admin Toast Notification */}
+      {adminToast && (
+        <div className="fixed bottom-6 right-6 z-50 bg-slate-900 text-white text-xs px-4 py-3 rounded-xl shadow-2xl flex items-center gap-2 animate-in fade-in slide-in-from-bottom-2">
+          <CheckCircle className="w-4 h-4 text-emerald-400" />
+          <span>{adminToast}</span>
+        </div>
+      )}
 
       {/* Add Student Modal */}
       {showAddModal && (

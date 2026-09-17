@@ -252,6 +252,9 @@ export async function POST(req: NextRequest) {
       source = 'User Created',
       status = 'published',
       visibility = 'public',
+      is_paid = false,
+      price_inr = 0,
+      series_id = null,
       instructions = '',
       result_availability = 'immediate',
       tags = [],
@@ -288,9 +291,9 @@ export async function POST(req: NextRequest) {
         marking_scheme_type, default_correct_marks, default_negative_marks, default_unanswered_marks,
         shuffle_questions, shuffle_options, allow_navigation, show_palette, allow_review_marking, show_immediate_results,
         test_type, difficulty, source, status, instructions, result_availability, tags_json,
-        exam_id, subject_id, topic_id, subtopic_id, visibility,
+        exam_id, subject_id, topic_id, subtopic_id, visibility, is_paid, price_inr, series_id,
         created_at, updated_at
-      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     `);
 
     insertTest.run(
@@ -323,9 +326,22 @@ export async function POST(req: NextRequest) {
       topic_id || null,
       subtopic_id || null,
       visibility,
+      is_paid ? 1 : 0,
+      Number(price_inr) || 0,
+      series_id || null,
       now,
       now
     );
+
+    // If series_id is provided, automatically attach to test_series_items
+    if (series_id) {
+      const seqStmt = db.prepare('SELECT COUNT(*) as count FROM test_series_items WHERE series_id = ?');
+      const curCount = (seqStmt.get(series_id) as any)?.count || 0;
+      db.prepare(`
+        INSERT INTO test_series_items (id, series_id, test_id, sequence_order, is_free_preview, unlock_rule, created_at)
+        VALUES (?, ?, ?, ?, 0, 'immediate', ?)
+      `).run(`tsi-${crypto.randomUUID().slice(0, 8)}`, series_id, testId, curCount + 1, now);
+    }
 
     const insertQ = db.prepare(`
       INSERT INTO questions (

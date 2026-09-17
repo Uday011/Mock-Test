@@ -39,7 +39,7 @@ export default function StudentDashboardPage() {
   const router = useRouter();
   const [data, setData] = useState<any>(null);
   const [loading, setLoading] = useState(true);
-  const [activeTab, setActiveTab] = useState<'tests' | 'mistakes' | 'path'>('tests');
+  const [activeTab, setActiveTab] = useState<'tests' | 'series' | 'mistakes' | 'path'>('tests');
 
   useEffect(() => {
     fetch('/api/dashboard/overview')
@@ -81,6 +81,7 @@ export default function StudentDashboardPage() {
   const mistakes = data?.mistakes || [];
   const attempts = data?.attempts || [];
   const availableTests = data?.availableTests || [];
+  const enrolledSeries = data?.enrolled_series || [];
   const learningPath = data?.learningPath;
   const onboardingProfile = data?.onboardingProfile;
 
@@ -355,6 +356,7 @@ export default function StudentDashboardPage() {
           onChange={(tab) => setActiveTab(tab as any)}
           tabs={[
             { id: 'tests', label: 'Recent Tests & Recommended Mocks', count: availableTests.length },
+            { id: 'series', label: 'Enrolled Master Series', count: enrolledSeries.length },
             { id: 'mistakes', label: 'Pending Mistake Revision', count: stats.pendingRevisionCount },
             { id: 'path', label: '60-Day Strategic Plan' },
           ]}
@@ -443,6 +445,77 @@ export default function StudentDashboardPage() {
                 ))}
               </div>
             </div>
+          </div>
+        )}
+
+        {/* Tab: Enrolled Test Series */}
+        {activeTab === 'series' && (
+          <div className="space-y-4">
+            <div className="flex items-center justify-between pb-1">
+              <p className="text-xs text-stone-500">
+                Multi-part sequential test series curated by verified faculty.
+              </p>
+              <Link href="/library" className="text-xs text-amber-700 font-semibold hover:underline">
+                Explore More Series in Library →
+              </Link>
+            </div>
+
+            {enrolledSeries.length === 0 ? (
+              <div className="p-8 bg-white border border-stone-200 rounded-2xl text-center text-xs text-stone-500 space-y-3">
+                <p>You haven't enrolled in any test series yet.</p>
+                <Link href="/library">
+                  <Button variant="primary" size="sm">
+                    Browse Public Library
+                  </Button>
+                </Link>
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {enrolledSeries.map((s: any) => (
+                  <Card key={s.enrollment_id} className="p-5 bg-white border-stone-200 space-y-4 flex flex-col justify-between shadow-2xs">
+                    <div className="space-y-2.5">
+                      <div className="flex items-center justify-between">
+                        <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded bg-amber-50 text-amber-800 border border-amber-200">
+                          {s.exam_title || 'Target Exam'}
+                        </span>
+                        <span className={`text-[10px] font-mono font-bold px-2.5 py-0.5 rounded ${
+                          s.access_tier === 'paid'
+                            ? 'bg-emerald-50 text-emerald-800 border border-emerald-200'
+                            : 'bg-stone-100 text-stone-700 border border-stone-200'
+                        }`}>
+                          {s.access_tier === 'paid' ? 'Full Paid Access' : 'Free Preview'}
+                        </span>
+                      </div>
+
+                      <h4 className="text-sm font-serif font-bold text-stone-900">{s.series_title}</h4>
+                      <p className="text-xs text-stone-500 line-clamp-2">{s.series_description}</p>
+                      <p className="text-[11px] text-stone-400 font-mono">By {s.creator_name || 'Faculty Member'}</p>
+                    </div>
+
+                    <div className="space-y-3 pt-3 border-t border-stone-100">
+                      <div className="space-y-1">
+                        <div className="flex justify-between text-xs font-mono">
+                          <span className="text-stone-500">Series Progression</span>
+                          <span className="font-bold text-stone-900">{s.completed_tests_count || 0} / {s.total_tests || 5} Completed</span>
+                        </div>
+                        <ProgressBar value={s.progress_percentage || 0} size="sm" variant="saffron" />
+                      </div>
+
+                      <div className="flex items-center justify-between pt-1">
+                        <span className="text-[11px] font-mono text-stone-400">
+                          Enrolled: {new Date(s.enrolled_at).toLocaleDateString()}
+                        </span>
+                        <Link href={`/series/${s.series_id}`}>
+                          <Button variant="saffron" size="sm" className="text-xs">
+                            Continue Series <ArrowRight className="w-3.5 h-3.5 ml-1" />
+                          </Button>
+                        </Link>
+                      </div>
+                    </div>
+                  </Card>
+                ))}
+              </div>
+            )}
           </div>
         )}
 

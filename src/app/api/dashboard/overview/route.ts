@@ -112,6 +112,31 @@ export async function GET(req: NextRequest) {
     `);
     const availableTests = testsStmt.all(examId) as any[];
 
+    // 7b. Fetch Enrolled Test Series
+    const enrolledSeriesStmt = db.prepare(`
+      SELECT 
+        use.id as enrollment_id,
+        use.access_tier,
+        use.progress_percentage,
+        use.completed_tests_count,
+        use.enrolled_at,
+        ts.id as series_id,
+        ts.title as series_title,
+        ts.description as series_description,
+        ts.total_tests,
+        ts.is_paid,
+        ts.price_inr,
+        e.title as exam_title,
+        u.name as creator_name
+      FROM user_series_enrollments use
+      JOIN test_series ts ON ts.id = use.series_id
+      LEFT JOIN exams e ON e.id = ts.exam_id
+      LEFT JOIN users u ON u.id = ts.creator_id
+      WHERE use.user_id = ?
+      ORDER BY use.enrolled_at DESC
+    `);
+    const enrolledSeries = safeUserId ? (enrolledSeriesStmt.all(safeUserId) as any[]) : [];
+
     // 8. Fetch Learning Path & Units
     const pathStmt = db.prepare(`
       SELECT * FROM learning_paths WHERE exam_id = ? ORDER BY created_at DESC LIMIT 1
@@ -232,6 +257,7 @@ export async function GET(req: NextRequest) {
       mistakes,
       attempts,
       availableTests,
+      enrolled_series: enrolledSeries,
       learningPath: learningPath ? { ...learningPath, units } : null,
     });
   } catch (error: any) {

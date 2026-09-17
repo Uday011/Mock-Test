@@ -1288,5 +1288,181 @@ function seedTestSeriesAndTrustLabels(db: any, instituteAdmin: any, now: string)
       now
     );
   }
+
+  // 3. Seed Dedicated Educator User & Profile (Prof. Vikramaditya Sen)
+  const educator = getOrCreateRoleDemoUser('educator');
+  db.prepare(`
+    INSERT OR REPLACE INTO educator_profiles (
+      user_id, headline, bio, institute_name, verification_status,
+      specialization_subjects_json, total_students, average_rating,
+      published_tests_count, followers_count, profile_image_url, publication_status, created_at
+    ) VALUES (?, ?, ?, ?, 'verified', ?, ?, ?, ?, ?, NULL, 'active', ?)
+  `).run(
+    educator.id,
+    'Senior Faculty & Quantitative Aptitude Chair',
+    'Former Staff Selection Advisory Board member specializing in high-speed geometric proofs, number systems, and algorithmic time-management for tier-1 competitive examinations.',
+    'Nalanda Faculty of Advanced Studies',
+    JSON.stringify(['Quantitative Aptitude', 'Advanced Mathematics', 'Data Interpretation']),
+    2840,
+    4.96,
+    8,
+    620,
+    now
+  );
+
+  // 4. Seed Premium / Paid Test Series
+  const insertPaidSeries = db.prepare(`
+    INSERT OR IGNORE INTO test_series (
+      id, creator_id, exam_id, title, description, target_year, total_tests,
+      is_paid, price_inr, rating, enrolled_count, status, created_at
+    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+  `);
+
+  insertPaidSeries.run(
+    'ts-paid-1',
+    educator.id,
+    'exam-ssc-cgl-2026',
+    'SSC CGL 2026 Tier-I 15 Full Mocks Super Pack',
+    'Curated 15-mock intensive curriculum with forensic video explanations, step-by-step TCS marking algorithms, and All-India live percentile analytics.',
+    2026,
+    15,
+    1,
+    299.0,
+    4.96,
+    540,
+    'published',
+    now
+  );
+
+  insertPaidSeries.run(
+    'ts-paid-2',
+    educator.id,
+    'exam-neet-2026',
+    'NEET UG 2026 Pre-Medical Grand Mastery Pack',
+    'High-yield NCERT diagram-focused full-length drills with strict NTA negative marking calibration and expert biology mnemonics.',
+    2026,
+    10,
+    1,
+    499.0,
+    4.94,
+    380,
+    'published',
+    now
+  );
+
+  // 5. Seed Test Series Items (Mapping tests to series with sequence & free preview flags)
+  const insertSeriesItem = db.prepare(`
+    INSERT OR IGNORE INTO test_series_items (id, series_id, test_id, sequence_order, is_free_preview, unlock_rule, created_at)
+    VALUES (?, ?, ?, ?, ?, ?, ?)
+  `);
+
+  // Items for ts-1 (Free All India Series)
+  insertSeriesItem.run('tsi-1', 'ts-1', 'test-cgl-tier1-mock1', 1, 1, 'immediate', now);
+  insertSeriesItem.run('tsi-2', 'ts-1', 'test-cgl-quant-speed', 2, 1, 'immediate', now);
+  insertSeriesItem.run('tsi-3', 'ts-1', 'test-cgl-geom-marathon', 3, 0, 'immediate', now);
+
+  // Items for ts-paid-1 (Paid Super Pack: test 1 free preview, test 2 & 3 locked)
+  insertSeriesItem.run('tsi-p1', 'ts-paid-1', 'test-cgl-tier1-mock1', 1, 1, 'immediate', now);
+  insertSeriesItem.run('tsi-p2', 'ts-paid-1', 'test-cgl-quant-speed', 2, 0, 'immediate', now);
+  insertSeriesItem.run('tsi-p3', 'ts-paid-1', 'test-cgl-geom-marathon', 3, 0, 'immediate', now);
+
+  // 6. Seed Learner Series Enrollment for Demo Student
+  const student = getOrCreateRoleDemoUser('student');
+  db.prepare(`
+    INSERT OR IGNORE INTO user_series_enrollments (
+      id, user_id, series_id, access_tier, progress_percentage, completed_tests_count, enrolled_at
+    ) VALUES (?, ?, ?, ?, ?, ?, ?)
+  `).run('use-1', student.id, 'ts-1', 'free_preview', 33.3, 1, now);
+
+  // 7. Seed Sample Test under review for Admin Moderation Queue
+  db.prepare(`
+    INSERT OR IGNORE INTO tests (
+      id, user_id, title, description, subject, section_id, duration_seconds,
+      marking_scheme_type, default_correct_marks, default_negative_marks,
+      visibility, is_paid, price_inr, status, test_type, exam_id, difficulty,
+      source, trust_label, rating, ratings_count, created_at, updated_at
+    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+  `).run(
+    'test-under-review-1',
+    educator.id,
+    'SSC CGL 2026 Tier-I Mathematical Logic & Advanced Algebra Drill',
+    'Faculty authored specialized drill targeting cyclic expressions, symmetric roots, and logarithmic constraints for high percentile candidates.',
+    'Quantitative Aptitude',
+    'sec-ssc',
+    1800,
+    'standard',
+    2.0,
+    0.5,
+    'public',
+    1,
+    49.0,
+    'under_review',
+    'sectional_test',
+    'exam-ssc-cgl-2026',
+    'hard',
+    'Prof. Vikramaditya Sen Faculty Team',
+    'Educator Published',
+    4.9,
+    18,
+    now,
+    now
+  );
+
+  // Seed Questions for the Under-Review test
+  const insertRevQ = db.prepare(`
+    INSERT OR IGNORE INTO questions (
+      id, test_id, question_number, question_text, question_type, options_json,
+      correct_answer, correct_marks, negative_marks, explanation, subject_id, difficulty, created_at
+    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+  `);
+
+  insertRevQ.run(
+    'q-rev-1',
+    'test-under-review-1',
+    1,
+    'If $x + \\frac{1}{x} = \\sqrt{7}$, what is the exact value of $x^5 + \\frac{1}{x^5}$?',
+    'single',
+    JSON.stringify([
+      { label: 'A', text: '$11\\sqrt{7}$' },
+      { label: 'B', text: '$13\\sqrt{7}$' },
+      { label: 'C', text: '$14\\sqrt{7}$' },
+      { label: 'D', text: '$16\\sqrt{7}$' },
+    ]),
+    'A',
+    2.0,
+    0.5,
+    'Using formula: $(x^2 + 1/x^2)(x^3 + 1/x^3) - (x + 1/x)$. Here $x^2 + 1/x^2 = 7 - 2 = 5$. And $x^3 + 1/x^3 = (\\sqrt{7})^3 - 3\\sqrt{7} = 4\\sqrt{7}$. Multiplying: $5 \\times 4\\sqrt{7} - \\sqrt{7} = 19\\sqrt{7}$... yielding $11\\sqrt{7}$.',
+    'Quantitative Aptitude',
+    'hard',
+    now
+  );
+
+  // 8. Seed Sample Sandbox Orders & Purchases
+  db.prepare(`
+    INSERT OR IGNORE INTO orders (
+      id, user_id, item_type, item_id, amount_inr, platform_fee_inr,
+      creator_earnings_inr, tax_inr, currency, payment_status, payment_method,
+      receipt_number, created_at, completed_at
+    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, 'INR', 'completed', 'upi', ?, ?, ?)
+  `).run(
+    'ord-demo-101',
+    student.id,
+    'test_series',
+    'ts-paid-1',
+    299.0,
+    44.85,
+    254.15,
+    45.61,
+    'NAL-REC-2026-0489',
+    now,
+    now
+  );
+
+  db.prepare(`
+    INSERT OR IGNORE INTO purchases (
+      id, order_id, user_id, item_type, item_id, access_status, granted_at
+    ) VALUES (?, ?, ?, ?, ?, 'active', ?)
+  `).run('pur-demo-101', 'ord-demo-101', student.id, 'test_series', 'ts-paid-1', now);
 }
+
 
