@@ -685,7 +685,7 @@ export default function LandingPage() {
                   <ArrowRight className="w-4 h-4" />
                 </button>
               </Link>
-              <Link href="/dashboard/admin">
+              <Link href="/dashboard/educator">
                 <button className="w-full py-3.5 px-6 rounded-xl bg-white/10 hover:bg-white/15 border border-white/10 text-white font-bold text-xs transition-all flex items-center justify-center gap-2">
                   <span>Educator Batch Dashboard</span>
                 </button>

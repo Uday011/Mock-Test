@@ -369,7 +369,7 @@ export default function TopicLearningPage() {
                   <h3 className="font-serif font-bold text-stone-900 text-base">
                     {tbl.title}
                   </h3>
-                  <div className="border border-stone-200 rounded-xl overflow-hidden bg-white">
+                  <div className="border border-stone-200 rounded-xl overflow-x-auto bg-white">
                     <table className="w-full text-xs text-left border-collapse">
                       <thead className="bg-stone-50 border-b border-stone-200 font-mono uppercase text-[10px] text-stone-600">
                         <tr>

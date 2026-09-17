@@ -1223,7 +1223,7 @@ Explanation: Binary search halves the search space at every comparison, giving $
                 <span>Click to Edit</span>
               </div>
 
-              <div className="space-y-2 max-h-[720px] overflow-y-auto pr-1">
+              <div className="space-y-2 max-h-60 sm:max-h-72 lg:max-h-[720px] overflow-y-auto pr-1">
                 {questions.map((q, idx) => {
                   const isActive = idx === activeQuestionIdx;
                   const hasCrit = !q.correct_answer || !q.question_text || (q.options || []).length < 2;

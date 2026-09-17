@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getDb } from '@/lib/db';
 import { seedInitialData } from '@/lib/db/seed';
 import { getCurrentUser } from '@/lib/auth';
+import { calculateReadinessIndex } from '@/lib/readiness';
 
 export async function GET(req: NextRequest) {
   try {
@@ -173,15 +174,16 @@ export async function GET(req: NextRequest) {
     const syllabusProgress = totalTopics > 0 ? (masteredTopics / totalTopics) * 100 : 42.0;
 
     const targetScore = primaryEnrollment?.target_score || 165.0;
-    const predictedScore = 142.0;
+    const readinessData = calculateReadinessIndex(db, safeUserId, examId);
+    const predictedScore = readinessData.predictedScore;
 
     // 10. Weak Topics & Recommended Next Action
     const weakTopicStmt = db.prepare(`
-      SELECT sn.*, s.name as subject_name, utp.mastery_percentage
+      SELECT sn.*, s.name as subject_name, utp.mastery_percentage, utp.status as topic_status
       FROM syllabus_nodes sn
       JOIN subjects s ON s.id = sn.subject_id
       LEFT JOIN user_topic_progress utp ON utp.topic_id = sn.id AND utp.user_id = ?
-      WHERE s.exam_id = ? AND (utp.status = 'needs_focus' OR utp.mastery_percentage < 50)
+      WHERE s.exam_id = ? AND (utp.status IN ('needs_focus', 'needs_revision') OR (utp.mastery_percentage IS NOT NULL AND utp.mastery_percentage < 60))
       ORDER BY sn.weightage_percentage DESC
       LIMIT 3
     `);
@@ -216,7 +218,8 @@ export async function GET(req: NextRequest) {
         syllabusProgress: Number(syllabusProgress.toFixed(1)),
         totalPracticed,
         totalCorrect,
-        readinessIndex: 71, // Benchmark readiness %
+        readinessIndex: readinessData.readinessIndex,
+        qualitativeBand: readinessData.qualitativeBand,
         cutoffBar: 138.0,
         pendingRevisionCount: mistakes.filter(m => !m.is_resolved).length,
       },

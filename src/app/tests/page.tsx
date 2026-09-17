@@ -178,6 +178,7 @@ export default function TestDiscoveryPage() {
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Search tests by title, topic, or exam..."
+              aria-label="Search tests by title, topic, or exam"
               className="w-full pl-9 pr-4 py-2 text-xs rounded-xl border border-stone-200 bg-stone-50/50 text-stone-900 placeholder:text-stone-400 focus:outline-none focus:ring-2 focus:ring-amber-500/40"
             />
           </form>

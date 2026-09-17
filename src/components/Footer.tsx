@@ -52,9 +52,10 @@ export default function Footer() {
             <h4 className={`text-xs font-bold uppercase tracking-wider mb-3 ${isHome ? 'text-white' : 'text-slate-900'}`}>Platform Dimensions</h4>
             <ul className="space-y-2 text-xs">
               <li><Link href="/dashboard" className={isHome ? 'hover:text-white transition-colors' : 'hover:text-slate-900 transition-colors'}>Personal Learning & Mocks</Link></li>
-              <li><Link href="/dashboard" className={isHome ? 'hover:text-white transition-colors' : 'hover:text-slate-900 transition-colors'}>Exam Syllabus Tree</Link></li>
+              <li><Link href="/learn" className={isHome ? 'hover:text-white transition-colors' : 'hover:text-slate-900 transition-colors'}>Exam Syllabus Tree</Link></li>
+              <li><Link href="/library" className={isHome ? 'hover:text-white transition-colors' : 'hover:text-slate-900 transition-colors'}>Public Assessment Library</Link></li>
               <li><Link href="/tests/create" className={isHome ? 'hover:text-white transition-colors' : 'hover:text-slate-900 transition-colors'}>Test Studio & Parser</Link></li>
-              <li><Link href="/dashboard/admin" className={isHome ? 'hover:text-white transition-colors' : 'hover:text-slate-900 transition-colors'}>Educator Publishing Hub</Link></li>
+              <li><Link href="/dashboard/educator" className={isHome ? 'hover:text-white transition-colors' : 'hover:text-slate-900 transition-colors'}>Educator Publishing Hub</Link></li>
             </ul>
           </div>
 

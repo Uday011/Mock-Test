@@ -366,6 +366,7 @@ export default function PublicLibraryPage() {
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   placeholder="Search tests by title, subject, formula, or creator..."
+                  aria-label="Search tests by title, subject, formula, or creator"
                   className="w-full pl-10 pr-4 py-2 text-xs bg-stone-50 border border-stone-200 rounded-xl focus:bg-white focus:outline-none focus:ring-1 focus:ring-stone-900 text-stone-900 placeholder-stone-400"
                 />
                 {searchQuery && (

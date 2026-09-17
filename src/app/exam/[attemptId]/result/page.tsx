@@ -402,7 +402,7 @@ export default function ExamResultPage() {
                       {top.is_mastered ? 'Review in 3 days' : 'Review tomorrow'}
                     </span>
                     <Link
-                      href={`/learning`}
+                      href={top.topic_id ? `/learn/${top.topic_id}` : '/learn'}
                       className="font-bold text-amber-800 hover:text-amber-950 flex items-center gap-0.5"
                     >
                       Study <ChevronRight className="w-3 h-3" />

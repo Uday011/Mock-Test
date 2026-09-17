@@ -20,6 +20,7 @@ import {
   Menu,
   X,
   Target,
+  Library,
 } from 'lucide-react';
 import { UserRole } from '@/lib/types';
 import Logo from '@/components/ui/Logo';
@@ -262,6 +263,18 @@ export default function Navbar() {
               </Link>
 
               <Link
+                href="/library"
+                className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-colors flex items-center gap-1.5 ${
+                  pathname === '/library'
+                    ? 'bg-slate-900 text-white shadow-2xs'
+                    : isHome ? 'text-stone-300 hover:text-white hover:bg-white/10' : 'text-slate-600 hover:text-slate-900 hover:bg-stone-100'
+                }`}
+              >
+                <Library className="w-3.5 h-3.5 text-emerald-400" />
+                Library
+              </Link>
+
+              <Link
                 href="/tests/create"
                 className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-colors flex items-center gap-1.5 ${
                   pathname === '/tests/create'
@@ -271,6 +284,18 @@ export default function Navbar() {
               >
                 <PlusCircle className="w-3.5 h-3.5 text-amber-400" />
                 Test Studio
+              </Link>
+
+              <Link
+                href="/dashboard/educator"
+                className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-colors flex items-center gap-1.5 ${
+                  pathname === '/dashboard/educator'
+                    ? 'bg-slate-900 text-white shadow-2xs'
+                    : isHome ? 'text-stone-300 hover:text-white hover:bg-white/10' : 'text-slate-600 hover:text-slate-900 hover:bg-stone-100'
+                }`}
+              >
+                <GraduationCap className="w-3.5 h-3.5 text-amber-400" />
+                Educators
               </Link>
             </nav>
           </div>
@@ -650,6 +675,28 @@ export default function Navbar() {
               >
                 <PlusCircle className="w-4 h-4 text-amber-600" />
                 Test Studio & Parser
+              </Link>
+
+              <Link
+                href="/library"
+                onClick={() => setMobileMenuOpen(false)}
+                className={`flex items-center gap-2.5 px-3.5 py-3 rounded-xl text-xs font-bold min-h-[44px] transition-colors ${
+                  pathname === '/library' ? 'bg-slate-900 text-white' : 'text-slate-700 hover:bg-stone-50'
+                }`}
+              >
+                <Library className="w-4 h-4 text-emerald-600" />
+                Public Assessment Library
+              </Link>
+
+              <Link
+                href="/dashboard/educator"
+                onClick={() => setMobileMenuOpen(false)}
+                className={`flex items-center gap-2.5 px-3.5 py-3 rounded-xl text-xs font-bold min-h-[44px] transition-colors ${
+                  pathname === '/dashboard/educator' ? 'bg-slate-900 text-white' : 'text-slate-700 hover:bg-stone-50'
+                }`}
+              >
+                <GraduationCap className="w-4 h-4 text-amber-600" />
+                Educator Studio & Publishing
               </Link>
 
               {(role === 'admin' || role === 'superadmin') && (

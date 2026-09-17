@@ -499,9 +499,65 @@ export function AppShell({
         </header>
 
         {/* Page Container */}
-        <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
+        <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 pb-24 md:pb-8">
           {children}
         </main>
+
+        {/* Mobile Fixed Bottom Navigation Bar (Screens < md:) */}
+        <nav
+          aria-label="Mobile Bottom Navigation"
+          className="md:hidden fixed bottom-0 inset-x-0 bg-white/95 backdrop-blur-md border-t border-stone-200 z-30 flex items-center justify-around py-1.5 px-2 shadow-lg"
+        >
+          <Link
+            href="/dashboard"
+            className={`flex flex-col items-center justify-center py-1 px-2 rounded-lg text-[10px] font-bold min-w-[56px] transition-colors ${
+              pathname === '/dashboard' ? 'text-amber-800' : 'text-stone-500 hover:text-stone-900'
+            }`}
+          >
+            <LayoutDashboard className={`w-5 h-5 mb-0.5 ${pathname === '/dashboard' ? 'text-amber-800' : 'text-stone-400'}`} />
+            <span>Overview</span>
+          </Link>
+
+          <Link
+            href="/learn"
+            className={`flex flex-col items-center justify-center py-1 px-2 rounded-lg text-[10px] font-bold min-w-[56px] transition-colors ${
+              pathname.startsWith('/learn') ? 'text-amber-800' : 'text-stone-500 hover:text-stone-900'
+            }`}
+          >
+            <BookOpen className={`w-5 h-5 mb-0.5 ${pathname.startsWith('/learn') ? 'text-amber-800' : 'text-stone-400'}`} />
+            <span>Learn</span>
+          </Link>
+
+          <Link
+            href="/tests"
+            className={`flex flex-col items-center justify-center py-1 px-2 rounded-lg text-[10px] font-bold min-w-[56px] transition-colors ${
+              pathname.startsWith('/tests') && !pathname.startsWith('/tests/create') ? 'text-amber-800' : 'text-stone-500 hover:text-stone-900'
+            }`}
+          >
+            <FileCheck className={`w-5 h-5 mb-0.5 ${pathname.startsWith('/tests') && !pathname.startsWith('/tests/create') ? 'text-amber-800' : 'text-stone-400'}`} />
+            <span>Tests</span>
+          </Link>
+
+          <Link
+            href="/mistakes"
+            className={`flex flex-col items-center justify-center py-1 px-2 rounded-lg text-[10px] font-bold min-w-[56px] transition-colors ${
+              pathname === '/mistakes' ? 'text-rose-700' : 'text-stone-500 hover:text-stone-900'
+            }`}
+          >
+            <BookMarked className={`w-5 h-5 mb-0.5 ${pathname === '/mistakes' ? 'text-rose-700' : 'text-stone-400'}`} />
+            <span>Mistakes</span>
+          </Link>
+
+          <Link
+            href="/library"
+            className={`flex flex-col items-center justify-center py-1 px-2 rounded-lg text-[10px] font-bold min-w-[56px] transition-colors ${
+              pathname === '/library' ? 'text-amber-800' : 'text-stone-500 hover:text-stone-900'
+            }`}
+          >
+            <Library className={`w-5 h-5 mb-0.5 ${pathname === '/library' ? 'text-amber-800' : 'text-stone-400'}`} />
+            <span>Library</span>
+          </Link>
+        </nav>
       </div>
     </div>
   );

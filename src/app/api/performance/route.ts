@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getDb } from '@/lib/db';
 import { seedInitialData } from '@/lib/db/seed';
 import { getCurrentUser } from '@/lib/auth';
+import { calculateReadinessIndex } from '@/lib/readiness';
 
 export async function GET(req: NextRequest) {
   try {
@@ -204,46 +205,11 @@ export async function GET(req: NextRequest) {
     const repeatedErrorPenalty = (mistakeMetrics.repeated_count || 0) * 12;
     const mistakeControlScore = Math.max(30, 100 - repeatedErrorPenalty);
 
-    // Weighted Readiness Index Calculation
-    // 1. Syllabus Coverage (15%)
-    // 2. Topic Mastery (20%)
-    // 3. Recent Test Accuracy (15%)
-    // 4. Retention & Revision (10%)
-    // 5. Sectional Balance (10%)
-    // 6. Full-Mock Endurance (10%)
-    // 7. Time Management (10%)
-    // 8. Study Consistency (5%)
-    // 9. Mistake Recurrence Control (5%)
-    const readinessIndex = Math.round(
-      syllabusCoverage * 0.15 +
-      topicMasteryRate * 0.20 +
-      recentAccuracy * 0.15 +
-      resolvedRate * 0.10 +
-      sectionalBalance * 0.10 +
-      mockEndurance * 0.10 +
-      paceScore * 0.10 +
-      consistencyScore * 0.05 +
-      mistakeControlScore * 0.05
-    );
-
-    let qualitativeBand = 'Competitive';
-    if (readinessIndex >= 88) qualitativeBand = 'Exam Ready';
-    else if (readinessIndex >= 72) qualitativeBand = 'Competitive';
-    else if (readinessIndex >= 60) qualitativeBand = 'Developing';
-    else if (readinessIndex >= 45) qualitativeBand = 'Emerging';
-    else qualitativeBand = 'Foundational';
-
-    const contributingFactors = [
-      { name: 'Syllabus Coverage', score: syllabusCoverage, weight: '15%', status: syllabusCoverage >= 70 ? 'Strong' : 'Moderate' },
-      { name: 'Topic Mastery', score: topicMasteryRate, weight: '20%', status: topicMasteryRate >= 65 ? 'Strong' : 'Focus Needed' },
-      { name: 'Recent Test Accuracy', score: recentAccuracy, weight: '15%', status: recentAccuracy >= 80 ? 'Optimal' : 'Competitive' },
-      { name: 'Retention & Revision', score: resolvedRate, weight: '10%', status: resolvedRate >= 70 ? 'Active' : 'Backlog' },
-      { name: 'Sectional Balance', score: sectionalBalance, weight: '10%', status: sectionalBalance >= 75 ? 'Harmonized' : 'Imbalanced' },
-      { name: 'Full-Mock Endurance', score: mockEndurance, weight: '10%', status: mockEndurance >= 70 ? 'Tested' : 'Needs Mocks' },
-      { name: 'Pacing & Tempo', score: paceScore, weight: '10%', status: Math.abs(52 - avgPace) <= 5 ? 'Calibrated' : 'Calibrating' },
-      { name: 'Consistency Cadence', score: consistencyScore, weight: '5%', status: 'Disciplined' },
-      { name: 'Mistake Control', score: mistakeControlScore, weight: '5%', status: mistakeMetrics.repeated_count > 0 ? 'Review Needed' : 'Clean' },
-    ];
+    // Use shared Nalanda Readiness Index Engine
+    const readinessData = calculateReadinessIndex(db, safeUserId, examId);
+    const readinessIndex = readinessData.readinessIndex;
+    const qualitativeBand = readinessData.qualitativeBand;
+    const contributingFactors = readinessData.contributingFactors;
 
     // Bottlenecks / Areas holding the score back
     const areasHoldingBack: string[] = [];
@@ -312,7 +278,7 @@ export async function GET(req: NextRequest) {
       success: true,
       exam,
       stats: {
-        predictedScore: 142.0,
+        predictedScore: readinessData.predictedScore,
         maxScore: exam.total_marks || 200,
         targetScore: enrollment?.target_score || 165.0,
         accuracyRate: recentAccuracy,
