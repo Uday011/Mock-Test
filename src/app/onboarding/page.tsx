@@ -21,8 +21,6 @@ import {
 import Logo from '@/components/ui/Logo';
 import { Button } from '@/components/ui/Button';
 import { Badge } from '@/components/ui/Badge';
-import { Card } from '@/components/ui/Card';
-import { ProgressBar } from '@/components/ui/ProgressBar';
 
 export default function OnboardingPage() {
   const router = useRouter();
@@ -69,7 +67,6 @@ export default function OnboardingPage() {
       setStrongSubjects(strongSubjects.filter((s) => s !== subjectName));
     } else {
       setStrongSubjects([...strongSubjects, subjectName]);
-      // Remove from weak if present
       setWeakSubjects(weakSubjects.filter((s) => s !== subjectName));
     }
   };
@@ -79,7 +76,6 @@ export default function OnboardingPage() {
       setWeakSubjects(weakSubjects.filter((s) => s !== subjectName));
     } else {
       setWeakSubjects([...weakSubjects, subjectName]);
-      // Remove from strong if present
       setStrongSubjects(strongSubjects.filter((s) => s !== subjectName));
     }
   };
@@ -101,7 +97,6 @@ export default function OnboardingPage() {
         }),
       });
 
-      // Also sync active exam in localStorage
       const matched = exams.find((e) => e.id === selectedExamId);
       if (matched) {
         localStorage.setItem('nalanda_active_exam', matched.title);
@@ -120,9 +115,9 @@ export default function OnboardingPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-[#fcfbf9] flex flex-col items-center justify-center p-4">
-        <div className="w-8 h-8 border-2 border-amber-600 border-t-transparent rounded-full animate-spin mb-3" />
-        <p className="text-xs font-mono text-stone-500">Preparing Academic Onboarding...</p>
+      <div className="min-h-screen bg-[#fbfbfa] flex flex-col items-center justify-center p-4">
+        <div className="w-6 h-6 border-2 border-[#37352f] border-t-transparent rounded-full animate-spin mb-3" />
+        <p className="text-xs text-[#787774]">Preparing Academic Onboarding...</p>
       </div>
     );
   }
@@ -136,18 +131,18 @@ export default function OnboardingPage() {
   ];
 
   return (
-    <div className="min-h-screen bg-[#fcfbf9] flex flex-col text-stone-900">
+    <div className="min-h-screen bg-[#fbfbfa] flex flex-col text-[#37352f]">
       {/* Top Onboarding Header */}
-      <header className="px-6 py-4 border-b border-stone-200/80 bg-white/80 backdrop-blur-xs flex items-center justify-between sticky top-0 z-20">
+      <header className="px-6 py-3.5 border-b border-[#ebebeb] bg-white flex items-center justify-between sticky top-0 z-20">
         <Logo size="sm" href="/" />
 
         <div className="flex items-center gap-4">
-          <span className="text-xs font-mono text-stone-500 hidden sm:inline">
-            Step {currentStep} of 5: <strong>{stepTitles[currentStep - 1]}</strong>
+          <span className="text-xs text-[#787774] hidden sm:inline">
+            Step {currentStep} of 5: <strong className="text-[#37352f]">{stepTitles[currentStep - 1]}</strong>
           </span>
           <button
             onClick={() => handleSaveAndProceed(true, false)}
-            className="text-xs text-stone-500 hover:text-stone-900 flex items-center gap-1 font-medium transition-colors"
+            className="text-xs text-[#787774] hover:text-[#37352f] flex items-center gap-1 font-medium transition-colors"
           >
             <SkipForward className="w-3.5 h-3.5" />
             <span>Skip for now</span>
@@ -156,69 +151,69 @@ export default function OnboardingPage() {
       </header>
 
       {/* Progress Line */}
-      <div className="w-full bg-stone-100 h-1">
+      <div className="w-full bg-[#ebebeb] h-0.5">
         <div
-          className="bg-amber-600 h-1 transition-all duration-300"
+          className="bg-[#37352f] h-0.5 transition-all duration-300"
           style={{ width: `${(currentStep / 5) * 100}%` }}
         />
       </div>
 
       {/* Main Form Container */}
-      <main className="flex-1 max-w-2xl w-full mx-auto px-4 py-8 sm:py-12 flex flex-col justify-between">
-        <div className="space-y-6">
+      <main className="flex-1 max-w-2xl w-full mx-auto px-4 py-8 sm:py-10 flex flex-col justify-between">
+        <div className="space-y-5">
           {/* STEP 1: PREFERRED EXAM */}
           {currentStep === 1 && (
             <div className="space-y-4 animate-in fade-in duration-200">
               <div className="space-y-1">
-                <Badge variant="saffron" size="sm">Step 1 of 5</Badge>
-                <h2 className="text-xl sm:text-2xl font-serif font-bold text-stone-900">
+                <Badge variant="stone" size="sm">Step 1 of 5</Badge>
+                <h2 className="text-xl font-bold text-[#37352f]">
                   Select Your Primary Examination
                 </h2>
-                <p className="text-xs sm:text-sm text-stone-600 leading-relaxed">
+                <p className="text-xs text-[#787774] leading-relaxed">
                   Choose the master examination framework you are targeting. You can switch or add secondary targets later in Settings.
                 </p>
               </div>
 
-              <div className="space-y-3 pt-2">
+              <div className="space-y-2.5 pt-1">
                 {exams.map((ex) => {
                   const isSelected = selectedExamId === ex.id;
                   return (
                     <div
                       key={ex.id}
                       onClick={() => setSelectedExamId(ex.id)}
-                      className={`p-4 rounded-xl border cursor-pointer transition-all flex items-start justify-between gap-4 ${
+                      className={`p-3.5 rounded-md border cursor-pointer transition-colors flex items-start justify-between gap-3 ${
                         isSelected
-                          ? 'border-amber-600 bg-amber-50/40 ring-1 ring-amber-600'
-                          : 'border-stone-200 bg-white hover:border-stone-300'
+                          ? 'border-[#37352f] bg-[#f7f6f3] ring-1 ring-[#37352f]'
+                          : 'border-[#ebebeb] bg-white hover:bg-[#fcfbf9]'
                       }`}
                     >
                       <div className="space-y-1">
                         <div className="flex items-center gap-2">
-                          <span className="font-mono text-[10px] font-bold px-2 py-0.5 rounded bg-stone-100 text-stone-700 border border-stone-200">
+                          <span className="font-mono text-[10px] px-1.5 py-0.5 rounded-[3px] bg-[#f7f6f3] text-[#787774] border border-[#ebebeb]">
                             {ex.code}
                           </span>
                           {ex.conducting_body && (
-                            <span className="text-[11px] text-stone-500 font-medium">
+                            <span className="text-[11px] text-[#787774]">
                               {ex.conducting_body}
                             </span>
                           )}
                         </div>
-                        <h3 className="text-sm sm:text-base font-serif font-bold text-stone-900">
+                        <h3 className="text-sm font-semibold text-[#37352f]">
                           {ex.title}
                         </h3>
-                        <p className="text-xs text-stone-600 line-clamp-2">
+                        <p className="text-xs text-[#787774] line-clamp-2">
                           {ex.description}
                         </p>
                       </div>
 
                       <div
-                        className={`w-5 h-5 rounded-full border flex items-center justify-center shrink-0 mt-1 ${
+                        className={`w-4 h-4 rounded-full border flex items-center justify-center shrink-0 mt-0.5 ${
                           isSelected
-                            ? 'border-amber-600 bg-amber-600 text-white'
-                            : 'border-stone-300'
+                            ? 'border-[#37352f] bg-[#37352f] text-white'
+                            : 'border-[#ebebeb]'
                         }`}
                       >
-                        {isSelected && <Check className="w-3.5 h-3.5 stroke-[2.5]" />}
+                        {isSelected && <Check className="w-2.5 h-2.5 stroke-[3]" />}
                       </div>
                     </div>
                   );
@@ -231,22 +226,22 @@ export default function OnboardingPage() {
           {currentStep === 2 && (
             <div className="space-y-4 animate-in fade-in duration-200">
               <div className="space-y-1">
-                <Badge variant="saffron" size="sm">Step 2 of 5</Badge>
-                <h2 className="text-xl sm:text-2xl font-serif font-bold text-stone-900">
+                <Badge variant="stone" size="sm">Step 2 of 5</Badge>
+                <h2 className="text-xl font-bold text-[#37352f]">
                   Where are you in your preparation?
                 </h2>
-                <p className="text-xs sm:text-sm text-stone-600 leading-relaxed">
+                <p className="text-xs text-[#787774] leading-relaxed">
                   This calibrates whether your learning path prioritizes concept mastery or high-speed diagnostic mock testing.
                 </p>
               </div>
 
-              <div className="space-y-3 pt-2">
+              <div className="space-y-2.5 pt-1">
                 {[
                   {
                     id: 'beginner',
                     title: 'Beginner / Starting Fresh',
                     sub: 'Beginning syllabus coverage, establishing fundamental arithmetic & grammatical principles.',
-                    badge: 'Foundation Focus',
+                    badge: 'Foundation',
                   },
                   {
                     id: 'intermediate',
@@ -266,34 +261,34 @@ export default function OnboardingPage() {
                     <div
                       key={st.id}
                       onClick={() => setPreparationStage(st.id as any)}
-                      className={`p-4 rounded-xl border cursor-pointer transition-all flex items-start justify-between gap-4 ${
+                      className={`p-3.5 rounded-md border cursor-pointer transition-colors flex items-start justify-between gap-3 ${
                         isSelected
-                          ? 'border-amber-600 bg-amber-50/40 ring-1 ring-amber-600'
-                          : 'border-stone-200 bg-white hover:border-stone-300'
+                          ? 'border-[#37352f] bg-[#f7f6f3] ring-1 ring-[#37352f]'
+                          : 'border-[#ebebeb] bg-white hover:bg-[#fcfbf9]'
                       }`}
                     >
                       <div className="space-y-1">
                         <div className="flex items-center gap-2">
-                          <h3 className="text-sm font-serif font-bold text-stone-900">
+                          <h3 className="text-sm font-semibold text-[#37352f]">
                             {st.title}
                           </h3>
                           <Badge variant={isSelected ? 'saffron' : 'stone'} size="sm">
                             {st.badge}
                           </Badge>
                         </div>
-                        <p className="text-xs text-stone-600">
+                        <p className="text-xs text-[#787774]">
                           {st.sub}
                         </p>
                       </div>
 
                       <div
-                        className={`w-5 h-5 rounded-full border flex items-center justify-center shrink-0 mt-1 ${
+                        className={`w-4 h-4 rounded-full border flex items-center justify-center shrink-0 mt-0.5 ${
                           isSelected
-                            ? 'border-amber-600 bg-amber-600 text-white'
-                            : 'border-stone-300'
+                            ? 'border-[#37352f] bg-[#37352f] text-white'
+                            : 'border-[#ebebeb]'
                         }`}
                       >
-                        {isSelected && <Check className="w-3.5 h-3.5 stroke-[2.5]" />}
+                        {isSelected && <Check className="w-2.5 h-2.5 stroke-[3]" />}
                       </div>
                     </div>
                   );
@@ -304,23 +299,23 @@ export default function OnboardingPage() {
 
           {/* STEP 3: TIMELINE & DAILY AVAILABILITY */}
           {currentStep === 3 && (
-            <div className="space-y-5 animate-in fade-in duration-200">
+            <div className="space-y-4 animate-in fade-in duration-200">
               <div className="space-y-1">
-                <Badge variant="saffron" size="sm">Step 3 of 5</Badge>
-                <h2 className="text-xl sm:text-2xl font-serif font-bold text-stone-900">
+                <Badge variant="stone" size="sm">Step 3 of 5</Badge>
+                <h2 className="text-xl font-bold text-[#37352f]">
                   Timeline & Daily Commitment
                 </h2>
-                <p className="text-xs sm:text-sm text-stone-600 leading-relaxed">
+                <p className="text-xs text-[#787774] leading-relaxed">
                   We schedule your unit modules and spaced revision cycles based on your weekly study bandwidth.
                 </p>
               </div>
 
               {/* Timeline Selection */}
-              <div className="space-y-2">
-                <label className="block text-xs font-semibold text-stone-700">
+              <div className="space-y-1.5 pt-1">
+                <label className="block text-xs font-medium text-[#37352f]">
                   Target Exam Attempt
                 </label>
-                <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
                   {[
                     { id: '2026_tier1', label: '2026 Tier-I', sub: 'Target Sprint' },
                     { id: '3_months', label: 'Next 3 Months', sub: 'Rapid Sprint' },
@@ -331,45 +326,45 @@ export default function OnboardingPage() {
                       key={t.id}
                       type="button"
                       onClick={() => setTargetTimeline(t.id as any)}
-                      className={`p-3 rounded-xl border text-left transition-all ${
+                      className={`p-2.5 rounded-[4px] border text-left transition-colors ${
                         targetTimeline === t.id
-                          ? 'border-amber-600 bg-amber-50/50 ring-1 ring-amber-600 font-bold'
-                          : 'border-stone-200 bg-white hover:border-stone-300 text-stone-700'
+                          ? 'border-[#37352f] bg-[#f7f6f3] ring-1 ring-[#37352f]'
+                          : 'border-[#ebebeb] bg-white hover:bg-[#fcfbf9] text-[#787774]'
                       }`}
                     >
-                      <div className="text-xs font-semibold text-stone-900">{t.label}</div>
-                      <div className="text-[10px] text-stone-400 mt-0.5">{t.sub}</div>
+                      <div className="text-xs font-semibold text-[#37352f]">{t.label}</div>
+                      <div className="text-[10px] text-[#787774] mt-0.5">{t.sub}</div>
                     </button>
                   ))}
                 </div>
               </div>
 
               {/* Daily Hours Commitment */}
-              <div className="space-y-3 pt-2">
+              <div className="space-y-2 pt-2">
                 <div className="flex items-center justify-between">
-                  <label className="text-xs font-semibold text-stone-700">
+                  <label className="text-xs font-medium text-[#37352f]">
                     Daily Study Availability
                   </label>
-                  <span className="font-mono text-sm font-bold text-amber-800 bg-amber-50 px-2.5 py-0.5 rounded border border-amber-200">
+                  <span className="font-mono text-xs font-semibold text-[#37352f] bg-[#f7f6f3] px-2 py-0.5 rounded-[3px] border border-[#ebebeb]">
                     {dailyHours} Hours / Day
                   </span>
                 </div>
 
-                <div className="grid grid-cols-3 gap-3">
+                <div className="grid grid-cols-3 gap-2.5">
                   {[2.0, 4.0, 6.0].map((hrs) => (
                     <button
                       key={hrs}
                       type="button"
                       onClick={() => setDailyHours(hrs)}
-                      className={`p-3 rounded-xl border text-center transition-all ${
+                      className={`p-2.5 rounded-[4px] border text-center transition-colors ${
                         dailyHours === hrs
-                          ? 'border-amber-600 bg-amber-50 text-amber-900 font-bold ring-1 ring-amber-600'
-                          : 'border-stone-200 bg-white text-stone-700 hover:bg-stone-50'
+                          ? 'border-[#37352f] bg-[#f7f6f3] ring-1 ring-[#37352f]'
+                          : 'border-[#ebebeb] bg-white text-[#787774] hover:bg-[#fcfbf9]'
                       }`}
                     >
-                      <span className="text-sm font-mono font-bold">{hrs} Hours</span>
-                      <span className="text-[10px] text-stone-400 block mt-0.5">
-                        {hrs === 2.0 ? '~14h/week' : hrs === 4.0 ? '~28h/week' : '~42h/week'}
+                      <span className="text-xs font-mono font-semibold text-[#37352f] block">{hrs} Hours</span>
+                      <span className="text-[10px] text-[#787774] block mt-0.5">
+                        {hrs === 2.0 ? '~14h/wk' : hrs === 4.0 ? '~28h/wk' : '~42h/wk'}
                       </span>
                     </button>
                   ))}
@@ -380,23 +375,23 @@ export default function OnboardingPage() {
 
           {/* STEP 4: SUBJECT CALIBRATION */}
           {currentStep === 4 && (
-            <div className="space-y-5 animate-in fade-in duration-200">
+            <div className="space-y-4 animate-in fade-in duration-200">
               <div className="space-y-1">
-                <Badge variant="saffron" size="sm">Step 4 of 5</Badge>
-                <h2 className="text-xl sm:text-2xl font-serif font-bold text-stone-900">
+                <Badge variant="stone" size="sm">Step 4 of 5</Badge>
+                <h2 className="text-xl font-bold text-[#37352f]">
                   Calibrate Strengths & Weak Areas
                 </h2>
-                <p className="text-xs sm:text-sm text-stone-600 leading-relaxed">
+                <p className="text-xs text-[#787774] leading-relaxed">
                   Identify subjects you feel confident in and areas needing urgent remedial drills.
                 </p>
               </div>
 
               {/* Strong Subjects */}
-              <div className="space-y-2">
-                <label className="text-xs font-semibold text-stone-700 block">
-                  Strong Areas <span className="text-stone-400 font-normal">(Tap to highlight strengths)</span>
+              <div className="space-y-1.5 pt-1">
+                <label className="text-xs font-medium text-[#37352f] block">
+                  Strong Areas <span className="text-[#787774] font-normal">(Tap to highlight strengths)</span>
                 </label>
-                <div className="flex flex-wrap gap-2">
+                <div className="flex flex-wrap gap-1.5">
                   {currentExamSubjects.map((s) => {
                     const isSelected = strongSubjects.includes(s.name);
                     return (
@@ -404,13 +399,13 @@ export default function OnboardingPage() {
                         key={`strong-${s.id}`}
                         type="button"
                         onClick={() => toggleStrongSubject(s.name)}
-                        className={`px-3 py-2 rounded-lg text-xs font-semibold border transition-all flex items-center gap-1.5 ${
+                        className={`px-2.5 py-1 rounded-[3px] text-xs font-medium border transition-colors flex items-center gap-1.5 ${
                           isSelected
-                            ? 'border-emerald-600 bg-emerald-50 text-emerald-900 shadow-2xs'
-                            : 'border-stone-200 bg-white text-stone-600 hover:border-stone-300'
+                            ? 'border-[#cbe4eb] bg-[#edf6f9] text-[#1e6074]'
+                            : 'border-[#ebebeb] bg-white text-[#787774] hover:bg-[#fcfbf9]'
                         }`}
                       >
-                        {isSelected && <Check className="w-3.5 h-3.5 text-emerald-600" />}
+                        {isSelected && <Check className="w-3 h-3 text-[#1e6074]" />}
                         <span>{s.name}</span>
                       </button>
                     );
@@ -419,11 +414,11 @@ export default function OnboardingPage() {
               </div>
 
               {/* Weak Subjects */}
-              <div className="space-y-2 pt-2">
-                <label className="text-xs font-semibold text-stone-700 block">
-                  Areas Requiring Focus <span className="text-stone-400 font-normal">(Tap to assign remedial drills)</span>
+              <div className="space-y-1.5 pt-2">
+                <label className="text-xs font-medium text-[#37352f] block">
+                  Areas Requiring Focus <span className="text-[#787774] font-normal">(Tap to assign remedial drills)</span>
                 </label>
-                <div className="flex flex-wrap gap-2">
+                <div className="flex flex-wrap gap-1.5">
                   {currentExamSubjects.map((s) => {
                     const isSelected = weakSubjects.includes(s.name);
                     return (
@@ -431,13 +426,13 @@ export default function OnboardingPage() {
                         key={`weak-${s.id}`}
                         type="button"
                         onClick={() => toggleWeakSubject(s.name)}
-                        className={`px-3 py-2 rounded-lg text-xs font-semibold border transition-all flex items-center gap-1.5 ${
+                        className={`px-2.5 py-1 rounded-[3px] text-xs font-medium border transition-colors flex items-center gap-1.5 ${
                           isSelected
-                            ? 'border-rose-500 bg-rose-50 text-rose-900 shadow-2xs'
-                            : 'border-stone-200 bg-white text-stone-600 hover:border-stone-300'
+                            ? 'border-[#f5c6cb] bg-[#fdf3f2] text-[#eb5757]'
+                            : 'border-[#ebebeb] bg-white text-[#787774] hover:bg-[#fcfbf9]'
                         }`}
                       >
-                        {isSelected && <Check className="w-3.5 h-3.5 text-rose-600" />}
+                        {isSelected && <Check className="w-3 h-3 text-[#eb5757]" />}
                         <span>{s.name}</span>
                       </button>
                     );
@@ -449,48 +444,52 @@ export default function OnboardingPage() {
 
           {/* STEP 5: OPTIONAL DIAGNOSTIC TEST */}
           {currentStep === 5 && (
-            <div className="space-y-5 animate-in fade-in duration-200">
+            <div className="space-y-4 animate-in fade-in duration-200">
               <div className="space-y-1">
-                <Badge variant="emerald" size="sm">Final Step</Badge>
-                <h2 className="text-xl sm:text-2xl font-serif font-bold text-stone-900">
+                <Badge variant="stone" size="sm">Final Step</Badge>
+                <h2 className="text-xl font-bold text-[#37352f]">
                   Ready to Benchmark Your Readiness?
                 </h2>
-                <p className="text-xs sm:text-sm text-stone-600 leading-relaxed">
+                <p className="text-xs text-[#787774] leading-relaxed">
                   You can attempt a rapid 10-minute diagnostic drill now to seed your accuracy baselines, or go straight to your personalized dashboard.
                 </p>
               </div>
 
-              <div className="space-y-3 pt-2">
+              <div className="space-y-2.5 pt-1">
                 <div
                   onClick={() => handleSaveAndProceed(false, true)}
-                  className="p-5 rounded-xl border border-amber-300 bg-gradient-to-br from-amber-50/80 to-white hover:border-amber-400 cursor-pointer transition-all space-y-2 shadow-xs"
+                  className="p-4 rounded-md border border-[#ebebeb] bg-white hover:bg-[#fcfbf9] cursor-pointer transition-colors space-y-1.5"
                 >
                   <div className="flex items-center justify-between">
-                    <span className="flex items-center gap-1 text-[11px] uppercase font-bold text-amber-800 font-mono">
-                      <Zap className="w-3.5 h-3.5 text-amber-600" /> Recommended
+                    <span className="flex items-center gap-1 text-[11px] font-semibold text-[#37352f]">
+                      <Zap className="w-3.5 h-3.5 text-[#d9730d]" /> Recommended
                     </span>
-                    <Badge variant="saffron" size="sm">10 Minutes</Badge>
+                    <span className="text-[11px] font-mono px-1.5 py-0.5 rounded-[3px] bg-[#fbf3db] text-[#4d3800] border border-[#f1e0b5]">
+                      10 Minutes
+                    </span>
                   </div>
-                  <h3 className="text-base font-serif font-bold text-stone-900">
+                  <h3 className="text-sm font-semibold text-[#37352f]">
                     Take 10-Min Diagnostic Drill
                   </h3>
-                  <p className="text-xs text-stone-600 leading-relaxed">
+                  <p className="text-xs text-[#787774] leading-relaxed">
                     8 authentic questions across Quant, Reasoning, English, and General Awareness. Calibrates your initial predicted score and identifies weak areas immediately.
                   </p>
                 </div>
 
                 <div
                   onClick={() => handleSaveAndProceed(false, false)}
-                  className="p-5 rounded-xl border border-stone-200 bg-white hover:border-stone-300 cursor-pointer transition-all space-y-2"
+                  className="p-4 rounded-md border border-[#ebebeb] bg-white hover:bg-[#fcfbf9] cursor-pointer transition-colors space-y-1.5"
                 >
                   <div className="flex items-center justify-between">
-                    <span className="text-[11px] text-stone-500 font-medium">Standard Setup</span>
-                    <Badge variant="stone" size="sm">Direct Entry</Badge>
+                    <span className="text-[11px] text-[#787774]">Standard Setup</span>
+                    <span className="text-[11px] font-mono px-1.5 py-0.5 rounded-[3px] bg-[#f7f6f3] text-[#787774] border border-[#ebebeb]">
+                      Direct Entry
+                    </span>
                   </div>
-                  <h3 className="text-base font-serif font-bold text-stone-900">
+                  <h3 className="text-sm font-semibold text-[#37352f]">
                     Proceed Directly to Dashboard
                   </h3>
-                  <p className="text-xs text-stone-600 leading-relaxed">
+                  <p className="text-xs text-[#787774] leading-relaxed">
                     Explore your customized 60-Day syllabus roadmap, topic notes, and mock tests without taking an immediate test.
                   </p>
                 </div>
@@ -500,15 +499,15 @@ export default function OnboardingPage() {
         </div>
 
         {/* Action Controls */}
-        <div className="pt-8 border-t border-stone-200 flex items-center justify-between mt-8">
+        <div className="pt-6 border-t border-[#ebebeb] flex items-center justify-between mt-6">
           {currentStep > 1 ? (
             <Button
-              variant="outline"
+              variant="secondary"
               size="md"
               onClick={() => setCurrentStep(currentStep - 1)}
               disabled={saving}
             >
-              <ArrowLeft className="w-4 h-4 mr-1.5" />
+              <ArrowLeft className="w-3.5 h-3.5 mr-1" />
               Previous
             </Button>
           ) : (
@@ -517,22 +516,22 @@ export default function OnboardingPage() {
 
           {currentStep < 5 ? (
             <Button
-              variant="saffron"
+              variant="primary"
               size="md"
               onClick={() => setCurrentStep(currentStep + 1)}
             >
               Continue
-              <ArrowRight className="w-4 h-4 ml-1.5" />
+              <ArrowRight className="w-3.5 h-3.5 ml-1" />
             </Button>
           ) : (
             <Button
-              variant="secondary"
+              variant="primary"
               size="md"
               disabled={saving}
               onClick={() => handleSaveAndProceed(false, false)}
             >
               {saving ? 'Finalizing Profile...' : 'Complete & Enter Workspace'}
-              <ArrowRight className="w-4 h-4 ml-1.5" />
+              <ArrowRight className="w-3.5 h-3.5 ml-1" />
             </Button>
           )}
         </div>

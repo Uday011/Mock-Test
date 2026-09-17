@@ -13,13 +13,10 @@ import {
   ChevronRight,
   Maximize2,
   Minimize2,
-  HelpCircle,
   Check,
   X,
   Layers,
-  Sparkles,
   LayoutGrid,
-  Info,
 } from 'lucide-react';
 import { QuestionPaletteState } from '@/lib/types';
 
@@ -173,7 +170,6 @@ export default function ExamPage() {
               setIsTimeUp(true);
             }
           } else {
-            // Duration is 0 -> No Time Limit
             setSecondsRemaining(null);
           }
         }
@@ -225,7 +221,6 @@ export default function ExamPage() {
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || 'Submission failed');
 
-      // Clear local storage cache
       localStorage.removeItem(`nalanda_attempt_${attemptId}`);
       router.push(`/exam/${attemptId}/result`);
     } catch (err: any) {
@@ -271,7 +266,6 @@ export default function ExamPage() {
 
   // Autosave to server & local storage
   const saveAnswerToServer = (qId: string, answer: string | null, marked: boolean) => {
-    // 1. Update local storage immediately
     const localKey = `nalanda_attempt_${attemptId}`;
     try {
       const current = JSON.parse(localStorage.getItem(localKey) || '{}');
@@ -282,7 +276,6 @@ export default function ExamPage() {
       localStorage.setItem(localKey, JSON.stringify(current));
     } catch (e) {}
 
-    // 2. Debounced save to server
     if (autoSaveTimeoutRef.current) clearTimeout(autoSaveTimeoutRef.current);
     autoSaveTimeoutRef.current = setTimeout(() => {
       fetch(`/api/exam/${attemptId}/save`, {
@@ -400,7 +393,7 @@ export default function ExamPage() {
     }
   };
 
-  // Determine Question Palette State for each question
+  // Determine Question Palette State
   const getQuestionState = (qId: string): QuestionPaletteState => {
     const resp = responses[qId];
     if (!resp || !resp.visited) return 'not_visited';
@@ -410,7 +403,7 @@ export default function ExamPage() {
     return 'visited_unanswered';
   };
 
-  // Format timer display: HH:MM:SS
+  // Format timer display
   const formatTimer = (totalSecs: number | null) => {
     if (totalSecs === null) {
       const hrs = Math.floor(elapsedSeconds / 3600);
@@ -426,7 +419,7 @@ export default function ExamPage() {
       .padStart(2, '0')}`;
   };
 
-  // Extract distinct sections for Section Switcher
+  // Extract sections
   const sections = useMemo(() => {
     const list: { name: string; count: number; firstIndex: number }[] = [];
     questions.forEach((q, idx) => {
@@ -445,7 +438,7 @@ export default function ExamPage() {
   const currentResp = currentQ ? responses[currentQ.id] : null;
   const currentSectionName = currentQ?.section_name || currentQ?.subject || testInfo?.subject || 'General Section';
 
-  // Calculate Palette Counters
+  // Palette Counters
   const answeredCount = Object.values(responses).filter((r) => Boolean(r.selected_answer)).length;
   const markedCount = Object.values(responses).filter((r) => r.is_marked_for_review).length;
   const unansweredVisitedCount = Object.values(responses).filter((r) => r.visited && !r.selected_answer).length;
@@ -454,7 +447,7 @@ export default function ExamPage() {
   const isTimeLow = secondsRemaining !== null && secondsRemaining <= 300; // < 5 mins
   const isTimeCritical = secondsRemaining !== null && secondsRemaining <= 60; // < 1 min
 
-  // Filtered questions for palette jump list
+  // Filtered questions for palette
   const paletteQuestions = useMemo(() => {
     if (paletteSectionFilter === 'all') return questions.map((q, i) => ({ q, index: i }));
     return questions
@@ -464,9 +457,9 @@ export default function ExamPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex flex-col items-center justify-center bg-stone-900 text-white space-y-4">
-        <div className="w-10 h-10 border-3 border-amber-500 border-t-transparent rounded-full animate-spin" />
-        <p className="text-xs font-semibold tracking-wider uppercase text-stone-300">
+      <div className="min-h-screen flex flex-col items-center justify-center bg-[#fbfbfa] text-[#37352f] space-y-3">
+        <div className="w-8 h-8 border-2 border-[#37352f] border-t-transparent rounded-full animate-spin" />
+        <p className="text-xs text-[#787774] font-medium">
           Initializing Examination Environment...
         </p>
       </div>
@@ -474,61 +467,60 @@ export default function ExamPage() {
   }
 
   return (
-    <div className="min-h-screen min-h-[100dvh] flex flex-col bg-[#fcfbf9] pb-20 lg:pb-6 text-stone-900 select-none">
-      {/* EXAM STICKY HEADER */}
-      <header className="sticky top-0 z-40 bg-stone-950 text-white border-b border-stone-800 shadow-md px-3.5 sm:px-6 py-2.5 sm:py-3 flex items-center justify-between">
-        <div className="flex items-center gap-3 min-w-0">
-          <div className="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse shrink-0" />
+    <div className="min-h-screen min-h-[100dvh] flex flex-col bg-[#fbfbfa] pb-20 lg:pb-6 text-[#37352f] select-none">
+      {/* NOTION EXAM STICKY HEADER */}
+      <header className="sticky top-0 z-40 bg-[#2f2d28] text-white border-b border-[#3e3b35] px-4 sm:px-6 py-2.5 flex items-center justify-between shadow-xs">
+        <div className="flex items-center gap-2.5 min-w-0">
+          <div className="w-2 h-2 rounded-full bg-emerald-400 shrink-0" />
           <div className="min-w-0">
-            <h1 className="font-serif font-bold text-xs sm:text-base tracking-tight truncate max-w-[160px] sm:max-w-md">
+            <h1 className="font-semibold text-xs sm:text-sm tracking-tight truncate max-w-[180px] sm:max-w-md text-white">
               {testInfo?.title || 'Examination Workspace'}
             </h1>
             <span className="text-[10px] text-stone-400 font-mono hidden sm:inline">
-              Nalanda CBE Engine • {questions.length} Total MCQs
+              CBT Engine • {questions.length} MCQs
             </span>
           </div>
         </div>
 
         {/* Right side: Timer & Actions */}
-        <div className="flex items-center gap-2 sm:gap-4">
-          {/* Real-time Persistent Timer */}
+        <div className="flex items-center gap-2 sm:gap-3">
+          {/* Timer */}
           <div
-            className={`flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-1.5 rounded-xl font-mono text-xs sm:text-sm font-bold transition-all ${
+            className={`flex items-center gap-1.5 px-2.5 py-1 rounded-[4px] font-mono text-xs font-semibold transition-colors ${
               isTimeCritical
-                ? 'bg-rose-600 text-white animate-bounce shadow-md'
+                ? 'bg-rose-600 text-white animate-pulse'
                 : isTimeLow
-                ? 'bg-amber-500 text-stone-950 font-black'
-                : 'bg-stone-900 text-amber-400 border border-stone-800'
+                ? 'bg-amber-600 text-white'
+                : 'bg-stone-800 text-amber-300 border border-stone-700'
             }`}
           >
-            <Clock className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+            <Clock className="w-3.5 h-3.5" />
             <span>{formatTimer(secondsRemaining)}</span>
           </div>
 
           <button
             onClick={toggleFullscreen}
             title="Toggle Fullscreen"
-            className="p-2 text-stone-400 hover:text-white hover:bg-stone-800 rounded-lg transition-colors hidden md:block"
+            className="p-1.5 text-stone-300 hover:text-white hover:bg-stone-800 rounded-[4px] transition-colors hidden md:block"
           >
-            {isFullscreen ? <Minimize2 className="w-4 h-4" /> : <Maximize2 className="w-4 h-4" />}
+            {isFullscreen ? <Minimize2 className="w-3.5 h-3.5" /> : <Maximize2 className="w-3.5 h-3.5" />}
           </button>
 
           <button
             onClick={() => setShowSubmitModal(true)}
             disabled={isSubmitting}
-            className="px-3.5 sm:px-4 py-1.5 sm:py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl text-xs sm:text-sm shadow-sm transition-all flex items-center gap-1.5 min-h-[38px]"
+            className="px-3 py-1 bg-emerald-600 hover:bg-emerald-700 text-white font-medium rounded-[4px] text-xs transition-colors flex items-center gap-1.5"
           >
-            <Send className="w-3.5 h-3.5" />
-            <span className="hidden sm:inline">Submit Test</span>
-            <span className="sm:hidden">Submit</span>
+            <Send className="w-3 h-3" />
+            <span>Submit</span>
           </button>
         </div>
       </header>
 
-      {/* SECTION SWITCHER BAR (Crucial for SSC CGL / Multidisciplinary Tests) */}
+      {/* SECTION SWITCHER BAR */}
       {sections.length > 1 && (
-        <div className="bg-white border-b border-stone-200 px-3.5 sm:px-6 py-1.5 flex items-center gap-1.5 overflow-x-auto scrollbar-none shadow-2xs">
-          <span className="text-[10px] font-bold uppercase tracking-wider text-stone-600 shrink-0 mr-1.5">
+        <div className="bg-white border-b border-[#ebebeb] px-4 sm:px-6 py-1.5 flex items-center gap-1.5 overflow-x-auto scrollbar-none">
+          <span className="text-[10px] uppercase font-semibold text-[#787774] shrink-0 mr-1">
             Sections:
           </span>
           {sections.map((sec) => {
@@ -537,16 +529,16 @@ export default function ExamPage() {
               <button
                 key={sec.name}
                 onClick={() => setCurrentIndex(sec.firstIndex)}
-                className={`px-3 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap transition-all flex items-center gap-1.5 ${
+                className={`px-2.5 py-1 rounded-[4px] text-xs transition-colors flex items-center gap-1.5 whitespace-nowrap ${
                   isActive
-                    ? 'bg-stone-900 text-white shadow-xs font-bold'
-                    : 'bg-stone-50 text-stone-700 hover:bg-stone-100 border border-stone-200/80'
+                    ? 'bg-[#37352f] text-white font-medium'
+                    : 'bg-[#f7f6f3] text-[#787774] hover:text-[#37352f] hover:bg-[#ebebeb] border border-[#ebebeb]'
                 }`}
               >
                 <span>{sec.name}</span>
                 <span
-                  className={`text-[10px] font-mono px-1.5 py-0.2 rounded-md ${
-                    isActive ? 'bg-stone-800 text-amber-300' : 'bg-stone-200 text-stone-600'
+                  className={`text-[10px] font-mono px-1 rounded-[2px] ${
+                    isActive ? 'bg-[#22211e] text-stone-300' : 'bg-[#ebebeb] text-[#787774]'
                   }`}
                 >
                   {sec.count}
@@ -558,15 +550,15 @@ export default function ExamPage() {
       )}
 
       {/* SUB-HEADER PROGRESS STRIP */}
-      <div className="bg-stone-50 border-b border-stone-200 px-3.5 sm:px-6 py-2 flex items-center justify-between text-xs text-stone-600">
-        <div className="flex items-center gap-2 sm:gap-4">
-          <span className="font-bold text-stone-900 font-mono">
+      <div className="bg-[#fcfbf9] border-b border-[#ebebeb] px-4 sm:px-6 py-2 flex items-center justify-between text-xs text-[#787774]">
+        <div className="flex items-center gap-2 sm:gap-3">
+          <span className="font-semibold text-[#37352f] font-mono">
             Q {currentIndex + 1} of {questions.length}
           </span>
-          <span className="text-stone-500 font-serif italic hidden md:inline">
+          <span className="text-[#787774] hidden md:inline">
             [{currentSectionName}]
           </span>
-          <span className="text-emerald-800 font-semibold bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200 text-[11px] font-mono">
+          <span className="text-[#1e6074] bg-[#edf6f9] px-1.5 py-0.5 rounded-[3px] border border-[#cbe4eb] text-[10px] font-mono font-medium">
             +{currentQ?.correct_marks || 2} / -{currentQ?.negative_marks || 0.5} Marks
           </span>
         </div>
@@ -575,26 +567,26 @@ export default function ExamPage() {
         <div className="flex items-center gap-2">
           <button
             onClick={() => setShowMobilePalette(true)}
-            className="lg:hidden px-2.5 py-1 rounded-lg bg-white hover:bg-stone-100 text-stone-800 font-bold text-[11px] flex items-center gap-1.5 border border-stone-300 shadow-2xs min-h-[32px]"
+            className="lg:hidden px-2 py-1 rounded-[4px] bg-white hover:bg-[#f7f6f3] text-[#37352f] text-xs font-medium flex items-center gap-1 border border-[#ebebeb]"
           >
-            <LayoutGrid className="w-3.5 h-3.5 text-amber-600" />
+            <LayoutGrid className="w-3.5 h-3.5 text-[#787774]" />
             <span>Palette ({answeredCount}/{questions.length})</span>
           </button>
 
-          <div className="hidden sm:flex items-center gap-3 font-medium text-[11px]">
-            <span className="text-emerald-700 font-bold flex items-center gap-1">
-              <span className="w-2 h-2 rounded-full bg-emerald-600" />
+          <div className="hidden sm:flex items-center gap-3 text-[11px] font-medium">
+            <span className="text-emerald-700 flex items-center gap-1">
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-600" />
               {answeredCount} Answered
             </span>
             <span className="text-amber-700 flex items-center gap-1">
-              <span className="w-2 h-2 rounded-full bg-amber-500" />
+              <span className="w-1.5 h-1.5 rounded-full bg-amber-500" />
               {unansweredVisitedCount} Unanswered
             </span>
             <span className="text-purple-700 flex items-center gap-1">
-              <span className="w-2 h-2 rounded-full bg-purple-600" />
+              <span className="w-1.5 h-1.5 rounded-full bg-purple-600" />
               {markedCount} Review
             </span>
-            <span className="text-stone-400 font-mono">
+            <span className="text-[#787774] font-mono">
               {notVisitedCount} Left
             </span>
           </div>
@@ -602,71 +594,71 @@ export default function ExamPage() {
       </div>
 
       {/* MAIN EXAM BODY (Split: Question View + Desktop Palette Sidebar) */}
-      <div className="flex-1 max-w-7xl w-full mx-auto p-3.5 sm:p-6 grid grid-cols-1 lg:grid-cols-4 gap-4 sm:gap-6 items-start">
+      <div className="flex-1 max-w-7xl w-full mx-auto p-4 sm:p-6 grid grid-cols-1 lg:grid-cols-4 gap-4 sm:gap-6 items-start">
         {/* LEFT / CENTER: QUESTION DISPLAY (Span 3 on desktop) */}
-        <div className="lg:col-span-3 bg-white rounded-2xl border border-stone-200 shadow-xs flex flex-col min-h-[500px] justify-between overflow-hidden">
+        <div className="lg:col-span-3 bg-white rounded-md border border-[#ebebeb] flex flex-col min-h-[480px] justify-between overflow-hidden">
           {/* Question Text Area */}
-          <div className="p-5 sm:p-8 space-y-6">
+          <div className="p-5 sm:p-6 space-y-5">
             <div className="flex items-start justify-between gap-3">
               <div className="flex items-center gap-2">
-                <span className="px-3 py-1 bg-stone-900 text-white font-bold text-xs sm:text-sm rounded-lg font-mono shadow-2xs">
+                <span className="px-2.5 py-0.5 bg-[#37352f] text-white text-xs font-medium rounded-[3px] font-mono">
                   Question {currentQ?.question_number || currentIndex + 1}
                 </span>
-                <span className="text-xs text-stone-500 font-medium">
+                <span className="text-xs text-[#787774]">
                   {currentQ?.question_type === 'single' ? 'Single Choice MCQ' : 'Multiple Choice'}
                 </span>
               </div>
 
               {currentResp?.is_marked_for_review && (
-                <span className="px-2.5 py-1 bg-purple-50 text-purple-800 text-xs font-bold rounded-lg flex items-center gap-1 border border-purple-200">
-                  <Flag className="w-3.5 h-3.5 text-purple-600" /> Marked for Review
+                <span className="px-2 py-0.5 bg-[#fbf3db] text-[#4d3800] text-xs font-medium rounded-[3px] flex items-center gap-1 border border-[#f1e0b5]">
+                  <Flag className="w-3 h-3 text-[#d9730d]" /> Marked for Review
                 </span>
               )}
             </div>
 
-            {/* Question Text with refined typography */}
-            <div className="text-sm sm:text-base md:text-lg font-medium text-stone-900 leading-relaxed whitespace-pre-line">
+            {/* Question Text */}
+            <div className="text-sm sm:text-base font-normal text-[#37352f] leading-relaxed whitespace-pre-line">
               {currentQ?.question_text}
             </div>
 
             {/* Optional Question Image */}
             {currentQ?.question_image_url && (
-              <div className="rounded-xl overflow-hidden border border-stone-200 max-h-80 max-w-md bg-stone-50 p-2">
+              <div className="rounded-md overflow-hidden border border-[#ebebeb] max-h-80 max-w-md bg-[#fcfbf9] p-2">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
                   src={currentQ.question_image_url}
                   alt="Question Diagram"
-                  className="w-full h-auto object-contain max-h-72 rounded-lg"
+                  className="w-full h-auto object-contain max-h-72 rounded-[4px]"
                 />
               </div>
             )}
 
             {/* MCQ Options List */}
-            <div className="space-y-3 pt-2">
+            <div className="space-y-2.5 pt-1">
               {(currentQ?.options || []).map((opt) => {
                 const isSelected = currentResp?.selected_answer === opt.label;
                 return (
                   <div
                     key={opt.label}
                     onClick={() => handleSelectOption(opt.label)}
-                    className={`p-3.5 sm:p-4 rounded-xl border-2 transition-all cursor-pointer flex items-center gap-3 sm:gap-4 active:scale-[0.99] min-h-[48px] ${
+                    className={`p-3 rounded-md border transition-colors cursor-pointer flex items-center gap-3 ${
                       isSelected
-                        ? 'border-stone-900 bg-amber-50/50 shadow-xs ring-2 ring-amber-500/20'
-                        : 'border-stone-200 bg-white hover:border-stone-300 hover:bg-stone-50/70'
+                        ? 'border-[#37352f] bg-[#f7f6f3]'
+                        : 'border-[#ebebeb] bg-white hover:bg-[#fcfbf9]'
                     }`}
                   >
                     <div
-                      className={`w-8 h-8 sm:w-9 sm:h-9 rounded-lg font-bold text-xs flex items-center justify-center shrink-0 font-mono transition-all ${
+                      className={`w-7 h-7 rounded-[4px] text-xs font-semibold flex items-center justify-center shrink-0 font-mono transition-colors ${
                         isSelected
-                          ? 'bg-stone-900 text-white shadow-xs'
-                          : 'bg-stone-100 text-stone-700 border border-stone-200'
+                          ? 'bg-[#37352f] text-white'
+                          : 'bg-[#f7f6f3] text-[#37352f] border border-[#ebebeb]'
                       }`}
                     >
                       {opt.label}
                     </div>
                     <span
-                      className={`text-xs sm:text-sm md:text-base leading-relaxed ${
-                        isSelected ? 'font-bold text-stone-950' : 'text-stone-800'
+                      className={`text-xs sm:text-sm leading-relaxed ${
+                        isSelected ? 'font-medium text-[#37352f]' : 'text-[#37352f]'
                       }`}
                     >
                       {opt.text}
@@ -678,13 +670,13 @@ export default function ExamPage() {
           </div>
 
           {/* DESKTOP / TABLET CONTROLS & NAVIGATION BAR */}
-          <div className="hidden sm:flex p-4 sm:p-6 bg-stone-50 border-t border-stone-200 flex-wrap items-center justify-between gap-3">
+          <div className="hidden sm:flex p-3.5 sm:p-4 bg-[#fcfbf9] border-t border-[#ebebeb] flex-wrap items-center justify-between gap-3">
             <div className="flex items-center gap-2">
               <button
                 type="button"
                 onClick={handleClearResponse}
                 disabled={!currentResp?.selected_answer}
-                className="px-3.5 py-2 rounded-xl text-xs font-bold text-stone-600 hover:bg-stone-200 disabled:opacity-35 transition-colors min-h-[40px]"
+                className="px-3 py-1.5 rounded-[4px] text-xs text-[#787774] hover:text-[#37352f] hover:bg-[#ebebeb] disabled:opacity-30 transition-colors"
               >
                 Clear Response
               </button>
@@ -692,13 +684,13 @@ export default function ExamPage() {
               <button
                 type="button"
                 onClick={handleToggleMarkForReview}
-                className={`px-3.5 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 border min-h-[40px] ${
+                className={`px-3 py-1.5 rounded-[4px] text-xs font-medium transition-colors flex items-center gap-1.5 border ${
                   currentResp?.is_marked_for_review
-                    ? 'bg-purple-600 text-white border-purple-700 shadow-xs'
-                    : 'bg-white text-purple-700 border-purple-300 hover:bg-purple-50'
+                    ? 'bg-[#fbf3db] text-[#4d3800] border-[#f1e0b5]'
+                    : 'bg-white text-[#787774] border-[#ebebeb] hover:bg-[#f7f6f3]'
                 }`}
               >
-                <Flag className="w-3.5 h-3.5" />
+                <Flag className="w-3 h-3 text-[#d9730d]" />
                 {currentResp?.is_marked_for_review ? 'Unmark Review' : 'Mark for Review'}
               </button>
             </div>
@@ -708,16 +700,16 @@ export default function ExamPage() {
                 type="button"
                 onClick={() => setCurrentIndex(Math.max(0, currentIndex - 1))}
                 disabled={currentIndex === 0}
-                className="px-4 py-2.5 rounded-xl border border-stone-300 bg-white hover:bg-stone-100 text-stone-700 text-xs font-bold disabled:opacity-35 flex items-center gap-1 shadow-xs min-h-[40px]"
+                className="px-3 py-1.5 rounded-[4px] border border-[#ebebeb] bg-white hover:bg-[#f7f6f3] text-[#37352f] text-xs disabled:opacity-30 flex items-center gap-1 transition-colors"
               >
-                <ChevronLeft className="w-4 h-4" />
+                <ChevronLeft className="w-3.5 h-3.5" />
                 Previous
               </button>
 
               <button
                 type="button"
                 onClick={handleMarkAndNext}
-                className="px-4 py-2.5 rounded-xl bg-purple-50 hover:bg-purple-100 text-purple-800 border border-purple-200 text-xs font-bold transition-colors min-h-[40px]"
+                className="px-3 py-1.5 rounded-[4px] bg-[#f7f6f3] hover:bg-[#ebebeb] text-[#37352f] border border-[#ebebeb] text-xs font-medium transition-colors"
               >
                 Mark & Next
               </button>
@@ -725,34 +717,34 @@ export default function ExamPage() {
               <button
                 type="button"
                 onClick={handleSaveAndNext}
-                className="px-6 py-2.5 rounded-xl bg-stone-900 hover:bg-stone-800 text-white text-xs font-bold shadow-sm flex items-center gap-1.5 transition-all min-h-[40px]"
+                className="px-4 py-1.5 rounded-[4px] bg-[#37352f] hover:bg-[#2f2d28] text-white text-xs font-medium flex items-center gap-1 transition-colors"
               >
                 Save & Next
-                <ChevronRight className="w-4 h-4" />
+                <ChevronRight className="w-3.5 h-3.5" />
               </button>
             </div>
           </div>
         </div>
 
-        {/* RIGHT: DESKTOP 5-STATE QUESTION PALETTE SIDEBAR */}
-        <div className="hidden lg:block bg-white rounded-2xl border border-stone-200 shadow-xs p-5 space-y-4">
-          <div className="flex items-center justify-between border-b border-stone-100 pb-3">
-            <h3 className="text-xs font-bold uppercase tracking-wider text-stone-900 flex items-center gap-1.5 font-serif">
-              <Layers className="w-4 h-4 text-amber-700" />
+        {/* RIGHT: DESKTOP QUESTION PALETTE SIDEBAR */}
+        <div className="hidden lg:block bg-white rounded-md border border-[#ebebeb] p-4 space-y-3.5">
+          <div className="flex items-center justify-between border-b border-[#ebebeb] pb-2.5">
+            <h3 className="text-xs font-semibold text-[#37352f] flex items-center gap-1.5">
+              <Layers className="w-3.5 h-3.5 text-[#787774]" />
               Question Palette
             </h3>
-            <span className="text-[11px] font-mono text-stone-900 font-bold bg-stone-100 px-2.5 py-0.5 rounded-md border border-stone-200">
+            <span className="text-[11px] font-mono text-[#787774] bg-[#f7f6f3] px-2 py-0.5 rounded-[3px] border border-[#ebebeb]">
               {answeredCount}/{questions.length}
             </span>
           </div>
 
-          {/* Section Filter Dropdown / Buttons if multiple sections */}
+          {/* Section Filter */}
           {sections.length > 1 && (
-            <div className="flex items-center gap-1.5 text-xs">
+            <div className="flex items-center text-xs">
               <select
                 value={paletteSectionFilter}
                 onChange={(e) => setPaletteSectionFilter(e.target.value)}
-                className="w-full text-xs font-medium py-1.5 px-2 bg-stone-50 border border-stone-200 rounded-lg text-stone-800 focus:outline-none focus:ring-1 focus:ring-stone-400"
+                className="w-full text-xs py-1 px-2 bg-[#fcfbf9] border border-[#ebebeb] rounded-[4px] text-[#37352f] focus:outline-none"
               >
                 <option value="all">Filter: All Sections ({questions.length})</option>
                 {sections.map((s) => (
@@ -765,27 +757,27 @@ export default function ExamPage() {
           )}
 
           {/* Palette Status Legend Grid */}
-          <div className="grid grid-cols-2 gap-2 text-[11px] font-medium text-stone-700">
-            <div className="flex items-center gap-2 p-1.5 rounded-lg bg-stone-50 border border-stone-100">
-              <span className="w-5 h-5 rounded-md bg-emerald-600 text-white font-bold flex items-center justify-center text-[10px] font-mono">
+          <div className="grid grid-cols-2 gap-1.5 text-[11px] font-medium text-[#787774]">
+            <div className="flex items-center gap-1.5 p-1 rounded-[3px] bg-[#fcfbf9] border border-[#ebebeb]">
+              <span className="w-4 h-4 rounded-[2px] bg-emerald-600 text-white font-bold flex items-center justify-center text-[10px] font-mono">
                 {answeredCount}
               </span>
               <span>Answered</span>
             </div>
-            <div className="flex items-center gap-2 p-1.5 rounded-lg bg-stone-50 border border-stone-100">
-              <span className="w-5 h-5 rounded-md bg-amber-500 text-white font-bold flex items-center justify-center text-[10px] font-mono">
+            <div className="flex items-center gap-1.5 p-1 rounded-[3px] bg-[#fcfbf9] border border-[#ebebeb]">
+              <span className="w-4 h-4 rounded-[2px] bg-amber-500 text-white font-bold flex items-center justify-center text-[10px] font-mono">
                 {unansweredVisitedCount}
               </span>
               <span>Unanswered</span>
             </div>
-            <div className="flex items-center gap-2 p-1.5 rounded-lg bg-stone-50 border border-stone-100">
-              <span className="w-5 h-5 rounded-md bg-purple-600 text-white font-bold flex items-center justify-center text-[10px] font-mono">
+            <div className="flex items-center gap-1.5 p-1 rounded-[3px] bg-[#fcfbf9] border border-[#ebebeb]">
+              <span className="w-4 h-4 rounded-[2px] bg-purple-600 text-white font-bold flex items-center justify-center text-[10px] font-mono">
                 {markedCount}
               </span>
-              <span>Marked Review</span>
+              <span>Review</span>
             </div>
-            <div className="flex items-center gap-2 p-1.5 rounded-lg bg-stone-50 border border-stone-100">
-              <span className="w-5 h-5 rounded-md bg-stone-200 text-stone-700 font-bold flex items-center justify-center text-[10px] font-mono">
+            <div className="flex items-center gap-1.5 p-1 rounded-[3px] bg-[#fcfbf9] border border-[#ebebeb]">
+              <span className="w-4 h-4 rounded-[2px] bg-[#ebebeb] text-[#787774] font-bold flex items-center justify-center text-[10px] font-mono">
                 {notVisitedCount}
               </span>
               <span>Not Visited</span>
@@ -793,24 +785,24 @@ export default function ExamPage() {
           </div>
 
           {/* Jump Bubble Grid */}
-          <div className="pt-2">
-            <span className="text-[10px] font-bold text-stone-400 uppercase tracking-wider block mb-2">
+          <div className="pt-1">
+            <span className="text-[10px] uppercase font-semibold text-[#787774] block mb-1.5">
               Jump To Question:
             </span>
-            <div className="grid grid-cols-5 gap-2 max-h-72 overflow-y-auto p-1">
+            <div className="grid grid-cols-5 gap-1.5 max-h-72 overflow-y-auto p-0.5">
               {paletteQuestions.map(({ q, index }) => {
                 const state = getQuestionState(q.id);
                 const isCurrent = currentIndex === index;
 
-                let styleClass = 'bg-stone-100 text-stone-600 border border-stone-200';
+                let styleClass = 'bg-[#f7f6f3] text-[#787774] border border-[#ebebeb]';
                 if (state === 'answered') {
-                  styleClass = 'bg-emerald-600 text-white font-bold shadow-xs';
+                  styleClass = 'bg-emerald-600 text-white font-medium';
                 } else if (state === 'visited_unanswered') {
-                  styleClass = 'bg-amber-500 text-white font-bold shadow-xs';
+                  styleClass = 'bg-amber-500 text-white font-medium';
                 } else if (state === 'marked_for_review') {
-                  styleClass = 'bg-purple-600 text-white font-bold shadow-xs';
+                  styleClass = 'bg-purple-600 text-white font-medium';
                 } else if (state === 'answered_and_marked') {
-                  styleClass = 'bg-purple-600 text-white font-bold shadow-xs';
+                  styleClass = 'bg-purple-600 text-white font-medium';
                 }
 
                 return (
@@ -818,13 +810,13 @@ export default function ExamPage() {
                     key={q.id}
                     type="button"
                     onClick={() => setCurrentIndex(index)}
-                    className={`h-9 rounded-xl text-xs font-mono font-bold transition-all relative flex items-center justify-center ${styleClass} ${
-                      isCurrent ? 'ring-2 ring-stone-900 ring-offset-2 scale-105' : 'hover:opacity-90'
+                    className={`h-8 rounded-[4px] text-xs font-mono font-medium transition-colors relative flex items-center justify-center ${styleClass} ${
+                      isCurrent ? 'ring-2 ring-[#37352f] ring-offset-1' : 'hover:opacity-90'
                     }`}
                   >
                     {index + 1}
                     {state === 'answered_and_marked' && (
-                      <span className="absolute -top-1 -right-1 w-2.5 h-2.5 rounded-full bg-emerald-400 border-2 border-white" />
+                      <span className="absolute -top-0.5 -right-0.5 w-2 h-2 rounded-full bg-emerald-400 border border-white" />
                     )}
                   </button>
                 );
@@ -833,111 +825,107 @@ export default function ExamPage() {
           </div>
 
           {/* Quick Submit Test CTA */}
-          <div className="pt-4 border-t border-stone-100">
+          <div className="pt-2 border-t border-[#ebebeb]">
             <button
               onClick={() => setShowSubmitModal(true)}
               disabled={isSubmitting}
-              className="w-full py-3 bg-stone-900 hover:bg-stone-800 text-white font-bold rounded-xl text-xs shadow-xs transition-all flex items-center justify-center gap-2 min-h-[44px]"
+              className="w-full py-2 bg-[#37352f] hover:bg-[#2f2d28] text-white font-medium rounded-[4px] text-xs transition-colors flex items-center justify-center gap-1.5"
             >
-              <Send className="w-3.5 h-3.5" />
-              Complete & Submit Test
+              <Send className="w-3 h-3" />
+              Submit Examination
             </button>
           </div>
         </div>
       </div>
 
-      {/* MOBILE STICKY BOTTOM DOCK (Visible on < sm: screens) */}
-      <div className="sm:hidden fixed bottom-0 inset-x-0 bg-white/95 backdrop-blur-md border-t border-stone-200 px-3 py-2 z-30 flex items-center justify-between gap-1.5 shadow-xl pb-safe">
+      {/* MOBILE STICKY BOTTOM DOCK */}
+      <div className="sm:hidden fixed bottom-0 inset-x-0 bg-white border-t border-[#ebebeb] px-3 py-2 z-30 flex items-center justify-between gap-1.5 shadow-lg pb-safe">
         <button
           type="button"
           onClick={() => setCurrentIndex(Math.max(0, currentIndex - 1))}
           disabled={currentIndex === 0}
-          className="p-2.5 rounded-xl border border-stone-200 bg-stone-50 text-stone-700 disabled:opacity-35 min-h-[44px] min-w-[44px] flex items-center justify-center"
+          className="p-2 rounded-[4px] border border-[#ebebeb] bg-[#f7f6f3] text-[#37352f] disabled:opacity-30 min-h-[40px] min-w-[40px] flex items-center justify-center"
           aria-label="Previous Question"
         >
-          <ChevronLeft className="w-5 h-5" />
+          <ChevronLeft className="w-4 h-4" />
         </button>
 
         <button
           type="button"
           onClick={handleToggleMarkForReview}
-          className={`p-2.5 rounded-xl border transition-all min-h-[44px] min-w-[44px] flex items-center justify-center ${
+          className={`p-2 rounded-[4px] border transition-colors min-h-[40px] min-w-[40px] flex items-center justify-center ${
             currentResp?.is_marked_for_review
-              ? 'bg-purple-600 text-white border-purple-700'
-              : 'bg-stone-50 text-purple-700 border-stone-200'
+              ? 'bg-[#fbf3db] text-[#4d3800] border-[#f1e0b5]'
+              : 'bg-[#f7f6f3] text-[#787774] border-[#ebebeb]'
           }`}
           title="Mark for Review"
         >
-          <Flag className="w-5 h-5" />
+          <Flag className="w-4 h-4" />
         </button>
 
         <button
           type="button"
           onClick={() => setShowMobilePalette(true)}
-          className="px-3.5 py-2.5 rounded-xl bg-stone-100 border border-stone-300 text-stone-900 font-bold text-xs flex items-center gap-1.5 shadow-2xs min-h-[44px]"
+          className="px-3 py-2 rounded-[4px] bg-[#f7f6f3] border border-[#ebebeb] text-[#37352f] text-xs font-medium flex items-center gap-1 min-h-[40px]"
         >
-          <LayoutGrid className="w-4 h-4 text-amber-600" />
+          <LayoutGrid className="w-3.5 h-3.5 text-[#787774]" />
           <span>Palette ({answeredCount}/{questions.length})</span>
         </button>
 
         <button
           type="button"
           onClick={handleSaveAndNext}
-          className="px-4 py-2.5 rounded-xl bg-stone-900 hover:bg-stone-800 text-white text-xs font-bold shadow-sm flex items-center gap-1 min-h-[44px]"
+          className="px-3.5 py-2 rounded-[4px] bg-[#37352f] text-white text-xs font-medium flex items-center gap-1 min-h-[40px]"
         >
           <span>{currentIndex === questions.length - 1 ? 'Finish' : 'Next'}</span>
-          <ChevronRight className="w-4 h-4" />
+          <ChevronRight className="w-3.5 h-3.5" />
         </button>
       </div>
 
-      {/* MOBILE QUESTION PALETTE BOTTOM SHEET (SLIDE-UP DRAWER) */}
+      {/* MOBILE QUESTION PALETTE DRAWER */}
       {showMobilePalette && (
-        <div className="lg:hidden fixed inset-0 z-50 bg-stone-950/60 backdrop-blur-xs flex flex-col justify-end animate-fade-in">
-          <div className="bg-white rounded-t-3xl border-t border-stone-200 p-5 shadow-2xl max-h-[82dvh] overflow-y-auto space-y-4 pb-safe">
-            {/* Drawer handle & header */}
-            <div className="flex flex-col items-center">
-              <div className="w-12 h-1.5 rounded-full bg-stone-300 mb-3" />
-              <div className="w-full flex items-center justify-between border-b border-stone-100 pb-3">
-                <div className="flex items-center gap-2">
-                  <LayoutGrid className="w-5 h-5 text-amber-700" />
-                  <h3 className="text-sm font-serif font-bold text-stone-900">Question Palette</h3>
-                </div>
-                <div className="flex items-center gap-2">
-                  <span className="text-xs font-mono font-bold text-stone-700 bg-stone-100 px-2 py-0.5 rounded">
-                    {answeredCount}/{questions.length}
-                  </span>
-                  <button
-                    onClick={() => setShowMobilePalette(false)}
-                    className="p-1 rounded-lg text-stone-400 hover:text-stone-600 hover:bg-stone-100 min-h-[36px] min-w-[36px] flex items-center justify-center"
-                  >
-                    <X className="w-5 h-5" />
-                  </button>
-                </div>
+        <div className="lg:hidden fixed inset-0 z-50 bg-black/40 flex flex-col justify-end animate-fade-in">
+          <div className="bg-white rounded-t-lg border-t border-[#ebebeb] p-4 shadow-xl max-h-[80dvh] overflow-y-auto space-y-3.5 pb-safe">
+            <div className="flex items-center justify-between border-b border-[#ebebeb] pb-2.5">
+              <div className="flex items-center gap-2">
+                <LayoutGrid className="w-4 h-4 text-[#787774]" />
+                <h3 className="text-sm font-semibold text-[#37352f]">Question Palette</h3>
+              </div>
+              <div className="flex items-center gap-2">
+                <span className="text-xs font-mono text-[#787774] bg-[#f7f6f3] px-2 py-0.5 rounded-[3px] border border-[#ebebeb]">
+                  {answeredCount}/{questions.length}
+                </span>
+                <button
+                  onClick={() => setShowMobilePalette(false)}
+                  className="p-1 rounded text-[#787774] hover:text-[#37352f] min-h-[32px] min-w-[32px] flex items-center justify-center"
+                >
+                  <X className="w-4 h-4" />
+                </button>
               </div>
             </div>
 
-            {/* Mobile Legend Counters */}
-            <div className="grid grid-cols-2 gap-2 text-xs font-semibold">
-              <div className="flex items-center gap-2 p-2 rounded-xl bg-emerald-50 border border-emerald-200/60 text-emerald-900">
-                <span className="w-6 h-6 rounded-lg bg-emerald-600 text-white font-mono font-bold flex items-center justify-center text-xs">
+            {/* Legend */}
+            <div className="grid grid-cols-2 gap-1.5 text-xs font-medium">
+              <div className="flex items-center gap-1.5 p-1.5 rounded-[3px] bg-[#fcfbf9] border border-[#ebebeb] text-[#37352f]">
+                <span className="w-4 h-4 rounded-[2px] bg-emerald-600 text-white font-mono text-[10px] flex items-center justify-center font-bold">
                   {answeredCount}
                 </span>
                 <span>Answered</span>
               </div>
-              <div className="flex items-center gap-2 p-2 rounded-xl bg-amber-50 border border-amber-200/60 text-amber-900">
-                <span className="w-6 h-6 rounded-lg bg-amber-500 text-white font-mono font-bold flex items-center justify-center text-xs">
+              <div className="flex items-center gap-1.5 p-1.5 rounded-[3px] bg-[#fcfbf9] border border-[#ebebeb] text-[#37352f]">
+                <span className="w-4 h-4 rounded-[2px] bg-amber-500 text-white font-mono text-[10px] flex items-center justify-center font-bold">
                   {unansweredVisitedCount}
                 </span>
                 <span>Unanswered</span>
               </div>
-              <div className="flex items-center gap-2 p-2 rounded-xl bg-purple-50 border border-purple-200/60 text-purple-900">
-                <span className="w-6 h-6 rounded-lg bg-purple-600 text-white font-mono font-bold flex items-center justify-center text-xs">
+              <div className="flex items-center gap-1.5 p-1.5 rounded-[3px] bg-[#fcfbf9] border border-[#ebebeb] text-[#37352f]">
+                <span className="w-4 h-4 rounded-[2px] bg-purple-600 text-white font-mono text-[10px] flex items-center justify-center font-bold">
                   {markedCount}
                 </span>
-                <span>Marked Review</span>
+                <span>Marked</span>
               </div>
-              <div className="flex items-center gap-2 p-2 rounded-xl bg-stone-100 border border-stone-200 text-stone-700">
-                <span className="w-6 h-6 rounded-lg bg-stone-300 text-stone-800 font-mono font-bold flex items-center justify-center text-xs">
+              <div className="flex items-center gap-1.5 p-1.5 rounded-[3px] bg-[#fcfbf9] border border-[#ebebeb] text-[#37352f]">
+                <span className="w-4 h-4 rounded-[2px] bg-[#ebebeb] text-[#787774] font-mono text-[10px] flex items-center justify-center font-bold">
                   {notVisitedCount}
                 </span>
                 <span>Not Visited</span>
@@ -945,24 +933,21 @@ export default function ExamPage() {
             </div>
 
             {/* Questions Number Grid */}
-            <div className="pt-2">
-              <p className="text-[10px] font-bold text-stone-400 uppercase tracking-wider mb-2">
-                Tap Any Question to Navigate:
-              </p>
-              <div className="grid grid-cols-6 sm:grid-cols-8 gap-2 p-1">
+            <div className="pt-1">
+              <div className="grid grid-cols-6 sm:grid-cols-8 gap-1.5 p-0.5">
                 {questions.map((q, idx) => {
                   const state = getQuestionState(q.id);
                   const isCurrent = currentIndex === idx;
 
-                  let styleClass = 'bg-stone-100 text-stone-600 border border-stone-200';
+                  let styleClass = 'bg-[#f7f6f3] text-[#787774] border border-[#ebebeb]';
                   if (state === 'answered') {
-                    styleClass = 'bg-emerald-600 text-white font-bold';
+                    styleClass = 'bg-emerald-600 text-white font-medium';
                   } else if (state === 'visited_unanswered') {
-                    styleClass = 'bg-amber-500 text-white font-bold';
+                    styleClass = 'bg-amber-500 text-white font-medium';
                   } else if (state === 'marked_for_review') {
-                    styleClass = 'bg-purple-600 text-white font-bold';
+                    styleClass = 'bg-purple-600 text-white font-medium';
                   } else if (state === 'answered_and_marked') {
-                    styleClass = 'bg-purple-600 text-white font-bold';
+                    styleClass = 'bg-purple-600 text-white font-medium';
                   }
 
                   return (
@@ -973,13 +958,13 @@ export default function ExamPage() {
                         setCurrentIndex(idx);
                         setShowMobilePalette(false);
                       }}
-                      className={`h-11 rounded-xl text-xs font-mono font-bold transition-all relative flex items-center justify-center active:scale-95 ${styleClass} ${
-                        isCurrent ? 'ring-2 ring-stone-900 ring-offset-2' : ''
+                      className={`h-9 rounded-[4px] text-xs font-mono font-medium transition-colors relative flex items-center justify-center ${styleClass} ${
+                        isCurrent ? 'ring-2 ring-[#37352f] ring-offset-1' : ''
                       }`}
                     >
                       {idx + 1}
                       {state === 'answered_and_marked' && (
-                        <span className="absolute -top-1 -right-1 w-2.5 h-2.5 rounded-full bg-emerald-400 border-2 border-white" />
+                        <span className="absolute -top-0.5 -right-0.5 w-2 h-2 rounded-full bg-emerald-400 border border-white" />
                       )}
                     </button>
                   );
@@ -987,17 +972,16 @@ export default function ExamPage() {
               </div>
             </div>
 
-            {/* Submit button inside drawer */}
             <div className="pt-2">
               <button
                 onClick={() => {
                   setShowMobilePalette(false);
                   setShowSubmitModal(true);
                 }}
-                className="w-full py-3.5 bg-stone-900 hover:bg-stone-800 text-white font-bold rounded-xl text-xs shadow-sm flex items-center justify-center gap-2 min-h-[48px]"
+                className="w-full py-2.5 bg-[#37352f] text-white font-medium rounded-[4px] text-xs flex items-center justify-center gap-1.5"
               >
-                <Send className="w-4 h-4" />
-                Proceed to Submit Examination
+                <Send className="w-3.5 h-3.5" />
+                Submit Examination
               </button>
             </div>
           </div>
@@ -1006,51 +990,51 @@ export default function ExamPage() {
 
       {/* CONFIRMATION MODAL */}
       {showSubmitModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-stone-950/60 backdrop-blur-xs p-4">
-          <div className="bg-white rounded-2xl max-w-md w-full p-6 sm:p-7 shadow-2xl border border-stone-200 space-y-5 animate-in fade-in zoom-in-95">
-            <div className="text-center space-y-2">
-              <div className="w-12 h-12 rounded-2xl bg-amber-50 text-amber-700 flex items-center justify-center mx-auto mb-2 border border-amber-200">
-                <Send className="w-5 h-5" />
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
+          <div className="bg-white rounded-md max-w-md w-full p-6 shadow-xl border border-[#ebebeb] space-y-4 animate-in fade-in zoom-in-95">
+            <div className="text-center space-y-1.5">
+              <div className="w-10 h-10 rounded-[4px] bg-[#fbf3db] text-[#4d3800] flex items-center justify-center mx-auto mb-1 border border-[#f1e0b5]">
+                <Send className="w-4 h-4" />
               </div>
-              <h3 className="text-lg font-serif font-bold text-stone-900">Confirm Test Submission</h3>
-              <p className="text-xs text-stone-500 leading-relaxed">
-                Are you ready to submit your test? Once confirmed, your answers will be evaluated server-side against the official answer key and recorded to your learning pathway.
+              <h3 className="text-base font-semibold text-[#37352f]">Confirm Test Submission</h3>
+              <p className="text-xs text-[#787774] leading-relaxed">
+                Are you ready to submit your test? Once confirmed, your answers will be evaluated server-side against the official answer key.
               </p>
             </div>
 
             {/* Summary Statistics Table */}
-            <div className="bg-stone-50 rounded-xl p-4 border border-stone-200 divide-y divide-stone-200/80 text-xs">
-              <div className="flex items-center justify-between py-2">
-                <span className="text-stone-600 font-medium">Total Questions</span>
-                <span className="font-bold font-mono text-stone-900">{questions.length}</span>
+            <div className="bg-[#fcfbf9] rounded-[4px] p-3 border border-[#ebebeb] divide-y divide-[#ebebeb] text-xs">
+              <div className="flex items-center justify-between py-1.5">
+                <span className="text-[#787774]">Total Questions</span>
+                <span className="font-semibold font-mono text-[#37352f]">{questions.length}</span>
               </div>
-              <div className="flex items-center justify-between py-2">
-                <span className="text-emerald-700 font-semibold">Answered</span>
-                <span className="font-bold font-mono text-emerald-700">{answeredCount}</span>
+              <div className="flex items-center justify-between py-1.5">
+                <span className="text-emerald-700">Answered</span>
+                <span className="font-semibold font-mono text-emerald-700">{answeredCount}</span>
               </div>
-              <div className="flex items-center justify-between py-2">
-                <span className="text-amber-700 font-semibold">Unanswered</span>
-                <span className="font-bold font-mono text-amber-700">
+              <div className="flex items-center justify-between py-1.5">
+                <span className="text-amber-700">Unanswered</span>
+                <span className="font-semibold font-mono text-amber-700">
                   {questions.length - answeredCount}
                 </span>
               </div>
-              <div className="flex items-center justify-between py-2">
-                <span className="text-purple-700 font-semibold">Marked for Review</span>
-                <span className="font-bold font-mono text-purple-700">{markedCount}</span>
+              <div className="flex items-center justify-between py-1.5">
+                <span className="text-purple-700">Marked for Review</span>
+                <span className="font-semibold font-mono text-purple-700">{markedCount}</span>
               </div>
             </div>
 
             {questions.length - answeredCount > 0 && (
-              <p className="text-xs text-rose-700 font-medium bg-rose-50 p-3 rounded-xl border border-rose-200">
-                ⚠️ You still have {questions.length - answeredCount} unanswered questions remaining.
+              <p className="text-xs text-[#eb5757] bg-[#fdf3f2] p-2.5 rounded-[4px] border border-[#f5c6cb]">
+                Notice: You still have {questions.length - answeredCount} unanswered questions remaining.
               </p>
             )}
 
-            <div className="flex items-center justify-end gap-3 pt-2">
+            <div className="flex items-center justify-end gap-2 pt-1">
               <button
                 type="button"
                 onClick={() => setShowSubmitModal(false)}
-                className="px-4 py-2.5 text-xs font-bold text-stone-700 hover:bg-stone-100 rounded-xl transition-colors min-h-[44px]"
+                className="px-3 py-1.5 text-xs text-[#787774] hover:bg-[#f7f6f3] rounded-[4px] transition-colors"
               >
                 Return to Exam
               </button>
@@ -1058,17 +1042,17 @@ export default function ExamPage() {
                 type="button"
                 onClick={handleSubmitTest}
                 disabled={isSubmitting}
-                className="px-6 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl text-xs shadow-md transition-all flex items-center gap-1.5 min-h-[44px]"
+                className="px-4 py-1.5 bg-[#37352f] hover:bg-[#2f2d28] text-white font-medium rounded-[4px] text-xs transition-colors flex items-center gap-1.5"
               >
                 {isSubmitting ? (
                   <>
-                    <div className="w-3.5 h-3.5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                    <div className="w-3 h-3 border-2 border-white border-t-transparent rounded-full animate-spin" />
                     Submitting...
                   </>
                 ) : (
                   <>
-                    Yes, Submit Now
-                    <Check className="w-4 h-4" />
+                    Confirm Submission
+                    <Check className="w-3.5 h-3.5" />
                   </>
                 )}
               </button>

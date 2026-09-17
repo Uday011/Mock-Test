@@ -113,95 +113,103 @@ export default function ExamWorkspacePage() {
         { label: exam?.title || 'Exam Workspace' },
       ]}
     >
-      {/* Pinned Exam Identity Capsule */}
-      <div className="p-5 sm:p-6 mb-6 rounded-2xl border border-stone-200 bg-white shadow-xs">
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-          <div className="space-y-1.5">
-            <div className="flex items-center gap-2 flex-wrap">
-              <span className="font-mono text-xs font-bold px-2.5 py-0.5 rounded-md bg-amber-50 text-amber-900 border border-amber-200">
+      <div className="max-w-5xl mx-auto space-y-6 pb-16">
+        <PageHeader
+          icon={Compass}
+          title={exam?.title || 'Exam Workspace'}
+          description={exam?.description}
+          badge={
+            <div className="flex items-center gap-1.5 flex-wrap">
+              <span className="font-mono text-xs font-medium px-1.5 py-0.5 rounded bg-[#f1f1ef] text-[#37352f]">
                 {exam?.code || 'EXAM'}
               </span>
               <Badge variant="emerald" size="sm" dot>
                 {exam?.category === 'government_job' ? 'Staff Selection' : exam?.category}
               </Badge>
               {exam?.conducting_body && (
-                <span className="text-xs text-stone-500 font-medium flex items-center gap-1">
-                  <ShieldCheck className="w-3.5 h-3.5 text-emerald-600" />
+                <span className="text-xs text-[#787774] flex items-center gap-1">
+                  <ShieldCheck className="w-3.5 h-3.5 text-[#0f7b6c]" />
                   {exam.conducting_body}
                 </span>
               )}
             </div>
-
-            <h1 className="text-2xl sm:text-3xl font-serif font-bold text-stone-900 tracking-tight">
-              {exam?.title}
-            </h1>
-
-            <p className="text-xs sm:text-sm text-stone-600 max-w-3xl leading-relaxed">
-              {exam?.description}
-            </p>
-          </div>
-
-          <div className="flex items-center gap-2 flex-shrink-0">
+          }
+          actions={
             <Link href="/tests">
-              <Button variant="saffron" size="md">
-                <Play className="w-4 h-4 mr-1.5 fill-current" />
+              <Button variant="primary" size="sm">
+                <Play className="w-3.5 h-3.5 mr-1.5 fill-current" />
                 Start Diagnostic Drill
               </Button>
             </Link>
+          }
+        >
+          {/* Exam Specs Table */}
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs font-mono">
+            <div className="p-2.5 rounded-md bg-[#fbfbfa] border border-[#ebebeb]">
+              <span className="text-[10px] text-[#9b9a97] uppercase block font-sans">Difficulty</span>
+              <strong className="text-[#37352f]">{exam?.difficulty_level || 'National Level'}</strong>
+            </div>
+            <div className="p-2.5 rounded-md bg-[#fbfbfa] border border-[#ebebeb]">
+              <span className="text-[10px] text-[#9b9a97] uppercase block font-sans">Total Marks</span>
+              <strong className="text-[#37352f]">{exam?.total_marks} Marks</strong>
+            </div>
+            <div className="p-2.5 rounded-md bg-[#fbfbfa] border border-[#ebebeb]">
+              <span className="text-[10px] text-[#9b9a97] uppercase block font-sans">Duration</span>
+              <strong className="text-[#37352f]">{exam?.total_duration_minutes} Mins</strong>
+            </div>
+            <div className="p-2.5 rounded-md bg-[#fbfbfa] border border-[#ebebeb]">
+              <span className="text-[10px] text-[#9b9a97] uppercase block font-sans">Target Session</span>
+              <strong className="text-[#d9730d]">{exam?.target_year} Session</strong>
+            </div>
           </div>
-        </div>
+        </PageHeader>
 
-        {/* Exam At A Glance Specs */}
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-5 mt-5 border-t border-stone-100 text-xs font-mono">
-          <div>
-            <span className="text-[10px] text-stone-400 uppercase block font-sans">Difficulty</span>
-            <strong className="text-stone-900">{exam?.difficulty_level || 'National Level'}</strong>
-          </div>
-          <div>
-            <span className="text-[10px] text-stone-400 uppercase block font-sans">Total Marks</span>
-            <strong className="text-stone-900">{exam?.total_marks} Marks</strong>
-          </div>
-          <div>
-            <span className="text-[10px] text-stone-400 uppercase block font-sans">Duration</span>
-            <strong className="text-stone-900">{exam?.total_duration_minutes} Mins</strong>
-          </div>
-          <div>
-            <span className="text-[10px] text-stone-400 uppercase block font-sans">Target Session</span>
-            <strong className="text-amber-800">{exam?.target_year} Session</strong>
-          </div>
+        {/* 7 Workspace Sections Tabs */}
+        <div className="flex border-b border-[#ebebeb] overflow-x-auto no-scrollbar gap-1">
+          {workspaceTabs.map((t) => (
+            <button
+              key={t.id}
+              onClick={() => setActiveTab(t.id)}
+              className={`px-3 py-2 text-xs font-medium border-b-2 transition-colors whitespace-nowrap flex items-center gap-1.5 ${
+                activeTab === t.id
+                  ? 'border-[#37352f] text-[#37352f]'
+                  : 'border-transparent text-[#787774] hover:text-[#37352f]'
+              }`}
+            >
+              <span>{t.label}</span>
+              {t.count !== undefined && (
+                <span className={`text-[10px] font-mono px-1 rounded ${
+                  activeTab === t.id ? 'bg-[#f1f1ef] text-[#37352f]' : 'text-[#9b9a97]'
+                }`}>
+                  {t.count}
+                </span>
+              )}
+            </button>
+          ))}
         </div>
-      </div>
-
-      {/* 7 Workspace Sections Tabs */}
-      <Tabs
-        tabs={workspaceTabs}
-        activeTab={activeTab}
-        onChange={(t) => setActiveTab(t)}
-        className="mb-6"
-      />
 
       {/* SECTION 1: OVERVIEW */}
       {activeTab === 'overview' && (
         <div className="space-y-6">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <Card className="p-6 bg-white space-y-4">
-              <h3 className="text-base font-serif font-bold text-stone-900 flex items-center gap-2">
-                <Award className="w-4 h-4 text-amber-600" />
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="p-5 bg-white border border-[#ebebeb] rounded-lg space-y-3.5">
+              <h3 className="text-sm font-semibold text-[#37352f] flex items-center gap-2">
+                <Award className="w-4 h-4 text-[#d9730d]" />
                 Examination Architecture & Stages
               </h3>
-              <p className="text-xs text-stone-600 leading-relaxed">
+              <p className="text-xs text-[#787774] leading-relaxed">
                 The {exam?.title} is administered in multiple sequential phases. Tier-I serves as the primary computer-based screening stage, while Tier-II determines the final merit ranking.
               </p>
 
-              <div className="space-y-3 pt-2">
+              <div className="space-y-2.5 pt-1">
                 {stages.map((st: any) => (
-                  <div key={st.id} className="p-3.5 rounded-xl border border-stone-200 bg-stone-50/50 space-y-1">
+                  <div key={st.id} className="p-3 rounded-md border border-[#ebebeb] bg-[#fbfbfa] space-y-1">
                     <div className="flex items-center justify-between">
-                      <span className="font-semibold text-xs text-stone-900">{st.name}</span>
+                      <span className="font-semibold text-xs text-[#37352f]">{st.name}</span>
                       <Badge variant="saffron" size="sm">Stage {st.stage_number}</Badge>
                     </div>
-                    <p className="text-[11px] text-stone-600">{st.description}</p>
-                    <div className="flex items-center gap-3 pt-1 text-[10px] font-mono text-stone-500">
+                    <p className="text-[11px] text-[#787774]">{st.description}</p>
+                    <div className="flex items-center gap-3 pt-1 text-[10px] font-mono text-[#9b9a97]">
                       <span>Questions: {st.total_questions}</span>
                       <span>•</span>
                       <span>Marks: {st.total_marks}</span>
@@ -211,30 +219,30 @@ export default function ExamWorkspacePage() {
                   </div>
                 ))}
               </div>
-            </Card>
+            </div>
 
-            <Card className="p-6 bg-white space-y-4">
-              <h3 className="text-base font-serif font-bold text-stone-900 flex items-center gap-2">
-                <ShieldCheck className="w-4 h-4 text-emerald-600" />
+            <div className="p-5 bg-white border border-[#ebebeb] rounded-lg space-y-3.5">
+              <h3 className="text-sm font-semibold text-[#37352f] flex items-center gap-2">
+                <ShieldCheck className="w-4 h-4 text-[#0f7b6c]" />
                 Marking Scheme & Qualifying Cutoffs
               </h3>
-              <div className="space-y-3 text-xs text-stone-600 leading-relaxed">
-                <div className="p-3 rounded-lg border border-stone-200 bg-stone-50 space-y-1">
-                  <span className="font-semibold text-stone-800 block">Tier-I Objective Marking:</span>
-                  <div className="grid grid-cols-2 gap-2 text-stone-700 font-mono text-[11px] pt-1">
-                    <div className="text-emerald-700 font-bold">+2.0 Marks per Correct</div>
-                    <div className="text-rose-700 font-bold">-0.50 Negative Marking</div>
+              <div className="space-y-3 text-xs text-[#787774] leading-relaxed">
+                <div className="p-3 rounded-md border border-[#ebebeb] bg-[#fbfbfa] space-y-1">
+                  <span className="font-semibold text-[#37352f] block">Tier-I Objective Marking:</span>
+                  <div className="grid grid-cols-2 gap-2 text-[#37352f] font-mono text-[11px] pt-1">
+                    <div className="text-[#0f7b6c] font-semibold">+2.0 Marks per Correct</div>
+                    <div className="text-[#c93b3b] font-semibold">-0.50 Negative Marking</div>
                   </div>
                 </div>
 
-                <div className="p-3 rounded-lg border border-stone-200 bg-stone-50 space-y-1">
-                  <span className="font-semibold text-stone-800 block">Cutoff Benchmarks (General / UR):</span>
-                  <p className="text-[11px] text-stone-500">
+                <div className="p-3 rounded-md border border-[#ebebeb] bg-[#fbfbfa] space-y-1">
+                  <span className="font-semibold text-[#37352f] block">Cutoff Benchmarks (General / UR):</span>
+                  <p className="text-[11px] text-[#787774]">
                     Previous cycle Tier-I qualifying cutoff settled around <strong>138.0 to 142.0</strong> marks out of 200. Aspirants targeting administrative Group B posts should benchmark for 160+.
                   </p>
                 </div>
 
-                <div className="pt-2">
+                <div className="pt-1">
                   <Link href="/learn">
                     <Button variant="secondary" size="sm" className="w-full">
                       View 60-Day Strategic Roadmap →
@@ -242,7 +250,7 @@ export default function ExamWorkspacePage() {
                   </Link>
                 </div>
               </div>
-            </Card>
+            </div>
           </div>
         </div>
       )}
@@ -252,15 +260,15 @@ export default function ExamWorkspacePage() {
         <div className="space-y-6">
           {/* Stage Selector */}
           {stages.length > 1 && (
-            <div className="p-1.5 bg-stone-100 rounded-xl inline-flex gap-1 border border-stone-200/80">
+            <div className="p-1 bg-[#f1f1ef] rounded-md inline-flex gap-1 border border-[#ebebeb]">
               {stages.map((stage: any) => (
                 <button
                   key={stage.id}
                   onClick={() => setActiveStageId(stage.id)}
-                  className={`px-4 py-1.5 text-xs font-semibold rounded-lg transition-all ${
+                  className={`px-3 py-1 text-xs font-medium rounded transition-all ${
                     activeStageId === stage.id
-                      ? 'bg-white text-stone-900 shadow-xs'
-                      : 'text-stone-500 hover:text-stone-900'
+                      ? 'bg-white text-[#37352f] shadow-xs'
+                      : 'text-[#787774] hover:text-[#37352f]'
                   }`}
                 >
                   {stage.name}
@@ -270,13 +278,13 @@ export default function ExamWorkspacePage() {
           )}
 
           {/* Subject Filter Bar */}
-          <div className="flex items-center gap-2 overflow-x-auto pb-1 no-scrollbar">
+          <div className="flex items-center gap-1.5 overflow-x-auto pb-1 no-scrollbar">
             <button
               onClick={() => setSelectedSubjectId('all')}
-              className={`px-3 py-1.5 text-xs font-medium rounded-lg whitespace-nowrap transition-colors ${
+              className={`px-3 py-1 text-xs rounded-md whitespace-nowrap transition-colors ${
                 selectedSubjectId === 'all'
-                  ? 'bg-stone-900 text-white font-semibold'
-                  : 'bg-white border border-stone-200 text-stone-600 hover:bg-stone-50'
+                  ? 'bg-[#37352f] text-white font-medium'
+                  : 'bg-white border border-[#ebebeb] text-[#787774] hover:bg-[#f7f6f3]'
               }`}
             >
               All Subjects ({nodes.length})
@@ -286,10 +294,10 @@ export default function ExamWorkspacePage() {
               <button
                 key={s.id}
                 onClick={() => setSelectedSubjectId(s.id)}
-                className={`px-3 py-1.5 text-xs font-medium rounded-lg whitespace-nowrap transition-colors ${
+                className={`px-3 py-1 text-xs rounded-md whitespace-nowrap transition-colors ${
                   selectedSubjectId === s.id
-                    ? 'bg-stone-900 text-white font-semibold'
-                    : 'bg-white border border-stone-200 text-stone-600 hover:bg-stone-50'
+                    ? 'bg-[#37352f] text-white font-medium'
+                    : 'bg-white border border-[#ebebeb] text-[#787774] hover:bg-[#f7f6f3]'
                 }`}
               >
                 <span>{s.name}</span>
@@ -298,50 +306,50 @@ export default function ExamWorkspacePage() {
           </div>
 
           {/* Syllabus List */}
-          <div className="space-y-3">
+          <div className="space-y-2.5">
             {filteredNodes.map((node: any) => {
               const prereqs = node.prerequisite_ids_json ? JSON.parse(node.prerequisite_ids_json) : [];
               const topicResources = resources.filter((r: any) => r.topic_id === node.id);
 
               return (
-                <Card
+                <div
                   key={node.id}
-                  className="p-5 hover:border-stone-300 transition-colors bg-white flex flex-col md:flex-row md:items-center justify-between gap-4"
+                  className="p-4 rounded-lg border border-[#ebebeb] hover:border-[#d4d4d4] transition-colors bg-white flex flex-col md:flex-row md:items-center justify-between gap-3"
                 >
-                  <div className="space-y-2 flex-1">
+                  <div className="space-y-1.5 flex-1">
                     <div className="flex items-center gap-2 flex-wrap">
-                      <span className="font-mono text-[10px] font-bold px-2 py-0.5 rounded bg-stone-100 text-stone-700 border border-stone-200">
+                      <span className="font-mono text-[10px] font-medium px-1.5 py-0.5 rounded bg-[#f1f1ef] text-[#37352f]">
                         {node.code}
                       </span>
-                      <span className="text-xs font-semibold text-stone-600">
+                      <span className="text-xs font-medium text-[#37352f]">
                         {node.subject_name}
                       </span>
-                      <span className="text-stone-300">•</span>
-                      <span className="text-xs font-mono text-stone-500">
-                        Weightage: <strong className="text-stone-800">{node.weightage_percentage}%</strong>
+                      <span className="text-[#ebebeb]">•</span>
+                      <span className="text-xs font-mono text-[#787774]">
+                        Weightage: <strong className="text-[#37352f] font-semibold">{node.weightage_percentage}%</strong>
                       </span>
-                      <span className="text-stone-300">•</span>
-                      <span className="text-xs font-mono text-stone-500">
+                      <span className="text-[#ebebeb]">•</span>
+                      <span className="text-xs font-mono text-[#787774]">
                         {node.estimated_study_hours} hrs
                       </span>
                       {getStatusBadge(node.user_status, node.mastery_percentage || 0)}
                     </div>
 
-                    <h3 className="text-base font-serif font-bold text-stone-900">
+                    <h3 className="text-sm sm:text-base font-semibold text-[#37352f]">
                       {node.title}
                     </h3>
 
-                    <p className="text-xs text-stone-600 max-w-3xl leading-relaxed">
+                    <p className="text-xs text-[#787774] max-w-3xl leading-relaxed">
                       {node.description}
                     </p>
 
                     {prereqs.length > 0 && (
-                      <div className="flex items-center gap-1.5 pt-1 text-[11px] text-stone-500 flex-wrap">
-                        <span className="font-medium text-stone-400">Prerequisites:</span>
+                      <div className="flex items-center gap-1.5 pt-1 text-[11px] text-[#787774] flex-wrap">
+                        <span className="text-[#9b9a97]">Prerequisites:</span>
                         {prereqs.map((pr: string) => (
                           <span
                             key={pr}
-                            className="px-2 py-0.5 bg-stone-100 text-stone-600 rounded text-[10px] font-mono border border-stone-200"
+                            className="px-1.5 py-0.5 bg-[#f7f6f3] text-[#37352f] rounded text-[10px] font-mono border border-[#ebebeb]"
                           >
                             {pr.replace('topic-cgl-', '').replace('-', ' ')}
                           </span>
@@ -350,9 +358,9 @@ export default function ExamWorkspacePage() {
                     )}
                   </div>
 
-                  <div className="flex items-center gap-2 flex-shrink-0 flex-wrap">
+                  <div className="flex items-center gap-1.5 flex-shrink-0 flex-wrap">
                     <Link href={`/learn/${node.id}`}>
-                      <Button variant="outline" size="sm">
+                      <Button variant="secondary" size="sm">
                         <BookOpen className="w-3.5 h-3.5 mr-1" />
                         Read Topic
                       </Button>
@@ -376,12 +384,12 @@ export default function ExamWorkspacePage() {
                     </Link>
 
                     <Link href={`/learn/${node.id}#assessment`}>
-                      <Button variant="saffron" size="sm">
+                      <Button variant="primary" size="sm">
                         Topic Test
                       </Button>
                     </Link>
                   </div>
-                </Card>
+                </div>
               );
             })}
           </div>
@@ -391,26 +399,26 @@ export default function ExamWorkspacePage() {
       {/* SECTION 3: LEARNING PATH */}
       {activeTab === 'learning_path' && (
         <div className="space-y-4">
-          <div className="p-4 bg-white border border-stone-200 rounded-xl flex items-center justify-between flex-wrap gap-3">
+          <div className="p-4 bg-white border border-[#ebebeb] rounded-lg flex items-center justify-between flex-wrap gap-3">
             <div>
-              <h3 className="text-sm font-semibold text-stone-900">SSC CGL 60-Day Strategic Master Plan</h3>
-              <p className="text-xs text-stone-500 mt-0.5">Sequenced units balancing high-yield arithmetic, reasoning, and constitutional governance.</p>
+              <h3 className="text-sm font-semibold text-[#37352f]">SSC CGL 60-Day Strategic Master Plan</h3>
+              <p className="text-xs text-[#787774] mt-0.5">Sequenced units balancing high-yield arithmetic, reasoning, and constitutional governance.</p>
             </div>
             <Link href="/learn">
-              <Button variant="saffron" size="sm">Open Full Sprint Workspace →</Button>
+              <Button variant="primary" size="sm">Open Sprint Workspace →</Button>
             </Link>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
             {nodes.slice(0, 6).map((n: any, idx: number) => (
-              <div key={n.id} className="p-4 bg-white border border-stone-200 rounded-xl flex items-center justify-between">
+              <div key={n.id} className="p-3.5 bg-white border border-[#ebebeb] rounded-lg flex items-center justify-between">
                 <div className="flex items-center gap-3">
-                  <span className="w-7 h-7 rounded-full bg-stone-100 text-stone-700 flex items-center justify-center text-xs font-mono font-bold">
+                  <span className="w-6 h-6 rounded-full bg-[#f1f1ef] text-[#37352f] flex items-center justify-center text-xs font-mono font-medium">
                     {idx + 1}
                   </span>
                   <div>
-                    <div className="text-xs font-bold text-stone-900">{n.title}</div>
-                    <div className="text-[11px] text-stone-500">{n.subject_name} • {n.estimated_study_hours} hrs</div>
+                    <div className="text-xs font-semibold text-[#37352f]">{n.title}</div>
+                    <div className="text-[11px] text-[#787774]">{n.subject_name} • {n.estimated_study_hours} hrs</div>
                   </div>
                 </div>
                 <Badge variant={idx < 3 ? 'emerald' : 'stone'} size="sm">
@@ -425,22 +433,22 @@ export default function ExamWorkspacePage() {
       {/* SECTION 4: PRACTICE DRILLS */}
       {activeTab === 'practice' && (
         <div className="space-y-4">
-          <div className="p-6 bg-white border border-stone-200 rounded-xl space-y-3">
-            <h3 className="text-base font-serif font-bold text-stone-900">
+          <div className="p-5 bg-white border border-[#ebebeb] rounded-lg space-y-3">
+            <h3 className="text-sm font-semibold text-[#37352f]">
               Topic-Level Practice & Speed Drills
             </h3>
-            <p className="text-xs text-stone-600 leading-relaxed max-w-2xl">
+            <p className="text-xs text-[#787774] leading-relaxed max-w-2xl">
               10-minute micro-drills focusing on precision, mental arithmetic shortcuts, and rule recall without the fatigue of a full mock exam.
             </p>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 pt-3">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 pt-2">
               {subjects.map((s: any) => (
-                <div key={s.id} className="p-4 rounded-xl border border-stone-200 bg-stone-50/50 space-y-2">
-                  <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded bg-stone-100 text-stone-700">
+                <div key={s.id} className="p-3.5 rounded-lg border border-[#ebebeb] bg-[#fbfbfa] space-y-2">
+                  <span className="text-[10px] font-mono font-medium px-1.5 py-0.5 rounded bg-[#f1f1ef] text-[#37352f]">
                     {s.code}
                   </span>
-                  <div className="text-xs font-bold text-stone-900">{s.name}</div>
-                  <p className="text-[11px] text-stone-500">15 Questions • 12 Mins</p>
+                  <div className="text-xs font-semibold text-[#37352f]">{s.name}</div>
+                  <p className="text-[11px] text-[#787774]">15 Questions • 12 Mins</p>
                   <Link href="/tests" className="block pt-1">
                     <Button variant="secondary" size="sm" className="w-full">
                       Start Drill
@@ -456,41 +464,41 @@ export default function ExamWorkspacePage() {
       {/* SECTION 5: MOCK TESTS */}
       {activeTab === 'mock_tests' && (
         <div className="space-y-4">
-          <Card className="p-5 bg-white space-y-3">
+          <div className="p-5 bg-white border border-[#ebebeb] rounded-lg space-y-3">
             <div className="flex items-center justify-between flex-wrap gap-2">
               <div>
-                <span className="font-mono text-[10px] font-bold px-2 py-0.5 rounded bg-amber-50 text-amber-800 border border-amber-200">
+                <span className="font-mono text-[10px] font-medium px-1.5 py-0.5 rounded bg-[#fbf3db] text-[#8f6b10]">
                   Official CBE Diagnostic Mock
                 </span>
-                <h3 className="text-base font-serif font-bold text-stone-900 mt-1">
+                <h3 className="text-sm sm:text-base font-semibold text-[#37352f] mt-1">
                   SSC CGL 2026 Tier-I All India Diagnostic Mock 01
                 </h3>
               </div>
               <Badge variant="emerald" size="sm">Standard TCS Pattern</Badge>
             </div>
 
-            <p className="text-xs text-stone-600">
+            <p className="text-xs text-[#787774]">
               Full-length 100 questions screening exam across Quant, Reasoning, English, and General Awareness (+2.0 / -0.50 marks, 60 minutes).
             </p>
 
-            <div className="flex items-center justify-between pt-3 border-t border-stone-100 flex-wrap gap-3">
-              <div className="text-xs text-stone-500 font-mono">
-                Recent Student Score: <strong className="text-stone-900">142 / 200</strong> (78.5% Accuracy)
+            <div className="flex items-center justify-between pt-3 border-t border-[#ebebeb] flex-wrap gap-3">
+              <div className="text-xs text-[#787774] font-mono">
+                Recent Student Score: <strong className="text-[#37352f]">142 / 200</strong> (78.5% Accuracy)
               </div>
               <Link href="/tests">
-                <Button variant="saffron" size="sm">
+                <Button variant="primary" size="sm">
                   Attempt / Retake Mock
                 </Button>
               </Link>
             </div>
-          </Card>
+          </div>
         </div>
       )}
 
       {/* SECTION 6: PERFORMANCE */}
       {activeTab === 'performance' && (
         <div className="space-y-6">
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
             <MetricCallout
               label="Predicted Tier-I Score"
               value="142"
@@ -518,44 +526,44 @@ export default function ExamWorkspacePage() {
             />
           </div>
 
-          <Card className="p-6 bg-white space-y-3">
-            <h3 className="text-base font-serif font-bold text-stone-900">Cutoff Clearance Trajectory</h3>
-            <p className="text-xs text-stone-500">Your predicted performance against previous years Staff Selection cutoffs</p>
+          <div className="p-5 bg-white border border-[#ebebeb] rounded-lg space-y-3">
+            <h3 className="text-sm font-semibold text-[#37352f]">Cutoff Clearance Trajectory</h3>
+            <p className="text-xs text-[#787774]">Your predicted performance against previous years Staff Selection cutoffs</p>
             <ProgressBar value={142} max={200} label="Current Predicted Level: 142 / 200 (Cutoff Bar: 138)" size="md" variant="saffron" />
             <div className="pt-2 text-right">
-              <Link href="/performance" className="text-xs text-amber-700 font-semibold hover:underline">
+              <Link href="/performance" className="text-xs text-[#37352f] font-medium hover:underline">
                 Open Full Readiness Analytics →
               </Link>
             </div>
-          </Card>
+          </div>
         </div>
       )}
 
       {/* SECTION 7: RESOURCES */}
       {activeTab === 'resources' && (
         <div className="space-y-4">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
             {resources.map((res: any) => (
-              <Card key={res.id} className="p-5 bg-white space-y-2.5">
+              <div key={res.id} className="p-4 bg-white border border-[#ebebeb] rounded-lg space-y-2">
                 <div className="flex items-center justify-between">
-                  <span className="text-xs font-bold text-stone-900">{res.title}</span>
+                  <span className="text-xs font-semibold text-[#37352f]">{res.title}</span>
                   <Badge variant="saffron" size="sm">
                     {res.resource_type.replace('_', ' ')}
                   </Badge>
                 </div>
-                <p className="text-xs text-stone-600 leading-relaxed">
+                <p className="text-xs text-[#787774] leading-relaxed">
                   {res.content_summary}
                 </p>
-                <div className="pt-2 flex items-center justify-between text-[11px] text-stone-400 font-mono">
+                <div className="pt-2 flex items-center justify-between text-[11px] text-[#9b9a97] font-mono">
                   <span>Reading Time: {res.estimated_read_minutes} mins</span>
                   <button
                     onClick={() => setSelectedTopic({ title: res.title, description: res.content_summary, resources: [res] })}
-                    className="text-amber-800 font-semibold hover:underline"
+                    className="text-[#37352f] font-medium hover:underline"
                   >
                     View Resource →
                   </button>
                 </div>
-              </Card>
+              </div>
             ))}
           </div>
         </div>
@@ -581,6 +589,7 @@ export default function ExamWorkspacePage() {
           </div>
         </Modal>
       )}
+      </div>
     </AppShell>
   );
 }

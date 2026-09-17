@@ -11,7 +11,6 @@ import {
   GraduationCap,
   Building2,
   Crown,
-  Compass,
 } from 'lucide-react';
 import { UserRole } from '@/lib/types';
 import Logo from '@/components/ui/Logo';
@@ -105,30 +104,30 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-[85vh] flex items-center justify-center px-4 py-12 bg-[#fcfbf9]">
-      <div className="max-w-md w-full space-y-6 bg-white p-7 sm:p-9 rounded-2xl border border-stone-200 shadow-sm">
-        <div className="text-center space-y-2">
+    <div className="min-h-[85vh] flex items-center justify-center px-4 py-12 bg-[#fbfbfa]">
+      <div className="max-w-md w-full space-y-5 bg-white p-6 sm:p-8 rounded-md border border-[#ebebeb] shadow-xs">
+        <div className="text-center space-y-1.5">
           <div className="flex justify-center mb-2">
             <Logo size="md" href="/" />
           </div>
-          <h2 className="text-xl sm:text-2xl font-serif font-bold text-stone-900">
+          <h2 className="text-xl font-bold text-[#37352f]">
             Sign in to Nalanda
           </h2>
-          <p className="text-xs text-stone-500 max-w-sm mx-auto">
+          <p className="text-xs text-[#787774] max-w-sm mx-auto">
             Access your syllabus roadmap, computer-based mock diagnostics, and cognitive mistake forensics.
           </p>
         </div>
 
         {error && (
-          <div className="p-3 rounded-lg bg-rose-50 border border-rose-200 text-rose-700 text-xs flex items-center gap-2">
-            <AlertCircle className="w-4 h-4 shrink-0" />
+          <div className="p-2.5 rounded-[4px] bg-[#fdf3f2] border border-[#f5c6cb] text-[#eb5757] text-xs flex items-center gap-2">
+            <AlertCircle className="w-3.5 h-3.5 shrink-0" />
             <span>{error}</span>
           </div>
         )}
 
         {/* 1-Click Role Personas */}
         <div className="space-y-2 pt-1">
-          <p className="text-[10px] font-bold text-stone-400 uppercase tracking-wider text-center font-mono">
+          <p className="text-[10px] uppercase font-semibold text-[#787774] text-center tracking-wider">
             1-Click Instant Persona Sign-In
           </p>
           <div className="grid grid-cols-3 gap-2">
@@ -136,108 +135,108 @@ export default function LoginPage() {
               type="button"
               onClick={() => handleDemoLogin('student')}
               disabled={Boolean(demoRoleLoading)}
-              className="p-2.5 rounded-xl border border-stone-200 bg-stone-50 hover:bg-stone-100 text-stone-900 transition-all flex flex-col items-center text-center min-h-[52px]"
+              className="p-2 rounded-[4px] border border-[#ebebeb] bg-[#fcfbf9] hover:bg-[#f7f6f3] text-[#37352f] transition-colors flex flex-col items-center text-center"
             >
-              <div className="w-7 h-7 rounded-lg bg-emerald-100 text-emerald-800 flex items-center justify-center mb-1">
-                <GraduationCap className="w-4 h-4" />
+              <div className="w-6 h-6 rounded-[3px] bg-[#edf6f9] text-[#1e6074] flex items-center justify-center mb-1">
+                <GraduationCap className="w-3.5 h-3.5" />
               </div>
-              <span className="text-xs font-bold leading-tight">Aspirant</span>
-              <span className="text-[9px] text-stone-500 mt-0.5">SSC CGL 2026</span>
+              <span className="text-xs font-medium leading-tight">Aspirant</span>
+              <span className="text-[9px] text-[#787774] mt-0.5">SSC CGL</span>
             </button>
 
             <button
               type="button"
               onClick={() => handleDemoLogin('admin')}
               disabled={Boolean(demoRoleLoading)}
-              className="p-2.5 rounded-xl border border-stone-200 bg-stone-50 hover:bg-stone-100 text-stone-900 transition-all flex flex-col items-center text-center min-h-[52px]"
+              className="p-2 rounded-[4px] border border-[#ebebeb] bg-[#fcfbf9] hover:bg-[#f7f6f3] text-[#37352f] transition-colors flex flex-col items-center text-center"
             >
-              <div className="w-7 h-7 rounded-lg bg-amber-100 text-amber-900 flex items-center justify-center mb-1">
-                <Building2 className="w-4 h-4" />
+              <div className="w-6 h-6 rounded-[3px] bg-[#fbf3db] text-[#4d3800] flex items-center justify-center mb-1">
+                <Building2 className="w-3.5 h-3.5" />
               </div>
-              <span className="text-xs font-bold leading-tight">Educator</span>
-              <span className="text-[9px] text-stone-500 mt-0.5">Test Studio</span>
+              <span className="text-xs font-medium leading-tight">Educator</span>
+              <span className="text-[9px] text-[#787774] mt-0.5">Test Studio</span>
             </button>
 
             <button
               type="button"
               onClick={() => handleDemoLogin('superadmin')}
               disabled={Boolean(demoRoleLoading)}
-              className="p-2.5 rounded-xl border border-stone-200 bg-stone-50 hover:bg-stone-100 text-stone-900 transition-all flex flex-col items-center text-center min-h-[52px]"
+              className="p-2 rounded-[4px] border border-[#ebebeb] bg-[#fcfbf9] hover:bg-[#f7f6f3] text-[#37352f] transition-colors flex flex-col items-center text-center"
             >
-              <div className="w-7 h-7 rounded-lg bg-slate-200 text-slate-800 flex items-center justify-center mb-1">
-                <Crown className="w-4 h-4" />
+              <div className="w-6 h-6 rounded-[3px] bg-[#f7f6f3] text-[#37352f] flex items-center justify-center mb-1 border border-[#ebebeb]">
+                <Crown className="w-3.5 h-3.5" />
               </div>
-              <span className="text-xs font-bold leading-tight">Superadmin</span>
-              <span className="text-[9px] text-stone-500 mt-0.5">Master Gov</span>
+              <span className="text-xs font-medium leading-tight">Superadmin</span>
+              <span className="text-[9px] text-[#787774] mt-0.5">Master Gov</span>
             </button>
           </div>
         </div>
 
         <div className="relative flex items-center justify-center">
-          <div className="border-t border-stone-200 w-full" />
-          <span className="bg-white px-3 text-[10px] uppercase font-mono text-stone-400 absolute">
-            Or Account Credentials
+          <div className="border-t border-[#ebebeb] w-full" />
+          <span className="bg-white px-2.5 text-[10px] uppercase font-medium text-[#787774] absolute">
+            Or Credentials
           </span>
         </div>
 
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <form onSubmit={handleSubmit} className="space-y-3.5">
           <div>
-            <label className="block text-xs font-semibold text-stone-700 mb-1.5">
+            <label className="block text-xs font-medium text-[#37352f] mb-1">
               Email Address
             </label>
             <div className="relative">
-              <User className="w-4 h-4 absolute left-3 top-2.5 text-stone-400" />
+              <User className="w-3.5 h-3.5 absolute left-2.5 top-2.5 text-[#787774]" />
               <input
                 type="email"
                 required
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="student@example.com"
-                className="w-full pl-9 pr-3 py-2 text-xs rounded-lg border border-stone-200 focus:outline-none focus:ring-2 focus:ring-amber-500 bg-white"
+                className="w-full pl-8 pr-3 py-1.5 text-xs rounded-[4px] border border-[#ebebeb] focus:outline-none focus:border-[#37352f] bg-[#fcfbf9] focus:bg-white text-[#37352f]"
               />
             </div>
           </div>
 
           <div>
-            <div className="flex items-center justify-between mb-1.5">
-              <label className="block text-xs font-semibold text-stone-700">
+            <div className="flex items-center justify-between mb-1">
+              <label className="block text-xs font-medium text-[#37352f]">
                 Password
               </label>
               <Link
                 href="/forgot-password"
-                className="text-[11px] text-amber-800 hover:text-amber-900 font-medium hover:underline"
+                className="text-[11px] text-[#787774] hover:text-[#37352f] hover:underline"
               >
                 Forgot Password?
               </Link>
             </div>
             <div className="relative">
-              <Lock className="w-4 h-4 absolute left-3 top-2.5 text-stone-400" />
+              <Lock className="w-3.5 h-3.5 absolute left-2.5 top-2.5 text-[#787774]" />
               <input
                 type="password"
                 required
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="••••••••"
-                className="w-full pl-9 pr-3 py-2 text-xs rounded-lg border border-stone-200 focus:outline-none focus:ring-2 focus:ring-amber-500 bg-white"
+                className="w-full pl-8 pr-3 py-1.5 text-xs rounded-[4px] border border-[#ebebeb] focus:outline-none focus:border-[#37352f] bg-[#fcfbf9] focus:bg-white text-[#37352f]"
               />
             </div>
           </div>
 
           <Button
             type="submit"
-            variant="saffron"
+            variant="primary"
             size="md"
             className="w-full"
             disabled={loading}
           >
             {loading ? 'Authenticating...' : 'Sign In'}
-            <ArrowRight className="w-4 h-4 ml-1.5" />
+            <ArrowRight className="w-3.5 h-3.5 ml-1.5" />
           </Button>
         </form>
 
-        <div className="text-center text-xs text-stone-500 pt-2 border-t border-stone-100">
+        <div className="text-center text-xs text-[#787774] pt-2 border-t border-[#ebebeb]">
           New to Nalanda?{' '}
-          <Link href="/signup" className="text-amber-800 font-semibold hover:underline">
+          <Link href="/signup" className="text-[#37352f] font-medium hover:underline">
             Create an Aspirant Account
           </Link>
         </div>

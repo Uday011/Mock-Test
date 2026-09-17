@@ -57,68 +57,68 @@ export default function SignUpPage() {
   };
 
   return (
-    <div className="min-h-[85vh] flex items-center justify-center px-4 py-12 bg-[#fcfbf9]">
-      <div className="max-w-md w-full space-y-6 bg-white p-7 sm:p-9 rounded-2xl border border-stone-200 shadow-sm">
-        <div className="text-center space-y-2">
+    <div className="min-h-[85vh] flex items-center justify-center px-4 py-12 bg-[#fbfbfa]">
+      <div className="max-w-md w-full space-y-5 bg-white p-6 sm:p-8 rounded-md border border-[#ebebeb] shadow-xs">
+        <div className="text-center space-y-1.5">
           <div className="flex justify-center mb-2">
             <Logo size="md" href="/" />
           </div>
-          <h2 className="text-xl sm:text-2xl font-serif font-bold text-stone-900">
+          <h2 className="text-xl font-bold text-[#37352f]">
             Create an Account
           </h2>
-          <p className="text-xs text-stone-500 max-w-sm mx-auto">
+          <p className="text-xs text-[#787774] max-w-sm mx-auto">
             Join Nalanda to track syllabus progression, practice CBT mock papers, and curate mistake forensics.
           </p>
         </div>
 
         {error && (
-          <div className="p-3 rounded-lg bg-rose-50 border border-rose-200 text-rose-700 text-xs flex items-center gap-2">
-            <AlertCircle className="w-4 h-4 shrink-0" />
+          <div className="p-2.5 rounded-[4px] bg-[#fdf3f2] border border-[#f5c6cb] text-[#eb5757] text-xs flex items-center gap-2">
+            <AlertCircle className="w-3.5 h-3.5 shrink-0" />
             <span>{error}</span>
           </div>
         )}
 
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <form onSubmit={handleSubmit} className="space-y-3.5">
           <div>
-            <label className="block text-xs font-semibold text-stone-700 mb-1.5">
+            <label className="block text-xs font-medium text-[#37352f] mb-1">
               Full Name
             </label>
             <div className="relative">
-              <User className="w-4 h-4 absolute left-3 top-2.5 text-stone-400" />
+              <User className="w-3.5 h-3.5 absolute left-2.5 top-2.5 text-[#787774]" />
               <input
                 type="text"
                 required
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 placeholder="e.g. Priya Sharma"
-                className="w-full pl-9 pr-3 py-2 text-xs rounded-lg border border-stone-200 focus:outline-none focus:ring-2 focus:ring-amber-500 bg-white"
+                className="w-full pl-8 pr-3 py-1.5 text-xs rounded-[4px] border border-[#ebebeb] focus:outline-none focus:border-[#37352f] bg-[#fcfbf9] focus:bg-white text-[#37352f]"
               />
             </div>
           </div>
 
           <div>
-            <label className="block text-xs font-semibold text-stone-700 mb-1.5">
+            <label className="block text-xs font-medium text-[#37352f] mb-1">
               Email Address
             </label>
             <div className="relative">
-              <Mail className="w-4 h-4 absolute left-3 top-2.5 text-stone-400" />
+              <Mail className="w-3.5 h-3.5 absolute left-2.5 top-2.5 text-[#787774]" />
               <input
                 type="email"
                 required
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="name@example.com"
-                className="w-full pl-9 pr-3 py-2 text-xs rounded-lg border border-stone-200 focus:outline-none focus:ring-2 focus:ring-amber-500 bg-white"
+                className="w-full pl-8 pr-3 py-1.5 text-xs rounded-[4px] border border-[#ebebeb] focus:outline-none focus:border-[#37352f] bg-[#fcfbf9] focus:bg-white text-[#37352f]"
               />
             </div>
           </div>
 
           <div>
-            <label className="block text-xs font-semibold text-stone-700 mb-1.5">
+            <label className="block text-xs font-medium text-[#37352f] mb-1">
               Password
             </label>
             <div className="relative">
-              <Lock className="w-4 h-4 absolute left-3 top-2.5 text-stone-400" />
+              <Lock className="w-3.5 h-3.5 absolute left-2.5 top-2.5 text-[#787774]" />
               <input
                 type="password"
                 required
@@ -126,39 +126,39 @@ export default function SignUpPage() {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="Minimum 6 characters"
-                className="w-full pl-9 pr-3 py-2 text-xs rounded-lg border border-stone-200 focus:outline-none focus:ring-2 focus:ring-amber-500 bg-white"
+                className="w-full pl-8 pr-3 py-1.5 text-xs rounded-[4px] border border-[#ebebeb] focus:outline-none focus:border-[#37352f] bg-[#fcfbf9] focus:bg-white text-[#37352f]"
               />
             </div>
           </div>
 
           <div>
-            <label className="block text-xs font-semibold text-stone-700 mb-1.5">
+            <label className="block text-xs font-medium text-[#37352f] mb-1">
               Primary Role
             </label>
-            <div className="grid grid-cols-2 gap-2.5">
+            <div className="grid grid-cols-2 gap-2">
               <button
                 type="button"
                 onClick={() => setRole('student')}
-                className={`py-2 px-3 text-xs font-semibold rounded-lg border transition-all flex items-center justify-center gap-1.5 ${
+                className={`py-1.5 px-2.5 text-xs font-medium rounded-[4px] border transition-colors flex items-center justify-center gap-1.5 ${
                   role === 'student'
-                    ? 'border-amber-600 bg-amber-50 text-amber-900 shadow-2xs font-bold'
-                    : 'border-stone-200 text-stone-600 hover:bg-stone-50'
+                    ? 'border-[#37352f] bg-[#f7f6f3] text-[#37352f]'
+                    : 'border-[#ebebeb] text-[#787774] hover:bg-[#fcfbf9]'
                 }`}
               >
-                <GraduationCap className="w-4 h-4" />
+                <GraduationCap className="w-3.5 h-3.5" />
                 Aspirant / Student
               </button>
 
               <button
                 type="button"
                 onClick={() => setRole('educator')}
-                className={`py-2 px-3 text-xs font-semibold rounded-lg border transition-all flex items-center justify-center gap-1.5 ${
+                className={`py-1.5 px-2.5 text-xs font-medium rounded-[4px] border transition-colors flex items-center justify-center gap-1.5 ${
                   role === 'educator'
-                    ? 'border-amber-600 bg-amber-50 text-amber-900 shadow-2xs font-bold'
-                    : 'border-stone-200 text-stone-600 hover:bg-stone-50'
+                    ? 'border-[#37352f] bg-[#f7f6f3] text-[#37352f]'
+                    : 'border-[#ebebeb] text-[#787774] hover:bg-[#fcfbf9]'
                 }`}
               >
-                <Building2 className="w-4 h-4" />
+                <Building2 className="w-3.5 h-3.5" />
                 Educator / Faculty
               </button>
             </div>
@@ -166,19 +166,19 @@ export default function SignUpPage() {
 
           <Button
             type="submit"
-            variant="saffron"
+            variant="primary"
             size="md"
             className="w-full"
             disabled={loading}
           >
             {loading ? 'Creating Account...' : 'Create Account'}
-            <ArrowRight className="w-4 h-4 ml-1.5" />
+            <ArrowRight className="w-3.5 h-3.5 ml-1.5" />
           </Button>
         </form>
 
-        <div className="text-center text-xs text-stone-500 pt-2 border-t border-stone-100">
+        <div className="text-center text-xs text-[#787774] pt-2 border-t border-[#ebebeb]">
           Already have an account?{' '}
-          <Link href="/login" className="text-amber-800 font-semibold hover:underline">
+          <Link href="/login" className="text-[#37352f] font-medium hover:underline">
             Sign In
           </Link>
         </div>

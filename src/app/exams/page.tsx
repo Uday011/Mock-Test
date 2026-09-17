@@ -86,176 +86,177 @@ export default function ExamsCatalogPage() {
       breadcrumbs={[{ label: 'Target Exams', href: '/exams' }]}
       activeExamTitle={primaryEnrollment?.exam_title || 'SSC CGL 2026'}
     >
-      <PageHeader
-        title="Examination Discovery & Blueprints"
-        description="Standardized national examination frameworks featuring conducting bodies, curricular stages, and difficulty benchmarks."
-        badge={<Badge variant="saffron" size="md">National Frameworks</Badge>}
-        actions={
-          <Link href="/onboarding">
-            <Button variant="secondary" size="sm">
-              <Compass className="w-4 h-4 mr-1.5" />
-              Rerun Onboarding Wizard
-            </Button>
-          </Link>
-        }
-      />
+      <div className="max-w-5xl mx-auto space-y-6 pb-16">
+        <PageHeader
+          icon={Compass}
+          title="Examination Blueprints & Frameworks"
+          description="Standardized national examination frameworks featuring conducting bodies, curricular stages, and difficulty benchmarks."
+          badge={<Badge variant="saffron" size="sm">National Frameworks</Badge>}
+          actions={
+            <Link href="/onboarding">
+              <Button variant="secondary" size="sm">
+                <Compass className="w-3.5 h-3.5 mr-1.5" />
+                Rerun Onboarding Wizard
+              </Button>
+            </Link>
+          }
+        />
 
-      {actionSuccess && (
-        <div className="mb-6 p-3.5 bg-emerald-50 border border-emerald-200 rounded-xl text-xs text-emerald-800 flex items-center gap-2 animate-in fade-in">
-          <Check className="w-4 h-4 text-emerald-600 shrink-0" />
-          <span>{actionSuccess}</span>
+        {actionSuccess && (
+          <div className="p-3 bg-[#edf3ec] border border-[#d3e5d2] rounded-md text-xs text-[#1c3829] flex items-center gap-2">
+            <Check className="w-3.5 h-3.5 text-[#0f7b6c] shrink-0" />
+            <span>{actionSuccess}</span>
+          </div>
+        )}
+
+        {/* Filter Tabs */}
+        <div className="flex items-center gap-1.5 overflow-x-auto pb-1 no-scrollbar">
+          {categories.map((c) => (
+            <button
+              key={c.id}
+              onClick={() => setCategoryFilter(c.id)}
+              className={`px-3 py-1 text-xs rounded-md whitespace-nowrap transition-colors ${
+                categoryFilter === c.id
+                  ? 'bg-[#37352f] text-white font-medium'
+                  : 'bg-white border border-[#ebebeb] text-[#787774] hover:bg-[#f7f6f3]'
+              }`}
+            >
+              {c.label}
+            </button>
+          ))}
         </div>
-      )}
 
-      {/* Filter Tabs */}
-      <div className="flex items-center gap-2 mb-6 overflow-x-auto pb-1 no-scrollbar">
-        {categories.map((c) => (
-          <button
-            key={c.id}
-            onClick={() => setCategoryFilter(c.id)}
-            className={`px-3 py-1.5 text-xs font-medium rounded-lg whitespace-nowrap transition-colors ${
-              categoryFilter === c.id
-                ? 'bg-stone-900 text-white font-semibold'
-                : 'bg-white border border-stone-200 text-stone-600 hover:bg-stone-50'
-            }`}
-          >
-            {c.label}
-          </button>
-        ))}
-      </div>
+        {loading ? (
+          <div className="py-20 text-center text-xs text-[#787774] font-mono">
+            Loading Examination Frameworks...
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {filteredExams.map((ex) => {
+              const isPrimary = primaryEnrollment?.exam_id === ex.id;
+              const isEnrolled = userEnrollments.some((enr) => enr.exam_id === ex.id);
 
-      {loading ? (
-        <div className="py-20 text-center text-xs text-stone-500 font-mono">
-          Loading Examination Frameworks...
-        </div>
-      ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {filteredExams.map((ex) => {
-            const isPrimary = primaryEnrollment?.exam_id === ex.id;
-            const isEnrolled = userEnrollments.some((enr) => enr.exam_id === ex.id);
+              let statusBadge = <Badge variant="stone" size="sm">Not Enrolled</Badge>;
+              if (isPrimary) {
+                statusBadge = <Badge variant="emerald" size="sm" dot>Primary Target</Badge>;
+              } else if (isEnrolled) {
+                statusBadge = <Badge variant="saffron" size="sm" dot>Enrolled</Badge>;
+              }
 
-            let statusBadge = <Badge variant="stone" size="sm">Not Enrolled</Badge>;
-            if (isPrimary) {
-              statusBadge = <Badge variant="emerald" size="sm" dot>Primary Target</Badge>;
-            } else if (isEnrolled) {
-              statusBadge = <Badge variant="saffron" size="sm" dot>Enrolled</Badge>;
-            }
+              return (
+                <div
+                  key={ex.id}
+                  className={`p-5 rounded-lg border flex flex-col justify-between transition-colors bg-white ${
+                    isPrimary
+                      ? 'border-[#37352f] shadow-xs'
+                      : 'border-[#ebebeb] hover:border-[#d4d4d4]'
+                  }`}
+                >
+                  <div className="space-y-3.5">
+                    {/* Header */}
+                    <div className="flex items-start justify-between gap-2 flex-wrap">
+                      <div className="space-y-1">
+                        <div className="flex items-center gap-2 flex-wrap">
+                          <span className="font-mono text-[10px] font-medium px-1.5 py-0.5 rounded bg-[#f1f1ef] text-[#37352f]">
+                            {ex.code}
+                          </span>
+                          {statusBadge}
+                        </div>
 
-            return (
-              <Card
-                key={ex.id}
-                className={`p-6 flex flex-col justify-between transition-all bg-white ${
-                  isPrimary
-                    ? 'ring-2 ring-amber-500/80 bg-amber-50/20 border-amber-300'
-                    : 'hover:border-stone-300'
-                }`}
-              >
-                <div className="space-y-4">
-                  {/* Header: Badges & Conducting Body */}
-                  <div className="flex items-start justify-between gap-3 flex-wrap">
-                    <div className="space-y-1">
-                      <div className="flex items-center gap-2 flex-wrap">
-                        <span className="font-mono text-[10px] font-bold px-2 py-0.5 rounded bg-stone-100 text-stone-700 border border-stone-200">
-                          {ex.code}
-                        </span>
-                        {statusBadge}
+                        <h3 className="text-base font-semibold text-[#37352f] pt-0.5">
+                          {ex.title}
+                        </h3>
+
+                        {ex.conducting_body && (
+                          <div className="flex items-center gap-1.5 text-xs text-[#787774]">
+                            <ShieldCheck className="w-3.5 h-3.5 text-[#0f7b6c] shrink-0" />
+                            <span>Conducting Body: <strong className="text-[#37352f] font-medium">{ex.conducting_body}</strong></span>
+                          </div>
+                        )}
                       </div>
 
-                      <h3 className="text-base sm:text-lg font-serif font-bold text-stone-900 pt-1">
-                        {ex.title}
-                      </h3>
-
-                      {ex.conducting_body && (
-                        <div className="flex items-center gap-1.5 text-xs text-stone-500 font-medium">
-                          <ShieldCheck className="w-3.5 h-3.5 text-emerald-700 shrink-0" />
-                          <span>Conducting Body: <strong className="text-stone-700">{ex.conducting_body}</strong></span>
-                        </div>
-                      )}
-                    </div>
-
-                    <div className="text-right">
                       <Badge variant="stone" size="sm">
                         {ex.difficulty_level || 'National Level'}
                       </Badge>
                     </div>
-                  </div>
 
-                  <p className="text-xs text-stone-600 leading-relaxed">
-                    {ex.description}
-                  </p>
+                    <p className="text-xs text-[#787774] leading-relaxed line-clamp-2">
+                      {ex.description}
+                    </p>
 
-                  {/* Pattern Summary */}
-                  {ex.pattern_summary && (
-                    <div className="p-2.5 rounded-lg bg-stone-50 border border-stone-200/80 text-xs text-stone-600">
-                      <strong className="text-stone-900 block mb-0.5">Exam Pattern:</strong>
-                      {ex.pattern_summary}
-                    </div>
-                  )}
+                    {/* Pattern Summary */}
+                    {ex.pattern_summary && (
+                      <div className="p-2.5 rounded-md bg-[#fbfbfa] border border-[#ebebeb] text-xs text-[#787774]">
+                        <strong className="text-[#37352f] block mb-0.5 font-medium">Exam Pattern:</strong>
+                        {ex.pattern_summary}
+                      </div>
+                    )}
 
-                  {/* Subjects List */}
-                  {ex.subjects && ex.subjects.length > 0 && (
-                    <div className="space-y-1.5">
-                      <span className="text-[10px] font-mono uppercase font-bold text-stone-400 block">
-                        Included Disciplines & Subjects
-                      </span>
-                      <div className="flex flex-wrap gap-1.5">
-                        {ex.subjects.map((sub: any) => (
-                          <span
-                            key={sub.id}
-                            className="px-2 py-0.5 rounded text-[11px] font-medium bg-stone-100 text-stone-700 border border-stone-200"
-                          >
-                            {sub.name}
-                          </span>
-                        ))}
+                    {/* Subjects List */}
+                    {ex.subjects && ex.subjects.length > 0 && (
+                      <div className="space-y-1">
+                        <span className="text-[10px] font-mono uppercase text-[#9b9a97] block">
+                          Included Disciplines
+                        </span>
+                        <div className="flex flex-wrap gap-1">
+                          {ex.subjects.map((sub: any) => (
+                            <span
+                              key={sub.id}
+                              className="px-1.5 py-0.5 rounded text-[11px] bg-[#f7f6f3] text-[#37352f] border border-[#ebebeb]"
+                            >
+                              {sub.name}
+                            </span>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Metrics Specs */}
+                    <div className="grid grid-cols-3 gap-2 py-2 border-y border-[#ebebeb] text-xs text-[#787774] font-mono">
+                      <div>
+                        <span className="text-[10px] text-[#9b9a97] block uppercase">Total Marks</span>
+                        <strong className="text-[#37352f] text-sm">{ex.total_marks}</strong>
+                      </div>
+                      <div>
+                        <span className="text-[10px] text-[#9b9a97] block uppercase">Duration</span>
+                        <strong className="text-[#37352f] text-sm">{ex.total_duration_minutes}m</strong>
+                      </div>
+                      <div>
+                        <span className="text-[10px] text-[#9b9a97] block uppercase">Target Year</span>
+                        <strong className="text-[#37352f] text-sm">{ex.target_year}</strong>
                       </div>
                     </div>
-                  )}
+                  </div>
 
-                  {/* Metrics Specs */}
-                  <div className="grid grid-cols-3 gap-2 py-3 border-y border-stone-100 text-xs text-stone-600 font-mono">
-                    <div>
-                      <span className="text-[10px] text-stone-400 block uppercase">Total Marks</span>
-                      <strong className="text-stone-900 text-sm">{ex.total_marks}</strong>
-                    </div>
-                    <div>
-                      <span className="text-[10px] text-stone-400 block uppercase">Duration</span>
-                      <strong className="text-stone-900 text-sm">{ex.total_duration_minutes}m</strong>
-                    </div>
-                    <div>
-                      <span className="text-[10px] text-stone-400 block uppercase">Target Year</span>
-                      <strong className="text-stone-900 text-sm">{ex.target_year}</strong>
-                    </div>
+                  {/* Actions Row */}
+                  <div className="pt-4 flex items-center justify-between gap-3 mt-2 border-t border-[#ebebeb]">
+                    {!isPrimary ? (
+                      <button
+                        onClick={() => handleSetPrimary(ex)}
+                        className="text-xs font-medium text-[#787774] hover:text-[#37352f] flex items-center gap-1"
+                      >
+                        <Target className="w-3.5 h-3.5" />
+                        Set as Primary
+                      </button>
+                    ) : (
+                      <span className="text-xs font-medium text-[#0f7b6c] flex items-center gap-1">
+                        <Check className="w-3.5 h-3.5" />
+                        Primary Target
+                      </span>
+                    )}
+
+                    <Link href={`/exams/${ex.id}`}>
+                      <Button variant={isPrimary ? 'primary' : 'secondary'} size="sm">
+                        Open Workspace <ArrowRight className="w-3.5 h-3.5 ml-1" />
+                      </Button>
+                    </Link>
                   </div>
                 </div>
-
-                {/* Actions Row */}
-                <div className="pt-4 flex items-center justify-between gap-3 mt-2">
-                  {!isPrimary ? (
-                    <button
-                      onClick={() => handleSetPrimary(ex)}
-                      className="text-xs font-semibold text-amber-800 hover:text-amber-900 hover:underline flex items-center gap-1"
-                    >
-                      <Target className="w-3.5 h-3.5" />
-                      Set as Primary Target
-                    </button>
-                  ) : (
-                    <span className="text-xs font-semibold text-emerald-800 flex items-center gap-1">
-                      <Check className="w-3.5 h-3.5" />
-                      Active Primary
-                    </span>
-                  )}
-
-                  <Link href={`/exams/${ex.id}`}>
-                    <Button variant={isPrimary ? 'saffron' : 'outline'} size="sm">
-                      Open Workspace <ArrowRight className="w-3.5 h-3.5 ml-1" />
-                    </Button>
-                  </Link>
-                </div>
-              </Card>
-            );
-          })}
-        </div>
-      )}
+              );
+            })}
+          </div>
+        )}
+      </div>
     </AppShell>
   );
 }
