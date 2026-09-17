@@ -33,6 +33,7 @@ import {
   Eye,
 } from 'lucide-react';
 import { UserRole } from '@/lib/types';
+import { AppShell } from '@/components/layout/AppShell';
 
 interface StudentData {
   id: string;
@@ -382,499 +383,446 @@ export default function AdminDashboardPage() {
   };
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-10 space-y-8">
-      {/* Test Saved / Published Confirmation Banner */}
-      {showSavedBanner && (
-        <div className="p-4 rounded-2xl bg-emerald-50 border border-emerald-200 text-emerald-900 flex items-center justify-between shadow-xs">
-          <div className="flex items-center gap-3">
-            <div className="w-9 h-9 rounded-xl bg-emerald-100 text-emerald-700 flex items-center justify-center shrink-0">
-              <CheckCircle className="w-5 h-5" />
+    <AppShell
+      breadcrumbs={[
+        { label: 'Administration', href: '/dashboard/admin' },
+        { label: 'Institute Hub' },
+      ]}
+    >
+      <div className="max-w-6xl mx-auto px-4 sm:px-8 py-8 space-y-8">
+        {/* Test Saved / Published Confirmation Banner */}
+        {showSavedBanner && (
+          <div className="p-3.5 rounded-md bg-[#e6f6ee] border border-[#c3eed7] text-[#1c7d49] flex items-center justify-between text-xs">
+            <div className="flex items-center gap-2.5">
+              <CheckCircle className="w-4 h-4 shrink-0 text-[#1c7d49]" />
+              <div>
+                <p className="font-semibold text-[#1c7d49]">Official Mock Test Saved & Published!</p>
+                <p className="text-[#1c7d49]/80 mt-0.5 text-[11px]">
+                  The test paper has been added to your Institute Mock Library below and is now accessible to all your enrolled students.
+                </p>
+              </div>
             </div>
-            <div>
-              <p className="text-xs font-bold">Official Mock Test Saved & Published!</p>
-              <p className="text-[11px] text-emerald-700 mt-0.5">
-                The test paper has been added to your Institute Mock Library below and is now accessible to all your enrolled students.
-              </p>
+            <button
+              onClick={() => setShowSavedBanner(false)}
+              className="text-[#1c7d49]/70 hover:text-[#1c7d49] text-base font-bold px-2 py-1"
+              aria-label="Dismiss banner"
+            >
+              &times;
+            </button>
+          </div>
+        )}
+
+        {/* Top Header */}
+        <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4 pb-6 border-b border-[#ebebeb]">
+          <div className="space-y-2">
+            <div className="flex items-center gap-2">
+              <span className="px-2 py-0.5 rounded-[3px] text-[11px] font-medium bg-[#fbf3db] text-[#8f6b10] border border-[#fae6b4] flex items-center gap-1.5">
+                <Building2 className="w-3 h-3 text-[#8f6b10]" />
+                Administrator & Coaching Hub
+              </span>
+              <span className="text-xs text-[#787774]">
+                {currentUser?.institute_name || 'Apex Institute Platform'}
+              </span>
             </div>
+            <h1 className="text-2xl sm:text-3xl font-bold text-[#37352f] tracking-tight">
+              Teacher & Institute Dashboard
+            </h1>
+            <p className="text-xs sm:text-sm text-[#787774] max-w-2xl leading-relaxed">
+              Publish official mock tests for your students, manage student enrollments & login accounts, and monitor batch test performance.
+            </p>
           </div>
-          <button
-            onClick={() => setShowSavedBanner(false)}
-            className="text-emerald-700 hover:text-emerald-950 text-base font-bold px-2 py-1"
-            aria-label="Dismiss banner"
-          >
-            &times;
-          </button>
-        </div>
-      )}
 
-      {/* Top Banner / Breadcrumb */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        <div>
-          <div className="flex items-center gap-2 mb-1.5">
-            <span className="px-2.5 py-0.5 rounded-full text-xs font-bold bg-amber-100 text-amber-900 border border-amber-300 flex items-center gap-1">
-              <Building2 className="w-3.5 h-3.5 text-amber-700" />
-              Administrator & Coaching Hub
-            </span>
-            <span className="text-xs text-slate-500 font-medium">
-              {currentUser?.institute_name || 'Apex Institute Platform'}
-            </span>
-          </div>
-          <h1 className="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight">
-            Teacher & Institute Dashboard
-          </h1>
-          <p className="text-xs sm:text-sm text-slate-500 mt-1 max-w-2xl">
-            Publish official mock tests for your students, manage student enrollments & login accounts, and monitor batch test performance.
-          </p>
-        </div>
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 w-full sm:w-auto shrink-0">
+            <button
+              onClick={() => setShowAddModal(true)}
+              className="inline-flex items-center justify-center gap-1.5 px-3 py-1.5 min-h-[36px] bg-[#37352f] hover:bg-[#201e1d] text-white font-medium rounded-md shadow-2xs transition-colors text-xs"
+            >
+              <UserPlus className="w-3.5 h-3.5" />
+              Add Student
+            </button>
 
-        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2.5 w-full sm:w-auto">
-          <button
-            onClick={() => setShowAddModal(true)}
-            className="inline-flex items-center justify-center gap-2 px-4 py-2.5 min-h-[44px] bg-amber-600 hover:bg-amber-700 text-white font-bold rounded-xl shadow-sm hover:shadow transition-all text-xs"
-          >
-            <UserPlus className="w-4 h-4" />
-            Add Student
-          </button>
-
-          <Link
-            href="/tests/create"
-            className="inline-flex items-center justify-center gap-2 px-4 py-2.5 min-h-[44px] bg-slate-900 hover:bg-slate-800 text-white font-bold rounded-xl shadow-sm hover:shadow transition-all text-xs"
-          >
-            <PlusCircle className="w-4 h-4 text-blue-400" />
-            Create Official Mock
-          </Link>
-        </div>
-      </div>
-
-      {/* Overview Analytics Cards */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-5">
-        <div className="bg-white rounded-2xl p-4 sm:p-5 border border-slate-200 shadow-2xs flex items-center gap-3 sm:gap-4">
-          <div className="w-11 h-11 rounded-xl bg-amber-50 text-amber-700 flex items-center justify-center shrink-0">
-            <Users className="w-5 h-5 sm:w-6 sm:h-6" />
-          </div>
-          <div>
-            <p className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Enrolled Students</p>
-            <p className="text-xl sm:text-2xl font-black text-slate-900 mt-0.5">{totalStudentsCount}</p>
+            <Link
+              href="/tests/create"
+              className="inline-flex items-center justify-center gap-1.5 px-3 py-1.5 min-h-[36px] bg-white hover:bg-[#f7f6f3] text-[#37352f] font-medium rounded-md border border-[#ebebeb] shadow-2xs transition-colors text-xs"
+            >
+              <PlusCircle className="w-3.5 h-3.5 text-[#787774]" />
+              Create Official Mock
+            </Link>
           </div>
         </div>
 
-        <div className="bg-white rounded-2xl p-4 sm:p-5 border border-slate-200 shadow-2xs flex items-center gap-3 sm:gap-4">
-          <div className="w-11 h-11 rounded-xl bg-slate-100 text-slate-700 flex items-center justify-center shrink-0">
-            <Layers className="w-5 h-5 sm:w-6 sm:h-6 text-slate-700" />
+        {/* Overview Analytics Cards */}
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4">
+          <div className="bg-white rounded-md p-4 border border-[#ebebeb] shadow-2xs">
+            <div className="flex items-center justify-between text-[#787774] mb-1">
+              <span className="text-[11px] font-medium uppercase tracking-wider">Enrolled Students</span>
+              <Users className="w-4 h-4 text-[#787774]" />
+            </div>
+            <p className="text-2xl font-bold text-[#37352f] mt-1">{totalStudentsCount}</p>
           </div>
-          <div>
-            <p className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Institute Mocks</p>
-            <p className="text-xl sm:text-2xl font-black text-slate-900 mt-0.5">{totalTestsCount}</p>
+
+          <div className="bg-white rounded-md p-4 border border-[#ebebeb] shadow-2xs">
+            <div className="flex items-center justify-between text-[#787774] mb-1">
+              <span className="text-[11px] font-medium uppercase tracking-wider">Institute Mocks</span>
+              <Layers className="w-4 h-4 text-[#787774]" />
+            </div>
+            <p className="text-2xl font-bold text-[#37352f] mt-1">{totalTestsCount}</p>
+          </div>
+
+          <div className="bg-white rounded-md p-4 border border-[#ebebeb] shadow-2xs">
+            <div className="flex items-center justify-between text-[#787774] mb-1">
+              <span className="text-[11px] font-medium uppercase tracking-wider">Batch Submissions</span>
+              <CheckCircle className="w-4 h-4 text-[#1c7d49]" />
+            </div>
+            <p className="text-2xl font-bold text-[#1c7d49] mt-1">{totalSubmissionsCount}</p>
+          </div>
+
+          <div className="bg-white rounded-md p-4 border border-[#ebebeb] shadow-2xs">
+            <div className="flex items-center justify-between text-[#787774] mb-1">
+              <span className="text-[11px] font-medium uppercase tracking-wider">Avg Batch Accuracy</span>
+              <Award className="w-4 h-4 text-[#2383e2]" />
+            </div>
+            <p className="text-2xl font-bold text-[#2383e2] mt-1">{avgBatchAccuracy}%</p>
           </div>
         </div>
 
-        <div className="bg-white rounded-2xl p-4 sm:p-5 border border-slate-200 shadow-2xs flex items-center gap-3 sm:gap-4">
-          <div className="w-11 h-11 rounded-xl bg-emerald-50 text-emerald-700 flex items-center justify-center shrink-0">
-            <CheckCircle className="w-5 h-5 sm:w-6 sm:h-6" />
+        {/* Tabs Navigation */}
+        <div className="space-y-6">
+          <div className="flex items-center border-b border-[#ebebeb] gap-1 sm:gap-2 overflow-x-auto no-scrollbar pb-px text-xs font-medium">
+            <button
+              onClick={() => setActiveTab('students')}
+              className={`px-3 py-2 flex items-center gap-1.5 border-b-2 transition-all shrink-0 min-h-[36px] ${
+                activeTab === 'students'
+                  ? 'border-[#37352f] text-[#37352f] font-semibold'
+                  : 'border-transparent text-[#787774] hover:text-[#37352f] hover:bg-[#f7f6f3] rounded-t-md'
+              }`}
+            >
+              <Users className="w-3.5 h-3.5" />
+              Enrolled Students
+              <span className="px-1.5 py-0.2 rounded-full bg-[#f1f1ef] text-[10px] text-[#787774]">
+                {students.length}
+              </span>
+            </button>
+
+            <button
+              onClick={() => setActiveTab('tests')}
+              className={`px-3 py-2 flex items-center gap-1.5 border-b-2 transition-all shrink-0 min-h-[36px] ${
+                activeTab === 'tests'
+                  ? 'border-[#37352f] text-[#37352f] font-semibold'
+                  : 'border-transparent text-[#787774] hover:text-[#37352f] hover:bg-[#f7f6f3] rounded-t-md'
+              }`}
+            >
+              <Layers className="w-3.5 h-3.5" />
+              Institute Mock Tests
+              <span className="px-1.5 py-0.2 rounded-full bg-[#f1f1ef] text-[10px] text-[#787774]">
+                {tests.length}
+              </span>
+            </button>
+
+            <button
+              onClick={() => setActiveTab('submissions')}
+              className={`px-3 py-2 flex items-center gap-1.5 border-b-2 transition-all shrink-0 min-h-[36px] ${
+                activeTab === 'submissions'
+                  ? 'border-[#37352f] text-[#37352f] font-semibold'
+                  : 'border-transparent text-[#787774] hover:text-[#37352f] hover:bg-[#f7f6f3] rounded-t-md'
+              }`}
+            >
+              <FileSpreadsheet className="w-3.5 h-3.5" />
+              Batch Gradebook
+              <span className="px-1.5 py-0.2 rounded-full bg-[#f1f1ef] text-[10px] text-[#787774]">
+                {allSubmissions.length}
+              </span>
+            </button>
+
+            <button
+              onClick={() => setActiveTab('review_queue')}
+              className={`px-3 py-2 flex items-center gap-1.5 border-b-2 transition-all shrink-0 min-h-[36px] ${
+                activeTab === 'review_queue'
+                  ? 'border-[#37352f] text-[#37352f] font-semibold'
+                  : 'border-transparent text-[#787774] hover:text-[#37352f] hover:bg-[#f7f6f3] rounded-t-md'
+              }`}
+            >
+              <ShieldAlert className="w-3.5 h-3.5 text-[#8f6b10]" />
+              Review Queue
+              <span className="px-1.5 py-0.2 rounded-full bg-[#fbf3db] text-[10px] text-[#8f6b10] font-bold">
+                {reviewQueue.filter((r) => r.status === 'under_review').length}
+              </span>
+            </button>
+
+            <button
+              onClick={() => setActiveTab('educators')}
+              className={`px-3 py-2 flex items-center gap-1.5 border-b-2 transition-all shrink-0 min-h-[36px] ${
+                activeTab === 'educators'
+                  ? 'border-[#37352f] text-[#37352f] font-semibold'
+                  : 'border-transparent text-[#787774] hover:text-[#37352f] hover:bg-[#f7f6f3] rounded-t-md'
+              }`}
+            >
+              <GraduationCap className="w-3.5 h-3.5 text-[#2383e2]" />
+              Educators
+              <span className="px-1.5 py-0.2 rounded-full bg-[#f1f1ef] text-[10px] text-[#787774]">
+                {educators.length}
+              </span>
+            </button>
           </div>
-          <div>
-            <p className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Batch Submissions</p>
-            <p className="text-xl sm:text-2xl font-black text-emerald-600 mt-0.5">{totalSubmissionsCount}</p>
-          </div>
-        </div>
 
-        <div className="bg-white rounded-2xl p-4 sm:p-5 border border-slate-200 shadow-2xs flex items-center gap-3 sm:gap-4">
-          <div className="w-11 h-11 rounded-xl bg-blue-50 text-blue-700 flex items-center justify-center shrink-0">
-            <Award className="w-5 h-5 sm:w-6 sm:h-6" />
-          </div>
-          <div>
-            <p className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Avg Batch Accuracy</p>
-            <p className="text-xl sm:text-2xl font-black text-blue-600 mt-0.5">{avgBatchAccuracy}%</p>
-          </div>
-        </div>
-      </div>
+          {/* TAB 1: Enrolled Students Management */}
+          {activeTab === 'students' && (
+            <div className="space-y-4">
+              {/* Filter Bar */}
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 w-full sm:w-auto">
+                  <div className="relative flex-1 sm:flex-none">
+                    <input
+                      type="text"
+                      placeholder="Search students by name or email..."
+                      value={studentSearch}
+                      onChange={(e) => setStudentSearch(e.target.value)}
+                      className="w-full sm:w-72 pl-8 pr-3 py-1.5 min-h-[36px] border border-[#ebebeb] bg-white rounded-md text-xs text-[#37352f] placeholder-[#9b9a97] focus:outline-none focus:border-[#2383e2] focus:ring-1 focus:ring-[#2383e2]"
+                    />
+                    <Search className="w-3.5 h-3.5 text-[#9b9a97] absolute left-2.5 top-2.5" />
+                  </div>
 
-      {/* Tabs Navigation */}
-      <div className="space-y-6">
-        <div className="flex border-b border-slate-200 gap-4 sm:gap-6 overflow-x-auto no-scrollbar py-1">
-          <button
-            onClick={() => setActiveTab('students')}
-            className={`pb-3 text-xs sm:text-sm font-bold flex items-center gap-2 border-b-2 transition-all shrink-0 min-h-[44px] ${
-              activeTab === 'students'
-                ? 'border-amber-600 text-amber-900'
-                : 'border-transparent text-slate-500 hover:text-slate-800'
-            }`}
-          >
-            <Users className="w-4 h-4" />
-            Enrolled Students ({students.length})
-          </button>
+                  <select
+                    value={statusFilter}
+                    onChange={(e) => setStatusFilter(e.target.value as any)}
+                    className="px-3 py-1.5 min-h-[36px] border border-[#ebebeb] rounded-md text-xs text-[#37352f] bg-white focus:outline-none focus:border-[#2383e2] focus:ring-1 focus:ring-[#2383e2]"
+                  >
+                    <option value="all">All Statuses</option>
+                    <option value="active">Active Only</option>
+                    <option value="suspended">Suspended</option>
+                  </select>
+                </div>
 
-          <button
-            onClick={() => setActiveTab('tests')}
-            className={`pb-3 text-xs sm:text-sm font-bold flex items-center gap-2 border-b-2 transition-all shrink-0 min-h-[44px] ${
-              activeTab === 'tests'
-                ? 'border-amber-600 text-amber-900'
-                : 'border-transparent text-slate-500 hover:text-slate-800'
-            }`}
-          >
-            <Layers className="w-4 h-4" />
-            Institute Mock Tests ({tests.length})
-          </button>
+                <button
+                  onClick={fetchStudents}
+                  className="p-2 min-h-[36px] text-[#787774] hover:text-[#37352f] hover:bg-[#f7f6f3] rounded-md text-xs flex items-center justify-center gap-1 self-start sm:self-auto border border-[#ebebeb] transition-colors"
+                  title="Refresh student list"
+                >
+                  <RefreshCw className="w-3.5 h-3.5" />
+                  Refresh
+                </button>
+              </div>
 
-          <button
-            onClick={() => setActiveTab('submissions')}
-            className={`pb-3 text-xs sm:text-sm font-bold flex items-center gap-2 border-b-2 transition-all shrink-0 min-h-[44px] ${
-              activeTab === 'submissions'
-                ? 'border-amber-600 text-amber-900'
-                : 'border-transparent text-slate-500 hover:text-slate-800'
-            }`}
-          >
-            <FileSpreadsheet className="w-4 h-4" />
-            Batch Gradebook ({allSubmissions.length})
-          </button>
+              {loadingStudents ? (
+                <div className="p-12 text-center text-[#787774] text-sm">
+                  <div className="w-6 h-6 border-2 border-[#37352f] border-t-transparent rounded-full animate-spin mx-auto mb-3" />
+                  Loading enrolled students...
+                </div>
+              ) : filteredStudents.length === 0 ? (
+                <div className="bg-white rounded-md p-10 text-center border border-dashed border-[#ebebeb] space-y-3">
+                  <div className="w-10 h-10 rounded-full bg-[#f1f1ef] text-[#787774] flex items-center justify-center mx-auto">
+                    <Users className="w-5 h-5" />
+                  </div>
+                  <h3 className="text-sm font-semibold text-[#37352f]">No students found</h3>
+                  <p className="text-xs text-[#787774] max-w-sm mx-auto">
+                    {studentSearch
+                      ? 'No students matched your search criteria.'
+                      : 'Add students to allow them to take your institute mock tests and access AI reports.'}
+                  </p>
+                  <button
+                    onClick={() => setShowAddModal(true)}
+                    className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-[#37352f] hover:bg-[#201e1d] text-white rounded-md text-xs font-medium shadow-2xs transition-colors"
+                  >
+                    <UserPlus className="w-3.5 h-3.5" />
+                    Enroll First Student
+                  </button>
+                </div>
+              ) : (
+                <div className="bg-white rounded-md border border-[#ebebeb] overflow-hidden shadow-2xs">
+                  <div className="overflow-x-auto">
+                    <table className="w-full text-left text-xs border-collapse">
+                      <thead className="bg-[#fbfbfa] border-b border-[#ebebeb] text-[11px] font-semibold text-[#787774] uppercase tracking-wider">
+                        <tr>
+                          <th className="px-4 py-2.5">Student</th>
+                          <th className="px-3 py-2.5">Status</th>
+                          <th className="px-3 py-2.5">Attempts</th>
+                          <th className="px-3 py-2.5">Avg. Score</th>
+                          <th className="px-3 py-2.5">Best Score</th>
+                          <th className="px-3 py-2.5">Enrolled On</th>
+                          <th className="px-4 py-2.5 text-right">Actions</th>
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y divide-[#ebebeb] font-normal">
+                        {filteredStudents.map((s) => (
+                          <tr key={s.id} className="hover:bg-[#f7f6f3]/80 transition-colors">
+                            <td className="px-4 py-3">
+                              <div className="flex items-center gap-2.5">
+                                <div className="w-7 h-7 rounded-full bg-[#f1f1ef] text-[#37352f] font-semibold flex items-center justify-center text-xs border border-[#ebebeb]">
+                                  {s.name.charAt(0).toUpperCase()}
+                                </div>
+                                <div>
+                                  <p className="font-semibold text-[#37352f]">{s.name}</p>
+                                  <p className="text-[11px] text-[#787774]">{s.email}</p>
+                                </div>
+                              </div>
+                            </td>
+                            <td className="px-3 py-3">
+                              {s.status === 'active' ? (
+                                <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-[3px] text-[10px] font-medium bg-[#e6f6ee] text-[#1c7d49] border border-[#c3eed7]">
+                                  <CheckCircle className="w-2.5 h-2.5" />
+                                  Active
+                                </span>
+                              ) : (
+                                <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-[3px] text-[10px] font-medium bg-[#fbebe9] text-[#c43228] border border-[#fad2cf]">
+                                  <XCircle className="w-2.5 h-2.5" />
+                                  Suspended
+                                </span>
+                              )}
+                            </td>
+                            <td className="px-3 py-3 font-medium text-[#37352f]">
+                              {s.total_attempts} tests
+                            </td>
+                            <td className="px-3 py-3 font-semibold text-[#1c7d49]">
+                              {s.avg_score != null ? `${s.avg_score}%` : '—'}
+                            </td>
+                            <td className="px-3 py-3 font-semibold text-[#37352f]">
+                              {s.best_score != null ? `${s.best_score}%` : '—'}
+                            </td>
+                            <td className="px-3 py-3 text-[#787774] font-mono text-[11px]">
+                              {new Date(s.created_at).toLocaleDateString()}
+                            </td>
+                            <td className="px-4 py-3 text-right">
+                              <div className="flex items-center justify-end gap-1">
+                                <button
+                                  onClick={() => handleToggleStatus(s)}
+                                  title={s.status === 'active' ? 'Suspend Account' : 'Activate Account'}
+                                  className={`p-1.5 min-h-[30px] min-w-[30px] rounded-md border text-xs transition-colors flex items-center justify-center ${
+                                    s.status === 'active'
+                                      ? 'border-[#ebebeb] text-[#c43228] hover:bg-[#fbebe9]'
+                                      : 'border-[#ebebeb] text-[#1c7d49] hover:bg-[#e6f6ee]'
+                                  }`}
+                                >
+                                  {s.status === 'active' ? <ShieldAlert className="w-3.5 h-3.5" /> : <ShieldCheck className="w-3.5 h-3.5" />}
+                                </button>
 
-          <button
-            onClick={() => setActiveTab('review_queue')}
-            className={`pb-3 text-xs sm:text-sm font-bold flex items-center gap-2 border-b-2 transition-all shrink-0 min-h-[44px] ${
-              activeTab === 'review_queue'
-                ? 'border-amber-600 text-amber-900'
-                : 'border-transparent text-slate-500 hover:text-slate-800'
-            }`}
-          >
-            <ShieldAlert className="w-4 h-4 text-amber-600" />
-            Review Queue ({reviewQueue.filter((r) => r.status === 'under_review').length})
-          </button>
+                                <button
+                                  onClick={() => {
+                                    setEditingStudent(s);
+                                    setEditName(s.name);
+                                    setEditPassword('');
+                                  }}
+                                  title="Edit Student or Reset Password"
+                                  className="p-1.5 min-h-[30px] min-w-[30px] border border-[#ebebeb] text-[#787774] hover:text-[#37352f] hover:bg-[#f7f6f3] rounded-md text-xs transition-colors flex items-center justify-center"
+                                >
+                                  <Edit className="w-3.5 h-3.5" />
+                                </button>
 
-          <button
-            onClick={() => setActiveTab('educators')}
-            className={`pb-3 text-xs sm:text-sm font-bold flex items-center gap-2 border-b-2 transition-all shrink-0 min-h-[44px] ${
-              activeTab === 'educators'
-                ? 'border-amber-600 text-amber-900'
-                : 'border-transparent text-slate-500 hover:text-slate-800'
-            }`}
-          >
-            <GraduationCap className="w-4 h-4 text-indigo-600" />
-            Educators ({educators.length})
-          </button>
-        </div>
+                                <button
+                                  onClick={() => handleDeleteStudent(s.id)}
+                                  title="Remove Student"
+                                  className="p-1.5 min-h-[30px] min-w-[30px] border border-[#ebebeb] text-[#9b9a97] hover:text-[#c43228] hover:bg-[#fbebe9] rounded-md text-xs transition-colors flex items-center justify-center"
+                                >
+                                  <Trash2 className="w-3.5 h-3.5" />
+                                </button>
+                              </div>
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
 
-        {/* TAB 1: Enrolled Students Management */}
-        {activeTab === 'students' && (
-          <div className="space-y-4">
-            {/* Filter Bar */}
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-              <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 w-full sm:w-auto">
+          {/* TAB 2: Institute Mock Tests */}
+          {activeTab === 'tests' && (
+            <div className="space-y-4">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                 <div className="relative flex-1 sm:flex-none">
                   <input
                     type="text"
-                    placeholder="Search students by name or email..."
-                    value={studentSearch}
-                    onChange={(e) => setStudentSearch(e.target.value)}
-                    className="w-full sm:w-72 pl-8 pr-3 py-2 min-h-[40px] border border-slate-300 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-amber-500 font-medium"
+                    placeholder="Search mock tests..."
+                    value={testSearch}
+                    onChange={(e) => setTestSearch(e.target.value)}
+                    className="w-full sm:w-72 pl-8 pr-3 py-1.5 min-h-[36px] border border-[#ebebeb] bg-white rounded-md text-xs text-[#37352f] placeholder-[#9b9a97] focus:outline-none focus:border-[#2383e2] focus:ring-1 focus:ring-[#2383e2]"
                   />
-                  <Search className="w-3.5 h-3.5 text-slate-400 absolute left-2.5 top-3" />
+                  <Search className="w-3.5 h-3.5 text-[#9b9a97] absolute left-2.5 top-2.5" />
                 </div>
 
-                <select
-                  value={statusFilter}
-                  onChange={(e) => setStatusFilter(e.target.value as any)}
-                  className="px-3 py-2 min-h-[40px] border border-slate-300 rounded-xl text-xs text-slate-700 bg-white focus:outline-none focus:ring-2 focus:ring-amber-500 font-medium"
-                >
-                  <option value="all">All Statuses</option>
-                  <option value="active">Active Only</option>
-                  <option value="suspended">Suspended</option>
-                </select>
-              </div>
-
-              <button
-                onClick={fetchStudents}
-                className="p-2 min-h-[40px] text-slate-500 hover:text-amber-700 hover:bg-slate-100 rounded-xl text-xs flex items-center justify-center gap-1 self-start sm:self-auto border border-slate-200 sm:border-transparent"
-                title="Refresh student list"
-              >
-                <RefreshCw className="w-3.5 h-3.5" />
-                Refresh
-              </button>
-            </div>
-
-            {loadingStudents ? (
-              <div className="p-12 text-center text-slate-400 text-sm">
-                <div className="w-8 h-8 border-3 border-amber-600 border-t-transparent rounded-full animate-spin mx-auto mb-3" />
-                Loading enrolled students...
-              </div>
-            ) : filteredStudents.length === 0 ? (
-              <div className="bg-white rounded-3xl p-12 text-center border border-dashed border-slate-300 space-y-4">
-                <div className="w-14 h-14 rounded-2xl bg-amber-50 text-amber-600 flex items-center justify-center mx-auto">
-                  <Users className="w-7 h-7" />
-                </div>
-                <h3 className="text-lg font-bold text-slate-900">No students found</h3>
-                <p className="text-xs text-slate-500 max-w-sm mx-auto">
-                  {studentSearch
-                    ? 'No students matched your search criteria.'
-                    : 'Add students to allow them to take your institute mock tests and access AI reports.'}
-                </p>
-                <button
-                  onClick={() => setShowAddModal(true)}
-                  className="inline-flex items-center gap-2 px-4 py-2 bg-amber-600 text-white rounded-xl text-xs font-bold shadow-sm"
-                >
-                  <UserPlus className="w-4 h-4" />
-                  Enroll First Student
-                </button>
-              </div>
-            ) : (
-              <div className="bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-2xs">
-                <div className="overflow-x-auto">
-                  <table className="w-full text-left text-xs">
-                    <thead className="bg-slate-50/90 border-b border-slate-200 text-[11px] font-bold text-slate-500 uppercase tracking-wider">
-                      <tr>
-                        <th className="px-5 py-3">Student</th>
-                        <th className="px-4 py-3">Status</th>
-                        <th className="px-4 py-3">Attempts</th>
-                        <th className="px-4 py-3">Avg. Score</th>
-                        <th className="px-4 py-3">Best Score</th>
-                        <th className="px-4 py-3">Enrolled On</th>
-                        <th className="px-5 py-3 text-right">Actions</th>
-                      </tr>
-                    </thead>
-                    <tbody className="divide-y divide-slate-100 font-medium">
-                      {filteredStudents.map((s) => (
-                        <tr key={s.id} className="hover:bg-slate-50/60 transition-colors">
-                          <td className="px-5 py-3.5">
-                            <div className="flex items-center gap-3">
-                              <div className="w-8 h-8 rounded-full bg-emerald-100 text-emerald-800 font-bold flex items-center justify-center text-xs">
-                                {s.name.charAt(0).toUpperCase()}
-                              </div>
-                              <div>
-                                <p className="font-bold text-slate-900">{s.name}</p>
-                                <p className="text-[11px] text-slate-500">{s.email}</p>
-                              </div>
-                            </div>
-                          </td>
-                          <td className="px-4 py-3.5">
-                            {s.status === 'active' ? (
-                              <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">
-                                <CheckCircle className="w-3 h-3" />
-                                Active
-                              </span>
-                            ) : (
-                              <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-rose-50 text-rose-700 border border-rose-200">
-                                <XCircle className="w-3 h-3" />
-                                Suspended
-                              </span>
-                            )}
-                          </td>
-                          <td className="px-4 py-3.5 font-bold text-slate-800">
-                            {s.total_attempts} tests
-                          </td>
-                          <td className="px-4 py-3.5 font-bold text-emerald-700">
-                            {s.avg_score != null ? `${s.avg_score}%` : '—'}
-                          </td>
-                          <td className="px-4 py-3.5 font-bold text-slate-900">
-                            {s.best_score != null ? `${s.best_score}%` : '—'}
-                          </td>
-                          <td className="px-4 py-3.5 text-slate-400 font-mono text-[11px]">
-                            {new Date(s.created_at).toLocaleDateString()}
-                          </td>
-                          <td className="px-5 py-3.5 text-right">
-                            <div className="flex items-center justify-end gap-1.5">
-                              <button
-                                onClick={() => handleToggleStatus(s)}
-                                title={s.status === 'active' ? 'Suspend Account' : 'Activate Account'}
-                                className={`p-2 min-h-[36px] min-w-[36px] rounded-lg border text-xs font-semibold transition-colors flex items-center justify-center ${
-                                  s.status === 'active'
-                                    ? 'border-rose-200 text-rose-600 hover:bg-rose-50'
-                                    : 'border-emerald-200 text-emerald-600 hover:bg-emerald-50'
-                                }`}
-                              >
-                                {s.status === 'active' ? <ShieldAlert className="w-3.5 h-3.5" /> : <ShieldCheck className="w-3.5 h-3.5" />}
-                              </button>
-
-                              <button
-                                onClick={() => {
-                                  setEditingStudent(s);
-                                  setEditName(s.name);
-                                  setEditPassword('');
-                                }}
-                                title="Edit Student or Reset Password"
-                                className="p-2 min-h-[36px] min-w-[36px] border border-slate-200 text-slate-600 hover:bg-slate-100 rounded-lg text-xs transition-colors flex items-center justify-center"
-                              >
-                                <Edit className="w-3.5 h-3.5" />
-                              </button>
-
-                              <button
-                                onClick={() => handleDeleteStudent(s.id)}
-                                title="Remove Student"
-                                className="p-2 min-h-[36px] min-w-[36px] border border-slate-200 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg text-xs transition-colors flex items-center justify-center"
-                              >
-                                <Trash2 className="w-3.5 h-3.5" />
-                              </button>
-                            </div>
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-              </div>
-            )}
-          </div>
-        )}
-
-        {/* TAB 2: Institute Mock Tests */}
-        {activeTab === 'tests' && (
-          <div className="space-y-4">
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-              <div className="relative flex-1 sm:flex-none">
-                <input
-                  type="text"
-                  placeholder="Search mock tests..."
-                  value={testSearch}
-                  onChange={(e) => setTestSearch(e.target.value)}
-                  className="w-full sm:w-72 pl-8 pr-3 py-2 min-h-[40px] border border-slate-300 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-amber-500 font-medium"
-                />
-                <Search className="w-3.5 h-3.5 text-slate-400 absolute left-2.5 top-3" />
-              </div>
-
-              <Link
-                href="/tests/create"
-                className="inline-flex items-center justify-center gap-2 px-4 py-2.5 min-h-[44px] bg-slate-900 hover:bg-slate-800 text-white font-bold rounded-xl text-xs shadow-sm transition-colors"
-              >
-                <PlusCircle className="w-4 h-4 text-blue-400" />
-                Upload New Mock Paper
-              </Link>
-            </div>
-
-            {loadingTests ? (
-              <div className="p-12 text-center text-slate-400 text-sm">
-                <div className="w-8 h-8 border-3 border-amber-600 border-t-transparent rounded-full animate-spin mx-auto mb-3" />
-                Loading tests...
-              </div>
-            ) : filteredTests.length === 0 ? (
-              <div className="bg-white rounded-3xl p-8 sm:p-12 text-center border border-dashed border-slate-300 space-y-4">
-                <div className="w-14 h-14 rounded-2xl bg-slate-100 text-slate-700 flex items-center justify-center mx-auto">
-                  <Layers className="w-7 h-7 text-slate-700" />
-                </div>
-                <h3 className="text-lg font-bold text-slate-900">No mock tests published yet</h3>
-                <p className="text-xs text-slate-500 max-w-sm mx-auto">
-                  Upload an exam question paper and answer key to create an official mock for your enrolled students.
-                </p>
                 <Link
                   href="/tests/create"
-                  className="inline-flex items-center justify-center gap-2 px-5 py-2.5 min-h-[44px] bg-slate-900 text-white rounded-xl text-xs font-bold shadow-sm"
+                  className="inline-flex items-center justify-center gap-1.5 px-3 py-1.5 min-h-[36px] bg-[#37352f] hover:bg-[#201e1d] text-white font-medium rounded-md text-xs shadow-2xs transition-colors"
                 >
-                  <PlusCircle className="w-4 h-4 text-blue-400" />
-                  Create First Mock
+                  <PlusCircle className="w-3.5 h-3.5" />
+                  Upload New Mock Paper
                 </Link>
               </div>
-            ) : (
-              <div className="grid grid-cols-1 gap-4">
-                {filteredTests.map((test) => (
-                  <div
-                    key={test.id}
-                    className="bg-white rounded-2xl border border-amber-300/80 p-4 sm:p-5 shadow-2xs hover:shadow-md transition-all flex flex-col lg:flex-row lg:items-center justify-between gap-4"
-                  >
-                    <div className="space-y-1.5 flex-1">
-                      <div className="flex flex-wrap items-center gap-2">
-                        <span className="px-2.5 py-0.5 rounded text-[10px] font-bold bg-amber-100 text-amber-900 border border-amber-300">
-                          {test.subject || 'General'}
-                        </span>
-                        <span className="text-xs text-slate-400 font-mono">
-                          {new Date(test.created_at).toLocaleDateString()}
-                        </span>
-                      </div>
-                      <h4 className="text-base font-bold text-slate-900">{test.title}</h4>
-                      <div className="flex flex-wrap items-center gap-3 sm:gap-4 text-xs text-slate-600">
-                        <span className="flex items-center gap-1 font-semibold">
-                          <Layers className="w-3.5 h-3.5 text-slate-500" />
-                          {test.question_count} Questions
-                        </span>
-                        <span className="flex items-center gap-1 font-semibold">
-                          <Clock className="w-3.5 h-3.5 text-slate-400" />
-                          {formatDuration(test.duration_seconds)}
-                        </span>
-                        <span className="flex items-center gap-1 font-semibold">
-                          <Sliders className="w-3.5 h-3.5 text-slate-400" />
-                          +{test.default_correct_marks} / -{test.default_negative_marks} marks
-                        </span>
-                        <span className="flex items-center gap-1 font-bold text-emerald-800 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200">
-                          <Users className="w-3.5 h-3.5 text-emerald-600" />
-                          {test.attempts_count} Student Attempts
-                        </span>
-                      </div>
-                    </div>
 
-                    <div className="flex flex-wrap items-center gap-2 pt-2 lg:pt-0 border-t lg:border-t-0 border-slate-100">
-                      <Link
-                        href={`/tests/${test.id}/start`}
-                        className="flex-1 sm:flex-none justify-center px-4 py-2.5 min-h-[44px] bg-amber-600 hover:bg-amber-700 text-white font-bold rounded-xl text-xs flex items-center gap-1.5 shadow-2xs"
-                      >
-                        <Play className="w-3.5 h-3.5 fill-white" />
-                        Preview Exam
-                      </Link>
-                      <Link
-                        href={`/tests/${test.id}`}
-                        className="p-2.5 min-h-[44px] min-w-[44px] flex items-center justify-center border border-slate-200 hover:bg-slate-50 text-slate-600 rounded-xl text-xs transition-colors"
-                        title="View Details & Questions"
-                      >
-                        <History className="w-4 h-4" />
-                      </Link>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            )}
-          </div>
-        )}
-
-        {/* TAB 3: Batch Submissions Gradebook */}
-        {activeTab === 'submissions' && (
-          <div className="space-y-4">
-            <div className="bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-2xs">
-              <div className="p-4 bg-slate-50/90 border-b border-slate-200 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
-                <div>
-                  <h3 className="text-sm font-bold text-slate-900">Student Attempts Gradebook</h3>
-                  <p className="text-[11px] text-slate-500">
-                    Review each student's exam responses, marks, accuracy, and Gemini AI coaching insights.
-                  </p>
+              {loadingTests ? (
+                <div className="p-12 text-center text-[#787774] text-sm">
+                  <div className="w-6 h-6 border-2 border-[#37352f] border-t-transparent rounded-full animate-spin mx-auto mb-3" />
+                  Loading tests...
                 </div>
-                <span className="text-xs font-bold text-slate-600 bg-white px-2.5 py-1 rounded-lg border border-slate-200 self-start sm:self-auto">
-                  {allSubmissions.length} Total Submissions
-                </span>
-              </div>
-
-              {allSubmissions.length === 0 ? (
-                <div className="p-10 text-center text-slate-400 text-xs">
-                  No student submissions recorded yet. Once students attempt your mock tests, their scores will appear here.
+              ) : filteredTests.length === 0 ? (
+                <div className="bg-white rounded-md p-10 text-center border border-dashed border-[#ebebeb] space-y-3">
+                  <div className="w-10 h-10 rounded-full bg-[#f1f1ef] text-[#787774] flex items-center justify-center mx-auto">
+                    <Layers className="w-5 h-5" />
+                  </div>
+                  <h3 className="text-sm font-semibold text-[#37352f]">No mock tests published yet</h3>
+                  <p className="text-xs text-[#787774] max-w-sm mx-auto">
+                    Upload an exam question paper and answer key to create an official mock for your enrolled students.
+                  </p>
+                  <Link
+                    href="/tests/create"
+                    className="inline-flex items-center justify-center gap-1.5 px-3 py-1.5 min-h-[36px] bg-[#37352f] hover:bg-[#201e1d] text-white rounded-md text-xs font-medium shadow-2xs transition-colors"
+                  >
+                    <PlusCircle className="w-3.5 h-3.5" />
+                    Create First Mock
+                  </Link>
                 </div>
               ) : (
-                <div className="divide-y divide-slate-100">
-                  {allSubmissions.map((att) => (
+                <div className="grid grid-cols-1 gap-3">
+                  {filteredTests.map((test) => (
                     <div
-                      key={att.id}
-                      className="p-4 sm:p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4 hover:bg-slate-50/60 transition-colors"
+                      key={test.id}
+                      className="bg-white rounded-md border border-[#ebebeb] hover:border-[#d9d8d6] p-4 shadow-2xs transition-all flex flex-col lg:flex-row lg:items-center justify-between gap-4"
                     >
-                      <div className="space-y-1">
-                        <div className="flex items-center gap-2">
-                          <span className="font-bold text-slate-900 text-sm">{att.student_name || 'Student'}</span>
-                          <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-slate-100 text-slate-800 border border-slate-200">
-                            {att.testSubject || 'General'}
+                      <div className="space-y-1.5 flex-1">
+                        <div className="flex flex-wrap items-center gap-2">
+                          <span className="px-2 py-0.5 rounded-[3px] text-[10px] font-medium bg-[#f7f6f3] text-[#37352f] border border-[#ebebeb]">
+                            {test.subject || 'General'}
+                          </span>
+                          <span className="text-xs text-[#9b9a97] font-mono">
+                            {new Date(test.created_at).toLocaleDateString()}
                           </span>
                         </div>
-                        <p className="text-xs font-semibold text-slate-700">{att.testTitle}</p>
-                        <p className="text-[11px] text-slate-400 font-mono">
-                          Submitted on {new Date(att.created_at).toLocaleString()} • Time: {Math.round(att.time_taken_seconds / 60)} mins
-                        </p>
+                        <h4 className="text-sm font-semibold text-[#37352f]">{test.title}</h4>
+                        <div className="flex flex-wrap items-center gap-3 sm:gap-4 text-xs text-[#787774]">
+                          <span className="flex items-center gap-1 font-medium">
+                            <Layers className="w-3.5 h-3.5 text-[#9b9a97]" />
+                            {test.question_count} Questions
+                          </span>
+                          <span className="flex items-center gap-1 font-medium">
+                            <Clock className="w-3.5 h-3.5 text-[#9b9a97]" />
+                            {formatDuration(test.duration_seconds)}
+                          </span>
+                          <span className="flex items-center gap-1 font-medium">
+                            <Sliders className="w-3.5 h-3.5 text-[#9b9a97]" />
+                            +{test.default_correct_marks} / -{test.default_negative_marks} marks
+                          </span>
+                          <span className="flex items-center gap-1 font-medium text-[#1c7d49] bg-[#e6f6ee] px-2 py-0.5 rounded-[3px] border border-[#c3eed7]">
+                            <Users className="w-3.5 h-3.5 text-[#1c7d49]" />
+                            {test.attempts_count} Student Attempts
+                          </span>
+                        </div>
                       </div>
 
-                      <div className="flex items-center justify-between sm:justify-end gap-4 pt-2 sm:pt-0 border-t sm:border-t-0 border-slate-100">
-                        <div className="text-left sm:text-right">
-                          <span className="text-lg font-black text-slate-900">
-                            {att.final_score} / {att.maximum_marks}
-                          </span>
-                          <p className="text-[11px] font-bold text-emerald-600">{att.percentage}% Score</p>
-                        </div>
-
+                      <div className="flex flex-wrap items-center gap-2 pt-2 lg:pt-0 border-t lg:border-t-0 border-[#ebebeb]">
                         <Link
-                          href={`/exam/${att.id}/result`}
-                          className="px-4 py-2.5 min-h-[44px] bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold rounded-xl text-xs border border-slate-300 transition-colors flex items-center justify-center gap-1.5"
+                          href={`/tests/${test.id}/start`}
+                          className="flex-1 sm:flex-none justify-center px-3 py-1.5 min-h-[36px] bg-[#37352f] hover:bg-[#201e1d] text-white font-medium rounded-md text-xs flex items-center gap-1.5 shadow-2xs transition-colors"
                         >
-                          <Sparkles className="w-3.5 h-3.5 text-amber-500" />
-                          Review Paper
-                          <ExternalLink className="w-3 h-3" />
+                          <Play className="w-3.5 h-3.5 fill-white" />
+                          Preview Exam
+                        </Link>
+                        <Link
+                          href={`/tests/${test.id}`}
+                          className="p-2 min-h-[36px] min-w-[36px] flex items-center justify-center border border-[#ebebeb] hover:bg-[#f7f6f3] text-[#787774] hover:text-[#37352f] rounded-md text-xs transition-colors"
+                          title="View Details & Questions"
+                        >
+                          <History className="w-4 h-4" />
                         </Link>
                       </div>
                     </div>
@@ -882,404 +830,469 @@ export default function AdminDashboardPage() {
                 </div>
               )}
             </div>
-          </div>
-        )}
+          )}
 
-        {/* TAB 4: Content Moderation & Review Queue */}
-        {activeTab === 'review_queue' && (
-          <div className="space-y-4">
-            <div className="p-4 bg-white rounded-2xl border border-slate-200 flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-2xs">
-              <div>
-                <h3 className="font-bold text-slate-900 text-sm">Educational Assessment Moderation Queue</h3>
-                <p className="text-[11px] text-slate-500">
-                  Review submitted tests for syllabus alignment, marking key accuracy, copyright compliance, and pedagogical quality.
-                </p>
-              </div>
-              <button
-                onClick={fetchReviewQueue}
-                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-slate-200 text-xs font-bold text-slate-700 hover:bg-slate-50"
-              >
-                <RefreshCw className={`w-3.5 h-3.5 ${loadingReviewQueue ? 'animate-spin' : ''}`} />
-                Refresh Queue
-              </button>
-            </div>
+          {/* TAB 3: Batch Submissions Gradebook */}
+          {activeTab === 'submissions' && (
+            <div className="space-y-4">
+              <div className="bg-white rounded-md border border-[#ebebeb] overflow-hidden shadow-2xs">
+                <div className="p-3.5 bg-[#fbfbfa] border-b border-[#ebebeb] flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                  <div>
+                    <h3 className="text-sm font-semibold text-[#37352f]">Student Attempts Gradebook</h3>
+                    <p className="text-[11px] text-[#787774]">
+                      Review each student's exam responses, marks, accuracy, and Gemini AI coaching insights.
+                    </p>
+                  </div>
+                  <span className="text-xs font-medium text-[#787774] bg-[#f1f1ef] px-2.5 py-0.5 rounded-[3px] self-start sm:self-auto">
+                    {allSubmissions.length} Total Submissions
+                  </span>
+                </div>
 
-            {loadingReviewQueue ? (
-              <div className="p-12 text-center text-slate-400 text-xs">
-                <RefreshCw className="w-5 h-5 animate-spin mx-auto mb-2 text-slate-400" />
-                Loading moderation queue...
-              </div>
-            ) : reviewQueue.length === 0 ? (
-              <div className="p-12 text-center text-slate-500 bg-white rounded-2xl border border-slate-200 text-xs">
-                No assessments currently waiting in the review queue.
-              </div>
-            ) : (
-              <div className="space-y-3">
-                {reviewQueue.map((item) => (
-                  <div
-                    key={item.id}
-                    className="p-5 bg-white rounded-2xl border border-slate-200 shadow-2xs space-y-4 hover:border-slate-300 transition-all"
-                  >
-                    <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-3">
-                      <div className="space-y-1.5 flex-1">
-                        <div className="flex items-center gap-2 flex-wrap">
-                          <span className={`text-[10px] font-mono font-bold px-2 py-0.5 rounded uppercase ${
-                            item.status === 'under_review'
-                              ? 'bg-amber-100 text-amber-900 border border-amber-300'
-                              : item.status === 'revisions_requested'
-                              ? 'bg-rose-100 text-rose-900 border border-rose-200'
-                              : 'bg-emerald-100 text-emerald-900 border border-emerald-200'
-                          }`}>
-                            {item.status?.replace('_', ' ')}
-                          </span>
-
-                          <span className={`text-[10px] font-mono font-bold px-2 py-0.5 rounded ${
-                            item.is_paid
-                              ? 'bg-blue-50 text-blue-800 border border-blue-200'
-                              : 'bg-slate-100 text-slate-700 border border-slate-200'
-                          }`}>
-                            {item.is_paid ? `₹${item.price_inr}` : 'Free'}
-                          </span>
-
-                          <span className="text-[11px] text-slate-500 font-mono">
-                            {item.subject || 'General'} • {item.difficulty || 'Medium'} • {item.question_count} Questions
-                          </span>
-                        </div>
-
-                        <h4 className="font-bold text-slate-900 text-base">{item.title}</h4>
-                        {item.description && (
-                          <p className="text-xs text-slate-500 line-clamp-2">{item.description}</p>
-                        )}
-
-                        <div className="flex items-center gap-2 pt-1 text-xs text-slate-600">
-                          <GraduationCap className="w-4 h-4 text-amber-700" />
-                          <span className="font-bold text-slate-900">{item.creator?.name}</span>
-                          <span className="text-slate-400 font-mono">({item.creator?.email})</span>
-                          <span className="text-slate-400">•</span>
-                          <span className="text-slate-500">{item.creator?.institute}</span>
-                        </div>
-
-                        {item.review_notes && (
-                          <div className="p-2.5 bg-amber-50 rounded-xl text-xs text-amber-950 border border-amber-200 mt-2">
-                            <strong>Previous Review Note:</strong> {item.review_notes}
+                {allSubmissions.length === 0 ? (
+                  <div className="p-10 text-center text-[#787774] text-xs">
+                    No student submissions recorded yet. Once students attempt your mock tests, their scores will appear here.
+                  </div>
+                ) : (
+                  <div className="divide-y divide-[#ebebeb]">
+                    {allSubmissions.map((att) => (
+                      <div
+                        key={att.id}
+                        className="p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4 hover:bg-[#f7f6f3]/60 transition-colors"
+                      >
+                        <div className="space-y-1">
+                          <div className="flex items-center gap-2">
+                            <span className="font-semibold text-[#37352f] text-sm">{att.student_name || 'Student'}</span>
+                            <span className="px-2 py-0.5 rounded-[3px] text-[10px] font-medium bg-[#f1f1ef] text-[#787774] border border-[#ebebeb]">
+                              {att.testSubject || 'General'}
+                            </span>
                           </div>
-                        )}
+                          <p className="text-xs text-[#787774]">{att.testTitle}</p>
+                          <p className="text-[11px] text-[#9b9a97] font-mono">
+                            Submitted on {new Date(att.created_at).toLocaleString()} • Time: {Math.round(att.time_taken_seconds / 60)} mins
+                          </p>
+                        </div>
+
+                        <div className="flex items-center justify-between sm:justify-end gap-4 pt-2 sm:pt-0 border-t sm:border-t-0 border-[#ebebeb]">
+                          <div className="text-left sm:text-right">
+                            <span className="text-base font-bold text-[#37352f]">
+                              {att.final_score} / {att.maximum_marks}
+                            </span>
+                            <p className="text-[11px] font-medium text-[#1c7d49]">{att.percentage}% Score</p>
+                          </div>
+
+                          <Link
+                            href={`/exam/${att.id}/result`}
+                            className="px-3 py-1.5 min-h-[36px] bg-white hover:bg-[#f7f6f3] text-[#37352f] font-medium rounded-md text-xs border border-[#ebebeb] transition-colors flex items-center justify-center gap-1.5 shadow-2xs"
+                          >
+                            <Sparkles className="w-3.5 h-3.5 text-[#8f6b10]" />
+                            Review Paper
+                            <ExternalLink className="w-3 h-3 text-[#787774]" />
+                          </Link>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
+
+          {/* TAB 4: Content Moderation & Review Queue */}
+          {activeTab === 'review_queue' && (
+            <div className="space-y-4">
+              <div className="p-4 bg-white rounded-md border border-[#ebebeb] flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-2xs">
+                <div>
+                  <h3 className="font-semibold text-[#37352f] text-sm">Educational Assessment Moderation Queue</h3>
+                  <p className="text-[11px] text-[#787774]">
+                    Review submitted tests for syllabus alignment, marking key accuracy, copyright compliance, and pedagogical quality.
+                  </p>
+                </div>
+                <button
+                  onClick={fetchReviewQueue}
+                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md border border-[#ebebeb] text-xs font-medium text-[#787774] hover:text-[#37352f] hover:bg-[#f7f6f3] transition-colors"
+                >
+                  <RefreshCw className={`w-3.5 h-3.5 ${loadingReviewQueue ? 'animate-spin' : ''}`} />
+                  Refresh Queue
+                </button>
+              </div>
+
+              {loadingReviewQueue ? (
+                <div className="p-12 text-center text-[#787774] text-xs">
+                  <RefreshCw className="w-5 h-5 animate-spin mx-auto mb-2 text-[#787774]" />
+                  Loading moderation queue...
+                </div>
+              ) : reviewQueue.length === 0 ? (
+                <div className="p-12 text-center text-[#787774] bg-white rounded-md border border-[#ebebeb] text-xs">
+                  No assessments currently waiting in the review queue.
+                </div>
+              ) : (
+                <div className="space-y-3">
+                  {reviewQueue.map((item) => (
+                    <div
+                      key={item.id}
+                      className="p-4 bg-white rounded-md border border-[#ebebeb] shadow-2xs space-y-3 hover:border-[#d9d8d6] transition-all"
+                    >
+                      <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-3">
+                        <div className="space-y-1.5 flex-1">
+                          <div className="flex items-center gap-2 flex-wrap">
+                            <span className={`text-[10px] font-mono font-medium px-2 py-0.5 rounded-[3px] uppercase ${
+                              item.status === 'under_review'
+                                ? 'bg-[#fbf3db] text-[#8f6b10] border border-[#fae6b4]'
+                                : item.status === 'revisions_requested'
+                                ? 'bg-[#fbebe9] text-[#c43228] border border-[#fad2cf]'
+                                : 'bg-[#e6f6ee] text-[#1c7d49] border border-[#c3eed7]'
+                            }`}>
+                              {item.status?.replace('_', ' ')}
+                            </span>
+
+                            <span className={`text-[10px] font-mono font-medium px-2 py-0.5 rounded-[3px] ${
+                              item.is_paid
+                                ? 'bg-[#ebf5fe] text-[#2383e2] border border-[#cce5fb]'
+                                : 'bg-[#f1f1ef] text-[#787774] border border-[#ebebeb]'
+                            }`}>
+                              {item.is_paid ? `₹${item.price_inr}` : 'Free'}
+                            </span>
+
+                            <span className="text-[11px] text-[#787774] font-mono">
+                              {item.subject || 'General'} • {item.difficulty || 'Medium'} • {item.question_count} Questions
+                            </span>
+                          </div>
+
+                          <h4 className="font-semibold text-[#37352f] text-sm">{item.title}</h4>
+                          {item.description && (
+                            <p className="text-xs text-[#787774] line-clamp-2">{item.description}</p>
+                          )}
+
+                          <div className="flex items-center gap-2 pt-1 text-xs text-[#787774]">
+                            <GraduationCap className="w-3.5 h-3.5 text-[#8f6b10]" />
+                            <span className="font-medium text-[#37352f]">{item.creator?.name}</span>
+                            <span className="text-[#9b9a97] font-mono">({item.creator?.email})</span>
+                            <span className="text-[#ebebeb]">•</span>
+                            <span className="text-[#787774]">{item.creator?.institute}</span>
+                          </div>
+
+                          {item.review_notes && (
+                            <div className="p-2.5 bg-[#fbf3db] rounded-md text-xs text-[#8f6b10] border border-[#fae6b4] mt-2">
+                              <strong>Previous Review Note:</strong> {item.review_notes}
+                            </div>
+                          )}
+                        </div>
+
+                        <div className="flex sm:flex-col items-center sm:items-end gap-2 shrink-0">
+                          <Link href={`/tests/${item.id}`}>
+                            <button className="px-3 py-1.5 bg-white hover:bg-[#f7f6f3] text-[#37352f] font-medium rounded-md text-xs border border-[#ebebeb] transition-colors flex items-center gap-1 shadow-2xs">
+                              <Eye className="w-3.5 h-3.5 text-[#787774]" /> Preview Test
+                            </button>
+                          </Link>
+                        </div>
                       </div>
 
-                      <div className="flex sm:flex-col items-center sm:items-end gap-2 shrink-0">
-                        <Link href={`/tests/${item.id}`}>
-                          <button className="px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold rounded-xl text-xs border border-slate-300 transition-colors flex items-center gap-1">
-                            <Eye className="w-3.5 h-3.5" /> Preview Test
+                      {/* Moderation Controls & Feedback Input */}
+                      <div className="pt-3 border-t border-[#ebebeb] space-y-3">
+                        <div>
+                          <label className="block text-[11px] font-medium text-[#787774] mb-1">
+                            Review Feedback / Revision Instructions (Optional):
+                          </label>
+                          <input
+                            type="text"
+                            placeholder="e.g. Verified syllabus alignment and key accuracy. Approved for publishing."
+                            value={reviewActionNote[item.id] || ''}
+                            onChange={(e) =>
+                              setReviewActionNote((prev) => ({ ...prev, [item.id]: e.target.value }))
+                            }
+                            className="w-full px-3 py-1.5 rounded-md border border-[#ebebeb] text-xs bg-white text-[#37352f] placeholder-[#9b9a97] focus:border-[#2383e2] focus:ring-1 focus:ring-[#2383e2] focus:outline-none"
+                          />
+                        </div>
+
+                        <div className="flex items-center justify-end gap-2 flex-wrap">
+                          <button
+                            disabled={actionProcessing === item.id}
+                            onClick={() => handleReviewAction(item.id, 'reject')}
+                            className="px-3 py-1.5 text-xs font-medium rounded-md border border-[#ebebeb] text-[#787774] hover:bg-[#f7f6f3] hover:text-[#37352f] transition-colors"
+                          >
+                            Reject to Draft
+                          </button>
+                          <button
+                            disabled={actionProcessing === item.id}
+                            onClick={() => handleReviewAction(item.id, 'revisions_requested')}
+                            className="px-3 py-1.5 text-xs font-medium rounded-md bg-[#fbf3db] text-[#8f6b10] border border-[#fae6b4] hover:bg-[#fae6b4] transition-colors"
+                          >
+                            Request Revisions
+                          </button>
+                          <button
+                            disabled={actionProcessing === item.id}
+                            onClick={() => handleReviewAction(item.id, 'approve')}
+                            className="px-3.5 py-1.5 text-xs font-medium rounded-md bg-[#1c7d49] text-white hover:bg-[#16643b] transition-colors shadow-2xs flex items-center gap-1.5"
+                          >
+                            <CheckCircle className="w-3.5 h-3.5" />
+                            Approve & Publish
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* TAB 5: Educators & Faculty Accreditation */}
+          {activeTab === 'educators' && (
+            <div className="space-y-4">
+              <div className="p-4 bg-white rounded-md border border-[#ebebeb] flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-2xs">
+                <div>
+                  <h3 className="font-semibold text-[#37352f] text-sm">Educators & Creator Accreditation Registry</h3>
+                  <p className="text-[11px] text-[#787774]">
+                    Manage educator verification status, credentials, and publishing permissions across the Nalanda ecosystem.
+                  </p>
+                </div>
+                <button
+                  onClick={fetchEducators}
+                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md border border-[#ebebeb] text-xs font-medium text-[#787774] hover:text-[#37352f] hover:bg-[#f7f6f3] transition-colors"
+                >
+                  <RefreshCw className={`w-3.5 h-3.5 ${loadingEducators ? 'animate-spin' : ''}`} />
+                  Refresh Registry
+                </button>
+              </div>
+
+              {loadingEducators ? (
+                <div className="p-12 text-center text-[#787774] text-xs">
+                  <RefreshCw className="w-5 h-5 animate-spin mx-auto mb-2 text-[#787774]" />
+                  Loading educators...
+                </div>
+              ) : educators.length === 0 ? (
+                <div className="p-12 text-center text-[#787774] bg-white rounded-md border border-[#ebebeb] text-xs">
+                  No educators or creator accounts registered yet.
+                </div>
+              ) : (
+                <div className="space-y-3">
+                  {educators.map((edu) => (
+                    <div
+                      key={edu.user_id}
+                      className="p-4 bg-white rounded-md border border-[#ebebeb] shadow-2xs flex flex-col sm:flex-row sm:items-center justify-between gap-4 hover:border-[#d9d8d6] transition-all"
+                    >
+                      <div className="space-y-1 flex-1">
+                        <div className="flex items-center gap-2 flex-wrap">
+                          <span className="font-semibold text-[#37352f] text-sm">{edu.name}</span>
+                          <span className={`text-[10px] font-mono font-medium px-2 py-0.5 rounded-[3px] uppercase ${
+                            edu.verification_status === 'verified'
+                              ? 'bg-[#e6f6ee] text-[#1c7d49] border border-[#c3eed7]'
+                              : edu.verification_status === 'pending'
+                              ? 'bg-[#fbf3db] text-[#8f6b10] border border-[#fae6b4]'
+                              : 'bg-[#f1f1ef] text-[#787774] border border-[#ebebeb]'
+                          }`}>
+                            {edu.verification_status}
+                          </span>
+                          <span className="text-[10px] font-mono text-[#9b9a97] uppercase">
+                            Role: {edu.role}
+                          </span>
+                        </div>
+
+                        <p className="text-xs text-[#787774]">
+                          {edu.headline} • <span className="text-[#9b9a97]">{edu.institute_name}</span>
+                        </p>
+
+                        <div className="flex items-center gap-3 text-[11px] text-[#9b9a97] font-mono flex-wrap">
+                          <span>Email: <strong className="text-[#37352f] font-medium">{edu.email}</strong></span>
+                          <span>•</span>
+                          <span>{edu.authored_tests_count} Tests Authored</span>
+                          <span>•</span>
+                          <span>{edu.series_count} Series</span>
+                          <span>•</span>
+                          <span>{edu.total_students} Learners Enrolled</span>
+                        </div>
+                      </div>
+
+                      <div className="flex items-center gap-2 shrink-0 pt-2 sm:pt-0 border-t sm:border-t-0 border-[#ebebeb] flex-wrap">
+                        <Link href={`/creators/${edu.user_id}`}>
+                          <button className="px-3 py-1.5 text-xs font-medium rounded-md border border-[#ebebeb] text-[#787774] hover:text-[#37352f] hover:bg-[#f7f6f3] transition-colors flex items-center gap-1">
+                            <Eye className="w-3.5 h-3.5" /> Profile
                           </button>
                         </Link>
+
+                        {edu.verification_status !== 'verified' ? (
+                          <button
+                            disabled={actionProcessing === edu.user_id}
+                            onClick={() => handleVerifyEducator(edu.user_id, 'verified')}
+                            className="px-3 py-1.5 text-xs font-medium rounded-md bg-[#1c7d49] text-white hover:bg-[#16643b] transition-colors shadow-2xs flex items-center gap-1"
+                          >
+                            <ShieldCheck className="w-3.5 h-3.5" />
+                            Verify Faculty
+                          </button>
+                        ) : (
+                          <button
+                            disabled={actionProcessing === edu.user_id}
+                            onClick={() => handleVerifyEducator(edu.user_id, 'unverified')}
+                            className="px-3 py-1.5 text-xs font-medium rounded-md border border-[#fad2cf] text-[#c43228] hover:bg-[#fbebe9] transition-colors"
+                          >
+                            Revoke Verification
+                          </button>
+                        )}
                       </div>
                     </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
+        </div>
 
-                    {/* Moderation Controls & Feedback Input */}
-                    <div className="pt-3 border-t border-slate-100 space-y-3">
-                      <div>
-                        <label className="block text-[11px] font-bold text-slate-700 mb-1">
-                          Review Feedback / Revision Instructions (Optional):
-                        </label>
-                        <input
-                          type="text"
-                          placeholder="e.g. Verified syllabus alignment and key accuracy. Approved for publishing."
-                          value={reviewActionNote[item.id] || ''}
-                          onChange={(e) =>
-                            setReviewActionNote((prev) => ({ ...prev, [item.id]: e.target.value }))
-                          }
-                          className="w-full px-3 py-2 rounded-xl border border-slate-300 text-xs bg-white text-slate-900 focus:ring-2 focus:ring-amber-500 focus:outline-hidden"
-                        />
-                      </div>
-
-                      <div className="flex items-center justify-end gap-2 flex-wrap">
-                        <button
-                          disabled={actionProcessing === item.id}
-                          onClick={() => handleReviewAction(item.id, 'reject')}
-                          className="px-3.5 py-1.5 text-xs font-bold rounded-xl border border-slate-300 text-slate-700 hover:bg-slate-100 transition-colors"
-                        >
-                          Reject to Draft
-                        </button>
-                        <button
-                          disabled={actionProcessing === item.id}
-                          onClick={() => handleReviewAction(item.id, 'revisions_requested')}
-                          className="px-3.5 py-1.5 text-xs font-bold rounded-xl bg-amber-50 text-amber-900 border border-amber-300 hover:bg-amber-100 transition-colors"
-                        >
-                          Request Revisions
-                        </button>
-                        <button
-                          disabled={actionProcessing === item.id}
-                          onClick={() => handleReviewAction(item.id, 'approve')}
-                          className="px-4 py-1.5 text-xs font-bold rounded-xl bg-emerald-600 text-white hover:bg-emerald-700 transition-colors shadow-2xs flex items-center gap-1.5"
-                        >
-                          <CheckCircle className="w-3.5 h-3.5" />
-                          Approve & Publish
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            )}
+        {/* Admin Toast Notification */}
+        {adminToast && (
+          <div className="fixed bottom-6 right-6 z-50 bg-[#37352f] text-white text-xs px-3.5 py-2.5 rounded-md shadow-lg flex items-center gap-2">
+            <CheckCircle className="w-4 h-4 text-[#2eaadc]" />
+            <span>{adminToast}</span>
           </div>
         )}
 
-        {/* TAB 5: Educators & Faculty Accreditation */}
-        {activeTab === 'educators' && (
-          <div className="space-y-4">
-            <div className="p-4 bg-white rounded-2xl border border-slate-200 flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-2xs">
-              <div>
-                <h3 className="font-bold text-slate-900 text-sm">Educators & Creator Accreditation Registry</h3>
-                <p className="text-[11px] text-slate-500">
-                  Manage educator verification status, credentials, and publishing permissions across the Nalanda ecosystem.
-                </p>
-              </div>
-              <button
-                onClick={fetchEducators}
-                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-slate-200 text-xs font-bold text-slate-700 hover:bg-slate-50"
-              >
-                <RefreshCw className={`w-3.5 h-3.5 ${loadingEducators ? 'animate-spin' : ''}`} />
-                Refresh Registry
-              </button>
-            </div>
-
-            {loadingEducators ? (
-              <div className="p-12 text-center text-slate-400 text-xs">
-                <RefreshCw className="w-5 h-5 animate-spin mx-auto mb-2 text-slate-400" />
-                Loading educators...
-              </div>
-            ) : educators.length === 0 ? (
-              <div className="p-12 text-center text-slate-500 bg-white rounded-2xl border border-slate-200 text-xs">
-                No educators or creator accounts registered yet.
-              </div>
-            ) : (
-              <div className="space-y-3">
-                {educators.map((edu) => (
-                  <div
-                    key={edu.user_id}
-                    className="p-5 bg-white rounded-2xl border border-slate-200 shadow-2xs flex flex-col sm:flex-row sm:items-center justify-between gap-4 hover:border-slate-300 transition-all"
-                  >
-                    <div className="space-y-1.5 flex-1">
-                      <div className="flex items-center gap-2 flex-wrap">
-                        <span className="font-bold text-slate-900 text-base">{edu.name}</span>
-                        <span className={`text-[10px] font-mono font-bold px-2 py-0.5 rounded uppercase ${
-                          edu.verification_status === 'verified'
-                            ? 'bg-emerald-100 text-emerald-900 border border-emerald-300'
-                            : edu.verification_status === 'pending'
-                            ? 'bg-amber-100 text-amber-900 border border-amber-300'
-                            : 'bg-slate-100 text-slate-700 border border-slate-200'
-                        }`}>
-                          {edu.verification_status}
-                        </span>
-                        <span className="text-[10px] font-mono text-slate-500 uppercase">
-                          Role: {edu.role}
-                        </span>
-                      </div>
-
-                      <p className="text-xs text-slate-600 font-medium">
-                        {edu.headline} • <span className="text-slate-500">{edu.institute_name}</span>
-                      </p>
-
-                      <div className="flex items-center gap-3 text-[11px] text-slate-500 font-mono flex-wrap">
-                        <span>Email: <strong className="text-slate-800">{edu.email}</strong></span>
-                        <span>•</span>
-                        <span>{edu.authored_tests_count} Tests Authored</span>
-                        <span>•</span>
-                        <span>{edu.series_count} Series</span>
-                        <span>•</span>
-                        <span>{edu.total_students} Learners Enrolled</span>
-                      </div>
-                    </div>
-
-                    <div className="flex items-center gap-2 shrink-0 pt-2 sm:pt-0 border-t sm:border-t-0 border-slate-100 flex-wrap">
-                      <Link href={`/creators/${edu.user_id}`}>
-                        <button className="px-3 py-1.5 text-xs font-bold rounded-xl border border-slate-300 text-slate-700 hover:bg-slate-100 transition-colors flex items-center gap-1">
-                          <Eye className="w-3.5 h-3.5" /> Profile
-                        </button>
-                      </Link>
-
-                      {edu.verification_status !== 'verified' ? (
-                        <button
-                          disabled={actionProcessing === edu.user_id}
-                          onClick={() => handleVerifyEducator(edu.user_id, 'verified')}
-                          className="px-3.5 py-1.5 text-xs font-bold rounded-xl bg-emerald-600 text-white hover:bg-emerald-700 transition-colors shadow-2xs flex items-center gap-1"
-                        >
-                          <ShieldCheck className="w-3.5 h-3.5" />
-                          Verify Faculty
-                        </button>
-                      ) : (
-                        <button
-                          disabled={actionProcessing === edu.user_id}
-                          onClick={() => handleVerifyEducator(edu.user_id, 'unverified')}
-                          className="px-3.5 py-1.5 text-xs font-bold rounded-xl border border-rose-300 text-rose-700 hover:bg-rose-50 transition-colors"
-                        >
-                          Revoke Verification
-                        </button>
-                      )}
-                    </div>
+        {/* Add Student Modal */}
+        {showAddModal && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#37352f]/40 backdrop-blur-xs p-4">
+            <div className="bg-white rounded-lg max-w-md w-full p-5 shadow-lg border border-[#ebebeb]">
+              <div className="flex items-center justify-between mb-4">
+                <div className="flex items-center gap-2">
+                  <div className="w-7 h-7 rounded-md bg-[#f1f1ef] text-[#37352f] flex items-center justify-center">
+                    <UserPlus className="w-3.5 h-3.5" />
                   </div>
-                ))}
+                  <h3 className="font-semibold text-[#37352f] text-sm">Enroll New Student</h3>
+                </div>
+                <button
+                  onClick={() => setShowAddModal(false)}
+                  className="text-[#9b9a97] hover:text-[#37352f] p-1 text-lg leading-none"
+                >
+                  &times;
+                </button>
               </div>
-            )}
+
+              {createError && (
+                <div className="p-2.5 bg-[#fbebe9] border border-[#fad2cf] rounded-md text-xs text-[#c43228] font-medium mb-4">
+                  {createError}
+                </div>
+              )}
+
+              <form onSubmit={handleCreateStudent} className="space-y-3.5">
+                <div>
+                  <label className="block text-[11px] font-medium uppercase tracking-wider text-[#787774] mb-1">Student Full Name</label>
+                  <input
+                    type="text"
+                    placeholder="e.g. Rahul Sharma"
+                    value={newStudentName}
+                    onChange={(e) => setNewStudentName(e.target.value)}
+                    className="w-full px-3 py-2 min-h-[36px] border border-[#ebebeb] rounded-md text-xs bg-white text-[#37352f] placeholder-[#9b9a97] focus:outline-none focus:border-[#2383e2] focus:ring-1 focus:ring-[#2383e2]"
+                    required
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-[11px] font-medium uppercase tracking-wider text-[#787774] mb-1">Email Address</label>
+                  <input
+                    type="email"
+                    placeholder="student@coaching.com"
+                    value={newStudentEmail}
+                    onChange={(e) => setNewStudentEmail(e.target.value)}
+                    className="w-full px-3 py-2 min-h-[36px] border border-[#ebebeb] rounded-md text-xs bg-white text-[#37352f] placeholder-[#9b9a97] focus:outline-none focus:border-[#2383e2] focus:ring-1 focus:ring-[#2383e2]"
+                    required
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-[11px] font-medium uppercase tracking-wider text-[#787774] mb-1">Temporary Password</label>
+                  <input
+                    type="password"
+                    placeholder="At least 6 characters"
+                    value={newStudentPassword}
+                    onChange={(e) => setNewStudentPassword(e.target.value)}
+                    className="w-full px-3 py-2 min-h-[36px] border border-[#ebebeb] rounded-md text-xs bg-white text-[#37352f] placeholder-[#9b9a97] focus:outline-none focus:border-[#2383e2] focus:ring-1 focus:ring-[#2383e2]"
+                    required
+                  />
+                </div>
+
+                <div className="flex items-center justify-end gap-2 pt-2 border-t border-[#ebebeb]">
+                  <button
+                    type="button"
+                    onClick={() => setShowAddModal(false)}
+                    className="px-3 py-1.5 min-h-[36px] text-xs font-medium text-[#787774] hover:text-[#37352f] hover:bg-[#f7f6f3] rounded-md transition-colors"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="submit"
+                    disabled={creatingStudent}
+                    className="px-3.5 py-1.5 min-h-[36px] bg-[#37352f] hover:bg-[#201e1d] text-white rounded-md text-xs font-medium shadow-2xs transition-colors"
+                  >
+                    {creatingStudent ? 'Enrolling...' : 'Enroll Student'}
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        )}
+
+        {/* Edit Student / Password Modal */}
+        {editingStudent && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#37352f]/40 backdrop-blur-xs p-4">
+            <div className="bg-white rounded-lg max-w-md w-full p-5 shadow-lg border border-[#ebebeb]">
+              <div className="flex items-center justify-between mb-4">
+                <div className="flex items-center gap-2">
+                  <div className="w-7 h-7 rounded-md bg-[#f1f1ef] text-[#37352f] flex items-center justify-center">
+                    <Edit className="w-3.5 h-3.5" />
+                  </div>
+                  <h3 className="font-semibold text-[#37352f] text-sm">Edit Student Account</h3>
+                </div>
+                <button
+                  onClick={() => setEditingStudent(null)}
+                  className="text-[#9b9a97] hover:text-[#37352f] p-1 text-lg leading-none"
+                >
+                  &times;
+                </button>
+              </div>
+
+              <form onSubmit={handleUpdateStudent} className="space-y-3.5">
+                <div>
+                  <label className="block text-[11px] font-medium uppercase tracking-wider text-[#787774] mb-1">Student Full Name</label>
+                  <input
+                    type="text"
+                    value={editName}
+                    onChange={(e) => setEditName(e.target.value)}
+                    className="w-full px-3 py-2 min-h-[36px] border border-[#ebebeb] rounded-md text-xs bg-white text-[#37352f] placeholder-[#9b9a97] focus:outline-none focus:border-[#2383e2] focus:ring-1 focus:ring-[#2383e2]"
+                    required
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-[11px] font-medium uppercase tracking-wider text-[#787774] mb-1">
+                    Reset Password (leave blank to keep unchanged)
+                  </label>
+                  <input
+                    type="password"
+                    placeholder="New password"
+                    value={editPassword}
+                    onChange={(e) => setEditPassword(e.target.value)}
+                    className="w-full px-3 py-2 min-h-[36px] border border-[#ebebeb] rounded-md text-xs bg-white text-[#37352f] placeholder-[#9b9a97] focus:outline-none focus:border-[#2383e2] focus:ring-1 focus:ring-[#2383e2]"
+                  />
+                </div>
+
+                <div className="flex items-center justify-end gap-2 pt-2 border-t border-[#ebebeb]">
+                  <button
+                    type="button"
+                    onClick={() => setEditingStudent(null)}
+                    className="px-3 py-1.5 min-h-[36px] text-xs font-medium text-[#787774] hover:text-[#37352f] hover:bg-[#f7f6f3] rounded-md transition-colors"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="submit"
+                    disabled={updatingStudent}
+                    className="px-3.5 py-1.5 min-h-[36px] bg-[#37352f] hover:bg-[#201e1d] text-white rounded-md text-xs font-medium shadow-2xs transition-colors"
+                  >
+                    {updatingStudent ? 'Saving...' : 'Update Account'}
+                  </button>
+                </div>
+              </form>
+            </div>
           </div>
         )}
       </div>
-
-      {/* Admin Toast Notification */}
-      {adminToast && (
-        <div className="fixed bottom-6 right-6 z-50 bg-slate-900 text-white text-xs px-4 py-3 rounded-xl shadow-2xl flex items-center gap-2 animate-in fade-in slide-in-from-bottom-2">
-          <CheckCircle className="w-4 h-4 text-emerald-400" />
-          <span>{adminToast}</span>
-        </div>
-      )}
-
-      {/* Add Student Modal */}
-      {showAddModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 backdrop-blur-sm p-4">
-          <div className="bg-white rounded-2xl max-w-md w-full p-5 sm:p-6 shadow-2xl border border-slate-200">
-            <div className="flex items-center justify-between mb-4">
-              <div className="flex items-center gap-2">
-                <div className="w-8 h-8 rounded-lg bg-amber-50 text-amber-600 flex items-center justify-center">
-                  <UserPlus className="w-4 h-4" />
-                </div>
-                <h3 className="font-bold text-slate-900 text-base sm:text-lg">Enroll New Student</h3>
-              </div>
-              <button
-                onClick={() => setShowAddModal(false)}
-                className="text-slate-400 hover:text-slate-600 p-2 min-h-[40px] min-w-[40px] flex items-center justify-center text-xl font-semibold"
-              >
-                &times;
-              </button>
-            </div>
-
-            {createError && (
-              <div className="p-3 bg-rose-50 border border-rose-200 rounded-xl text-xs text-rose-700 font-medium mb-4">
-                {createError}
-              </div>
-            )}
-
-            <form onSubmit={handleCreateStudent} className="space-y-3.5">
-              <div>
-                <label className="block text-xs font-bold text-slate-700 mb-1">Student Full Name</label>
-                <input
-                  type="text"
-                  placeholder="e.g. Rahul Sharma"
-                  value={newStudentName}
-                  onChange={(e) => setNewStudentName(e.target.value)}
-                  className="w-full px-3.5 py-2.5 min-h-[40px] border border-slate-300 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-amber-500 font-medium"
-                  required
-                />
-              </div>
-
-              <div>
-                <label className="block text-xs font-bold text-slate-700 mb-1">Email Address</label>
-                <input
-                  type="email"
-                  placeholder="student@coaching.com"
-                  value={newStudentEmail}
-                  onChange={(e) => setNewStudentEmail(e.target.value)}
-                  className="w-full px-3.5 py-2.5 min-h-[40px] border border-slate-300 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-amber-500 font-medium"
-                  required
-                />
-              </div>
-
-              <div>
-                <label className="block text-xs font-bold text-slate-700 mb-1">Temporary Password</label>
-                <input
-                  type="password"
-                  placeholder="At least 6 characters"
-                  value={newStudentPassword}
-                  onChange={(e) => setNewStudentPassword(e.target.value)}
-                  className="w-full px-3.5 py-2.5 min-h-[40px] border border-slate-300 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-amber-500 font-medium"
-                  required
-                />
-              </div>
-
-              <div className="flex items-center justify-end gap-2 pt-2">
-                <button
-                  type="button"
-                  onClick={() => setShowAddModal(false)}
-                  className="px-4 py-2 min-h-[40px] text-xs font-semibold text-slate-600 hover:bg-slate-100 rounded-xl"
-                >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  disabled={creatingStudent}
-                  className="px-4 py-2 min-h-[40px] bg-amber-600 hover:bg-amber-700 text-white rounded-xl text-xs font-bold shadow-sm"
-                >
-                  {creatingStudent ? 'Enrolling...' : 'Enroll Student'}
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
-
-      {/* Edit Student / Password Modal */}
-      {editingStudent && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 backdrop-blur-sm p-4">
-          <div className="bg-white rounded-2xl max-w-md w-full p-5 sm:p-6 shadow-2xl border border-slate-200">
-            <div className="flex items-center justify-between mb-4">
-              <div className="flex items-center gap-2">
-                <div className="w-8 h-8 rounded-lg bg-slate-100 text-slate-700 flex items-center justify-center">
-                  <Edit className="w-4 h-4" />
-                </div>
-                <h3 className="font-bold text-slate-900 text-base sm:text-lg">Edit Student Account</h3>
-              </div>
-              <button
-                onClick={() => setEditingStudent(null)}
-                className="text-slate-400 hover:text-slate-600 p-2 min-h-[40px] min-w-[40px] flex items-center justify-center text-xl font-semibold"
-              >
-                &times;
-              </button>
-            </div>
-
-            <form onSubmit={handleUpdateStudent} className="space-y-3.5">
-              <div>
-                <label className="block text-xs font-bold text-slate-700 mb-1">Student Full Name</label>
-                <input
-                  type="text"
-                  value={editName}
-                  onChange={(e) => setEditName(e.target.value)}
-                  className="w-full px-3.5 py-2.5 min-h-[40px] border border-slate-300 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-blue-500 font-medium"
-                  required
-                />
-              </div>
-
-              <div>
-                <label className="block text-xs font-bold text-slate-700 mb-1">
-                  Reset Password (leave blank to keep unchanged)
-                </label>
-                <input
-                  type="password"
-                  placeholder="New password"
-                  value={editPassword}
-                  onChange={(e) => setEditPassword(e.target.value)}
-                  className="w-full px-3.5 py-2.5 min-h-[40px] border border-slate-300 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-blue-500 font-medium"
-                />
-              </div>
-
-              <div className="flex items-center justify-end gap-2 pt-2">
-                <button
-                  type="button"
-                  onClick={() => setEditingStudent(null)}
-                  className="px-4 py-2 min-h-[40px] text-xs font-semibold text-slate-600 hover:bg-slate-100 rounded-xl"
-                >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  disabled={updatingStudent}
-                  className="px-4 py-2 min-h-[40px] bg-slate-900 hover:bg-slate-800 text-white rounded-xl text-xs font-bold shadow-sm"
-                >
-                  {updatingStudent ? 'Saving...' : 'Update Account'}
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
-    </div>
+    </AppShell>
   );
 }

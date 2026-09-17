@@ -26,6 +26,7 @@ import {
   Filter,
   CheckCircle,
   XCircle,
+  AlertTriangle,
 } from 'lucide-react';
 import { AppShell } from '@/components/layout/AppShell';
 import { PageHeader } from '@/components/ui/PageHeader';
@@ -34,6 +35,7 @@ import { Card } from '@/components/ui/Card';
 import { Badge } from '@/components/ui/Badge';
 import { Button } from '@/components/ui/Button';
 import { EmptyState } from '@/components/ui/EmptyState';
+import { PropertyTable, PropertyRow } from '@/components/ui/PropertyTable';
 
 const MISTAKE_CATEGORIES = [
   { id: 'all', label: 'All Errors' },
@@ -150,14 +152,12 @@ export default function MistakeNotebookPage() {
     }
   };
 
-  // Open Retry Modal
   const openRetryModal = (m: any) => {
     setRetryMistake(m);
     setSelectedRetryAnswer('');
     setRetryResult(null);
   };
 
-  // Submit Retry
   const handleSubmitRetry = async () => {
     if (!retryMistake || !selectedRetryAnswer) return;
     try {
@@ -182,7 +182,6 @@ export default function MistakeNotebookPage() {
     }
   };
 
-  // Create Remedial Test
   const handleCreateRemedialTest = async () => {
     try {
       setTestCreating(true);
@@ -211,21 +210,21 @@ export default function MistakeNotebookPage() {
       case 'conceptual_gap':
         return <Badge variant="rose" size="sm">Conceptual Gap</Badge>;
       case 'calculation_error':
-        return <Badge variant="saffron" size="sm">Calculation Slip</Badge>;
+        return <Badge variant="orange" size="sm">Calculation Slip</Badge>;
       case 'misread_question':
-        return <Badge variant="navy" size="sm">Misread Question</Badge>;
+        return <Badge variant="blue" size="sm">Misread Question</Badge>;
       case 'formula_recall':
-        return <Badge variant="stone" size="sm">Formula Recall</Badge>;
+        return <Badge variant="purple" size="sm">Formula Recall</Badge>;
       case 'time_rush':
-        return <Badge variant="stone" size="sm">Time Pressure</Badge>;
+        return <Badge variant="gray" size="sm">Time Pressure</Badge>;
       case 'guessing_error':
         return <Badge variant="rose" size="sm">Guessing Error</Badge>;
       case 'carelessness':
-        return <Badge variant="saffron" size="sm">Carelessness</Badge>;
+        return <Badge variant="amber" size="sm">Carelessness</Badge>;
       case 'knowledge_gap':
         return <Badge variant="emerald" size="sm">Knowledge Gap</Badge>;
       default:
-        return <Badge variant="stone" size="sm">{cat}</Badge>;
+        return <Badge variant="gray" size="sm">{cat}</Badge>;
     }
   };
 
@@ -236,208 +235,224 @@ export default function MistakeNotebookPage() {
         { label: 'Mistake Notebook' },
       ]}
     >
-      <PageHeader
-        title="Forensic Mistake Notebook"
-        description="Cognitive error management separating mechanical calculation slips from deep conceptual gaps, misread constraints, and time pressure rushing."
-        badge={
-          <Badge variant="rose" size="md">
-            {counts.total || 0} Logged Errors ({counts.repeated_count || 0} Repeated)
-          </Badge>
-        }
-        actions={
-          <div className="flex items-center gap-2">
+      <div className="max-w-5xl mx-auto space-y-6 pb-16">
+        <PageHeader
+          icon={AlertTriangle}
+          title="Forensic Mistake Notebook"
+          description="Cognitive error management separating mechanical calculation slips from deep conceptual gaps, misread constraints, and time pressure."
+          badge={
+            <Badge variant="rose" size="sm">
+              {counts.total || 0} Logged ({counts.repeated_count || 0} Repeated)
+            </Badge>
+          }
+          actions={
             <Button
-              variant="saffron"
+              variant="primary"
               size="sm"
               onClick={() => setShowTestModal(true)}
             >
               <Zap className="w-3.5 h-3.5 mr-1.5" />
-              Generate Remedial Mini-Test
+              Remedial Mini-Test
             </Button>
-          </div>
-        }
-      />
-
-      {/* Forensic Breakdown Stats */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-        <MetricCallout
-          label="Unresolved Errors"
-          value={counts.unresolved_count || 0}
-          subtext={`${counts.resolved_count || 0} already resolved`}
-          accent="rose"
-        />
-        <MetricCallout
-          label="Repeated Mistakes"
-          value={counts.repeated_count || 0}
-          subtext="Missed across multiple attempts"
-          accent="saffron"
-        />
-        <MetricCallout
-          label="Conceptual Gaps"
-          value={counts.concept_count || 0}
-          subtext="Requires theoretical re-derivation"
-          accent="navy"
-        />
-        <MetricCallout
-          label="Calculation Slips"
-          value={counts.calc_count || 0}
-          subtext="Arithmetic & precision errors"
-          accent="stone"
-        />
-      </div>
-
-      {/* Status Segmented Tabs */}
-      <div className="flex border-b border-stone-200 mb-6 overflow-x-auto no-scrollbar gap-2">
-        {[
-          { id: 'all', label: `All Errors (${counts.total || 0})` },
-          { id: 'unresolved', label: `Unresolved (${counts.unresolved_count || 0})` },
-          { id: 'repeated', label: `Repeated Mistakes (${counts.repeated_count || 0})` },
-          { id: 'bookmarked', label: `Saved for Revision (${counts.bookmarked_count || 0})` },
-          { id: 'resolved', label: `Resolved (${counts.resolved_count || 0})` },
-        ].map((tab) => (
-          <button
-            key={tab.id}
-            onClick={() => setActiveStatus(tab.id)}
-            className={`px-4 py-2.5 text-xs font-semibold border-b-2 transition-all whitespace-nowrap ${
-              activeStatus === tab.id
-                ? 'border-amber-600 text-amber-900 bg-amber-50/40'
-                : 'border-transparent text-stone-500 hover:text-stone-800'
-            }`}
-          >
-            {tab.label}
-          </button>
-        ))}
-      </div>
-
-      {/* 8 Categories Filter Pills & Search */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
-        <div className="flex items-center gap-1.5 overflow-x-auto pb-1 no-scrollbar">
-          {MISTAKE_CATEGORIES.map((cat) => {
-            const countKey =
-              cat.id === 'all' ? 'total' :
-              cat.id === 'conceptual_gap' ? 'concept_count' :
-              cat.id === 'calculation_error' ? 'calc_count' :
-              cat.id === 'misread_question' ? 'misread_count' :
-              cat.id === 'formula_recall' ? 'formula_count' :
-              cat.id === 'time_rush' ? 'rush_count' :
-              cat.id === 'guessing_error' ? 'guess_count' :
-              cat.id === 'carelessness' ? 'careless_count' :
-              cat.id === 'knowledge_gap' ? 'knowledge_count' : 'total';
-
-            const catCount = counts[countKey] || 0;
-            const isSelected = activeCategory === cat.id;
-
-            return (
-              <button
-                key={cat.id}
-                onClick={() => setActiveCategory(cat.id)}
-                className={`px-3 py-1.5 text-xs font-medium rounded-lg whitespace-nowrap transition-colors flex items-center gap-1.5 ${
-                  isSelected
-                    ? 'bg-stone-900 text-white font-semibold'
-                    : 'bg-white border border-stone-200 text-stone-600 hover:bg-stone-50'
-                }`}
-              >
-                <span>{cat.label}</span>
-                <span className={`text-[10px] font-mono px-1.5 py-0.2 rounded-full ${isSelected ? 'bg-stone-700 text-stone-200' : 'bg-stone-100 text-stone-500'}`}>
-                  {catCount}
-                </span>
-              </button>
-            );
-          })}
-        </div>
-
-        <form onSubmit={handleSearchSubmit} className="relative sm:w-64">
-          <Search className="w-3.5 h-3.5 absolute left-3 top-2.5 text-stone-400" />
-          <input
-            type="text"
-            placeholder="Search questions or notes..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full pl-8 pr-3 py-1.5 text-xs rounded-lg border border-stone-200 focus:outline-none focus:ring-2 focus:ring-amber-500 bg-white"
-          />
-        </form>
-      </div>
-
-      {/* Mistakes Ledger */}
-      {loading ? (
-        <div className="py-20 text-center text-xs text-stone-500 font-mono">
-          Filtering and loading forensic error records...
-        </div>
-      ) : mistakes.length === 0 ? (
-        <EmptyState
-          icon={CheckCircle2}
-          title="No Mistakes In This Diagnostic Filter"
-          description="You have zero logged errors matching your current filter criteria. Continue attempting CBT mocks to maintain your forensic error log."
-          action={
-            <Link href="/tests">
-              <Button variant="saffron" size="sm">Attempt a Mock Test</Button>
-            </Link>
           }
         />
-      ) : (
-        <div className="space-y-4">
-          {mistakes.map((m) => {
-            const options = m.options_json ? JSON.parse(m.options_json) : [];
-            const isEditingNotes = editingNotesId === m.id;
 
-            return (
-              <Card
-                key={m.id}
-                className={`p-5 sm:p-6 transition-all ${
-                  m.is_resolved ? 'opacity-75 bg-stone-50/50' : 'bg-white hover:border-stone-300'
-                }`}
-              >
-                <div className="space-y-3.5">
+        {/* Forensic Properties Table */}
+        <div className="bg-white border border-[#ebebeb] rounded-lg p-3.5">
+          <PropertyTable>
+            <PropertyRow icon={AlertCircle} label="Unresolved Errors">
+              <div className="flex items-center gap-2">
+                <span className="font-mono text-xs font-semibold text-[#e03e3e]">
+                  {counts.unresolved_count || 0}
+                </span>
+                <span className="text-xs text-[#787774]">
+                  ({counts.resolved_count || 0} resolved)
+                </span>
+              </div>
+            </PropertyRow>
+
+            <PropertyRow icon={RotateCcw} label="Repeated Mistakes">
+              <div className="flex items-center gap-2">
+                <span className="font-mono text-xs font-semibold text-[#37352f]">
+                  {counts.repeated_count || 0}
+                </span>
+                <span className="text-xs text-[#787774]">Missed across multiple attempts</span>
+              </div>
+            </PropertyRow>
+
+            <PropertyRow icon={HelpCircle} label="Conceptual Gaps">
+              <div className="flex items-center gap-2">
+                <span className="font-mono text-xs font-semibold text-[#37352f]">
+                  {counts.concept_count || 0}
+                </span>
+                <span className="text-xs text-[#787774]">Requires theoretical re-derivation</span>
+              </div>
+            </PropertyRow>
+
+            <PropertyRow icon={Clock} label="Calculation Slips">
+              <div className="flex items-center gap-2">
+                <span className="font-mono text-xs font-semibold text-[#37352f]">
+                  {counts.calc_count || 0}
+                </span>
+                <span className="text-xs text-[#787774]">Arithmetic & precision slips</span>
+              </div>
+            </PropertyRow>
+          </PropertyTable>
+        </div>
+
+        {/* Status Tabs */}
+        <div className="flex border-b border-[#ebebeb] overflow-x-auto no-scrollbar gap-1">
+          {[
+            { id: 'all', label: `All (${counts.total || 0})` },
+            { id: 'unresolved', label: `Unresolved (${counts.unresolved_count || 0})` },
+            { id: 'repeated', label: `Repeated (${counts.repeated_count || 0})` },
+            { id: 'bookmarked', label: `Saved (${counts.bookmarked_count || 0})` },
+            { id: 'resolved', label: `Resolved (${counts.resolved_count || 0})` },
+          ].map((tab) => (
+            <button
+              key={tab.id}
+              onClick={() => setActiveStatus(tab.id)}
+              className={`px-3 py-2 text-xs font-medium border-b-2 transition-colors whitespace-nowrap ${
+                activeStatus === tab.id
+                  ? 'border-[#37352f] text-[#37352f]'
+                  : 'border-transparent text-[#787774] hover:text-[#37352f]'
+              }`}
+            >
+              {tab.label}
+            </button>
+          ))}
+        </div>
+
+        {/* Categories Filter Pills & Search */}
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+          <div className="flex items-center gap-1.5 overflow-x-auto pb-1 no-scrollbar">
+            {MISTAKE_CATEGORIES.map((cat) => {
+              const countKey =
+                cat.id === 'all' ? 'total' :
+                cat.id === 'conceptual_gap' ? 'concept_count' :
+                cat.id === 'calculation_error' ? 'calc_count' :
+                cat.id === 'misread_question' ? 'misread_count' :
+                cat.id === 'formula_recall' ? 'formula_count' :
+                cat.id === 'time_rush' ? 'rush_count' :
+                cat.id === 'guessing_error' ? 'guess_count' :
+                cat.id === 'carelessness' ? 'careless_count' :
+                cat.id === 'knowledge_gap' ? 'knowledge_count' : 'total';
+
+              const catCount = counts[countKey] || 0;
+              const isSelected = activeCategory === cat.id;
+
+              return (
+                <button
+                  key={cat.id}
+                  onClick={() => setActiveCategory(cat.id)}
+                  className={`px-2.5 py-1 text-xs rounded-md whitespace-nowrap transition-colors flex items-center gap-1.5 ${
+                    isSelected
+                      ? 'bg-[#37352f] text-white font-medium'
+                      : 'bg-white border border-[#ebebeb] text-[#787774] hover:bg-[#f7f6f3]'
+                  }`}
+                >
+                  <span>{cat.label}</span>
+                  <span className={`text-[10px] font-mono px-1 rounded ${isSelected ? 'bg-[#4f4d47] text-white' : 'bg-[#f7f6f3] text-[#787774]'}`}>
+                    {catCount}
+                  </span>
+                </button>
+              );
+            })}
+          </div>
+
+          <form onSubmit={handleSearchSubmit} className="relative sm:w-60">
+            <Search className="w-3.5 h-3.5 absolute left-2.5 top-2.5 text-[#787774]" />
+            <input
+              type="text"
+              placeholder="Search errors or notes..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="w-full pl-8 pr-3 py-1.5 text-xs rounded-md border border-[#ebebeb] focus:outline-none focus:border-[#37352f] bg-white text-[#37352f] placeholder:text-[#9b9a97]"
+            />
+          </form>
+        </div>
+
+        {/* Mistakes Database */}
+        {loading ? (
+          <div className="py-20 text-center text-xs text-[#787774] font-mono">
+            Loading error records...
+          </div>
+        ) : mistakes.length === 0 ? (
+          <div className="p-12 text-center bg-white border border-[#ebebeb] rounded-lg space-y-3">
+            <CheckCircle2 className="w-8 h-8 text-emerald-600 mx-auto" />
+            <h3 className="font-semibold text-sm text-[#37352f]">No Mistakes In This Filter</h3>
+            <p className="text-xs text-[#787774] max-w-sm mx-auto">
+              You have zero logged errors matching your current filter criteria.
+            </p>
+            <Link href="/tests" className="inline-block">
+              <Button variant="primary" size="sm">Attempt a Mock Test</Button>
+            </Link>
+          </div>
+        ) : (
+          <div className="space-y-3">
+            {mistakes.map((m) => {
+              const options = m.options_json ? JSON.parse(m.options_json) : [];
+              const isEditingNotes = editingNotesId === m.id;
+
+              return (
+                <div
+                  key={m.id}
+                  className={`p-4 rounded-lg border transition-colors space-y-3 ${
+                    m.is_resolved
+                      ? 'border-[#ebebeb] bg-[#fbfbfa] opacity-80'
+                      : 'border-[#ebebeb] bg-white hover:border-[#d4d4d4]'
+                  }`}
+                >
                   {/* Card Header */}
                   <div className="flex items-center justify-between flex-wrap gap-2">
                     <div className="flex items-center gap-2">
                       {getCategoryBadge(m.error_category)}
-                      <span className="text-xs font-semibold text-stone-800">
+                      <span className="text-xs font-medium text-[#37352f]">
                         {m.subject_name}
                       </span>
                       {m.topic_title && (
                         <>
-                          <span className="text-stone-300">•</span>
-                          <span className="text-xs text-stone-500">{m.topic_title}</span>
+                          <span className="text-[#ebebeb]">•</span>
+                          <span className="text-xs text-[#787774]">{m.topic_title}</span>
                         </>
                       )}
                       {m.attempt_count > 1 && (
-                        <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-rose-100 text-rose-800 font-bold">
-                          {m.attempt_count}x Repeated Mistake
-                        </span>
+                        <Badge variant="rose" size="sm">
+                          {m.attempt_count}x Repeated
+                        </Badge>
                       )}
                     </div>
 
-                    <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-1.5">
                       {/* Bookmark Toggle */}
                       <button
                         onClick={() => handleToggleBookmark(m.id, m.is_bookmarked)}
                         title={m.is_bookmarked ? 'Remove Bookmark' : 'Save for Revision'}
-                        className={`p-1.5 rounded-lg border text-xs transition-colors ${
+                        className={`p-1 rounded-md border text-xs transition-colors ${
                           m.is_bookmarked
-                            ? 'bg-amber-100 border-amber-300 text-amber-900'
-                            : 'bg-stone-50 border-stone-200 text-stone-400 hover:text-stone-700'
+                            ? 'bg-[#fdf5e8] border-[#fae2be] text-[#8f4f00]'
+                            : 'bg-white border-[#ebebeb] text-[#787774] hover:bg-[#f7f6f3]'
                         }`}
                       >
-                        {m.is_bookmarked ? <BookmarkCheck className="w-3.5 h-3.5" /> : <Bookmark className="w-3.5 h-3.5" />}
+                        {m.is_bookmarked ? <BookmarkCheck className="w-3.5 h-3.5 text-amber-600" /> : <Bookmark className="w-3.5 h-3.5" />}
                       </button>
 
                       {/* Retry Action */}
                       <button
                         onClick={() => openRetryModal(m)}
-                        className="px-2.5 py-1 text-xs font-semibold rounded-lg bg-amber-600 hover:bg-amber-700 text-white transition-colors flex items-center gap-1 shadow-sm"
+                        className="px-2 py-1 text-xs font-medium rounded-md bg-[#37352f] hover:bg-[#22211e] text-white transition-colors flex items-center gap-1"
                       >
                         <RotateCcw className="w-3 h-3" />
-                        <span>Retry Blind</span>
+                        <span>Retry</span>
                       </button>
 
                       {/* Mark Resolved */}
                       <button
                         onClick={() => handleToggleResolved(m.id, m.is_resolved)}
-                        className={`text-xs px-2.5 py-1 rounded-lg font-medium transition-colors flex items-center gap-1 ${
+                        className={`text-xs px-2 py-1 rounded-md font-medium transition-colors flex items-center gap-1 border ${
                           m.is_resolved
-                            ? 'bg-emerald-100 text-emerald-800 border border-emerald-300'
-                            : 'bg-stone-100 hover:bg-stone-200 text-stone-600 border border-stone-200'
+                            ? 'bg-[#ebf5e8] text-[#2b593f] border-[#c4e2b8]'
+                            : 'bg-white hover:bg-[#f7f6f3] text-[#787774] border-[#ebebeb]'
                         }`}
                       >
                         {m.is_resolved ? (
@@ -446,14 +461,14 @@ export default function MistakeNotebookPage() {
                             Resolved
                           </>
                         ) : (
-                          'Mark Resolved'
+                          'Resolve'
                         )}
                       </button>
                     </div>
                   </div>
 
                   {/* Question Stem */}
-                  <p className="text-sm font-medium text-stone-900 leading-relaxed">
+                  <p className="text-xs sm:text-sm font-medium text-[#37352f] leading-relaxed">
                     {m.question_text}
                   </p>
 
@@ -464,29 +479,29 @@ export default function MistakeNotebookPage() {
                         const isSelected = opt.label === m.selected_answer;
                         const isCorrect = opt.label === m.correct_answer;
 
-                        let style = 'bg-stone-50 border-stone-200 text-stone-700';
+                        let style = 'bg-[#fbfbfa] border-[#ebebeb] text-[#37352f]';
                         if (isSelected && !isCorrect) {
-                          style = 'bg-rose-50 border-rose-300 text-rose-900 font-semibold';
+                          style = 'bg-[#fff0f0] border-[#f5c2c2] text-[#e03e3e] font-medium';
                         } else if (isCorrect) {
-                          style = 'bg-emerald-50 border-emerald-300 text-emerald-900 font-semibold';
+                          style = 'bg-[#ebf5e8] border-[#c4e2b8] text-[#2b593f] font-medium';
                         }
 
                         return (
                           <div
                             key={opt.label}
-                            className={`p-2.5 rounded-lg border flex items-center justify-between ${style}`}
+                            className={`p-2 rounded-md border flex items-center justify-between ${style}`}
                           >
                             <div className="flex items-center gap-2">
-                              <span className="font-mono font-bold">{opt.label}.</span>
+                              <span className="font-mono font-medium">{opt.label}.</span>
                               <span>{opt.text}</span>
                             </div>
                             {isSelected && !isCorrect && (
-                              <span className="text-[10px] uppercase font-bold text-rose-600">
+                              <span className="text-[10px] uppercase font-mono text-rose-600">
                                 Your Pick
                               </span>
                             )}
                             {isCorrect && (
-                              <span className="text-[10px] uppercase font-bold text-emerald-700">
+                              <span className="text-[10px] uppercase font-mono text-emerald-700">
                                 Correct Key
                               </span>
                             )}
@@ -496,23 +511,23 @@ export default function MistakeNotebookPage() {
                     </div>
                   )}
 
-                  {/* Pedagogical Explanation & Theorem Proof */}
+                  {/* Explanation */}
                   {m.explanation && (
-                    <div className="text-xs text-stone-700 bg-stone-50 p-3.5 rounded-lg border border-stone-200/80 leading-relaxed">
-                      <strong className="text-stone-900 block mb-1 font-semibold">Pedagogical Derivation & Proof:</strong>
+                    <div className="text-xs text-[#37352f] bg-[#fbfbfa] p-3 rounded-md border border-[#ebebeb] leading-relaxed">
+                      <strong className="text-[#787774] block mb-0.5">Pedagogical Solution:</strong>
                       {m.explanation}
                     </div>
                   )}
 
-                  {/* Reflection Notes & Categorization Controls */}
-                  <div className="pt-2 border-t border-stone-100 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs">
+                  {/* Reflection Notes & Controls */}
+                  <div className="pt-2 border-t border-[#ebebeb] flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 text-xs">
                     {/* Category Reassignment */}
-                    <div className="flex items-center gap-2">
-                      <span className="text-stone-400 font-mono text-[11px]">Reclassify:</span>
+                    <div className="flex items-center gap-1.5">
+                      <span className="text-[#9b9a97] font-mono text-[11px]">Reclassify:</span>
                       <select
                         value={m.error_category}
                         onChange={(e) => handleChangeCategory(m.id, e.target.value)}
-                        className="py-1 px-2 text-xs rounded border border-stone-200 bg-stone-50 text-stone-700 focus:ring-1 focus:ring-amber-500"
+                        className="py-0.5 px-1.5 text-xs rounded border border-[#ebebeb] bg-[#fbfbfa] text-[#37352f] focus:outline-none"
                       >
                         {MISTAKE_CATEGORIES.filter(c => c.id !== 'all').map(c => (
                           <option key={c.id} value={c.id}>{c.label}</option>
@@ -525,8 +540,8 @@ export default function MistakeNotebookPage() {
                       {!isEditingNotes ? (
                         <div className="flex items-center gap-2">
                           {m.user_notes ? (
-                            <span className="text-amber-900 bg-amber-50 px-2.5 py-1 rounded border border-amber-200 text-[11px] italic max-w-md truncate">
-                              &ldquo;{m.user_notes}&rdquo;
+                            <span className="text-[#8f4f00] bg-[#fdf5e8] px-2 py-0.5 rounded border border-[#fae2be] text-[11px] max-w-md truncate">
+                              "{m.user_notes}"
                             </span>
                           ) : null}
                           <button
@@ -534,29 +549,29 @@ export default function MistakeNotebookPage() {
                               setEditingNotesId(m.id);
                               setTempNotes(m.user_notes || '');
                             }}
-                            className="text-stone-500 hover:text-stone-900 font-medium text-[11px] underline"
+                            className="text-[#787774] hover:text-[#37352f] text-[11px] underline"
                           >
-                            {m.user_notes ? 'Edit Note' : '+ Add Reflection Note'}
+                            {m.user_notes ? 'Edit Note' : '+ Reflection Note'}
                           </button>
                         </div>
                       ) : (
-                        <div className="flex items-center gap-2 w-full sm:w-auto">
+                        <div className="flex items-center gap-1.5 w-full sm:w-auto">
                           <input
                             type="text"
                             placeholder="Why did this mistake happen?..."
                             value={tempNotes}
                             onChange={(e) => setTempNotes(e.target.value)}
-                            className="px-2.5 py-1 text-xs border border-stone-300 rounded focus:outline-none focus:ring-1 focus:ring-amber-500 sm:w-64"
+                            className="px-2 py-1 text-xs border border-[#ebebeb] rounded focus:outline-none focus:border-[#37352f] sm:w-60 bg-white text-[#37352f]"
                           />
                           <button
                             onClick={() => handleSaveNotes(m.id)}
-                            className="px-2 py-1 bg-stone-900 text-white rounded text-xs font-semibold"
+                            className="px-2 py-1 bg-[#37352f] text-white rounded text-xs"
                           >
                             Save
                           </button>
                           <button
                             onClick={() => setEditingNotesId(null)}
-                            className="text-stone-400 hover:text-stone-600 text-xs"
+                            className="text-[#787774] text-xs hover:underline"
                           >
                             Cancel
                           </button>
@@ -565,189 +580,174 @@ export default function MistakeNotebookPage() {
                     </div>
                   </div>
                 </div>
-              </Card>
-            );
-          })}
-        </div>
-      )}
+              );
+            })}
+          </div>
+        )}
 
-      {/* ========================================================= */}
-      {/* INTERACTIVE BLIND RETRY MODAL                             */}
-      {/* ========================================================= */}
-      {retryMistake && (
-        <div className="fixed inset-0 z-50 bg-stone-900/60 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="bg-white rounded-2xl max-w-xl w-full p-6 shadow-2xl border border-stone-200 max-h-[90vh] overflow-y-auto space-y-4">
-            <div className="flex items-center justify-between border-b border-stone-100 pb-3">
-              <div className="flex items-center gap-2">
-                <span className="p-1.5 rounded-lg bg-amber-100 text-amber-800">
-                  <RotateCcw className="w-4 h-4" />
-                </span>
-                <span className="font-serif font-bold text-sm text-stone-900">
-                  Blind Retry Mode
-                </span>
+        {/* Retry Modal */}
+        {retryMistake && (
+          <div className="fixed inset-0 z-50 bg-black/40 backdrop-blur-xs flex items-center justify-center p-4">
+            <div className="bg-white rounded-lg max-w-lg w-full p-5 shadow-xl border border-[#ebebeb] max-h-[90vh] overflow-y-auto space-y-4">
+              <div className="flex items-center justify-between border-b border-[#ebebeb] pb-2.5">
+                <div className="flex items-center gap-2">
+                  <RotateCcw className="w-4 h-4 text-[#37352f]" />
+                  <span className="font-semibold text-sm text-[#37352f]">
+                    Blind Retry Mode
+                  </span>
+                </div>
+                <button
+                  onClick={() => setRetryMistake(null)}
+                  className="text-[#787774] hover:text-[#37352f]"
+                >
+                  <X className="w-4 h-4" />
+                </button>
               </div>
-              <button
-                onClick={() => setRetryMistake(null)}
-                className="text-stone-400 hover:text-stone-600 p-1"
-              >
-                <X className="w-4 h-4" />
-              </button>
-            </div>
 
-            <div className="text-xs text-stone-500">
-              Options are randomized and previous selections are hidden. Solve under clean test conditions.
-            </div>
+              <div className="text-xs text-[#787774]">
+                Options randomized, previous answers hidden.
+              </div>
 
-            {/* Question Stem */}
-            <div className="p-3.5 bg-stone-50 rounded-xl border border-stone-200 text-sm font-medium text-stone-900 leading-relaxed">
-              {retryMistake.question_text}
-            </div>
+              <div className="p-3 bg-[#fbfbfa] rounded-md border border-[#ebebeb] text-xs text-[#37352f] leading-relaxed">
+                {retryMistake.question_text}
+              </div>
 
-            {/* Selectable Options */}
-            <div className="space-y-2">
-              {retryMistake.options_json &&
-                JSON.parse(retryMistake.options_json).map((opt: any) => {
-                  const isSelected = selectedRetryAnswer === opt.label;
-                  return (
-                    <button
-                      key={opt.label}
-                      onClick={() => !retryResult && setSelectedRetryAnswer(opt.label)}
-                      disabled={Boolean(retryResult)}
-                      className={`w-full p-3 rounded-lg border text-xs text-left flex items-center justify-between transition-all ${
-                        isSelected
-                          ? 'border-amber-600 bg-amber-50 text-amber-950 font-semibold'
-                          : 'border-stone-200 bg-white hover:bg-stone-50 text-stone-800'
-                      }`}
-                    >
-                      <div className="flex items-center gap-2.5">
-                        <span className="font-mono font-bold">{opt.label}.</span>
-                        <span>{opt.text}</span>
-                      </div>
-                      {isSelected && <span className="w-2 h-2 rounded-full bg-amber-600" />}
-                    </button>
-                  );
-                })}
-            </div>
+              <div className="space-y-1.5">
+                {retryMistake.options_json &&
+                  JSON.parse(retryMistake.options_json).map((opt: any) => {
+                    const isSelected = selectedRetryAnswer === opt.label;
+                    return (
+                      <button
+                        key={opt.label}
+                        onClick={() => !retryResult && setSelectedRetryAnswer(opt.label)}
+                        disabled={Boolean(retryResult)}
+                        className={`w-full p-2.5 rounded-md border text-xs text-left flex items-center justify-between transition-colors ${
+                          isSelected
+                            ? 'border-[#37352f] bg-[#f7f6f3] text-[#37352f] font-medium'
+                            : 'border-[#ebebeb] bg-white hover:bg-[#fbfbfa] text-[#37352f]'
+                        }`}
+                      >
+                        <div className="flex items-center gap-2">
+                          <span className="font-mono">{opt.label}.</span>
+                          <span>{opt.text}</span>
+                        </div>
+                        {isSelected && <span className="w-1.5 h-1.5 rounded-full bg-[#37352f]" />}
+                      </button>
+                    );
+                  })}
+              </div>
 
-            {/* Retry Result Feedback */}
-            {retryResult && (
-              <div className={`p-4 rounded-xl border text-xs space-y-2 ${
-                retryResult.is_correct ? 'bg-emerald-50 border-emerald-300 text-emerald-950' : 'bg-rose-50 border-rose-300 text-rose-950'
-              }`}>
-                <div className="flex items-center gap-2 font-bold">
-                  {retryResult.is_correct ? (
-                    <>
-                      <CheckCircle className="w-4 h-4 text-emerald-700" />
-                      <span>Correct Answer! Error Marked Resolved.</span>
-                    </>
-                  ) : (
-                    <>
-                      <XCircle className="w-4 h-4 text-rose-700" />
-                      <span>Incorrect Attempt. Correct Key is {retryResult.correct_answer}.</span>
-                    </>
+              {retryResult && (
+                <div className={`p-3 rounded-md border text-xs space-y-1.5 ${
+                  retryResult.is_correct ? 'bg-[#ebf5e8] border-[#c4e2b8] text-[#2b593f]' : 'bg-[#fff0f0] border-[#f5c2c2] text-[#e03e3e]'
+                }`}>
+                  <div className="flex items-center gap-1.5 font-medium">
+                    {retryResult.is_correct ? (
+                      <>
+                        <CheckCircle className="w-3.5 h-3.5 text-emerald-700" />
+                        <span>Correct! Error resolved.</span>
+                      </>
+                    ) : (
+                      <>
+                        <XCircle className="w-3.5 h-3.5 text-rose-700" />
+                        <span>Incorrect. Key is Option {retryResult.correct_answer}.</span>
+                      </>
+                    )}
+                  </div>
+                  {retryResult.explanation && (
+                    <div className="text-[11px] leading-relaxed pt-1 border-t border-black/10">
+                      <strong>Solution:</strong> {retryResult.explanation}
+                    </div>
                   )}
                 </div>
-                {retryResult.explanation && (
-                  <div className="text-[11px] leading-relaxed pt-1 border-t border-stone-200/40">
-                    <strong className="block mb-0.5">Pedagogical Solution:</strong>
-                    {retryResult.explanation}
-                  </div>
+              )}
+
+              <div className="flex items-center justify-end gap-2 pt-2 border-t border-[#ebebeb]">
+                {!retryResult ? (
+                  <>
+                    <Button variant="outline" size="sm" onClick={() => setRetryMistake(null)}>
+                      Cancel
+                    </Button>
+                    <Button
+                      variant="primary"
+                      size="sm"
+                      disabled={!selectedRetryAnswer || retrySubmitting}
+                      onClick={handleSubmitRetry}
+                    >
+                      {retrySubmitting ? 'Verifying...' : 'Submit Answer'}
+                    </Button>
+                  </>
+                ) : (
+                  <Button variant="primary" size="sm" onClick={() => setRetryMistake(null)}>
+                    Close
+                  </Button>
                 )}
               </div>
-            )}
+            </div>
+          </div>
+        )}
 
-            {/* Action Buttons */}
-            <div className="flex items-center justify-end gap-2 pt-2 border-t border-stone-100">
-              {!retryResult ? (
-                <>
-                  <Button variant="outline" size="sm" onClick={() => setRetryMistake(null)}>
-                    Cancel
-                  </Button>
-                  <Button
-                    variant="saffron"
-                    size="sm"
-                    disabled={!selectedRetryAnswer || retrySubmitting}
-                    onClick={handleSubmitRetry}
-                  >
-                    {retrySubmitting ? 'Verifying...' : 'Submit Retry Answer'}
-                  </Button>
-                </>
-              ) : (
-                <Button variant="saffron" size="sm" onClick={() => setRetryMistake(null)}>
-                  Close
+        {/* Remedial Mini-Test Generator Modal */}
+        {showTestModal && (
+          <div className="fixed inset-0 z-50 bg-black/40 backdrop-blur-xs flex items-center justify-center p-4">
+            <div className="bg-white rounded-lg max-w-sm w-full p-5 shadow-xl border border-[#ebebeb] space-y-3.5">
+              <div className="flex items-center justify-between border-b border-[#ebebeb] pb-2">
+                <div className="flex items-center gap-1.5">
+                  <Zap className="w-4 h-4 text-[#37352f]" />
+                  <span className="font-semibold text-sm text-[#37352f]">
+                    Remedial Mini-Test
+                  </span>
+                </div>
+                <button onClick={() => setShowTestModal(false)} className="text-[#787774] hover:text-[#37352f]">
+                  <X className="w-4 h-4" />
+                </button>
+              </div>
+
+              <p className="text-xs text-[#787774] leading-relaxed">
+                Assemble a custom, timed revision test generated from your error notebook to eliminate recurring slips.
+              </p>
+
+              <div className="space-y-2">
+                <label className="block text-xs font-medium text-[#37352f]">Question Volume:</label>
+                <div className="grid grid-cols-3 gap-2">
+                  {[5, 10, 15].map((cnt) => (
+                    <button
+                      key={cnt}
+                      onClick={() => setTestCount(cnt)}
+                      className={`py-1.5 px-2 text-xs rounded-md border transition-colors ${
+                        testCount === cnt
+                          ? 'border-[#37352f] bg-[#37352f] text-white font-medium'
+                          : 'border-[#ebebeb] bg-white text-[#37352f] hover:bg-[#f7f6f3]'
+                      }`}
+                    >
+                      {cnt} Qs ({Math.round(cnt * 1.5)}m)
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              <div className="p-2.5 bg-[#fbfbfa] rounded-md border border-[#ebebeb] text-[11px] text-[#787774] space-y-0.5 font-mono">
+                <div>• Section: Error Simulation</div>
+                <div>• Marking Scheme: +2.0 / -0.5</div>
+              </div>
+
+              <div className="flex items-center justify-end gap-2 pt-2 border-t border-[#ebebeb]">
+                <Button variant="outline" size="sm" onClick={() => setShowTestModal(false)}>
+                  Cancel
                 </Button>
-              )}
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* ========================================================= */}
-      {/* REMEDIAL MINI-TEST GENERATOR MODAL                        */}
-      {/* ========================================================= */}
-      {showTestModal && (
-        <div className="fixed inset-0 z-50 bg-stone-900/60 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl border border-stone-200 space-y-4">
-            <div className="flex items-center justify-between border-b border-stone-100 pb-3">
-              <div className="flex items-center gap-2">
-                <span className="p-1.5 rounded-lg bg-amber-100 text-amber-800">
-                  <Zap className="w-4 h-4" />
-                </span>
-                <span className="font-serif font-bold text-sm text-stone-900">
-                  Generate Remedial Mini-Test
-                </span>
-              </div>
-              <button onClick={() => setShowTestModal(false)} className="text-stone-400 hover:text-stone-600 p-1">
-                <X className="w-4 h-4" />
-              </button>
-            </div>
-
-            <p className="text-xs text-stone-600 leading-relaxed">
-              Assemble a custom, timed revision test generated exclusively from your unresolved error notebook to eliminate recurring slips.
-            </p>
-
-            <div className="space-y-3 pt-2">
-              <label className="block text-xs font-semibold text-stone-700">Question Volume:</label>
-              <div className="grid grid-cols-3 gap-2">
-                {[5, 10, 15].map((cnt) => (
-                  <button
-                    key={cnt}
-                    onClick={() => setTestCount(cnt)}
-                    className={`py-2 px-3 text-xs font-semibold rounded-lg border transition-all ${
-                      testCount === cnt
-                        ? 'border-amber-600 bg-amber-50 text-amber-950 font-bold'
-                        : 'border-stone-200 bg-white text-stone-700 hover:bg-stone-50'
-                    }`}
-                  >
-                    {cnt} Questions ({Math.round(cnt * 1.5)}m)
-                  </button>
-                ))}
+                <Button
+                  variant="primary"
+                  size="sm"
+                  disabled={testCreating}
+                  onClick={handleCreateRemedialTest}
+                >
+                  {testCreating ? 'Assembling...' : 'Launch Test'}
+                </Button>
               </div>
             </div>
-
-            <div className="p-3 bg-amber-50/60 rounded-xl border border-amber-200/80 text-[11px] text-amber-900 space-y-1">
-              <div className="font-semibold">Test Parameters:</div>
-              <div>• Section: Mixed CBT Error Simulation</div>
-              <div>• Marking Scheme: +2.0 Correct / -0.5 Negative</div>
-              <div>• Automatic autosave & immediate scorecard review</div>
-            </div>
-
-            <div className="flex items-center justify-end gap-2 pt-2 border-t border-stone-100">
-              <Button variant="outline" size="sm" onClick={() => setShowTestModal(false)}>
-                Cancel
-              </Button>
-              <Button
-                variant="saffron"
-                size="sm"
-                disabled={testCreating}
-                onClick={handleCreateRemedialTest}
-              >
-                {testCreating ? 'Assembling...' : 'Launch Test Simulation →'}
-              </Button>
-            </div>
           </div>
-        </div>
-      )}
+        )}
+      </div>
     </AppShell>
   );
 }

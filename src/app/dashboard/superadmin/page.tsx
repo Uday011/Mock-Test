@@ -32,6 +32,7 @@ import {
   Award,
 } from 'lucide-react';
 import { UserRole, Section } from '@/lib/types';
+import { AppShell } from '@/components/layout/AppShell';
 
 interface PlatformUser {
   id: string;
@@ -309,708 +310,726 @@ export default function SuperadminDashboardPage() {
   const totalAttemptsCount = users.reduce((acc, u) => acc + (u.attempts_made || 0), 0);
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-10 space-y-8">
-      {/* Test Saved / Published Confirmation Banner */}
-      {showSavedBanner && (
-        <div className="p-4 rounded-2xl bg-emerald-50 border border-emerald-200 text-emerald-900 flex items-center justify-between shadow-xs">
-          <div className="flex items-center gap-3">
-            <div className="w-9 h-9 rounded-xl bg-emerald-100 text-emerald-700 flex items-center justify-center shrink-0">
-              <CheckCircle className="w-5 h-5" />
-            </div>
-            <div>
-              <p className="text-xs font-bold">Platform Mock Test Saved & Published!</p>
-              <p className="text-[11px] text-emerald-700 mt-0.5">
-                The test paper has been stored in the Global Platform Mock Library and is now available across all institutes and student dashboards.
-              </p>
-            </div>
-          </div>
-          <button
-            onClick={() => setShowSavedBanner(false)}
-            className="text-emerald-700 hover:text-emerald-950 text-base font-bold px-2 py-1"
-            aria-label="Dismiss banner"
-          >
-            &times;
-          </button>
-        </div>
-      )}
-
-      {/* Superadmin Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        <div>
-          <div className="flex items-center gap-2 mb-1.5">
-            <span className="px-2.5 py-0.5 rounded-full text-xs font-black bg-purple-100 text-purple-900 border border-purple-300 flex items-center gap-1">
-              <Crown className="w-3.5 h-3.5 text-purple-700" />
-              Super Administrator Console
-            </span>
-            <span className="text-xs text-slate-500 font-medium">Absolute Platform Control</span>
-          </div>
-          <h1 className="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight">
-            Platform Master Console
-          </h1>
-          <p className="text-xs sm:text-sm text-slate-500 mt-1 max-w-2xl">
-            Manage all administrators, coaching institutes, students, global mock tests, exam sections & categories, and AI infrastructure.
-          </p>
-        </div>
-
-        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2.5 w-full sm:w-auto">
-          <button
-            onClick={() => setShowAddSectionModal(true)}
-            className="inline-flex items-center justify-center gap-2 px-4 py-2.5 min-h-[44px] bg-purple-700 hover:bg-purple-800 text-white font-bold rounded-xl shadow-sm hover:shadow transition-all text-xs"
-          >
-            <FolderPlus className="w-4 h-4" />
-            New Exam Section
-          </button>
-
-          <Link
-            href="/tests/create"
-            className="inline-flex items-center justify-center gap-2 px-4 py-2.5 min-h-[44px] bg-slate-900 hover:bg-slate-800 text-white font-bold rounded-xl shadow-sm hover:shadow transition-all text-xs"
-          >
-            <PlusCircle className="w-4 h-4 text-blue-400" />
-            Upload Test
-          </Link>
-        </div>
-      </div>
-
-      {/* High-Level System Metrics */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-5">
-        <div className="bg-white rounded-2xl p-4 sm:p-5 border border-purple-200/80 shadow-2xs flex items-center gap-3 sm:gap-4">
-          <div className="w-11 h-11 rounded-xl bg-purple-50 text-purple-700 flex items-center justify-center shrink-0">
-            <Users className="w-5 h-5 sm:w-6 sm:h-6" />
-          </div>
-          <div>
-            <p className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Total Users</p>
-            <div className="flex flex-col sm:flex-row sm:items-baseline sm:gap-2">
-              <p className="text-xl sm:text-2xl font-black text-slate-900 mt-0.5">{users.length}</p>
-              <span className="text-[10px] sm:text-[11px] text-purple-700 font-bold">
-                {adminUsersCount} Admins • {studentUsersCount} Students
-              </span>
-            </div>
-          </div>
-        </div>
-
-        <div className="bg-white rounded-2xl p-4 sm:p-5 border border-slate-200 shadow-2xs flex items-center gap-3 sm:gap-4">
-          <div className="w-11 h-11 rounded-xl bg-slate-100 text-slate-700 flex items-center justify-center shrink-0">
-            <Layers className="w-5 h-5 sm:w-6 sm:h-6 text-slate-700" />
-          </div>
-          <div>
-            <p className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">All Mock Tests</p>
-            <p className="text-xl sm:text-2xl font-black text-slate-900 mt-0.5">{tests.length}</p>
-          </div>
-        </div>
-
-        <div className="bg-white rounded-2xl p-4 sm:p-5 border border-slate-200 shadow-2xs flex items-center gap-3 sm:gap-4">
-          <div className="w-11 h-11 rounded-xl bg-amber-50 text-amber-700 flex items-center justify-center shrink-0">
-            <FolderPlus className="w-5 h-5 sm:w-6 sm:h-6" />
-          </div>
-          <div>
-            <p className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Exam Sections</p>
-            <p className="text-xl sm:text-2xl font-black text-slate-900 mt-0.5">{sections.length}</p>
-          </div>
-        </div>
-
-        <div className="bg-white rounded-2xl p-4 sm:p-5 border border-slate-200 shadow-2xs flex items-center gap-3 sm:gap-4">
-          <div className="w-11 h-11 rounded-xl bg-emerald-50 text-emerald-700 flex items-center justify-center shrink-0">
-            <Sparkles className="w-5 h-5 sm:w-6 sm:h-6 text-amber-500" />
-          </div>
-          <div>
-            <p className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">AI Coach</p>
-            <p className="text-xl sm:text-2xl font-black text-emerald-600 mt-0.5">Online</p>
-          </div>
-        </div>
-      </div>
-
-      {/* Tabs Navigation */}
-      <div className="space-y-6">
-        <div className="flex border-b border-slate-200 gap-4 sm:gap-6 overflow-x-auto no-scrollbar py-1">
-          <button
-            onClick={() => setActiveTab('users')}
-            className={`pb-3 text-xs sm:text-sm font-bold flex items-center gap-2 border-b-2 transition-all shrink-0 min-h-[44px] ${
-              activeTab === 'users'
-                ? 'border-purple-600 text-purple-900'
-                : 'border-transparent text-slate-500 hover:text-slate-800'
-            }`}
-          >
-            <Users className="w-4 h-4" />
-            User Management ({users.length})
-          </button>
-
-          <button
-            onClick={() => setActiveTab('sections')}
-            className={`pb-3 text-xs sm:text-sm font-bold flex items-center gap-2 border-b-2 transition-all shrink-0 min-h-[44px] ${
-              activeTab === 'sections'
-                ? 'border-purple-600 text-purple-900'
-                : 'border-transparent text-slate-500 hover:text-slate-800'
-            }`}
-          >
-            <FolderPlus className="w-4 h-4" />
-            Sections & Categories ({sections.length})
-          </button>
-
-          <button
-            onClick={() => setActiveTab('tests')}
-            className={`pb-3 text-xs sm:text-sm font-bold flex items-center gap-2 border-b-2 transition-all shrink-0 min-h-[44px] ${
-              activeTab === 'tests'
-                ? 'border-purple-600 text-purple-900'
-                : 'border-transparent text-slate-500 hover:text-slate-800'
-            }`}
-          >
-            <Layers className="w-4 h-4" />
-            All Platform Tests ({tests.length})
-          </button>
-
-          <button
-            onClick={() => setActiveTab('system')}
-            className={`pb-3 text-xs sm:text-sm font-bold flex items-center gap-2 border-b-2 transition-all shrink-0 min-h-[44px] ${
-              activeTab === 'system'
-                ? 'border-purple-600 text-purple-900'
-                : 'border-transparent text-slate-500 hover:text-slate-800'
-            }`}
-          >
-            <Server className="w-4 h-4" />
-            System & AI Engine
-          </button>
-        </div>
-
-        {/* TAB 1: Platform User Management */}
-        {activeTab === 'users' && (
-          <div className="space-y-4">
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-              <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 w-full sm:w-auto">
-                <div className="relative flex-1 sm:flex-none">
-                  <input
-                    type="text"
-                    placeholder="Search users by name, email, or institute..."
-                    value={userSearch}
-                    onChange={(e) => setUserSearch(e.target.value)}
-                    className="w-full sm:w-80 pl-8 pr-3 py-2 min-h-[40px] border border-slate-300 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-purple-500 font-medium"
-                  />
-                  <Search className="w-3.5 h-3.5 text-slate-400 absolute left-2.5 top-3" />
-                </div>
-
-                <select
-                  value={roleFilter}
-                  onChange={(e) => setRoleFilter(e.target.value as any)}
-                  className="px-3 py-2 min-h-[40px] border border-slate-300 rounded-xl text-xs text-slate-700 bg-white focus:outline-none focus:ring-2 focus:ring-purple-500 font-medium"
-                >
-                  <option value="all">All Roles</option>
-                  <option value="student">Students</option>
-                  <option value="admin">Administrators</option>
-                  <option value="superadmin">Superadmins</option>
-                </select>
+    <AppShell
+      breadcrumbs={[
+        { label: 'Administration', href: '/dashboard/superadmin' },
+        { label: 'Platform Console' },
+      ]}
+    >
+      <div className="max-w-6xl mx-auto px-4 sm:px-8 py-8 space-y-8">
+        {/* Test Saved / Published Confirmation Banner */}
+        {showSavedBanner && (
+          <div className="p-3.5 rounded-md bg-[#e6f6ee] border border-[#c3eed7] text-[#1c7d49] flex items-center justify-between text-xs">
+            <div className="flex items-center gap-2.5">
+              <CheckCircle className="w-4 h-4 shrink-0 text-[#1c7d49]" />
+              <div>
+                <p className="font-semibold text-[#1c7d49]">Platform Mock Test Saved & Published!</p>
+                <p className="text-[#1c7d49]/80 mt-0.5 text-[11px]">
+                  The test paper has been stored in the Global Platform Mock Library and is now available across all institutes and student dashboards.
+                </p>
               </div>
-
-              <button
-                onClick={fetchUsers}
-                className="p-2 min-h-[40px] text-slate-500 hover:text-purple-700 hover:bg-slate-100 rounded-xl text-xs flex items-center justify-center gap-1 self-start sm:self-auto border border-slate-200 sm:border-transparent"
-              >
-                <RefreshCw className="w-3.5 h-3.5" />
-                Refresh
-              </button>
             </div>
-
-            {loadingUsers ? (
-              <div className="p-12 text-center text-slate-400 text-sm">
-                <div className="w-8 h-8 border-3 border-purple-600 border-t-transparent rounded-full animate-spin mx-auto mb-3" />
-                Loading all platform accounts...
-              </div>
-            ) : filteredUsers.length === 0 ? (
-              <div className="bg-white rounded-3xl p-12 text-center border border-dashed border-slate-300 space-y-3">
-                <p className="text-sm font-bold text-slate-800">No users match criteria</p>
-              </div>
-            ) : (
-              <div className="bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-2xs">
-                <div className="overflow-x-auto">
-                  <table className="w-full text-left text-xs">
-                    <thead className="bg-slate-50/90 border-b border-slate-200 text-[11px] font-bold text-slate-500 uppercase tracking-wider">
-                      <tr>
-                        <th className="px-5 py-3">User & Organization</th>
-                        <th className="px-4 py-3">Role & Privilege</th>
-                        <th className="px-4 py-3">Status</th>
-                        <th className="px-4 py-3">Activity</th>
-                        <th className="px-4 py-3">Joined</th>
-                        <th className="px-5 py-3 text-right">Superadmin Actions</th>
-                      </tr>
-                    </thead>
-                    <tbody className="divide-y divide-slate-100 font-medium">
-                      {filteredUsers.map((u) => (
-                        <tr key={u.id} className="hover:bg-slate-50/60 transition-colors">
-                          <td className="px-5 py-3.5">
-                            <div className="flex items-center gap-3">
-                              <div
-                                className={`w-8 h-8 rounded-full font-bold flex items-center justify-center text-xs ${
-                                  u.role === 'superadmin'
-                                    ? 'bg-purple-100 text-purple-800 border border-purple-300'
-                                    : u.role === 'admin'
-                                    ? 'bg-amber-100 text-amber-800 border border-amber-300'
-                                    : 'bg-emerald-100 text-emerald-800 border border-emerald-300'
-                                }`}
-                              >
-                                {u.name.charAt(0).toUpperCase()}
-                              </div>
-                              <div>
-                                <p className="font-bold text-slate-900">{u.name}</p>
-                                <p className="text-[11px] text-slate-500">{u.email}</p>
-                                {u.institute_name && (
-                                  <p className="text-[10px] text-amber-700 font-semibold mt-0.5">
-                                    🏢 {u.institute_name}
-                                  </p>
-                                )}
-                              </div>
-                            </div>
-                          </td>
-
-                          <td className="px-4 py-3.5">
-                            <select
-                              value={u.role}
-                              onChange={(e) => handleQuickRoleChange(u.id, e.target.value as UserRole)}
-                              disabled={u.id === currentUser?.id}
-                              className="px-2.5 py-1 border border-slate-200 rounded-lg text-xs font-bold bg-slate-50 focus:outline-none focus:ring-2 focus:ring-purple-500"
-                            >
-                              <option value="student">🎓 Student</option>
-                              <option value="admin">🏫 Administrator</option>
-                              <option value="superadmin">👑 Superadmin</option>
-                            </select>
-                          </td>
-
-                          <td className="px-4 py-3.5">
-                            <button
-                              onClick={() => handleToggleStatus(u)}
-                              disabled={u.id === currentUser?.id}
-                              className={`px-2 py-0.5 rounded-full text-[10px] font-bold border transition-colors ${
-                                u.status === 'active'
-                                  ? 'bg-emerald-50 text-emerald-700 border-emerald-200 hover:bg-emerald-100'
-                                  : 'bg-rose-50 text-rose-700 border-rose-200 hover:bg-rose-100'
-                              }`}
-                            >
-                              {u.status === 'active' ? '✓ Active' : '✕ Suspended'}
-                            </button>
-                          </td>
-
-                          <td className="px-4 py-3.5 text-slate-600 text-[11px]">
-                            <div>
-                              <strong>{u.tests_created}</strong> tests created
-                            </div>
-                            <div className="text-slate-400">
-                              <strong>{u.attempts_made}</strong> attempts
-                            </div>
-                          </td>
-
-                          <td className="px-4 py-3.5 text-slate-400 font-mono text-[11px]">
-                            {new Date(u.created_at).toLocaleDateString()}
-                          </td>
-
-                          <td className="px-5 py-3.5 text-right">
-                            <div className="flex items-center justify-end gap-1.5">
-                              <button
-                                onClick={() => {
-                                  setEditingUser(u);
-                                  setEditName(u.name);
-                                  setEditEmail(u.email);
-                                  setEditRole(u.role);
-                                  setEditInstitute(u.institute_name || '');
-                                  setEditPassword('');
-                                }}
-                                title="Edit User or Reset Password"
-                                className="p-2 min-h-[36px] min-w-[36px] flex items-center justify-center border border-slate-200 text-slate-600 hover:bg-slate-100 rounded-lg text-xs transition-colors"
-                              >
-                                <Edit className="w-3.5 h-3.5" />
-                              </button>
-
-                              {u.id !== currentUser?.id && (
-                                <button
-                                  onClick={() => handleDeleteUser(u.id)}
-                                  title="Delete User"
-                                  className="p-2 min-h-[36px] min-w-[36px] flex items-center justify-center border border-slate-200 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg text-xs transition-colors"
-                                >
-                                  <Trash2 className="w-3.5 h-3.5" />
-                                </button>
-                              )}
-                            </div>
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-              </div>
-            )}
+            <button
+              onClick={() => setShowSavedBanner(false)}
+              className="text-[#1c7d49]/70 hover:text-[#1c7d49] text-base font-bold px-2 py-1"
+              aria-label="Dismiss banner"
+            >
+              &times;
+            </button>
           </div>
         )}
 
-        {/* TAB 2: Sections & Categories Manager */}
-        {activeTab === 'sections' && (
-          <div className="space-y-4">
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-              <div>
-                <h3 className="text-sm font-bold text-slate-900">Exam Sections & Domain Categories</h3>
-                <p className="text-[11px] text-slate-500">
-                  Configure the official categories used to classify question papers and mock tests.
-                </p>
-              </div>
-
-              <button
-                onClick={() => setShowAddSectionModal(true)}
-                className="inline-flex items-center justify-center gap-2 px-4 py-2.5 min-h-[44px] bg-purple-700 hover:bg-purple-800 text-white font-bold rounded-xl text-xs shadow-sm self-start sm:self-auto"
-              >
-                <FolderPlus className="w-4 h-4" />
-                Add New Section
-              </button>
+        {/* Superadmin Header */}
+        <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4 pb-6 border-b border-[#ebebeb]">
+          <div className="space-y-2">
+            <div className="flex items-center gap-2">
+              <span className="px-2 py-0.5 rounded-[3px] text-[11px] font-medium bg-[#fbf3db] text-[#8f6b10] border border-[#fae6b4] flex items-center gap-1.5">
+                <Crown className="w-3 h-3 text-[#8f6b10]" />
+                Super Administrator Console
+              </span>
+              <span className="text-xs text-[#787774]">Absolute Platform Control</span>
             </div>
+            <h1 className="text-2xl sm:text-3xl font-bold text-[#37352f] tracking-tight">
+              Platform Master Console
+            </h1>
+            <p className="text-xs sm:text-sm text-[#787774] max-w-2xl leading-relaxed">
+              Manage all administrators, coaching institutes, students, global mock tests, exam sections & categories, and AI infrastructure.
+            </p>
+          </div>
 
-            {loadingSections ? (
-              <div className="p-12 text-center text-slate-400 text-sm">
-                <div className="w-8 h-8 border-3 border-purple-600 border-t-transparent rounded-full animate-spin mx-auto mb-3" />
-                Loading exam sections...
-              </div>
-            ) : (
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                {sections.map((sec) => (
-                  <div
-                    key={sec.id}
-                    className="bg-white rounded-2xl border border-slate-200 p-4 sm:p-5 shadow-2xs space-y-3 flex flex-col justify-between"
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 w-full sm:w-auto shrink-0">
+            <button
+              onClick={() => setShowAddSectionModal(true)}
+              className="inline-flex items-center justify-center gap-1.5 px-3 py-1.5 min-h-[36px] bg-[#37352f] hover:bg-[#201e1d] text-white font-medium rounded-md shadow-2xs transition-colors text-xs"
+            >
+              <FolderPlus className="w-3.5 h-3.5" />
+              New Exam Section
+            </button>
+
+            <Link
+              href="/tests/create"
+              className="inline-flex items-center justify-center gap-1.5 px-3 py-1.5 min-h-[36px] bg-white hover:bg-[#f7f6f3] text-[#37352f] font-medium rounded-md border border-[#ebebeb] shadow-2xs transition-colors text-xs"
+            >
+              <PlusCircle className="w-3.5 h-3.5 text-[#787774]" />
+              Upload Test
+            </Link>
+          </div>
+        </div>
+
+        {/* High-Level System Metrics */}
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4">
+          <div className="bg-white rounded-md p-4 border border-[#ebebeb] shadow-2xs">
+            <div className="flex items-center justify-between text-[#787774] mb-1">
+              <span className="text-[11px] font-medium uppercase tracking-wider">Total Users</span>
+              <Users className="w-4 h-4 text-[#787774]" />
+            </div>
+            <p className="text-2xl font-bold text-[#37352f] mt-1">{users.length}</p>
+            <p className="text-[11px] text-[#787774] mt-0.5">
+              {adminUsersCount} Admins • {studentUsersCount} Students
+            </p>
+          </div>
+
+          <div className="bg-white rounded-md p-4 border border-[#ebebeb] shadow-2xs">
+            <div className="flex items-center justify-between text-[#787774] mb-1">
+              <span className="text-[11px] font-medium uppercase tracking-wider">All Mock Tests</span>
+              <Layers className="w-4 h-4 text-[#787774]" />
+            </div>
+            <p className="text-2xl font-bold text-[#37352f] mt-1">{tests.length}</p>
+            <p className="text-[11px] text-[#787774] mt-0.5">
+              {totalAttemptsCount} Student Attempts
+            </p>
+          </div>
+
+          <div className="bg-white rounded-md p-4 border border-[#ebebeb] shadow-2xs">
+            <div className="flex items-center justify-between text-[#787774] mb-1">
+              <span className="text-[11px] font-medium uppercase tracking-wider">Exam Sections</span>
+              <FolderPlus className="w-4 h-4 text-[#787774]" />
+            </div>
+            <p className="text-2xl font-bold text-[#37352f] mt-1">{sections.length}</p>
+            <p className="text-[11px] text-[#787774] mt-0.5">
+              Active domain partitions
+            </p>
+          </div>
+
+          <div className="bg-white rounded-md p-4 border border-[#ebebeb] shadow-2xs">
+            <div className="flex items-center justify-between text-[#787774] mb-1">
+              <span className="text-[11px] font-medium uppercase tracking-wider">AI Coach Engine</span>
+              <Sparkles className="w-4 h-4 text-[#8f6b10]" />
+            </div>
+            <div className="flex items-center gap-1.5 mt-2">
+              <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-[3px] text-[11px] font-medium bg-[#e6f6ee] text-[#1c7d49] border border-[#c3eed7]">
+                <CheckCircle className="w-3 h-3" />
+                Operational
+              </span>
+            </div>
+            <p className="text-[11px] text-[#787774] mt-1.5">
+              gemini-3.6-flash
+            </p>
+          </div>
+        </div>
+
+        {/* Tabs Navigation */}
+        <div className="space-y-6">
+          <div className="flex items-center border-b border-[#ebebeb] gap-1 sm:gap-2 overflow-x-auto no-scrollbar pb-px text-xs font-medium">
+            <button
+              onClick={() => setActiveTab('users')}
+              className={`px-3 py-2 flex items-center gap-1.5 border-b-2 transition-all shrink-0 min-h-[36px] ${
+                activeTab === 'users'
+                  ? 'border-[#37352f] text-[#37352f] font-semibold'
+                  : 'border-transparent text-[#787774] hover:text-[#37352f] hover:bg-[#f7f6f3] rounded-t-md'
+              }`}
+            >
+              <Users className="w-3.5 h-3.5" />
+              User Management
+              <span className="px-1.5 py-0.2 rounded-full bg-[#f1f1ef] text-[10px] text-[#787774]">
+                {users.length}
+              </span>
+            </button>
+
+            <button
+              onClick={() => setActiveTab('sections')}
+              className={`px-3 py-2 flex items-center gap-1.5 border-b-2 transition-all shrink-0 min-h-[36px] ${
+                activeTab === 'sections'
+                  ? 'border-[#37352f] text-[#37352f] font-semibold'
+                  : 'border-transparent text-[#787774] hover:text-[#37352f] hover:bg-[#f7f6f3] rounded-t-md'
+              }`}
+            >
+              <FolderPlus className="w-3.5 h-3.5" />
+              Sections & Categories
+              <span className="px-1.5 py-0.2 rounded-full bg-[#f1f1ef] text-[10px] text-[#787774]">
+                {sections.length}
+              </span>
+            </button>
+
+            <button
+              onClick={() => setActiveTab('tests')}
+              className={`px-3 py-2 flex items-center gap-1.5 border-b-2 transition-all shrink-0 min-h-[36px] ${
+                activeTab === 'tests'
+                  ? 'border-[#37352f] text-[#37352f] font-semibold'
+                  : 'border-transparent text-[#787774] hover:text-[#37352f] hover:bg-[#f7f6f3] rounded-t-md'
+              }`}
+            >
+              <Layers className="w-3.5 h-3.5" />
+              All Platform Tests
+              <span className="px-1.5 py-0.2 rounded-full bg-[#f1f1ef] text-[10px] text-[#787774]">
+                {tests.length}
+              </span>
+            </button>
+
+            <button
+              onClick={() => setActiveTab('system')}
+              className={`px-3 py-2 flex items-center gap-1.5 border-b-2 transition-all shrink-0 min-h-[36px] ${
+                activeTab === 'system'
+                  ? 'border-[#37352f] text-[#37352f] font-semibold'
+                  : 'border-transparent text-[#787774] hover:text-[#37352f] hover:bg-[#f7f6f3] rounded-t-md'
+              }`}
+            >
+              <Server className="w-3.5 h-3.5" />
+              System & AI Engine
+            </button>
+          </div>
+
+          {/* TAB 1: Platform User Management */}
+          {activeTab === 'users' && (
+            <div className="space-y-4">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 w-full sm:w-auto">
+                  <div className="relative flex-1 sm:flex-none">
+                    <input
+                      type="text"
+                      placeholder="Search users by name, email, or institute..."
+                      value={userSearch}
+                      onChange={(e) => setUserSearch(e.target.value)}
+                      className="w-full sm:w-80 pl-8 pr-3 py-1.5 min-h-[36px] border border-[#ebebeb] bg-white rounded-md text-xs text-[#37352f] placeholder-[#9b9a97] focus:outline-none focus:border-[#2383e2] focus:ring-1 focus:ring-[#2383e2]"
+                    />
+                    <Search className="w-3.5 h-3.5 text-[#9b9a97] absolute left-2.5 top-2.5" />
+                  </div>
+
+                  <select
+                    value={roleFilter}
+                    onChange={(e) => setRoleFilter(e.target.value as any)}
+                    className="px-3 py-1.5 min-h-[36px] border border-[#ebebeb] rounded-md text-xs text-[#37352f] bg-white focus:outline-none focus:border-[#2383e2] focus:ring-1 focus:ring-[#2383e2]"
                   >
-                    <div>
-                      <div className="flex items-center justify-between mb-2">
-                        <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-purple-50 text-purple-700 border border-purple-200">
-                          {sec.id}
-                        </span>
-                        <button
-                          onClick={() => handleToggleSection(sec)}
-                          className={`px-2.5 py-1 rounded-lg text-[10px] font-bold border transition-colors ${
-                            sec.is_active
-                              ? 'bg-emerald-50 text-emerald-700 border-emerald-200'
-                              : 'bg-slate-100 text-slate-500 border-slate-200'
-                          }`}
-                        >
-                          {sec.is_active ? 'Active' : 'Inactive'}
-                        </button>
+                    <option value="all">All Roles</option>
+                    <option value="student">Students</option>
+                    <option value="admin">Administrators</option>
+                    <option value="superadmin">Superadmins</option>
+                  </select>
+                </div>
+
+                <button
+                  onClick={fetchUsers}
+                  className="p-2 min-h-[36px] text-[#787774] hover:text-[#37352f] hover:bg-[#f7f6f3] rounded-md text-xs flex items-center justify-center gap-1 self-start sm:self-auto border border-[#ebebeb] transition-colors"
+                >
+                  <RefreshCw className="w-3.5 h-3.5" />
+                  Refresh
+                </button>
+              </div>
+
+              {loadingUsers ? (
+                <div className="p-12 text-center text-[#787774] text-sm">
+                  <div className="w-6 h-6 border-2 border-[#37352f] border-t-transparent rounded-full animate-spin mx-auto mb-3" />
+                  Loading all platform accounts...
+                </div>
+              ) : filteredUsers.length === 0 ? (
+                <div className="bg-white rounded-md p-10 text-center border border-dashed border-[#ebebeb] space-y-3">
+                  <p className="text-xs text-[#787774]">No users match criteria</p>
+                </div>
+              ) : (
+                <div className="bg-white rounded-md border border-[#ebebeb] overflow-hidden shadow-2xs">
+                  <div className="overflow-x-auto">
+                    <table className="w-full text-left text-xs border-collapse">
+                      <thead className="bg-[#fbfbfa] border-b border-[#ebebeb] text-[11px] font-semibold text-[#787774] uppercase tracking-wider">
+                        <tr>
+                          <th className="px-4 py-2.5">User & Organization</th>
+                          <th className="px-3 py-2.5">Role & Privilege</th>
+                          <th className="px-3 py-2.5">Status</th>
+                          <th className="px-3 py-2.5">Activity</th>
+                          <th className="px-3 py-2.5">Joined</th>
+                          <th className="px-4 py-2.5 text-right">Superadmin Actions</th>
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y divide-[#ebebeb] font-normal">
+                        {filteredUsers.map((u) => (
+                          <tr key={u.id} className="hover:bg-[#f7f6f3]/80 transition-colors">
+                            <td className="px-4 py-3">
+                              <div className="flex items-center gap-2.5">
+                                <div
+                                  className={`w-7 h-7 rounded-full font-medium flex items-center justify-center text-xs border ${
+                                    u.role === 'superadmin'
+                                      ? 'bg-[#fbf3db] text-[#8f6b10] border-[#fae6b4]'
+                                      : u.role === 'admin'
+                                      ? 'bg-[#ebf5fe] text-[#2383e2] border-[#cce5fb]'
+                                      : 'bg-[#f1f1ef] text-[#787774] border-[#ebebeb]'
+                                  }`}
+                                >
+                                  {u.name.charAt(0).toUpperCase()}
+                                </div>
+                                <div>
+                                  <p className="font-semibold text-[#37352f]">{u.name}</p>
+                                  <p className="text-[11px] text-[#787774]">{u.email}</p>
+                                  {u.institute_name && (
+                                    <p className="text-[10px] text-[#8f6b10] font-medium mt-0.5">
+                                      🏢 {u.institute_name}
+                                    </p>
+                                  )}
+                                </div>
+                              </div>
+                            </td>
+
+                            <td className="px-3 py-3">
+                              <select
+                                value={u.role}
+                                onChange={(e) => handleQuickRoleChange(u.id, e.target.value as UserRole)}
+                                disabled={u.id === currentUser?.id}
+                                className="px-2 py-1 border border-[#ebebeb] rounded-md text-xs font-medium bg-white text-[#37352f] focus:outline-none focus:border-[#2383e2]"
+                              >
+                                <option value="student">🎓 Student</option>
+                                <option value="admin">🏫 Administrator</option>
+                                <option value="superadmin">👑 Superadmin</option>
+                              </select>
+                            </td>
+
+                            <td className="px-3 py-3">
+                              <button
+                                onClick={() => handleToggleStatus(u)}
+                                disabled={u.id === currentUser?.id}
+                                className={`px-2 py-0.5 rounded-[3px] text-[10px] font-medium border transition-colors ${
+                                  u.status === 'active'
+                                    ? 'bg-[#e6f6ee] text-[#1c7d49] border-[#c3eed7] hover:bg-[#d5f1e3]'
+                                    : 'bg-[#fbebe9] text-[#c43228] border-[#fad2cf] hover:bg-[#fad2cf]'
+                                }`}
+                              >
+                                {u.status === 'active' ? '✓ Active' : '✕ Suspended'}
+                              </button>
+                            </td>
+
+                            <td className="px-3 py-3 text-[#787774] text-[11px]">
+                              <div>
+                                <strong className="text-[#37352f]">{u.tests_created}</strong> tests created
+                              </div>
+                              <div className="text-[#9b9a97]">
+                                <strong className="text-[#37352f]">{u.attempts_made}</strong> attempts
+                              </div>
+                            </td>
+
+                            <td className="px-3 py-3 text-[#787774] font-mono text-[11px]">
+                              {new Date(u.created_at).toLocaleDateString()}
+                            </td>
+
+                            <td className="px-4 py-3 text-right">
+                              <div className="flex items-center justify-end gap-1">
+                                <button
+                                  onClick={() => {
+                                    setEditingUser(u);
+                                    setEditName(u.name);
+                                    setEditEmail(u.email);
+                                    setEditRole(u.role);
+                                    setEditInstitute(u.institute_name || '');
+                                    setEditPassword('');
+                                  }}
+                                  title="Edit User or Reset Password"
+                                  className="p-1.5 min-h-[30px] min-w-[30px] flex items-center justify-center border border-[#ebebeb] text-[#787774] hover:text-[#37352f] hover:bg-[#f7f6f3] rounded-md text-xs transition-colors"
+                                >
+                                  <Edit className="w-3.5 h-3.5" />
+                                </button>
+
+                                {u.id !== currentUser?.id && (
+                                  <button
+                                    onClick={() => handleDeleteUser(u.id)}
+                                    title="Delete User"
+                                    className="p-1.5 min-h-[30px] min-w-[30px] flex items-center justify-center border border-[#ebebeb] text-[#9b9a97] hover:text-[#c43228] hover:bg-[#fbebe9] rounded-md text-xs transition-colors"
+                                  >
+                                    <Trash2 className="w-3.5 h-3.5" />
+                                  </button>
+                                )}
+                              </div>
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* TAB 2: Sections & Categories Manager */}
+          {activeTab === 'sections' && (
+            <div className="space-y-4">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                <div>
+                  <h3 className="text-sm font-semibold text-[#37352f]">Exam Sections & Domain Categories</h3>
+                  <p className="text-[11px] text-[#787774]">
+                    Configure the official categories used to classify question papers and mock tests.
+                  </p>
+                </div>
+
+                <button
+                  onClick={() => setShowAddSectionModal(true)}
+                  className="inline-flex items-center justify-center gap-1.5 px-3 py-1.5 min-h-[36px] bg-[#37352f] hover:bg-[#201e1d] text-white font-medium rounded-md text-xs shadow-2xs self-start sm:self-auto transition-colors"
+                >
+                  <FolderPlus className="w-3.5 h-3.5" />
+                  Add New Section
+                </button>
+              </div>
+
+              {loadingSections ? (
+                <div className="p-12 text-center text-[#787774] text-sm">
+                  <div className="w-6 h-6 border-2 border-[#37352f] border-t-transparent rounded-full animate-spin mx-auto mb-3" />
+                  Loading exam sections...
+                </div>
+              ) : (
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+                  {sections.map((sec) => (
+                    <div
+                      key={sec.id}
+                      className="bg-white rounded-md border border-[#ebebeb] hover:border-[#d9d8d6] p-4 shadow-2xs space-y-3 flex flex-col justify-between transition-all"
+                    >
+                      <div>
+                        <div className="flex items-center justify-between mb-2">
+                          <span className="px-2 py-0.5 rounded-[3px] text-[10px] font-medium bg-[#f1f1ef] text-[#787774] border border-[#ebebeb]">
+                            {sec.id}
+                          </span>
+                          <button
+                            onClick={() => handleToggleSection(sec)}
+                            className={`px-2 py-0.5 rounded-[3px] text-[10px] font-medium border transition-colors ${
+                              sec.is_active
+                                ? 'bg-[#e6f6ee] text-[#1c7d49] border-[#c3eed7]'
+                                : 'bg-[#f1f1ef] text-[#787774] border-[#ebebeb]'
+                            }`}
+                          >
+                            {sec.is_active ? 'Active' : 'Inactive'}
+                          </button>
+                        </div>
+
+                        <h4 className="text-sm font-semibold text-[#37352f]">{sec.name}</h4>
+                        <p className="text-xs text-[#787774] mt-1 leading-relaxed">
+                          {sec.description || 'General examination section'}
+                        </p>
                       </div>
 
-                      <h4 className="text-base font-bold text-slate-900">{sec.name}</h4>
-                      <p className="text-xs text-slate-500 mt-1 leading-relaxed">
-                        {sec.description || 'General examination section'}
-                      </p>
+                      <div className="pt-3 border-t border-[#ebebeb] flex items-center justify-between text-xs">
+                        <span className="font-medium text-[#787774]">
+                          {sec.test_count || 0} Tests Linked
+                        </span>
+                        <button
+                          onClick={() => handleDeleteSection(sec.id)}
+                          className="p-1.5 min-h-[30px] min-w-[30px] flex items-center justify-center text-[#9b9a97] hover:text-[#c43228] hover:bg-[#fbebe9] rounded-md transition-colors"
+                          title="Delete section"
+                        >
+                          <Trash2 className="w-3.5 h-3.5" />
+                        </button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* TAB 3: All Platform Mock Tests */}
+          {activeTab === 'tests' && (
+            <div className="space-y-4">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                <div className="relative flex-1 sm:flex-none">
+                  <input
+                    type="text"
+                    placeholder="Search across all tests and creators..."
+                    value={testSearch}
+                    onChange={(e) => setTestSearch(e.target.value)}
+                    className="w-full sm:w-80 pl-8 pr-3 py-1.5 min-h-[36px] border border-[#ebebeb] bg-white rounded-md text-xs text-[#37352f] placeholder-[#9b9a97] focus:outline-none focus:border-[#2383e2] focus:ring-1 focus:ring-[#2383e2]"
+                  />
+                  <Search className="w-3.5 h-3.5 text-[#9b9a97] absolute left-2.5 top-2.5" />
+                </div>
+
+                <span className="text-xs font-medium text-[#787774] self-start sm:self-auto">
+                  {filteredTests.length} Total Mock Tests in System
+                </span>
+              </div>
+
+              <div className="grid grid-cols-1 gap-3">
+                {filteredTests.map((test) => (
+                  <div
+                    key={test.id}
+                    className="bg-white rounded-md border border-[#ebebeb] hover:border-[#d9d8d6] p-4 shadow-2xs transition-all flex flex-col lg:flex-row lg:items-center justify-between gap-4"
+                  >
+                    <div className="space-y-1.5 flex-1">
+                      <div className="flex flex-wrap items-center gap-2">
+                        <span className="px-2 py-0.5 rounded-[3px] text-[10px] font-medium bg-[#f7f6f3] text-[#37352f] border border-[#ebebeb]">
+                          {test.subject || 'General'}
+                        </span>
+                        <span className="text-xs text-[#9b9a97] font-mono">
+                          By {test.created_by_name || 'User'} ({test.created_by_role || 'student'})
+                        </span>
+                      </div>
+                      <h4 className="text-sm font-semibold text-[#37352f]">{test.title}</h4>
+                      <div className="flex flex-wrap items-center gap-3 sm:gap-4 text-xs text-[#787774]">
+                        <span className="flex items-center gap-1 font-medium">
+                          <Layers className="w-3.5 h-3.5 text-[#9b9a97]" />
+                          {test.question_count} Questions
+                        </span>
+                        <span className="flex items-center gap-1 font-medium">
+                          <Clock className="w-3.5 h-3.5 text-[#9b9a97]" />
+                          {Math.floor((test.duration_seconds || 0) / 60)} mins
+                        </span>
+                        <span className="flex items-center gap-1 font-medium text-[#1c7d49] bg-[#e6f6ee] px-2 py-0.5 rounded-[3px] border border-[#c3eed7]">
+                          <Users className="w-3.5 h-3.5 text-[#1c7d49]" />
+                          {test.attempts_count} Attempts Recorded
+                        </span>
+                      </div>
                     </div>
 
-                    <div className="pt-3 border-t border-slate-100 flex items-center justify-between text-xs">
-                      <span className="font-semibold text-slate-700">
-                        {sec.test_count || 0} Tests Linked
-                      </span>
-                      <button
-                        onClick={() => handleDeleteSection(sec.id)}
-                        className="p-2 min-h-[36px] min-w-[36px] flex items-center justify-center text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition-colors"
-                        title="Delete section"
+                    <div className="flex flex-wrap items-center gap-2 pt-2 lg:pt-0 border-t lg:border-t-0 border-[#ebebeb]">
+                      <Link
+                        href={`/tests/${test.id}/start`}
+                        className="flex-1 sm:flex-none justify-center px-3 py-1.5 min-h-[36px] bg-[#37352f] hover:bg-[#201e1d] text-white font-medium rounded-md text-xs flex items-center gap-1.5 shadow-2xs transition-colors"
                       >
-                        <Trash2 className="w-4 h-4" />
-                      </button>
+                        <Play className="w-3.5 h-3.5 fill-white" />
+                        Take Test
+                      </Link>
+                      <Link
+                        href={`/tests/${test.id}`}
+                        className="p-2 min-h-[36px] min-w-[36px] flex items-center justify-center border border-[#ebebeb] hover:bg-[#f7f6f3] text-[#787774] hover:text-[#37352f] rounded-md text-xs transition-colors"
+                        title="Inspect paper"
+                      >
+                        <Eye className="w-3.5 h-3.5" />
+                      </Link>
                     </div>
                   </div>
                 ))}
               </div>
-            )}
-          </div>
-        )}
+            </div>
+          )}
 
-        {/* TAB 3: All Platform Mock Tests */}
-        {activeTab === 'tests' && (
-          <div className="space-y-4">
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-              <div className="relative flex-1 sm:flex-none">
-                <input
-                  type="text"
-                  placeholder="Search across all tests and creators..."
-                  value={testSearch}
-                  onChange={(e) => setTestSearch(e.target.value)}
-                  className="w-full sm:w-80 pl-8 pr-3 py-2 min-h-[40px] border border-slate-300 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-purple-500 font-medium"
-                />
-                <Search className="w-3.5 h-3.5 text-slate-400 absolute left-2.5 top-3" />
+          {/* TAB 4: System & AI Engine Health */}
+          {activeTab === 'system' && (
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="bg-white rounded-md border border-[#ebebeb] p-5 shadow-2xs space-y-4">
+                <div className="flex items-center gap-3">
+                  <div className="w-9 h-9 rounded-md bg-[#fbf3db] text-[#8f6b10] flex items-center justify-center shrink-0">
+                    <Sparkles className="w-4 h-4" />
+                  </div>
+                  <div>
+                    <h4 className="font-semibold text-[#37352f] text-sm">Google Gemini AI Engine</h4>
+                    <p className="text-xs text-[#787774]">Autonomous performance analysis & parser</p>
+                  </div>
+                </div>
+
+                <div className="space-y-2 text-xs">
+                  <div className="flex items-center justify-between p-2.5 bg-[#fbfbfa] rounded-md border border-[#ebebeb]">
+                    <span className="text-[#787774]">Target Model:</span>
+                    <span className="font-mono font-medium text-[#37352f]">gemini-3.6-flash</span>
+                  </div>
+                  <div className="flex items-center justify-between p-2.5 bg-[#fbfbfa] rounded-md border border-[#ebebeb]">
+                    <span className="text-[#787774]">Status:</span>
+                    <span className="font-medium text-[#1c7d49] flex items-center gap-1">
+                      <CheckCircle className="w-3 h-3" />
+                      Verified & Operational
+                    </span>
+                  </div>
+                  <div className="flex items-center justify-between p-2.5 bg-[#fbfbfa] rounded-md border border-[#ebebeb]">
+                    <span className="text-[#787774]">Key Storage:</span>
+                    <span className="text-[#37352f] font-mono text-[11px]">Server Environment (.env.local)</span>
+                  </div>
+                </div>
               </div>
 
-              <span className="text-xs font-bold text-slate-500 self-start sm:self-auto">
-                {filteredTests.length} Total Mock Tests in System
-              </span>
-            </div>
+              <div className="bg-white rounded-md border border-[#ebebeb] p-5 shadow-2xs space-y-4">
+                <div className="flex items-center gap-3">
+                  <div className="w-9 h-9 rounded-md bg-[#ebf5fe] text-[#2383e2] flex items-center justify-center shrink-0">
+                    <Database className="w-4 h-4" />
+                  </div>
+                  <div>
+                    <h4 className="font-semibold text-[#37352f] text-sm">Database & Persistence</h4>
+                    <p className="text-xs text-[#787774]">Local High-Performance SQLite storage</p>
+                  </div>
+                </div>
 
-            <div className="grid grid-cols-1 gap-4">
-              {filteredTests.map((test) => (
-                <div
-                  key={test.id}
-                  className="bg-white rounded-2xl border border-slate-200 p-4 sm:p-5 shadow-2xs hover:shadow-md transition-all flex flex-col lg:flex-row lg:items-center justify-between gap-4"
+                <div className="space-y-2 text-xs">
+                  <div className="flex items-center justify-between p-2.5 bg-[#fbfbfa] rounded-md border border-[#ebebeb]">
+                    <span className="text-[#787774]">Database Engine:</span>
+                    <span className="font-medium text-[#37352f]">better-sqlite3 (WAL Mode)</span>
+                  </div>
+                  <div className="flex items-center justify-between p-2.5 bg-[#fbfbfa] rounded-md border border-[#ebebeb]">
+                    <span className="text-[#787774]">Storage Location:</span>
+                    <span className="font-mono text-[#37352f] text-[11px]">./data/mocktest.db</span>
+                  </div>
+                  <div className="flex items-center justify-between p-2.5 bg-[#fbfbfa] rounded-md border border-[#ebebeb]">
+                    <span className="text-[#787774]">Active Roles:</span>
+                    <span className="font-medium text-[#8f6b10]">student, admin, superadmin</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
+
+        {/* Add Exam Section Modal */}
+        {showAddSectionModal && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#37352f]/40 backdrop-blur-xs p-4">
+            <div className="bg-white rounded-lg max-w-md w-full p-5 shadow-lg border border-[#ebebeb]">
+              <div className="flex items-center justify-between mb-4">
+                <div className="flex items-center gap-2">
+                  <div className="w-7 h-7 rounded-md bg-[#f1f1ef] text-[#37352f] flex items-center justify-center">
+                    <FolderPlus className="w-3.5 h-3.5" />
+                  </div>
+                  <h3 className="font-semibold text-[#37352f] text-sm">Create Exam Section</h3>
+                </div>
+                <button
+                  onClick={() => setShowAddSectionModal(false)}
+                  className="text-[#9b9a97] hover:text-[#37352f] p-1 text-lg leading-none"
                 >
-                  <div className="space-y-1.5 flex-1">
-                    <div className="flex flex-wrap items-center gap-2">
-                      <span className="px-2.5 py-0.5 rounded text-[10px] font-bold bg-slate-100 text-slate-800 border border-slate-200">
-                        {test.subject || 'General'}
-                      </span>
-                      <span className="text-xs text-slate-400 font-mono">
-                        By {test.created_by_name || 'User'} ({test.created_by_role || 'student'})
-                      </span>
-                    </div>
-                    <h4 className="text-base font-bold text-slate-900">{test.title}</h4>
-                    <div className="flex flex-wrap items-center gap-3 sm:gap-4 text-xs text-slate-600">
-                      <span className="flex items-center gap-1 font-semibold">
-                        <Layers className="w-3.5 h-3.5 text-slate-500" />
-                        {test.question_count} Questions
-                      </span>
-                      <span className="flex items-center gap-1 font-semibold">
-                        <Clock className="w-3.5 h-3.5 text-slate-400" />
-                        {Math.floor((test.duration_seconds || 0) / 60)} mins
-                      </span>
-                      <span className="flex items-center gap-1 font-semibold">
-                        <Users className="w-3.5 h-3.5 text-emerald-600" />
-                        {test.attempts_count} Attempts Recorded
-                      </span>
-                    </div>
-                  </div>
+                  &times;
+                </button>
+              </div>
 
-                  <div className="flex flex-wrap items-center gap-2 pt-2 lg:pt-0 border-t lg:border-t-0 border-slate-100">
-                    <Link
-                      href={`/tests/${test.id}/start`}
-                      className="flex-1 sm:flex-none justify-center px-4 py-2.5 min-h-[44px] bg-purple-700 hover:bg-purple-800 text-white font-bold rounded-xl text-xs flex items-center gap-1.5 shadow-2xs"
-                    >
-                      <Play className="w-3.5 h-3.5 fill-white" />
-                      Take Test
-                    </Link>
-                    <Link
-                      href={`/tests/${test.id}`}
-                      className="p-2.5 min-h-[44px] min-w-[44px] flex items-center justify-center border border-slate-200 hover:bg-slate-50 text-slate-600 rounded-xl text-xs transition-colors"
-                      title="Inspect paper"
-                    >
-                      <Eye className="w-4 h-4" />
-                    </Link>
-                  </div>
+              <form onSubmit={handleCreateSection} className="space-y-3.5">
+                <div>
+                  <label className="block text-[11px] font-medium uppercase tracking-wider text-[#787774] mb-1">Section / Category Name</label>
+                  <input
+                    type="text"
+                    placeholder="e.g. UPSC Civil Services, Banking PO, NEET"
+                    value={newSectionName}
+                    onChange={(e) => setNewSectionName(e.target.value)}
+                    className="w-full px-3 py-2 min-h-[36px] border border-[#ebebeb] rounded-md text-xs bg-white text-[#37352f] placeholder-[#9b9a97] focus:outline-none focus:border-[#2383e2] focus:ring-1 focus:ring-[#2383e2]"
+                    required
+                  />
                 </div>
-              ))}
+
+                <div>
+                  <label className="block text-[11px] font-medium uppercase tracking-wider text-[#787774] mb-1">Description</label>
+                  <textarea
+                    placeholder="Brief summary of syllabus or target audience..."
+                    value={newSectionDescription}
+                    onChange={(e) => setNewSectionDescription(e.target.value)}
+                    className="w-full px-3 py-2 border border-[#ebebeb] rounded-md text-xs bg-white text-[#37352f] placeholder-[#9b9a97] focus:outline-none focus:border-[#2383e2] focus:ring-1 focus:ring-[#2383e2]"
+                    rows={3}
+                  />
+                </div>
+
+                <div className="flex items-center justify-end gap-2 pt-2 border-t border-[#ebebeb]">
+                  <button
+                    type="button"
+                    onClick={() => setShowAddSectionModal(false)}
+                    className="px-3 py-1.5 min-h-[36px] text-xs font-medium text-[#787774] hover:text-[#37352f] hover:bg-[#f7f6f3] rounded-md transition-colors"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="submit"
+                    disabled={creatingSection}
+                    className="px-3.5 py-1.5 min-h-[36px] bg-[#37352f] hover:bg-[#201e1d] text-white rounded-md text-xs font-medium shadow-2xs transition-colors"
+                  >
+                    {creatingSection ? 'Creating...' : 'Create Section'}
+                  </button>
+                </div>
+              </form>
             </div>
           </div>
         )}
 
-        {/* TAB 4: System & AI Engine Health */}
-        {activeTab === 'system' && (
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div className="bg-white rounded-2xl border border-slate-200 p-5 sm:p-6 shadow-2xs space-y-4">
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center shrink-0">
-                  <Sparkles className="w-5 h-5" />
+        {/* Edit User Modal */}
+        {editingUser && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#37352f]/40 backdrop-blur-xs p-4">
+            <div className="bg-white rounded-lg max-w-md w-full p-5 shadow-lg border border-[#ebebeb]">
+              <div className="flex items-center justify-between mb-4">
+                <div className="flex items-center gap-2">
+                  <div className="w-7 h-7 rounded-md bg-[#f1f1ef] text-[#37352f] flex items-center justify-center">
+                    <Edit className="w-3.5 h-3.5" />
+                  </div>
+                  <h3 className="font-semibold text-[#37352f] text-sm">Modify User Account</h3>
                 </div>
+                <button
+                  onClick={() => setEditingUser(null)}
+                  className="text-[#9b9a97] hover:text-[#37352f] p-1 text-lg leading-none"
+                >
+                  &times;
+                </button>
+              </div>
+
+              <form onSubmit={handleSaveUser} className="space-y-3.5">
                 <div>
-                  <h4 className="font-bold text-slate-900 text-sm sm:text-base">Google Gemini AI Engine</h4>
-                  <p className="text-xs text-slate-500">Autonomous performance analysis & parser</p>
+                  <label className="block text-[11px] font-medium uppercase tracking-wider text-[#787774] mb-1">Full Name</label>
+                  <input
+                    type="text"
+                    value={editName}
+                    onChange={(e) => setEditName(e.target.value)}
+                    className="w-full px-3 py-2 min-h-[36px] border border-[#ebebeb] rounded-md text-xs bg-white text-[#37352f] placeholder-[#9b9a97] focus:outline-none focus:border-[#2383e2] focus:ring-1 focus:ring-[#2383e2]"
+                    required
+                  />
                 </div>
-              </div>
 
-              <div className="space-y-2.5 text-xs">
-                <div className="flex items-center justify-between p-3 bg-slate-50 rounded-xl">
-                  <span className="text-slate-600 font-semibold">Target Model:</span>
-                  <span className="font-mono font-bold text-slate-900">gemini-3.6-flash</span>
-                </div>
-                <div className="flex items-center justify-between p-3 bg-slate-50 rounded-xl">
-                  <span className="text-slate-600 font-semibold">Status:</span>
-                  <span className="font-bold text-emerald-700 flex items-center gap-1">
-                    <CheckCircle className="w-3.5 h-3.5" />
-                    Verified & Operational
-                  </span>
-                </div>
-                <div className="flex items-center justify-between p-3 bg-slate-50 rounded-xl">
-                  <span className="text-slate-600 font-semibold">Key Storage:</span>
-                  <span className="text-slate-800 font-mono text-[11px]">Server Environment (.env.local)</span>
-                </div>
-              </div>
-            </div>
-
-            <div className="bg-white rounded-2xl border border-slate-200 p-5 sm:p-6 shadow-2xs space-y-4">
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center shrink-0">
-                  <Database className="w-5 h-5" />
-                </div>
                 <div>
-                  <h4 className="font-bold text-slate-900 text-sm sm:text-base">Database & Persistence</h4>
-                  <p className="text-xs text-slate-500">Local High-Performance SQLite storage</p>
+                  <label className="block text-[11px] font-medium uppercase tracking-wider text-[#787774] mb-1">Email</label>
+                  <input
+                    type="email"
+                    value={editEmail}
+                    onChange={(e) => setEditEmail(e.target.value)}
+                    className="w-full px-3 py-2 min-h-[36px] border border-[#ebebeb] rounded-md text-xs bg-white text-[#37352f] placeholder-[#9b9a97] focus:outline-none focus:border-[#2383e2] focus:ring-1 focus:ring-[#2383e2]"
+                    required
+                  />
                 </div>
-              </div>
 
-              <div className="space-y-2.5 text-xs">
-                <div className="flex items-center justify-between p-3 bg-slate-50 rounded-xl">
-                  <span className="text-slate-600 font-semibold">Database Engine:</span>
-                  <span className="font-bold text-slate-900">better-sqlite3 (WAL Mode)</span>
+                <div>
+                  <label className="block text-[11px] font-medium uppercase tracking-wider text-[#787774] mb-1">Role Privilege</label>
+                  <select
+                    value={editRole}
+                    onChange={(e) => setEditRole(e.target.value as UserRole)}
+                    className="w-full px-3 py-2 min-h-[36px] border border-[#ebebeb] rounded-md text-xs bg-white text-[#37352f] focus:outline-none focus:border-[#2383e2] focus:ring-1 focus:ring-[#2383e2]"
+                  >
+                    <option value="student">🎓 Student</option>
+                    <option value="admin">🏫 Administrator</option>
+                    <option value="superadmin">👑 Super Administrator</option>
+                  </select>
                 </div>
-                <div className="flex items-center justify-between p-3 bg-slate-50 rounded-xl">
-                  <span className="text-slate-600 font-semibold">Storage Location:</span>
-                  <span className="font-mono text-slate-800 text-[11px]">./data/mocktest.db</span>
+
+                <div>
+                  <label className="block text-[11px] font-medium uppercase tracking-wider text-[#787774] mb-1">Institute Name</label>
+                  <input
+                    type="text"
+                    placeholder="e.g. Apex Institute (optional)"
+                    value={editInstitute}
+                    onChange={(e) => setEditInstitute(e.target.value)}
+                    className="w-full px-3 py-2 min-h-[36px] border border-[#ebebeb] rounded-md text-xs bg-white text-[#37352f] placeholder-[#9b9a97] focus:outline-none focus:border-[#2383e2] focus:ring-1 focus:ring-[#2383e2]"
+                  />
                 </div>
-                <div className="flex items-center justify-between p-3 bg-slate-50 rounded-xl">
-                  <span className="text-slate-600 font-semibold">Active Roles:</span>
-                  <span className="font-bold text-purple-700">student, admin, superadmin</span>
+
+                <div>
+                  <label className="block text-[11px] font-medium uppercase tracking-wider text-[#787774] mb-1">
+                    Reset Password (optional)
+                  </label>
+                  <input
+                    type="password"
+                    placeholder="Leave empty to keep unchanged"
+                    value={editPassword}
+                    onChange={(e) => setEditPassword(e.target.value)}
+                    className="w-full px-3 py-2 min-h-[36px] border border-[#ebebeb] rounded-md text-xs bg-white text-[#37352f] placeholder-[#9b9a97] focus:outline-none focus:border-[#2383e2] focus:ring-1 focus:ring-[#2383e2]"
+                  />
                 </div>
-              </div>
+
+                <div className="flex items-center justify-end gap-2 pt-2 border-t border-[#ebebeb]">
+                  <button
+                    type="button"
+                    onClick={() => setEditingUser(null)}
+                    className="px-3 py-1.5 min-h-[36px] text-xs font-medium text-[#787774] hover:text-[#37352f] hover:bg-[#f7f6f3] rounded-md transition-colors"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="submit"
+                    disabled={updatingUser}
+                    className="px-3.5 py-1.5 min-h-[36px] bg-[#37352f] hover:bg-[#201e1d] text-white rounded-md text-xs font-medium shadow-2xs transition-colors"
+                  >
+                    {updatingUser ? 'Saving...' : 'Save Changes'}
+                  </button>
+                </div>
+              </form>
             </div>
           </div>
         )}
       </div>
-
-      {/* Add Exam Section Modal */}
-      {showAddSectionModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 backdrop-blur-sm p-4">
-          <div className="bg-white rounded-2xl max-w-md w-full p-5 sm:p-6 shadow-2xl border border-slate-200">
-            <div className="flex items-center justify-between mb-4">
-              <div className="flex items-center gap-2">
-                <div className="w-8 h-8 rounded-lg bg-purple-50 text-purple-700 flex items-center justify-center">
-                  <FolderPlus className="w-4 h-4" />
-                </div>
-                <h3 className="font-bold text-slate-900 text-base sm:text-lg">Create Exam Section</h3>
-              </div>
-              <button
-                onClick={() => setShowAddSectionModal(false)}
-                className="text-slate-400 hover:text-slate-600 p-2 min-h-[40px] min-w-[40px] flex items-center justify-center text-xl font-semibold"
-              >
-                &times;
-              </button>
-            </div>
-
-            <form onSubmit={handleCreateSection} className="space-y-3.5">
-              <div>
-                <label className="block text-xs font-bold text-slate-700 mb-1">Section / Category Name</label>
-                <input
-                  type="text"
-                  placeholder="e.g. UPSC Civil Services, Banking PO, NEET"
-                  value={newSectionName}
-                  onChange={(e) => setNewSectionName(e.target.value)}
-                  className="w-full px-3.5 py-2.5 min-h-[40px] border border-slate-300 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-purple-500 font-medium"
-                  required
-                />
-              </div>
-
-              <div>
-                <label className="block text-xs font-bold text-slate-700 mb-1">Description</label>
-                <textarea
-                  placeholder="Brief summary of syllabus or target audience..."
-                  value={newSectionDescription}
-                  onChange={(e) => setNewSectionDescription(e.target.value)}
-                  className="w-full px-3.5 py-2.5 border border-slate-300 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-purple-500 font-medium"
-                  rows={3}
-                />
-              </div>
-
-              <div className="flex items-center justify-end gap-2 pt-2">
-                <button
-                  type="button"
-                  onClick={() => setShowAddSectionModal(false)}
-                  className="px-4 py-2 min-h-[40px] text-xs font-semibold text-slate-600 hover:bg-slate-100 rounded-xl"
-                >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  disabled={creatingSection}
-                  className="px-4 py-2 min-h-[40px] bg-purple-700 hover:bg-purple-800 text-white rounded-xl text-xs font-bold shadow-sm"
-                >
-                  {creatingSection ? 'Creating...' : 'Create Section'}
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
-
-      {/* Edit User Modal */}
-      {editingUser && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 backdrop-blur-sm p-4">
-          <div className="bg-white rounded-2xl max-w-md w-full p-5 sm:p-6 shadow-2xl border border-slate-200">
-            <div className="flex items-center justify-between mb-4">
-              <div className="flex items-center gap-2">
-                <div className="w-8 h-8 rounded-lg bg-purple-50 text-purple-700 flex items-center justify-center">
-                  <Edit className="w-4 h-4" />
-                </div>
-                <h3 className="font-bold text-slate-900 text-base sm:text-lg">Modify User Account</h3>
-              </div>
-              <button
-                onClick={() => setEditingUser(null)}
-                className="text-slate-400 hover:text-slate-600 p-2 min-h-[40px] min-w-[40px] flex items-center justify-center text-xl font-semibold"
-              >
-                &times;
-              </button>
-            </div>
-
-            <form onSubmit={handleSaveUser} className="space-y-3.5">
-              <div>
-                <label className="block text-xs font-bold text-slate-700 mb-1">Full Name</label>
-                <input
-                  type="text"
-                  value={editName}
-                  onChange={(e) => setEditName(e.target.value)}
-                  className="w-full px-3.5 py-2.5 min-h-[40px] border border-slate-300 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-purple-500 font-medium"
-                  required
-                />
-              </div>
-
-              <div>
-                <label className="block text-xs font-bold text-slate-700 mb-1">Email</label>
-                <input
-                  type="email"
-                  value={editEmail}
-                  onChange={(e) => setEditEmail(e.target.value)}
-                  className="w-full px-3.5 py-2.5 min-h-[40px] border border-slate-300 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-purple-500 font-medium"
-                  required
-                />
-              </div>
-
-              <div>
-                <label className="block text-xs font-bold text-slate-700 mb-1">Role Privilege</label>
-                <select
-                  value={editRole}
-                  onChange={(e) => setEditRole(e.target.value as UserRole)}
-                  className="w-full px-3.5 py-2.5 min-h-[40px] border border-slate-300 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-purple-500 font-medium"
-                >
-                  <option value="student">🎓 Student</option>
-                  <option value="admin">🏫 Administrator</option>
-                  <option value="superadmin">👑 Super Administrator</option>
-                </select>
-              </div>
-
-              <div>
-                <label className="block text-xs font-bold text-slate-700 mb-1">Institute Name</label>
-                <input
-                  type="text"
-                  placeholder="e.g. Apex Institute (optional)"
-                  value={editInstitute}
-                  onChange={(e) => setEditInstitute(e.target.value)}
-                  className="w-full px-3.5 py-2.5 min-h-[40px] border border-slate-300 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-purple-500 font-medium"
-                />
-              </div>
-
-              <div>
-                <label className="block text-xs font-bold text-slate-700 mb-1">
-                  Reset Password (optional)
-                </label>
-                <input
-                  type="password"
-                  placeholder="Leave empty to keep unchanged"
-                  value={editPassword}
-                  onChange={(e) => setEditPassword(e.target.value)}
-                  className="w-full px-3.5 py-2.5 min-h-[40px] border border-slate-300 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-purple-500 font-medium"
-                />
-              </div>
-
-              <div className="flex items-center justify-end gap-2 pt-2">
-                <button
-                  type="button"
-                  onClick={() => setEditingUser(null)}
-                  className="px-4 py-2 min-h-[40px] text-xs font-semibold text-slate-600 hover:bg-slate-100 rounded-xl"
-                >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  disabled={updatingUser}
-                  className="px-4 py-2 min-h-[40px] bg-purple-700 hover:bg-purple-800 text-white rounded-xl text-xs font-bold shadow-sm"
-                >
-                  {updatingUser ? 'Saving...' : 'Save Changes'}
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
-    </div>
+    </AppShell>
   );
 }

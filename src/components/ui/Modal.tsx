@@ -64,39 +64,39 @@ export function Modal({
     >
       {/* Backdrop */}
       <div
-        className="fixed inset-0 bg-stone-900/60 backdrop-blur-sm transition-opacity"
+        className="fixed inset-0 bg-[#0f0f0f]/40 transition-opacity"
         onClick={onClose}
       />
 
       {/* Dialog Body */}
       <div
         ref={modalRef}
-        className={`relative w-full ${sizeWidths[size]} bg-white rounded-xl shadow-2xl border border-stone-200 overflow-hidden z-10 animate-in fade-in zoom-in-95 duration-200 ${className}`}
+        className={`relative w-full ${sizeWidths[size]} bg-white rounded-lg shadow-[0_4px_24px_rgba(0,0,0,0.12)] border border-[#ebebeb] overflow-hidden z-10 text-[#37352f] ${className}`}
       >
-        <div className="flex items-start justify-between px-6 pt-5 pb-4 border-b border-stone-100">
+        <div className="flex items-start justify-between px-5 pt-4 pb-3 border-b border-[#ebebeb]">
           <div>
-            <h2 id="modal-title" className="text-lg font-serif font-bold text-stone-900">
+            <h2 id="modal-title" className="text-base font-semibold text-[#37352f] tracking-tight">
               {title}
             </h2>
             {description && (
-              <p className="text-xs text-stone-500 mt-0.5">{description}</p>
+              <p className="text-xs text-[#787774] mt-0.5">{description}</p>
             )}
           </div>
           <button
             onClick={onClose}
-            className="p-1.5 rounded-lg text-stone-400 hover:text-stone-700 hover:bg-stone-100 transition-colors focus:outline-none focus:ring-2 focus:ring-stone-400"
+            className="p-1 rounded-md text-[#787774] hover:text-[#37352f] hover:bg-[#efefed] transition-colors focus:outline-none"
             aria-label="Close dialog"
           >
-            <X className="w-5 h-5" />
+            <X className="w-4 h-4" />
           </button>
         </div>
 
-        <div className="px-6 py-5 max-h-[75vh] overflow-y-auto">
+        <div className="px-5 py-4 max-h-[75vh] overflow-y-auto">
           {children}
         </div>
 
         {footer && (
-          <div className="flex items-center justify-end gap-3 px-6 py-4 bg-stone-50/70 border-t border-stone-100">
+          <div className="flex items-center justify-end gap-2.5 px-5 py-3 bg-[#fbfbfa] border-t border-[#ebebeb]">
             {footer}
           </div>
         )}

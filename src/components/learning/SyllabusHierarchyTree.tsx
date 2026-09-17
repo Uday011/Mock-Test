@@ -72,9 +72,7 @@ export function SyllabusHierarchyTree({
   onStartTopicTest,
   className = '',
 }: SyllabusHierarchyTreeProps) {
-  // Store expanded subjects and topics
   const [expandedSubjects, setExpandedSubjects] = useState<Record<string, boolean>>(() => {
-    // Expand first subject by default
     const init: Record<string, boolean> = {};
     if (subjects.length > 0) init[subjects[0].id] = true;
     return init;
@@ -115,31 +113,31 @@ export function SyllabusHierarchyTree({
   };
 
   return (
-    <div className={`space-y-4 ${className}`}>
+    <div className={`space-y-3 ${className}`}>
       {/* Controls Header */}
-      <div className="flex items-center justify-between pb-3 border-b border-stone-200">
+      <div className="flex items-center justify-between pb-2 border-b border-[#ebebeb]">
         <div className="flex items-center gap-2">
-          <span className="text-xs font-mono uppercase tracking-wider text-stone-500 font-semibold">
-            Hierarchical Curriculum Navigator
+          <span className="text-xs font-mono uppercase tracking-wider text-[#787774] font-medium">
+            Curriculum Hierarchy
           </span>
-          <span className="text-xs text-stone-400">•</span>
-          <span className="text-xs text-stone-600">
-            {subjects.length} Subjects, {subjects.reduce((acc, s) => acc + s.topics.length, 0)} Core Topics
+          <span className="text-xs text-[#9b9a97]">•</span>
+          <span className="text-xs text-[#787774]">
+            {subjects.length} Subjects, {subjects.reduce((acc, s) => acc + s.topics.length, 0)} Topics
           </span>
         </div>
         <div className="flex items-center gap-2">
           <button
             type="button"
             onClick={expandAll}
-            className="text-xs font-mono text-stone-600 hover:text-amber-700 underline px-1.5 py-0.5"
+            className="text-xs text-[#787774] hover:text-[#37352f] underline px-1 py-0.5"
           >
             Expand All
           </button>
-          <span className="text-stone-300">/</span>
+          <span className="text-[#ebebeb]">/</span>
           <button
             type="button"
             onClick={collapseAll}
-            className="text-xs font-mono text-stone-600 hover:text-amber-700 underline px-1.5 py-0.5"
+            className="text-xs text-[#787774] hover:text-[#37352f] underline px-1 py-0.5"
           >
             Collapse All
           </button>
@@ -147,7 +145,7 @@ export function SyllabusHierarchyTree({
       </div>
 
       {/* Subjects Tree */}
-      <div className="space-y-3">
+      <div className="space-y-2.5">
         {subjects.map((subj, subjIdx) => {
           const isSubjExpanded = Boolean(expandedSubjects[subj.id]);
           const masteredCount = subj.topics.filter((t) => t.user_status === 'mastered').length;
@@ -158,86 +156,86 @@ export function SyllabusHierarchyTree({
           return (
             <div
               key={subj.id}
-              className="border border-stone-200 bg-white rounded-xl overflow-hidden shadow-sm transition-all"
+              className="border border-[#ebebeb] bg-white rounded-lg overflow-hidden transition-all"
             >
               {/* Subject Header Bar */}
               <div
                 onClick={() => toggleSubject(subj.id)}
-                className="p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3 cursor-pointer hover:bg-stone-50/70 select-none bg-stone-50/40"
+                className="p-3.5 flex flex-col sm:flex-row sm:items-center justify-between gap-3 cursor-pointer hover:bg-[#fbfbfa] select-none bg-[#fbfbfa]"
               >
-                <div className="flex items-center gap-3">
-                  <div className="w-6 h-6 rounded flex items-center justify-center text-stone-400 bg-stone-100 shrink-0">
-                    {isSubjExpanded ? <ChevronDown className="w-4 h-4" /> : <ChevronRight className="w-4 h-4" />}
+                <div className="flex items-center gap-2.5">
+                  <div className="w-5 h-5 rounded flex items-center justify-center text-[#787774] bg-[#f7f6f3] shrink-0">
+                    {isSubjExpanded ? <ChevronDown className="w-3.5 h-3.5" /> : <ChevronRight className="w-3.5 h-3.5" />}
                   </div>
                   <div>
                     <div className="flex items-center gap-2">
-                      <span className="font-mono text-[10px] font-bold px-1.5 py-0.5 rounded bg-stone-200 text-stone-700">
+                      <span className="font-mono text-[10px] font-medium px-1.5 py-0.5 rounded bg-[#f7f6f3] text-[#787774] border border-[#ebebeb]">
                         {subj.code || `SUBJ-${subjIdx + 1}`}
                       </span>
-                      <h3 className="font-serif font-bold text-stone-900 text-base">
+                      <h3 className="font-semibold text-[#37352f] text-sm">
                         {subj.name}
                       </h3>
                     </div>
-                    <p className="text-xs text-stone-500 mt-0.5">
+                    <p className="text-[11px] text-[#787774] mt-0.5">
                       {totalSubjTopics} Topics • {masteredCount} Mastered • {completedCount} Studied
                     </p>
                   </div>
                 </div>
 
-                <div className="flex items-center gap-4 sm:shrink-0">
-                  <div className="w-28 text-right hidden sm:block">
-                    <div className="text-[11px] font-mono font-bold text-stone-700">
+                <div className="flex items-center gap-3 sm:shrink-0">
+                  <div className="w-24 text-right hidden sm:block">
+                    <div className="text-[11px] font-mono text-[#787774]">
                       {subjProgress}% Covered
                     </div>
-                    <div className="w-full bg-stone-200 h-1.5 rounded-full overflow-hidden mt-1">
+                    <div className="w-full bg-[#f7f6f3] h-1.5 rounded-full overflow-hidden mt-1 border border-[#ebebeb]">
                       <div
-                        className="bg-amber-600 h-full rounded-full transition-all"
+                        className="bg-[#37352f] h-full rounded-full transition-all"
                         style={{ width: `${subjProgress}%` }}
                       />
                     </div>
                   </div>
-                  <Badge variant={subjProgress === 100 ? 'emerald' : subjProgress > 0 ? 'saffron' : 'stone'} size="sm">
-                    {subjProgress === 100 ? 'Complete' : subjProgress > 0 ? `${subjProgress}% Progress` : 'Pending'}
+                  <Badge variant={subjProgress === 100 ? 'emerald' : subjProgress > 0 ? 'blue' : 'gray'} size="sm">
+                    {subjProgress === 100 ? 'Complete' : subjProgress > 0 ? `${subjProgress}%` : 'Pending'}
                   </Badge>
                 </div>
               </div>
 
               {/* Topics Container */}
               {isSubjExpanded && (
-                <div className="divide-y divide-stone-100 border-t border-stone-200">
+                <div className="divide-y divide-[#ebebeb] border-t border-[#ebebeb]">
                   {subj.topics.map((topic, tIdx) => {
                     const isTopicExpanded = Boolean(expandedTopics[topic.id]);
                     const subtopics = topic.subtopics || [];
 
                     return (
-                      <div key={topic.id} className="p-4 pl-6 sm:pl-10 transition-colors">
+                      <div key={topic.id} className="p-3.5 pl-6 sm:pl-9 transition-colors">
                         {/* Topic Row */}
                         <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-3">
-                          <div className="flex items-start gap-3">
+                          <div className="flex items-start gap-2.5">
                             <button
                               type="button"
                               onClick={() => toggleTopic(topic.id)}
-                              className="mt-1 w-5 h-5 rounded flex items-center justify-center text-stone-400 hover:text-stone-700 bg-stone-100 shrink-0"
+                              className="mt-0.5 w-4 h-4 rounded flex items-center justify-center text-[#787774] hover:text-[#37352f] bg-[#f7f6f3] shrink-0"
                             >
                               {subtopics.length > 0 ? (
-                                isTopicExpanded ? <ChevronDown className="w-3.5 h-3.5" /> : <ChevronRight className="w-3.5 h-3.5" />
+                                isTopicExpanded ? <ChevronDown className="w-3 h-3" /> : <ChevronRight className="w-3 h-3" />
                               ) : (
-                                <span className="w-1.5 h-1.5 rounded-full bg-stone-300" />
+                                <span className="w-1.5 h-1.5 rounded-full bg-[#d4d4d4]" />
                               )}
                             </button>
 
                             <div className="space-y-1">
                               <div className="flex items-center gap-2 flex-wrap">
-                                <span className="font-mono text-[10px] text-stone-500 font-semibold">
+                                <span className="font-mono text-[10px] text-[#787774]">
                                   {topic.code || `${subj.code}-${tIdx + 1}`}
                                 </span>
-                                <span className="text-stone-300">•</span>
+                                <span className="text-[#ebebeb]">•</span>
                                 <Link
                                   href={`/learn/${topic.id}`}
-                                  className="text-stone-900 font-serif font-bold text-sm hover:text-amber-700 transition-colors inline-flex items-center gap-1 group"
+                                  className="text-[#37352f] font-medium text-xs sm:text-sm hover:underline inline-flex items-center gap-1 group"
                                 >
                                   {topic.title}
-                                  <ArrowRight className="w-3 h-3 opacity-0 group-hover:opacity-100 text-amber-600 transition-opacity" />
+                                  <ArrowRight className="w-3 h-3 opacity-0 group-hover:opacity-100 text-[#787774] transition-opacity" />
                                 </Link>
 
                                 {/* Status Pills */}
@@ -247,78 +245,68 @@ export function SyllabusHierarchyTree({
                                   </Badge>
                                 )}
                                 {topic.user_status === 'studied' && (
-                                  <Badge variant="navy" size="sm">
+                                  <Badge variant="blue" size="sm">
                                     Studied ({topic.user_mastery}%)
                                   </Badge>
                                 )}
                                 {topic.user_status === 'in_progress' && (
-                                  <Badge variant="saffron" size="sm">
+                                  <Badge variant="amber" size="sm">
                                     In Progress ({topic.user_mastery}%)
                                   </Badge>
                                 )}
                                 {topic.user_status === 'not_started' && (
-                                  <Badge variant="stone" size="sm">
+                                  <Badge variant="gray" size="sm">
                                     Not Started
                                   </Badge>
                                 )}
 
                                 {/* Revision Status Pill */}
                                 {topic.revision_status === 'due' && (
-                                  <span className="inline-flex items-center gap-1 text-[10px] font-mono font-bold px-1.5 py-0.5 rounded bg-rose-50 text-rose-700 border border-rose-200">
+                                  <span className="inline-flex items-center gap-1 text-[10px] font-mono font-medium px-1.5 py-0.5 rounded bg-[#fff0f0] text-[#e03e3e] border border-[#f5c2c2]">
                                     <RotateCcw className="w-2.5 h-2.5" />
                                     Revision Due
                                   </span>
                                 )}
 
                                 {/* Difficulty Pill */}
-                                <span
-                                  className={`text-[10px] font-mono px-1.5 py-0.2 rounded uppercase ${
-                                    topic.difficulty === 'hard'
-                                      ? 'bg-rose-50 text-rose-700'
-                                      : topic.difficulty === 'medium'
-                                      ? 'bg-amber-50 text-amber-700'
-                                      : 'bg-emerald-50 text-emerald-700'
-                                  }`}
+                                <Badge
+                                  variant={topic.difficulty === 'hard' ? 'rose' : topic.difficulty === 'medium' ? 'amber' : 'emerald'}
+                                  size="sm"
                                 >
                                   {topic.difficulty}
-                                </span>
+                                </Badge>
                               </div>
 
                               {/* Description snippet */}
                               {topic.description && (
-                                <p className="text-xs text-stone-500 line-clamp-1">
+                                <p className="text-xs text-[#787774] line-clamp-1 leading-relaxed">
                                   {topic.description}
                                 </p>
                               )}
 
                               {/* Topic Metadata & Prerequisites */}
-                              <div className="flex items-center gap-3 text-[11px] text-stone-500 flex-wrap pt-0.5">
+                              <div className="flex items-center gap-3 text-[11px] text-[#787774] font-mono flex-wrap pt-0.5">
                                 <span className="flex items-center gap-1">
-                                  <Clock className="w-3 h-3 text-stone-400" />
+                                  <Clock className="w-3 h-3 text-[#9b9a97]" />
                                   {topic.estimated_study_hours} hrs
                                 </span>
                                 <span>•</span>
-                                <span className="font-mono">
-                                  Weight: {topic.weightage_percentage}%
-                                </span>
+                                <span>Weight: {topic.weightage_percentage}%</span>
                                 <span>•</span>
-                                <span>
-                                  {subtopics.length} Subtopics
-                                </span>
+                                <span>{subtopics.length} Subtopics</span>
 
-                                {/* Prerequisites link */}
                                 {topic.prerequisite_nodes && topic.prerequisite_nodes.length > 0 && (
                                   <>
                                     <span>•</span>
-                                    <span className="flex items-center gap-1 text-stone-600">
-                                      <span className="font-mono text-[10px] uppercase text-stone-400">Prereq:</span>
+                                    <span className="flex items-center gap-1">
+                                      <span className="uppercase text-[#9b9a97]">Prereq:</span>
                                       {topic.prerequisite_nodes.map((p) => (
                                         <span
                                           key={p.id}
                                           className={`px-1 rounded text-[10px] ${
                                             p.status === 'mastered'
-                                              ? 'bg-emerald-50 text-emerald-700 border border-emerald-200'
-                                              : 'bg-stone-100 text-stone-600 border border-stone-200'
+                                              ? 'bg-[#ebf5e8] text-[#2b593f] border border-[#c4e2b8]'
+                                              : 'bg-[#f7f6f3] text-[#787774] border border-[#ebebeb]'
                                           }`}
                                         >
                                           {p.title}
@@ -335,21 +323,21 @@ export function SyllabusHierarchyTree({
                           <div className="flex items-center gap-2 shrink-0 pt-2 lg:pt-0">
                             <Link href={`/learn/${topic.id}`}>
                               <Button variant="outline" size="sm">
-                                <BookOpen className="w-3.5 h-3.5 mr-1" />
+                                <BookOpen className="w-3.5 h-3.5 mr-1 text-[#787774]" />
                                 Read Topic
                               </Button>
                             </Link>
 
                             <Link href={`/learn/${topic.id}#practice`}>
                               <Button variant="secondary" size="sm">
-                                <Zap className="w-3.5 h-3.5 mr-1 text-amber-600" />
+                                <Zap className="w-3.5 h-3.5 mr-1 text-[#787774]" />
                                 Practice
                               </Button>
                             </Link>
 
                             {topic.topic_test && (
                               <Button
-                                variant={topic.user_status === 'mastered' ? 'outline' : 'saffron'}
+                                variant={topic.user_status === 'mastered' ? 'outline' : 'primary'}
                                 size="sm"
                                 onClick={() => {
                                   if (onStartTopicTest && topic.topic_test) {
@@ -368,28 +356,28 @@ export function SyllabusHierarchyTree({
 
                         {/* Subtopics Hierarchy Level */}
                         {isTopicExpanded && subtopics.length > 0 && (
-                          <div className="mt-3 pl-8 pr-2 py-2.5 bg-stone-50/70 border border-stone-200/80 rounded-lg space-y-2">
-                            <div className="text-[10px] font-mono uppercase text-stone-400 font-bold flex items-center gap-1">
+                          <div className="mt-3 pl-6 pr-3 py-2 bg-[#fbfbfa] border border-[#ebebeb] rounded-md space-y-1.5">
+                            <div className="text-[10px] font-mono uppercase text-[#787774] font-medium flex items-center gap-1">
                               <Layers className="w-3 h-3" />
-                              Structured Subtopics & Conceptual Units
+                              Subtopics & Conceptual Units
                             </div>
-                            <div className="space-y-1.5">
+                            <div className="space-y-1">
                               {subtopics.map((sub, sIdx) => (
                                 <div
                                   key={sub.id}
-                                  className="flex items-center justify-between text-xs py-1 border-b border-stone-200/40 last:border-0"
+                                  className="flex items-center justify-between text-xs py-1 border-b border-[#ebebeb] last:border-0"
                                 >
                                   <div className="flex items-center gap-2">
-                                    <span className="font-mono text-[10px] text-stone-400">
+                                    <span className="font-mono text-[10px] text-[#9b9a97]">
                                       {sub.code || `${topic.code}.${sIdx + 1}`}
                                     </span>
-                                    <span className="font-medium text-stone-800">
+                                    <span className="font-normal text-[#37352f]">
                                       {sub.title}
                                     </span>
                                   </div>
-                                  <div className="flex items-center gap-3 text-stone-400 text-[11px] font-mono">
+                                  <div className="flex items-center gap-3 text-[#787774] text-[11px] font-mono">
                                     <span>{sub.estimated_study_hours}h</span>
-                                    <span className="text-stone-300">•</span>
+                                    <span className="text-[#ebebeb]">•</span>
                                     <span className="capitalize">{sub.difficulty || 'Core'}</span>
                                   </div>
                                 </div>

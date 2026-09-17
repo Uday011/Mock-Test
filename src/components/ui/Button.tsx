@@ -24,30 +24,44 @@ export default function Button({
   ...props
 }: ButtonProps) {
   const baseStyles =
-    'inline-flex items-center justify-center font-bold rounded-xl transition-all duration-150 select-none focus:outline-none focus:ring-2 focus:ring-offset-1 disabled:opacity-50 disabled:cursor-not-allowed disabled:pointer-events-none active:scale-[0.99] touch-manipulation min-h-[44px]';
+    'inline-flex items-center justify-center font-medium rounded-md transition-colors duration-100 select-none focus:outline-none focus:ring-1 focus:ring-stone-400 disabled:opacity-50 disabled:cursor-not-allowed disabled:pointer-events-none touch-manipulation min-h-[36px]';
 
   const variantStyles = {
     primary:
-      'bg-slate-900 hover:bg-slate-800 active:bg-slate-950 text-white shadow-2xs focus:ring-slate-900 border border-slate-800',
+      'bg-[#37352f] hover:bg-[#2f2d28] text-white border border-[#37352f]',
     secondary:
-      'bg-white hover:bg-stone-50 active:bg-stone-100 text-slate-800 border border-stone-200 shadow-2xs focus:ring-stone-400',
+      'bg-white hover:bg-[#f7f6f3] text-[#37352f] border border-[#ebebeb]',
     saffron:
-      'bg-amber-600 hover:bg-amber-700 active:bg-amber-800 text-white shadow-2xs focus:ring-amber-500 border border-amber-600',
+      'bg-[#faece3] hover:bg-[#f5e1d3] text-[#d9730d] border border-[#f0d6c2]',
     outline:
-      'bg-transparent hover:bg-stone-100 active:bg-stone-200 text-slate-700 border border-stone-300 focus:ring-stone-400',
+      'bg-transparent hover:bg-[#efefed] text-[#37352f] border border-[#ebebeb]',
     ghost:
-      'bg-transparent hover:bg-stone-100 active:bg-stone-200 text-slate-700 focus:ring-stone-300 border border-transparent',
+      'bg-transparent hover:bg-[#efefed] text-[#37352f] border border-transparent',
     danger:
-      'bg-rose-600 hover:bg-rose-700 active:bg-rose-800 text-white shadow-2xs focus:ring-rose-500 border border-rose-700',
+      'bg-[#fdebec] hover:bg-[#fbd8da] text-[#c93b3b] border border-[#f7c5c8]',
   };
 
   const sizeStyles = {
-    sm: 'text-xs px-3 py-2 gap-1.5',
-    md: 'text-xs sm:text-sm px-4 py-2.5 gap-2',
-    lg: 'text-sm sm:text-base px-6 py-3.5 gap-2.5',
+    sm: 'text-xs px-2.5 py-1.5 gap-1.5',
+    md: 'text-xs sm:text-sm px-3.5 py-2 gap-2',
+    lg: 'text-sm sm:text-base px-4 py-2.5 gap-2.5',
   };
 
   const widthStyle = fullWidth ? 'w-full' : '';
+
+  const renderIcon = (ic: any) => {
+    if (!ic) return null;
+    if (React.isValidElement(ic)) return ic;
+    if (typeof ic === 'string' || typeof ic === 'number') return <span>{ic}</span>;
+    if (typeof ic === 'function' || (typeof ic === 'object' && ('render' in ic || '$$typeof' in ic))) {
+      const IconComponent = ic as any;
+      return <IconComponent className="w-4 h-4" />;
+    }
+    return null;
+  };
+
+  const renderedIcon = renderIcon(icon);
+  const renderedIconRight = renderIcon(iconRight);
 
   return (
     <button
@@ -62,9 +76,9 @@ export default function Button({
         </>
       ) : (
         <>
-          {icon && <span className="shrink-0">{icon}</span>}
+          {renderedIcon && <span className="shrink-0">{renderedIcon}</span>}
           <span>{children}</span>
-          {iconRight && <span className="shrink-0">{iconRight}</span>}
+          {renderedIconRight && <span className="shrink-0">{renderedIconRight}</span>}
         </>
       )}
     </button>

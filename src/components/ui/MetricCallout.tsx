@@ -12,7 +12,7 @@ export interface MetricCalloutProps {
     positive?: boolean;
     neutral?: boolean;
   };
-  icon?: React.ReactNode;
+  icon?: any;
   variant?: 'default' | 'saffron' | 'navy' | 'emerald' | 'stone' | 'rose';
   accent?: 'saffron' | 'emerald' | 'navy' | 'stone' | 'rose' | 'default';
   className?: string;
@@ -29,6 +29,18 @@ export default function MetricCallout({
   accent = 'default',
   className = '',
 }: MetricCalloutProps) {
+  const renderIcon = () => {
+    if (!icon) return null;
+    if (React.isValidElement(icon)) return icon;
+    if (typeof icon === 'string' || typeof icon === 'number') return <span>{icon}</span>;
+    if (typeof icon === 'function' || (typeof icon === 'object' && ('render' in icon || '$$typeof' in icon))) {
+      const IconComponent = icon;
+      return <IconComponent className="w-4 h-4" />;
+    }
+    return null;
+  };
+
+  const renderedIcon = renderIcon();
   const chosenStyle = variant || accent;
 
   const borderVariants: Record<string, string> = {
@@ -54,49 +66,45 @@ export default function MetricCallout({
 
   return (
     <div
-      className={`relative p-4 sm:p-5 rounded-xl border bg-white shadow-2xs overflow-hidden flex flex-col justify-between ${
-        borderVariants[chosenStyle] || borderVariants.default
-      } ${className}`}
+      className={`p-3.5 sm:p-4 rounded-lg border border-[#ebebeb] bg-white text-[#37352f] flex flex-col justify-between ${className}`}
     >
-      <div
-        className={`absolute top-0 left-0 right-0 h-[2px] ${
-          accentPills[chosenStyle] || accentPills.default
-        }`}
-      />
-
       <div className="flex items-start justify-between gap-2 mb-2">
-        <span className="text-[11px] font-sans font-medium text-stone-500 uppercase tracking-wider truncate">
+        <span className="text-[11px] font-medium text-[#787774] uppercase tracking-wider truncate">
           {label}
         </span>
-        {icon && <span className="text-stone-400 shrink-0">{icon}</span>}
+        {renderedIcon && (
+          <span className="text-[#9b9a97] shrink-0 opacity-80">
+            {renderedIcon}
+          </span>
+        )}
       </div>
 
-      <div className="space-y-1 my-auto">
+      <div className="space-y-0.5 my-auto">
         <div className="flex items-baseline gap-1.5 flex-wrap">
-          <span className="text-2xl sm:text-3xl font-serif font-bold text-stone-900 tracking-tight">
+          <span className="text-xl sm:text-2xl font-semibold text-[#37352f] tracking-tight font-sans">
             {value}
           </span>
           {max !== undefined && (
-            <span className="text-xs sm:text-sm font-mono text-stone-400">
+            <span className="text-xs font-mono text-[#9b9a97]">
               / {max}
             </span>
           )}
         </div>
 
         {subtext && (
-          <p className="text-[11px] text-stone-500 leading-tight truncate">
+          <p className="text-[11px] text-[#787774] leading-tight truncate">
             {subtext}
           </p>
         )}
       </div>
 
       {trendText && (
-        <div className="mt-2.5 pt-2 border-t border-stone-100/80 flex items-center text-[10px] font-medium font-mono">
+        <div className="mt-2 pt-1.5 border-t border-[#f0f0ee] flex items-center text-[10px] font-medium">
           <span
             className={
               isPos
-                ? 'text-emerald-700 font-semibold'
-                : 'text-stone-500'
+                ? 'text-[#0f7b6c]'
+                : 'text-[#787774]'
             }
           >
             {trendText}

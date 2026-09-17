@@ -147,9 +147,13 @@ export default function Navbar() {
     pathname.startsWith('/question-bank') ||
     pathname.startsWith('/library') ||
     pathname.startsWith('/settings') ||
-    pathname.startsWith('/exams/');
+    pathname.startsWith('/tests') ||
+    pathname.startsWith('/exams') ||
+    pathname.startsWith('/series') ||
+    pathname.startsWith('/creators') ||
+    pathname.startsWith('/exam');
 
-  if (isWorkspace || (pathname.startsWith('/exam/') && !pathname.includes('/result'))) {
+  if (isWorkspace) {
     return null;
   }
 
@@ -158,12 +162,8 @@ export default function Navbar() {
 
   return (
     <>
-      <header className={`sticky top-0 z-50 w-full transition-colors ${
-        isHome 
-          ? 'border-b border-white/10 bg-[#161618]/90 text-white backdrop-blur-md' 
-          : 'border-b border-stone-200 bg-white/95 text-slate-900 backdrop-blur-md'
-      }`}>
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+      <header className="sticky top-0 z-50 w-full border-b border-[#ebebeb] bg-white/90 text-[#37352f] backdrop-blur-md select-none">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-14 flex items-center justify-between">
           {/* Logo & Brand */}
           <div className="flex items-center gap-4 lg:gap-6">
             <Logo size="md" href="/" />
@@ -172,17 +172,13 @@ export default function Navbar() {
             <div className="relative hidden lg:block" ref={examMenuRef}>
               <button
                 onClick={() => setShowExamMenu(!showExamMenu)}
-                className={`px-2.5 py-1.5 rounded-lg border text-xs font-bold flex items-center gap-1.5 transition-all shadow-2xs ${
-                  isHome 
-                    ? 'border-white/10 bg-white/5 hover:bg-white/10 text-white' 
-                    : 'border-stone-200 hover:border-stone-300 bg-stone-50 hover:bg-stone-100 text-slate-800'
-                }`}
+                className="px-2.5 py-1 rounded border border-[#ebebeb] text-xs font-medium flex items-center gap-1.5 transition-colors bg-[#f7f6f3] hover:bg-[#efefed] text-[#37352f]"
                 title="Active Target Exam"
               >
-                <span className="w-1.5 h-1.5 rounded-full bg-amber-500 shrink-0" />
-                <span className={isHome ? 'text-stone-400 font-medium' : 'text-slate-500 font-medium'}>Target:</span>
+                <span className="w-1.5 h-1.5 rounded-full bg-[#0f7b6c] shrink-0" />
+                <span className="text-[#787774]">Target:</span>
                 <span>{selectedExam}</span>
-                <ChevronDown className={`w-3 h-3 ml-0.5 ${isHome ? 'text-stone-400' : 'text-slate-400'}`} />
+                <ChevronDown className="w-3 h-3 ml-0.5 text-[#787774]" />
               </button>
 
               {showExamMenu && (

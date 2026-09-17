@@ -13,14 +13,14 @@ export function Card({
   ...props
 }: CardProps) {
   const interactiveStyles = interactive
-    ? 'hover:border-stone-400 hover:shadow-xs transition-all duration-150 cursor-pointer active:scale-[0.995]'
+    ? 'hover:border-stone-400 hover:bg-[#f7f6f3]/50 transition-all duration-150 cursor-pointer'
     : '';
 
-  const paddingStyle = padded ? 'p-5 sm:p-6' : '';
+  const paddingStyle = padded ? 'p-4 sm:p-5' : '';
 
   return (
     <div
-      className={`bg-white rounded-2xl border border-stone-200/90 shadow-2xs text-slate-900 overflow-hidden ${interactiveStyles} ${paddingStyle} ${className}`}
+      className={`bg-white rounded-lg border border-[#ebebeb] text-[#37352f] overflow-hidden ${interactiveStyles} ${paddingStyle} ${className}`}
       {...props}
     >
       {children}
@@ -34,7 +34,7 @@ export function CardHeader({
   ...props
 }: React.HTMLAttributes<HTMLDivElement>) {
   return (
-    <div className={`flex items-start justify-between gap-4 mb-4 ${className}`} {...props}>
+    <div className={`flex items-start justify-between gap-3 mb-3 ${className}`} {...props}>
       {children}
     </div>
   );
@@ -47,7 +47,7 @@ export function CardTitle({
 }: React.HTMLAttributes<HTMLHeadingElement>) {
   return (
     <h3
-      className={`text-base sm:text-lg font-black text-slate-900 tracking-tight leading-snug ${className}`}
+      className={`text-sm sm:text-base font-semibold text-[#37352f] tracking-tight leading-snug ${className}`}
       {...props}
     >
       {children}
@@ -61,7 +61,7 @@ export function CardDescription({
   ...props
 }: React.HTMLAttributes<HTMLParagraphElement>) {
   return (
-    <p className={`text-xs sm:text-sm text-slate-500 mt-1 leading-relaxed ${className}`} {...props}>
+    <p className={`text-xs text-[#787774] mt-0.5 leading-relaxed ${className}`} {...props}>
       {children}
     </p>
   );
@@ -73,7 +73,7 @@ export function CardContent({
   ...props
 }: React.HTMLAttributes<HTMLDivElement>) {
   return (
-    <div className={`space-y-4 ${className}`} {...props}>
+    <div className={`space-y-3 ${className}`} {...props}>
       {children}
     </div>
   );
@@ -86,7 +86,7 @@ export function CardFooter({
 }: React.HTMLAttributes<HTMLDivElement>) {
   return (
     <div
-      className={`mt-5 pt-4 border-t border-stone-100 flex items-center justify-between gap-3 text-xs text-slate-500 ${className}`}
+      className={`mt-4 pt-3 border-t border-[#ebebeb] flex items-center justify-between gap-3 text-xs text-[#787774] ${className}`}
       {...props}
     >
       {children}

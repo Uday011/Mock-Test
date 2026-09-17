@@ -7,16 +7,20 @@ interface ProgressBarProps {
   sublabel?: string;
   showValue?: boolean;
   size?: 'xs' | 'sm' | 'md' | 'lg';
-  variant?: 'saffron' | 'emerald' | 'navy' | 'stone' | 'rose';
+  variant?: 'saffron' | 'emerald' | 'navy' | 'stone' | 'rose' | 'blue' | 'amber' | 'green' | 'default';
   className?: string;
 }
 
 const variantFills: Record<string, string> = {
-  saffron: 'bg-amber-600',
-  emerald: 'bg-emerald-600',
-  navy: 'bg-slate-800',
-  stone: 'bg-stone-500',
-  rose: 'bg-rose-600',
+  saffron: 'bg-[#d9730d]',
+  emerald: 'bg-[#0f7b6c]',
+  navy: 'bg-[#0b6e99]',
+  stone: 'bg-[#787774]',
+  rose: 'bg-[#c93b3b]',
+  blue: 'bg-[#2383e2]',
+  amber: 'bg-[#d9730d]',
+  green: 'bg-[#0f7b6c]',
+  default: 'bg-[#37352f]',
 };
 
 const sizeHeights: Record<string, string> = {

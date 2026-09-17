@@ -37,6 +37,7 @@ import { Card } from '@/components/ui/Card';
 import { Badge } from '@/components/ui/Badge';
 import { Button } from '@/components/ui/Button';
 import { TrustLabel } from '@/components/ui/TrustLabel';
+import { PropertyTable, PropertyRow } from '@/components/ui/PropertyTable';
 import { ReportModal } from '@/components/modals/ReportModal';
 import { MockCheckoutModal } from '@/components/modals/MockCheckoutModal';
 
@@ -127,8 +128,8 @@ export default function TestDetailsPage() {
     return (
       <AppShell>
         <div className="min-h-[60vh] flex flex-col items-center justify-center space-y-3">
-          <div className="w-8 h-8 border-3 border-stone-900 border-t-transparent rounded-full animate-spin" />
-          <p className="text-xs text-stone-500 font-medium">Loading assessment metadata...</p>
+          <div className="w-5 h-5 border-2 border-[#37352f] border-t-transparent rounded-full animate-spin" />
+          <p className="text-xs text-[#787774] font-medium">Loading assessment metadata...</p>
         </div>
       </AppShell>
     );
@@ -137,10 +138,10 @@ export default function TestDetailsPage() {
   if (error || !test) {
     return (
       <AppShell>
-        <div className="max-w-md mx-auto my-16 p-8 bg-white rounded-2xl border border-stone-200 text-center space-y-4">
-          <AlertCircle className="w-10 h-10 text-rose-500 mx-auto" />
-          <h3 className="font-bold text-stone-900 font-serif text-lg">Test Not Found</h3>
-          <p className="text-xs text-stone-500">
+        <div className="max-w-md mx-auto my-16 p-8 bg-white rounded-lg border border-[#ebebeb] text-center space-y-4">
+          <AlertCircle className="w-8 h-8 text-[#e03e3e] mx-auto" />
+          <h3 className="font-semibold text-[#37352f] text-base">Test Not Found</h3>
+          <p className="text-xs text-[#787774]">
             The requested assessment paper does not exist or has been made private.
           </p>
           <Link href="/library" className="inline-block">
@@ -157,12 +158,12 @@ export default function TestDetailsPage() {
   const questions = test.questions || [];
 
   const formatDuration = (seconds: number) => {
-    if (!seconds || seconds <= 0) return 'No time limit (Untimed)';
+    if (!seconds || seconds <= 0) return 'Untimed';
     const hrs = Math.floor(seconds / 3600);
     const mins = Math.floor((seconds % 3600) / 60);
-    if (hrs > 0 && mins > 0) return `${hrs}h ${mins}m (${seconds / 60} minutes)`;
-    if (hrs > 0) return `${hrs} hour${hrs > 1 ? 's' : ''}`;
-    return `${mins} minutes`;
+    if (hrs > 0 && mins > 0) return `${hrs}h ${mins}m (${seconds / 60} mins)`;
+    if (hrs > 0) return `${hrs} hr${hrs > 1 ? 's' : ''}`;
+    return `${mins} mins`;
   };
 
   const formatTestType = (type: string) => {
@@ -182,8 +183,8 @@ export default function TestDetailsPage() {
     >
       {/* Toast Notice */}
       {toastMessage && (
-        <div className="fixed bottom-6 right-6 z-50 bg-stone-900 text-white text-xs px-4 py-3 rounded-xl shadow-2xl flex items-center gap-2 animate-in fade-in slide-in-from-bottom-2">
-          <Check className="w-4 h-4 text-emerald-400" />
+        <div className="fixed bottom-6 right-6 z-50 bg-[#37352f] text-white text-xs px-3.5 py-2.5 rounded-md shadow-lg flex items-center gap-2 animate-in fade-in">
+          <Check className="w-3.5 h-3.5 text-emerald-400" />
           <span>{toastMessage}</span>
         </div>
       )}
@@ -197,266 +198,246 @@ export default function TestDetailsPage() {
         totalQuestions={questions.length}
       />
 
-      <div className="space-y-6 max-w-5xl mx-auto">
-        {/* Navigation Back */}
+      <div className="space-y-6 max-w-5xl mx-auto pb-16">
+        {/* Navigation & Toolbar */}
         <div className="flex items-center justify-between">
           <Link
             href="/library"
-            className="inline-flex items-center gap-1.5 text-xs font-bold text-stone-500 hover:text-stone-900 transition-colors"
+            className="inline-flex items-center gap-1.5 text-xs text-[#787774] hover:text-[#37352f] transition-colors"
           >
             <ArrowLeft className="w-3.5 h-3.5" /> Back to Assessment Library
           </Link>
 
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-1.5">
             <button
               onClick={handleBookmarkToggle}
-              className={`px-3 py-1.5 rounded-xl border text-xs font-medium flex items-center gap-1.5 transition-colors ${
+              className={`px-2.5 py-1 rounded-md border text-xs font-medium flex items-center gap-1.5 transition-colors ${
                 isBookmarked
-                  ? 'bg-amber-50 border-amber-300 text-amber-800'
-                  : 'bg-white border-stone-200 text-stone-600 hover:bg-stone-50'
+                  ? 'bg-[#fdf5e8] border-[#fae2be] text-[#8f4f00]'
+                  : 'bg-white border-[#ebebeb] text-[#787774] hover:bg-[#f7f6f3]'
               }`}
             >
-              <Bookmark className={`w-3.5 h-3.5 ${isBookmarked ? 'fill-amber-500 text-amber-500' : ''}`} />
-              <span>{isBookmarked ? 'Saved in Library' : 'Save Test'}</span>
+              <Bookmark className={`w-3 h-3 ${isBookmarked ? 'fill-amber-600 text-amber-600' : ''}`} />
+              <span>{isBookmarked ? 'Saved' : 'Save'}</span>
             </button>
 
             <button
               onClick={handleShare}
-              className="px-3 py-1.5 rounded-xl border border-stone-200 bg-white text-stone-600 hover:bg-stone-50 text-xs font-medium flex items-center gap-1.5 transition-colors"
+              className="px-2.5 py-1 rounded-md border border-[#ebebeb] bg-white text-[#787774] hover:bg-[#f7f6f3] text-xs font-medium flex items-center gap-1.5 transition-colors"
             >
-              <Share2 className="w-3.5 h-3.5" />
+              <Share2 className="w-3 h-3" />
               <span>Share</span>
             </button>
 
             <button
               onClick={handleDuplicate}
               disabled={duplicating}
-              className="px-3 py-1.5 rounded-xl border border-stone-200 bg-white text-stone-600 hover:bg-stone-50 text-xs font-medium flex items-center gap-1.5 transition-colors"
+              className="px-2.5 py-1 rounded-md border border-[#ebebeb] bg-white text-[#787774] hover:bg-[#f7f6f3] text-xs font-medium flex items-center gap-1.5 transition-colors"
               title="Clone this test to customize in Test Studio"
             >
-              <Copy className="w-3.5 h-3.5" />
-              <span>{duplicating ? 'Duplicating...' : 'Duplicate & Edit'}</span>
+              <Copy className="w-3 h-3" />
+              <span>{duplicating ? 'Duplicating...' : 'Duplicate'}</span>
             </button>
 
             <button
               onClick={() => setIsReportModalOpen(true)}
-              className="px-3 py-1.5 rounded-xl border border-stone-200 bg-white text-stone-500 hover:text-rose-600 hover:border-rose-200 text-xs font-medium flex items-center gap-1.5 transition-colors"
+              className="px-2.5 py-1 rounded-md border border-[#ebebeb] bg-white text-[#787774] hover:text-[#e03e3e] hover:border-[#f5c2c2] text-xs font-medium flex items-center gap-1.5 transition-colors"
               title="Report an error or formatting issue"
             >
-              <Flag className="w-3.5 h-3.5" />
+              <Flag className="w-3 h-3" />
               <span>Report</span>
             </button>
           </div>
         </div>
 
-        {/* Hero Card */}
-        <div className="bg-white rounded-3xl p-6 sm:p-8 border border-stone-200 shadow-2xs space-y-6">
-          <div className="flex flex-col md:flex-row md:items-start justify-between gap-6">
-            <div className="space-y-3 flex-1">
+        {/* Document Header & Main Overview */}
+        <div className="bg-white rounded-lg p-5 border border-[#ebebeb] space-y-5">
+          <div className="flex flex-col md:flex-row md:items-start justify-between gap-5">
+            <div className="space-y-2 flex-1">
               <div className="flex items-center gap-2 flex-wrap">
-                <TrustLabel label={test.trust_label} size="md" showTooltip />
-                <span className="text-xs font-mono font-bold px-2.5 py-0.5 rounded-full bg-stone-100 text-stone-700 border border-stone-200">
+                <TrustLabel label={test.trust_label} size="sm" showTooltip />
+                <span className="text-xs font-mono px-1.5 py-0.5 rounded bg-[#f7f6f3] text-[#787774] border border-[#ebebeb]">
                   {test.subject || 'General Studies'}
                 </span>
-                <span className="text-xs font-medium px-2.5 py-0.5 rounded-full bg-stone-50 text-stone-600 border border-stone-200">
+                <Badge variant="blue" size="sm">
                   {formatTestType(test.test_type)}
-                </span>
-                <span className="text-xs font-bold px-2.5 py-0.5 rounded-full bg-amber-50 text-amber-800 border border-amber-200 capitalize">
+                </Badge>
+                <Badge
+                  variant={test.difficulty === 'hard' ? 'rose' : test.difficulty === 'medium' ? 'amber' : 'emerald'}
+                  size="sm"
+                >
                   {test.difficulty || 'Medium'} Difficulty
-                </span>
-                <span className="text-xs font-medium px-2.5 py-0.5 rounded-full bg-emerald-50 text-emerald-800 border border-emerald-200">
+                </Badge>
+                <Badge variant={test.is_paid ? 'emerald' : 'gray'} size="sm">
                   {test.is_paid ? `₹${test.price_inr}` : 'Free Access'}
-                </span>
+                </Badge>
               </div>
 
-              <h1 className="text-2xl sm:text-3xl font-serif font-bold text-stone-900 tracking-tight">
+              <h1 className="text-xl sm:text-2xl font-semibold text-[#37352f] tracking-tight">
                 {test.title}
               </h1>
 
               {test.description && (
-                <p className="text-xs sm:text-sm text-stone-600 leading-relaxed max-w-3xl">
+                <p className="text-xs sm:text-sm text-[#787774] leading-relaxed max-w-3xl">
                   {test.description}
                 </p>
               )}
             </div>
 
-            {/* Primary Action Button */}
-            <div className="flex flex-col sm:flex-row md:flex-col gap-2 shrink-0">
+            {/* Launch CTA */}
+            <div className="flex flex-col sm:flex-row md:flex-col gap-1.5 shrink-0">
               {test.is_paid && !test.has_access ? (
                 <Button
                   variant="primary"
-                  size="lg"
+                  size="md"
                   onClick={() => setIsCheckoutModalOpen(true)}
-                  className="w-full min-h-[48px] px-8 text-sm font-bold shadow-md flex items-center justify-center gap-2"
-                  icon={<Lock className="w-4 h-4" />}
+                  className="w-full"
                 >
+                  <Lock className="w-3.5 h-3.5 mr-1.5" />
                   Unlock Assessment (₹{test.price_inr})
                 </Button>
               ) : (
                 <Link href={`/tests/${test.id}/start`}>
                   <Button
                     variant="primary"
-                    size="lg"
-                    className="w-full min-h-[48px] px-8 text-sm font-bold shadow-md flex items-center justify-center gap-2"
-                    icon={<Play className="w-4 h-4 fill-current" />}
+                    size="md"
+                    className="w-full"
                   >
-                    {attempts.length > 0 ? 'Retake Exam Paper' : 'Start Assessment'}
+                    <Play className="w-3.5 h-3.5 mr-1.5 fill-current" />
+                    {attempts.length > 0 ? 'Retake Exam' : 'Start Assessment'}
                   </Button>
                 </Link>
               )}
-              <p className="text-[11px] text-center text-stone-400 font-medium">
+              <p className="text-[11px] text-center text-[#9b9a97]">
                 {test.is_paid && !test.has_access
-                  ? 'Premium access required to launch paper'
-                  : 'Full CBT interface with countdown timer'}
+                  ? 'Premium access required to launch'
+                  : 'CBT interface with countdown timer'}
               </p>
             </div>
           </div>
 
-          {/* Key Metrics Grid */}
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 pt-4 border-t border-stone-100">
-            <div className="p-3.5 rounded-xl bg-stone-50 border border-stone-200/70">
-              <span className="text-[10px] font-mono text-stone-400 uppercase tracking-wider block">
-                Total Items
-              </span>
-              <div className="flex items-center gap-1.5 mt-0.5">
-                <Layers className="w-4 h-4 text-stone-600" />
-                <span className="font-serif font-bold text-base text-stone-900">
+          {/* Properties Table */}
+          <div className="pt-4 border-t border-[#ebebeb]">
+            <PropertyTable>
+              <PropertyRow icon={Layers} label="Total Items">
+                <span className="font-mono text-xs text-[#37352f] font-medium">
                   {questions.length} Questions
                 </span>
-              </div>
-            </div>
+              </PropertyRow>
 
-            <div className="p-3.5 rounded-xl bg-stone-50 border border-stone-200/70">
-              <span className="text-[10px] font-mono text-stone-400 uppercase tracking-wider block">
-                Duration Limit
-              </span>
-              <div className="flex items-center gap-1.5 mt-0.5">
-                <Clock className="w-4 h-4 text-stone-600" />
-                <span className="font-serif font-bold text-base text-stone-900">
+              <PropertyRow icon={Clock} label="Duration">
+                <span className="font-mono text-xs text-[#37352f]">
                   {formatDuration(test.duration_seconds)}
                 </span>
-              </div>
-            </div>
+              </PropertyRow>
 
-            <div className="p-3.5 rounded-xl bg-stone-50 border border-stone-200/70">
-              <span className="text-[10px] font-mono text-stone-400 uppercase tracking-wider block">
-                Marking Scheme
-              </span>
-              <div className="flex items-center gap-1.5 mt-0.5">
-                <Award className="w-4 h-4 text-emerald-600" />
-                <span className="font-serif font-bold text-base text-stone-900">
+              <PropertyRow icon={Award} label="Marking Scheme">
+                <span className="font-mono text-xs text-[#37352f]">
                   +{test.default_correct_marks} / -{test.default_negative_marks}
                 </span>
-              </div>
-            </div>
+              </PropertyRow>
 
-            <div className="p-3.5 rounded-xl bg-stone-50 border border-stone-200/70">
-              <span className="text-[10px] font-mono text-stone-400 uppercase tracking-wider block">
-                Community Attempts
-              </span>
-              <div className="flex items-center gap-1.5 mt-0.5">
-                <Users className="w-4 h-4 text-amber-600" />
-                <span className="font-serif font-bold text-base text-stone-900">
+              <PropertyRow icon={Users} label="Community Attempts">
+                <span className="font-mono text-xs text-[#787774]">
                   {test.total_attempts_count || attempts.length} Recorded
                 </span>
-              </div>
-            </div>
+              </PropertyRow>
+            </PropertyTable>
           </div>
 
-          {/* Creator Attribution Profile Card */}
-          <div className="pt-4 border-t border-stone-100 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+          {/* Creator Attribution */}
+          <div className="pt-3 border-t border-[#ebebeb] flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
             <Link
               href={`/creators/${test.user_id}`}
-              className="flex items-center gap-3 group hover:opacity-90 transition-opacity"
+              className="flex items-center gap-2.5 group hover:opacity-90 transition-opacity"
             >
-              <div className="w-10 h-10 rounded-2xl bg-amber-50 border border-amber-200 text-amber-900 flex items-center justify-center font-serif font-bold text-base">
+              <div className="w-8 h-8 rounded-md bg-[#f7f6f3] border border-[#ebebeb] text-[#37352f] flex items-center justify-center font-semibold text-xs">
                 {test.creator_name?.charAt(0) || 'E'}
               </div>
               <div>
-                <div className="flex items-center gap-1.5">
-                  <span className="font-serif font-bold text-stone-900 group-hover:underline text-sm">
+                <div className="flex items-center gap-1">
+                  <span className="font-medium text-[#37352f] group-hover:underline text-xs">
                     {test.creator_name || 'Academic Faculty'}
                   </span>
-                  <ShieldCheck className="w-3.5 h-3.5 text-emerald-600" />
+                  <ShieldCheck className="w-3 h-3 text-emerald-600" />
                 </div>
-                <p className="text-xs text-stone-500">
+                <p className="text-[11px] text-[#787774]">
                   {test.creator_headline || 'Senior Assessment Chair'} • {test.creator_institute || 'Nalanda Academic Board'}
                 </p>
               </div>
             </Link>
 
             <Link href={`/creators/${test.user_id}`}>
-              <Button variant="secondary" size="sm" className="text-xs">
+              <Button variant="outline" size="sm" className="text-xs">
                 View Creator Profile <ExternalLink className="w-3 h-3 ml-1" />
               </Button>
             </Link>
           </div>
         </div>
 
-        {/* Test Attempt History */}
-        <div className="space-y-4">
+        {/* Personal Attempt Progression */}
+        <div className="space-y-3">
           <div className="flex items-center justify-between">
-            <h2 className="text-base sm:text-lg font-serif font-bold text-stone-900 flex items-center gap-2">
-              <History className="w-4 h-4 text-stone-700" />
+            <h2 className="text-xs font-semibold uppercase text-[#787774] tracking-wider flex items-center gap-1.5">
+              <History className="w-3.5 h-3.5" />
               Your Personal Attempt Progression
             </h2>
-            <span className="text-xs font-mono text-stone-500 font-medium">
+            <span className="text-xs font-mono text-[#9b9a97]">
               {attempts.length} Attempt{attempts.length === 1 ? '' : 's'} recorded
             </span>
           </div>
 
           {attempts.length === 0 ? (
-            <div className="bg-white rounded-2xl p-6 sm:p-8 border border-stone-200 text-center space-y-3">
-              <p className="text-xs text-stone-500">You haven&apos;t attempted this test paper yet.</p>
-              <Link
-                href={`/tests/${test.id}/start`}
-                className="inline-flex items-center gap-2 px-6 py-2.5 bg-stone-900 text-white rounded-xl text-xs font-bold shadow-sm hover:bg-stone-800"
-              >
-                <Play className="w-3.5 h-3.5 fill-white" /> Take Test Now
+            <div className="bg-white rounded-lg p-6 border border-[#ebebeb] text-center space-y-2.5">
+              <p className="text-xs text-[#787774]">You haven't attempted this test paper yet.</p>
+              <Link href={`/tests/${test.id}/start`} className="inline-block">
+                <Button variant="primary" size="sm">
+                  <Play className="w-3 h-3 mr-1 fill-current" /> Take Test Now
+                </Button>
               </Link>
             </div>
           ) : (
-            <div className="bg-white rounded-2xl border border-stone-200 shadow-2xs overflow-hidden">
+            <div className="bg-white rounded-lg border border-[#ebebeb] overflow-hidden">
               <div className="overflow-x-auto">
                 <table className="w-full text-left text-xs">
-                  <thead className="bg-stone-50 border-b border-stone-200 text-stone-500 font-bold uppercase tracking-wider">
+                  <thead className="bg-[#fbfbfa] border-b border-[#ebebeb] text-[#787774] font-medium uppercase text-[10px]">
                     <tr>
-                      <th className="py-3.5 px-4">Attempt</th>
-                      <th className="py-3.5 px-4">Date & Time</th>
-                      <th className="py-3.5 px-4">Score</th>
-                      <th className="py-3.5 px-4">Percentage</th>
-                      <th className="py-3.5 px-4">Accuracy</th>
-                      <th className="py-3.5 px-4">Time Taken</th>
-                      <th className="py-3.5 px-4 text-right">Actions</th>
+                      <th className="py-2.5 px-3.5">Attempt</th>
+                      <th className="py-2.5 px-3.5">Date</th>
+                      <th className="py-2.5 px-3.5">Score</th>
+                      <th className="py-2.5 px-3.5">Percentage</th>
+                      <th className="py-2.5 px-3.5">Accuracy</th>
+                      <th className="py-2.5 px-3.5">Time Taken</th>
+                      <th className="py-2.5 px-3.5 text-right">Actions</th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-stone-100">
+                  <tbody className="divide-y divide-[#ebebeb]">
                     {attempts.map((att: any, idx: number) => {
                       const attemptNumber = attempts.length - idx;
                       return (
-                        <tr key={att.id} className="hover:bg-stone-50/70 transition-colors">
-                          <td className="py-3.5 px-4 font-bold text-stone-900">
+                        <tr key={att.id} className="hover:bg-[#fbfbfa] transition-colors">
+                          <td className="py-2.5 px-3.5 font-medium text-[#37352f]">
                             Attempt #{attemptNumber}
                           </td>
-                          <td className="py-3.5 px-4 text-stone-500">
-                            {new Date(att.created_at).toLocaleString()}
+                          <td className="py-2.5 px-3.5 text-[#787774] font-mono">
+                            {new Date(att.created_at).toLocaleDateString()}
                           </td>
-                          <td className="py-3.5 px-4 font-mono font-bold text-amber-900">
+                          <td className="py-2.5 px-3.5 font-mono font-medium text-[#37352f]">
                             {att.final_score} / {att.maximum_marks}
                           </td>
-                          <td className="py-3.5 px-4 font-bold text-emerald-600">
+                          <td className="py-2.5 px-3.5 font-medium text-emerald-700 font-mono">
                             {att.percentage}%
                           </td>
-                          <td className="py-3.5 px-4 text-stone-700 font-semibold font-mono">
+                          <td className="py-2.5 px-3.5 text-[#787774] font-mono">
                             {att.accuracy}%
                           </td>
-                          <td className="py-3.5 px-4 text-stone-500 font-mono">
+                          <td className="py-2.5 px-3.5 text-[#787774] font-mono">
                             {Math.floor(att.time_taken_seconds / 60)}m {att.time_taken_seconds % 60}s
                           </td>
-                          <td className="py-3.5 px-4 text-right">
+                          <td className="py-2.5 px-3.5 text-right">
                             <Link
                               href={`/exam/${att.id}/result`}
-                              className="inline-flex items-center gap-1 text-stone-900 font-bold hover:underline"
+                              className="inline-flex items-center gap-1 text-[#37352f] hover:underline font-medium"
                             >
                               Forensics & Solutions <ExternalLink className="w-3 h-3" />
                             </Link>
@@ -472,43 +453,50 @@ export default function TestDetailsPage() {
         </div>
 
         {/* Question Paper Preview Drawer */}
-        <div className="bg-white rounded-2xl border border-stone-200 p-6 shadow-2xs space-y-4">
+        <div className="bg-white rounded-lg border border-[#ebebeb] p-4 space-y-3">
           <div className="flex items-center justify-between">
             <div>
-              <h3 className="text-base font-serif font-bold text-stone-900">
+              <h3 className="text-xs font-semibold text-[#37352f]">
                 Question Paper Structure ({questions.length} Items)
               </h3>
-              <p className="text-xs text-stone-500 mt-0.5">
+              <p className="text-[11px] text-[#787774] mt-0.5">
                 Inspect question distribution, answer keys, and pedagogical solutions.
               </p>
             </div>
             <Button
-              variant="secondary"
+              variant="outline"
               size="sm"
               onClick={() => setShowQuestions(!showQuestions)}
-              icon={showQuestions ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
             >
-              {showQuestions ? 'Hide Questions' : 'Preview Questions'}
+              {showQuestions ? (
+                <>
+                  <ChevronUp className="w-3.5 h-3.5 mr-1" /> Hide Questions
+                </>
+              ) : (
+                <>
+                  <ChevronDown className="w-3.5 h-3.5 mr-1" /> Preview Questions
+                </>
+              )}
             </Button>
           </div>
 
           {showQuestions && (
-            <div className="space-y-4 pt-4 border-t border-stone-100">
+            <div className="space-y-3 pt-3 border-t border-[#ebebeb]">
               {questions.map((q: any) => (
                 <div
                   key={q.id || q.question_number}
-                  className="p-4 rounded-xl bg-stone-50/80 border border-stone-200 space-y-2.5 text-xs"
+                  className="p-3.5 rounded-md bg-[#fbfbfa] border border-[#ebebeb] space-y-2 text-xs"
                 >
                   <div className="flex items-center justify-between">
-                    <span className="font-bold text-stone-900 font-mono">
+                    <span className="font-medium text-[#37352f] font-mono">
                       Question #{q.question_number}
                     </span>
-                    <span className="font-mono text-emerald-800 font-bold text-[11px] bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200">
+                    <span className="font-mono text-emerald-800 text-[11px] bg-[#ebf5e8] px-1.5 py-0.5 rounded border border-[#c4e2b8]">
                       Correct: Key {q.correct_answer} (+{q.correct_marks} / -{q.negative_marks})
                     </span>
                   </div>
 
-                  <p className="text-stone-800 font-medium leading-relaxed">{q.question_text}</p>
+                  <p className="text-[#37352f] leading-relaxed">{q.question_text}</p>
 
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-1">
                     {(q.options || []).map((opt: any, oIdx: number) => {
@@ -516,13 +504,13 @@ export default function TestDetailsPage() {
                       return (
                         <div
                           key={oIdx}
-                          className={`p-2.5 rounded-lg border text-xs transition-colors ${
+                          className={`p-2 rounded border text-xs transition-colors ${
                             isCorrect
-                              ? 'border-emerald-300 bg-emerald-50 font-bold text-emerald-900'
-                              : 'border-stone-200 bg-white text-stone-700'
+                              ? 'border-[#c4e2b8] bg-[#ebf5e8] font-medium text-[#2b593f]'
+                              : 'border-[#ebebeb] bg-white text-[#37352f]'
                           }`}
                         >
-                          <span className="font-bold mr-2 font-mono">{opt.label}.</span>
+                          <span className="font-mono mr-1.5">{opt.label}.</span>
                           {opt.text}
                         </div>
                       );
@@ -530,8 +518,8 @@ export default function TestDetailsPage() {
                   </div>
 
                   {q.explanation && (
-                    <div className="p-3 rounded-lg bg-stone-100/70 border border-stone-200 text-stone-600 text-[11px] leading-relaxed">
-                      <strong className="text-stone-800 block mb-0.5">Pedagogical Solution:</strong>
+                    <div className="p-2.5 rounded bg-white border border-[#ebebeb] text-[#787774] text-[11px] leading-relaxed">
+                      <strong className="text-[#37352f] block mb-0.5">Solution:</strong>
                       {q.explanation}
                     </div>
                   )}

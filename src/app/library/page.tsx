@@ -26,6 +26,7 @@ import {
   SlidersHorizontal,
   X,
   FileCheck2,
+  Library,
 } from 'lucide-react';
 import { AppShell } from '@/components/layout/AppShell';
 import { PageHeader } from '@/components/ui/PageHeader';
@@ -88,7 +89,7 @@ export default function PublicLibraryPage() {
   const [selectedDifficulty, setSelectedDifficulty] = useState('all');
   const [selectedDuration, setSelectedDuration] = useState('all');
   const [selectedTrust, setSelectedTrust] = useState('all');
-  const [selectedAccess, setSelectedAccess] = useState('all'); // 'all', 'free', 'paid'
+  const [selectedAccess, setSelectedAccess] = useState('all');
   const [selectedSort, setSelectedSort] = useState('recently_published');
 
   const [tests, setTests] = useState<any[]>([]);
@@ -96,9 +97,7 @@ export default function PublicLibraryPage() {
   const [creators, setCreators] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [shareToast, setShareToast] = useState<string | null>(null);
-  const [isPending, startTransition] = useTransition();
 
-  // Load Library Data
   const loadLibraryData = () => {
     setLoading(true);
     const params = new URLSearchParams();
@@ -239,594 +238,506 @@ export default function PublicLibraryPage() {
     >
       {/* Toast Notification */}
       {shareToast && (
-        <div className="fixed bottom-6 right-6 z-50 bg-stone-900 text-white text-xs px-4 py-3 rounded-xl shadow-2xl flex items-center gap-2 animate-in fade-in slide-in-from-bottom-2">
-          <Check className="w-4 h-4 text-emerald-400" />
+        <div className="fixed bottom-6 right-6 z-50 bg-[#37352f] text-white text-xs px-3.5 py-2.5 rounded-md shadow-lg flex items-center gap-2 animate-in fade-in">
+          <Check className="w-3.5 h-3.5 text-emerald-400" />
           <span>{shareToast}</span>
         </div>
       )}
 
-      {/* Header */}
-      <PageHeader
-        title="Public Assessment Library & Question Repositories"
-        description="Explore, practice, and benchmark curated CBE mocks and question papers published by verified academic faculty, coaching chairs, and the open community."
-        badge={<Badge variant="emerald" size="md">Open Educational Resource</Badge>}
-        actions={
-          <div className="flex items-center gap-2">
+      <div className="max-w-5xl mx-auto space-y-6 pb-16">
+        <PageHeader
+          icon={Library}
+          title="Public Assessment Library"
+          description="Curated CBE mocks, sectional drills, and master series published by verified faculty and academic chairs."
+          badge={<Badge variant="emerald" size="sm">Open Resource</Badge>}
+          actions={
             <Link href="/tests/create">
-              <Button variant="primary" size="sm" icon={<Layers className="w-3.5 h-3.5" />}>
-                Publish Test Paper
+              <Button variant="primary" size="sm">
+                <Layers className="w-3.5 h-3.5 mr-1.5" />
+                Publish Test
               </Button>
             </Link>
+          }
+        />
+
+        {/* Tab Switcher */}
+        <div className="flex items-center justify-between border-b border-[#ebebeb] pb-2">
+          <div className="flex items-center gap-1.5">
+            <button
+              onClick={() => setActiveTab('tests')}
+              className={`px-3 py-1.5 rounded-md text-xs font-medium flex items-center gap-1.5 transition-colors ${
+                activeTab === 'tests'
+                  ? 'bg-[#37352f] text-white'
+                  : 'bg-white border border-[#ebebeb] text-[#787774] hover:bg-[#f7f6f3]'
+              }`}
+            >
+              <Layers className="w-3.5 h-3.5" />
+              <span>Individual Tests</span>
+              <span className={`text-[10px] font-mono px-1 rounded ${activeTab === 'tests' ? 'bg-[#4f4d47]' : 'bg-[#f7f6f3]'}`}>
+                {tests.length}
+              </span>
+            </button>
+
+            <button
+              onClick={() => setActiveTab('series')}
+              className={`px-3 py-1.5 rounded-md text-xs font-medium flex items-center gap-1.5 transition-colors ${
+                activeTab === 'series'
+                  ? 'bg-[#37352f] text-white'
+                  : 'bg-white border border-[#ebebeb] text-[#787774] hover:bg-[#f7f6f3]'
+              }`}
+            >
+              <BookOpen className="w-3.5 h-3.5" />
+              <span>Test Series</span>
+              <span className={`text-[10px] font-mono px-1 rounded ${activeTab === 'series' ? 'bg-[#4f4d47]' : 'bg-[#f7f6f3]'}`}>
+                {testSeries.length}
+              </span>
+            </button>
+
+            <button
+              onClick={() => setActiveTab('creators')}
+              className={`px-3 py-1.5 rounded-md text-xs font-medium flex items-center gap-1.5 transition-colors ${
+                activeTab === 'creators'
+                  ? 'bg-[#37352f] text-white'
+                  : 'bg-white border border-[#ebebeb] text-[#787774] hover:bg-[#f7f6f3]'
+              }`}
+            >
+              <GraduationCap className="w-3.5 h-3.5" />
+              <span>Verified Educators</span>
+              <span className={`text-[10px] font-mono px-1 rounded ${activeTab === 'creators' ? 'bg-[#4f4d47]' : 'bg-[#f7f6f3]'}`}>
+                {creators.length}
+              </span>
+            </button>
           </div>
-        }
-      />
 
-      {/* Metric Callouts */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-        <MetricCallout
-          label="Curated Test Papers"
-          value={tests.length > 0 ? String(tests.length) : '18+'}
-          subtext="Verified CBE diagnostics"
-          accent="navy"
-          icon={<FileCheck2 className="w-4 h-4" />}
-        />
-        <MetricCallout
-          label="Published Master Series"
-          value={testSeries.length > 0 ? String(testSeries.length) : '4'}
-          subtext="Structured curriculum bundles"
-          accent="saffron"
-          icon={<BookOpen className="w-4 h-4" />}
-        />
-        <MetricCallout
-          label="Verified Educators"
-          value={creators.length > 0 ? String(creators.length) : '10'}
-          subtext="Faculty & Subject Chairs"
-          accent="emerald"
-          icon={<GraduationCap className="w-4 h-4" />}
-        />
-        <MetricCallout
-          label="Learner Benchmarks"
-          value="4.92 / 5"
-          subtext="Transparent quality metrics"
-          accent="stone"
-          icon={<Star className="w-4 h-4" />}
-        />
-      </div>
-
-      {/* Tab Switcher */}
-      <div className="flex items-center justify-between border-b border-stone-200 mb-6 pb-2">
-        <div className="flex items-center gap-4">
-          <button
-            onClick={() => setActiveTab('tests')}
-            className={`pb-2 text-sm font-bold flex items-center gap-2 border-b-2 transition-all ${
-              activeTab === 'tests'
-                ? 'border-stone-900 text-stone-900'
-                : 'border-transparent text-stone-500 hover:text-stone-800'
-            }`}
-          >
-            <Layers className="w-4 h-4" />
-            Individual Tests
-            <span className="text-xs px-2 py-0.5 rounded-full bg-stone-100 text-stone-700 font-mono">
-              {tests.length}
-            </span>
-          </button>
-
-          <button
-            onClick={() => setActiveTab('series')}
-            className={`pb-2 text-sm font-bold flex items-center gap-2 border-b-2 transition-all ${
-              activeTab === 'series'
-                ? 'border-stone-900 text-stone-900'
-                : 'border-transparent text-stone-500 hover:text-stone-800'
-            }`}
-          >
-            <BookOpen className="w-4 h-4" />
-            Test Series
-            <span className="text-xs px-2 py-0.5 rounded-full bg-stone-100 text-stone-700 font-mono">
-              {testSeries.length}
-            </span>
-          </button>
-
-          <button
-            onClick={() => setActiveTab('creators')}
-            className={`pb-2 text-sm font-bold flex items-center gap-2 border-b-2 transition-all ${
-              activeTab === 'creators'
-                ? 'border-stone-900 text-stone-900'
-                : 'border-transparent text-stone-500 hover:text-stone-800'
-            }`}
-          >
-            <GraduationCap className="w-4 h-4" />
-            Verified Educators
-            <span className="text-xs px-2 py-0.5 rounded-full bg-stone-100 text-stone-700 font-mono">
-              {creators.length}
-            </span>
-          </button>
+          {activeTab === 'tests' && hasActiveFilters && (
+            <button
+              onClick={resetFilters}
+              className="text-xs text-[#787774] hover:text-[#e03e3e] flex items-center gap-1"
+            >
+              <X className="w-3.5 h-3.5" /> Clear Filters
+            </button>
+          )}
         </div>
 
-        {activeTab === 'tests' && hasActiveFilters && (
-          <button
-            onClick={resetFilters}
-            className="text-xs font-medium text-rose-600 hover:text-rose-800 flex items-center gap-1"
-          >
-            <X className="w-3.5 h-3.5" /> Clear Filters
-          </button>
-        )}
-      </div>
+        {/* TAB 1: INDIVIDUAL TESTS */}
+        {activeTab === 'tests' && (
+          <div className="space-y-4">
+            {/* Search & Filter Bar */}
+            <div className="bg-white border border-[#ebebeb] rounded-lg p-3 space-y-3">
+              <div className="flex flex-col sm:flex-row items-center gap-2.5">
+                <div className="relative flex-1 w-full">
+                  <Search className="w-3.5 h-3.5 text-[#787774] absolute left-3 top-1/2 -translate-y-1/2" />
+                  <input
+                    type="text"
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    placeholder="Search tests by title, subject, formula, or creator..."
+                    aria-label="Search tests by title, subject, formula, or creator"
+                    className="w-full pl-8 pr-8 py-1.5 text-xs bg-[#fbfbfa] border border-[#ebebeb] rounded-md focus:bg-white focus:outline-none focus:border-[#37352f] text-[#37352f] placeholder-[#9b9a97]"
+                  />
+                  {searchQuery && (
+                    <button
+                      onClick={() => setSearchQuery('')}
+                      className="absolute right-2.5 top-1/2 -translate-y-1/2 text-[#787774] hover:text-[#37352f]"
+                    >
+                      <X className="w-3.5 h-3.5" />
+                    </button>
+                  )}
+                </div>
 
-      {/* TAB 1: INDIVIDUAL TESTS */}
-      {activeTab === 'tests' && (
-        <div className="space-y-6">
-          {/* Search & Filter Bar */}
-          <div className="bg-white border border-stone-200 rounded-2xl p-4 shadow-2xs space-y-4">
-            <div className="flex flex-col md:flex-row items-center gap-3">
-              {/* Search Box */}
-              <div className="relative flex-1 w-full">
-                <Search className="w-4 h-4 text-stone-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
-                <input
-                  type="text"
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  placeholder="Search tests by title, subject, formula, or creator..."
-                  aria-label="Search tests by title, subject, formula, or creator"
-                  className="w-full pl-10 pr-4 py-2 text-xs bg-stone-50 border border-stone-200 rounded-xl focus:bg-white focus:outline-none focus:ring-1 focus:ring-stone-900 text-stone-900 placeholder-stone-400"
-                />
-                {searchQuery && (
-                  <button
-                    onClick={() => setSearchQuery('')}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-stone-400 hover:text-stone-600"
+                <div className="flex items-center gap-2 w-full sm:w-auto shrink-0">
+                  <span className="text-xs text-[#787774] whitespace-nowrap">Sort:</span>
+                  <select
+                    value={selectedSort}
+                    onChange={(e) => setSelectedSort(e.target.value)}
+                    className="px-2.5 py-1.5 text-xs bg-[#fbfbfa] border border-[#ebebeb] rounded-md text-[#37352f] focus:outline-none"
                   >
-                    <X className="w-3.5 h-3.5" />
-                  </button>
-                )}
+                    <option value="recently_published">Recently Published</option>
+                    <option value="most_attempted">Most Attempted</option>
+                    <option value="highest_rated">Highest Rated</option>
+                  </select>
+                </div>
               </div>
 
-              {/* Sort Selector */}
-              <div className="flex items-center gap-2 w-full md:w-auto shrink-0">
-                <span className="text-xs font-semibold text-stone-500 whitespace-nowrap">Sort:</span>
-                <select
-                  value={selectedSort}
-                  onChange={(e) => setSelectedSort(e.target.value)}
-                  className="px-3 py-2 text-xs bg-stone-50 border border-stone-200 rounded-xl text-stone-700 font-medium focus:outline-none focus:ring-1 focus:ring-stone-900"
-                >
-                  <option value="recently_published">Recently Published</option>
-                  <option value="most_attempted">Most Attempted</option>
-                  <option value="highest_rated">Highest Quality Rating</option>
-                </select>
+              {/* Faceted Filter Selectors */}
+              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2 pt-2 border-t border-[#ebebeb]">
+                <div>
+                  <label className="block text-[10px] text-[#787774] uppercase tracking-wider mb-0.5">
+                    Exam
+                  </label>
+                  <select
+                    value={selectedExam}
+                    onChange={(e) => setSelectedExam(e.target.value)}
+                    className="w-full px-2 py-1 text-xs bg-[#fbfbfa] border border-[#ebebeb] rounded text-[#37352f] focus:outline-none"
+                  >
+                    {EXAMS.map((e) => (
+                      <option key={e.value} value={e.value}>
+                        {e.label}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
+                <div>
+                  <label className="block text-[10px] text-[#787774] uppercase tracking-wider mb-0.5">
+                    Subject
+                  </label>
+                  <select
+                    value={selectedSubject}
+                    onChange={(e) => setSelectedSubject(e.target.value)}
+                    className="w-full px-2 py-1 text-xs bg-[#fbfbfa] border border-[#ebebeb] rounded text-[#37352f] focus:outline-none"
+                  >
+                    {SUBJECTS.map((s) => (
+                      <option key={s.value} value={s.value}>
+                        {s.label}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
+                <div>
+                  <label className="block text-[10px] text-[#787774] uppercase tracking-wider mb-0.5">
+                    Type
+                  </label>
+                  <select
+                    value={selectedType}
+                    onChange={(e) => setSelectedType(e.target.value)}
+                    className="w-full px-2 py-1 text-xs bg-[#fbfbfa] border border-[#ebebeb] rounded text-[#37352f] focus:outline-none"
+                  >
+                    {TEST_TYPES.map((t) => (
+                      <option key={t.value} value={t.value}>
+                        {t.label}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
+                <div>
+                  <label className="block text-[10px] text-[#787774] uppercase tracking-wider mb-0.5">
+                    Difficulty
+                  </label>
+                  <select
+                    value={selectedDifficulty}
+                    onChange={(e) => setSelectedDifficulty(e.target.value)}
+                    className="w-full px-2 py-1 text-xs bg-[#fbfbfa] border border-[#ebebeb] rounded text-[#37352f] focus:outline-none"
+                  >
+                    <option value="all">All Difficulties</option>
+                    <option value="easy">Easy</option>
+                    <option value="medium">Medium</option>
+                    <option value="hard">Hard</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label className="block text-[10px] text-[#787774] uppercase tracking-wider mb-0.5">
+                    Duration
+                  </label>
+                  <select
+                    value={selectedDuration}
+                    onChange={(e) => setSelectedDuration(e.target.value)}
+                    className="w-full px-2 py-1 text-xs bg-[#fbfbfa] border border-[#ebebeb] rounded text-[#37352f] focus:outline-none"
+                  >
+                    <option value="all">Any Duration</option>
+                    <option value="short">≤ 30 mins</option>
+                    <option value="medium">30 - 60 mins</option>
+                    <option value="long">&gt; 60 mins</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label className="block text-[10px] text-[#787774] uppercase tracking-wider mb-0.5">
+                    Trust
+                  </label>
+                  <select
+                    value={selectedTrust}
+                    onChange={(e) => setSelectedTrust(e.target.value)}
+                    className="w-full px-2 py-1 text-xs bg-[#fbfbfa] border border-[#ebebeb] rounded text-[#37352f] focus:outline-none"
+                  >
+                    {TRUST_LABELS.map((tl) => (
+                      <option key={tl.value} value={tl.value}>
+                        {tl.label}
+                      </option>
+                    ))}
+                  </select>
+                </div>
               </div>
             </div>
 
-            {/* Faceted Filter Selectors */}
-            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2.5 pt-2 border-t border-stone-100">
-              {/* Exam */}
-              <div>
-                <label className="block text-[10px] font-bold text-stone-400 uppercase tracking-wider mb-1">
-                  Exam
-                </label>
-                <select
-                  value={selectedExam}
-                  onChange={(e) => setSelectedExam(e.target.value)}
-                  className="w-full px-2.5 py-1.5 text-xs bg-stone-50 border border-stone-200 rounded-lg text-stone-700"
-                >
-                  {EXAMS.map((e) => (
-                    <option key={e.value} value={e.value}>
-                      {e.label}
-                    </option>
-                  ))}
-                </select>
+            {/* Test Cards Grid */}
+            {loading ? (
+              <div className="py-20 flex flex-col items-center justify-center space-y-2">
+                <div className="w-5 h-5 border-2 border-[#37352f] border-t-transparent rounded-full animate-spin" />
+                <p className="text-xs text-[#787774] font-mono">Filtering repositories...</p>
               </div>
-
-              {/* Subject */}
-              <div>
-                <label className="block text-[10px] font-bold text-stone-400 uppercase tracking-wider mb-1">
-                  Subject
-                </label>
-                <select
-                  value={selectedSubject}
-                  onChange={(e) => setSelectedSubject(e.target.value)}
-                  className="w-full px-2.5 py-1.5 text-xs bg-stone-50 border border-stone-200 rounded-lg text-stone-700"
-                >
-                  {SUBJECTS.map((s) => (
-                    <option key={s.value} value={s.value}>
-                      {s.label}
-                    </option>
-                  ))}
-                </select>
-              </div>
-
-              {/* Test Type */}
-              <div>
-                <label className="block text-[10px] font-bold text-stone-400 uppercase tracking-wider mb-1">
-                  Test Type
-                </label>
-                <select
-                  value={selectedType}
-                  onChange={(e) => setSelectedType(e.target.value)}
-                  className="w-full px-2.5 py-1.5 text-xs bg-stone-50 border border-stone-200 rounded-lg text-stone-700"
-                >
-                  {TEST_TYPES.map((t) => (
-                    <option key={t.value} value={t.value}>
-                      {t.label}
-                    </option>
-                  ))}
-                </select>
-              </div>
-
-              {/* Difficulty */}
-              <div>
-                <label className="block text-[10px] font-bold text-stone-400 uppercase tracking-wider mb-1">
-                  Difficulty
-                </label>
-                <select
-                  value={selectedDifficulty}
-                  onChange={(e) => setSelectedDifficulty(e.target.value)}
-                  className="w-full px-2.5 py-1.5 text-xs bg-stone-50 border border-stone-200 rounded-lg text-stone-700"
-                >
-                  <option value="all">All Difficulties</option>
-                  <option value="easy">Foundational (Easy)</option>
-                  <option value="medium">Standard (Medium)</option>
-                  <option value="hard">Advanced (Hard)</option>
-                </select>
-              </div>
-
-              {/* Duration */}
-              <div>
-                <label className="block text-[10px] font-bold text-stone-400 uppercase tracking-wider mb-1">
-                  Duration
-                </label>
-                <select
-                  value={selectedDuration}
-                  onChange={(e) => setSelectedDuration(e.target.value)}
-                  className="w-full px-2.5 py-1.5 text-xs bg-stone-50 border border-stone-200 rounded-lg text-stone-700"
-                >
-                  <option value="all">Any Duration</option>
-                  <option value="short">Speed Drill (≤ 30 min)</option>
-                  <option value="medium">Standard (30 - 60 min)</option>
-                  <option value="long">Full Mock (&gt; 60 min)</option>
-                </select>
-              </div>
-
-              {/* Trust Badge */}
-              <div>
-                <label className="block text-[10px] font-bold text-stone-400 uppercase tracking-wider mb-1">
-                  Provenance
-                </label>
-                <select
-                  value={selectedTrust}
-                  onChange={(e) => setSelectedTrust(e.target.value)}
-                  className="w-full px-2.5 py-1.5 text-xs bg-stone-50 border border-stone-200 rounded-lg text-stone-700"
-                >
-                  {TRUST_LABELS.map((tl) => (
-                    <option key={tl.value} value={tl.value}>
-                      {tl.label}
-                    </option>
-                  ))}
-                </select>
-              </div>
-            </div>
-          </div>
-
-          {/* Test Cards Grid */}
-          {loading ? (
-            <div className="py-20 flex flex-col items-center justify-center space-y-3">
-              <div className="w-8 h-8 border-3 border-stone-900 border-t-transparent rounded-full animate-spin" />
-              <p className="text-xs text-stone-500 font-medium">Filtering public question repositories...</p>
-            </div>
-          ) : tests.length === 0 ? (
-            <div className="bg-white border border-stone-200 rounded-2xl p-12 text-center space-y-4">
-              <div className="w-12 h-12 rounded-full bg-stone-100 flex items-center justify-center mx-auto text-stone-400">
-                <Search className="w-6 h-6" />
-              </div>
-              <div className="space-y-1">
-                <h3 className="text-base font-serif font-bold text-stone-900">No Tests Found Matching Filters</h3>
-                <p className="text-xs text-stone-500 max-w-sm mx-auto">
-                  Try clearing some filter constraints or searching for broader subject keywords like &quot;Quantitative&quot; or &quot;Biology&quot;.
+            ) : tests.length === 0 ? (
+              <div className="bg-white border border-[#ebebeb] rounded-lg p-10 text-center space-y-3">
+                <Search className="w-8 h-8 text-[#9b9a97] mx-auto" />
+                <h3 className="font-semibold text-sm text-[#37352f]">No Tests Found</h3>
+                <p className="text-xs text-[#787774] max-w-sm mx-auto">
+                  Try clearing some filter constraints or searching for broader subject keywords.
                 </p>
+                <Button variant="outline" size="sm" onClick={resetFilters}>
+                  Reset All Filters
+                </Button>
               </div>
-              <Button variant="secondary" size="sm" onClick={resetFilters}>
-                Reset All Filters
-              </Button>
-            </div>
-          ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
-              {tests.map((test) => {
-                return (
+            ) : (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3.5">
+                {tests.map((test) => (
                   <div
                     key={test.id}
-                    className="bg-white rounded-2xl border border-stone-200/90 shadow-2xs hover:border-stone-300 hover:shadow-sm transition-all flex flex-col justify-between p-5 space-y-4"
+                    className="bg-white rounded-lg border border-[#ebebeb] hover:border-[#d4d4d4] transition-colors flex flex-col justify-between p-4 space-y-3"
                   >
-                    {/* Top Row: Trust Label + Bookmark */}
-                    <div className="space-y-3">
+                    <div className="space-y-2">
                       <div className="flex items-center justify-between gap-2">
                         <TrustLabel label={test.trust_label} size="sm" showTooltip />
-                        <div className="flex items-center gap-1.5">
+                        <div className="flex items-center gap-1">
                           <button
                             onClick={() => handleBookmarkToggle(test.id)}
                             title={test.is_bookmarked ? 'Remove bookmark' : 'Save test'}
-                            className={`p-1.5 rounded-lg border transition-colors ${
+                            className={`p-1 rounded border text-xs transition-colors ${
                               test.is_bookmarked
-                                ? 'bg-amber-50 border-amber-200 text-amber-600'
-                                : 'bg-stone-50 border-stone-200 text-stone-400 hover:text-stone-700'
+                                ? 'bg-[#fdf5e8] border-[#fae2be] text-[#8f4f00]'
+                                : 'bg-[#fbfbfa] border-[#ebebeb] text-[#787774] hover:bg-[#f7f6f3]'
                             }`}
                           >
-                            <Bookmark
-                              className={`w-3.5 h-3.5 ${test.is_bookmarked ? 'fill-amber-500' : ''}`}
-                            />
+                            <Bookmark className={`w-3 h-3 ${test.is_bookmarked ? 'fill-amber-600' : ''}`} />
                           </button>
                           <button
                             onClick={() => handleShare(test.id, test.title)}
                             title="Share test link"
-                            className="p-1.5 rounded-lg border border-stone-200 bg-stone-50 text-stone-400 hover:text-stone-700 transition-colors"
+                            className="p-1 rounded border border-[#ebebeb] bg-[#fbfbfa] text-[#787774] hover:bg-[#f7f6f3] transition-colors"
                           >
-                            <Share2 className="w-3.5 h-3.5" />
+                            <Share2 className="w-3 h-3" />
                           </button>
                         </div>
                       </div>
 
-                      {/* Subject & Type Tags */}
-                      <div className="flex items-center gap-2 flex-wrap">
-                        <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded bg-stone-100 text-stone-700 border border-stone-200">
+                      <div className="flex items-center gap-1.5 flex-wrap">
+                        <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-[#f7f6f3] text-[#787774] border border-[#ebebeb]">
                           {test.subject || 'General Studies'}
                         </span>
-                        <span className="text-[10px] font-medium px-2 py-0.5 rounded bg-stone-50 text-stone-600 border border-stone-200">
+                        <Badge variant="blue" size="sm">
                           {formatTestType(test.test_type)}
-                        </span>
-                        <span
-                          className={`text-[10px] font-bold px-2 py-0.5 rounded border capitalize ${
-                            test.difficulty === 'hard'
-                              ? 'bg-rose-50 text-rose-700 border-rose-200'
-                              : test.difficulty === 'medium'
-                              ? 'bg-amber-50 text-amber-700 border-amber-200'
-                              : 'bg-emerald-50 text-emerald-700 border-emerald-200'
-                          }`}
+                        </Badge>
+                        <Badge
+                          variant={test.difficulty === 'hard' ? 'rose' : test.difficulty === 'medium' ? 'amber' : 'emerald'}
+                          size="sm"
                         >
                           {test.difficulty || 'medium'}
-                        </span>
-                        <span className={`text-[10px] font-mono font-bold px-2 py-0.5 rounded ${
-                          test.is_paid
-                            ? 'bg-blue-50 text-blue-800 border border-blue-200'
-                            : 'bg-emerald-50 text-emerald-800 border border-emerald-200'
-                        }`}>
+                        </Badge>
+                        <Badge variant={test.is_paid ? 'gray' : 'emerald'} size="sm">
                           {test.is_paid ? `₹${test.price_inr || 149}` : 'Free'}
-                        </span>
+                        </Badge>
                       </div>
 
-                      {/* Title & Description */}
                       <div>
                         <Link
                           href={`/tests/${test.id}`}
-                          className="font-serif font-bold text-stone-900 hover:text-amber-800 transition-colors line-clamp-2 text-sm leading-snug"
+                          className="font-medium text-xs sm:text-sm text-[#37352f] hover:underline line-clamp-1 leading-snug"
                         >
                           {test.title}
                         </Link>
                         {test.description && (
-                          <p className="text-xs text-stone-500 line-clamp-2 mt-1.5 leading-relaxed">
+                          <p className="text-xs text-[#787774] line-clamp-2 mt-1 leading-relaxed">
                             {test.description}
                           </p>
                         )}
                       </div>
 
-                      {/* Creator Attribution */}
-                      <div className="pt-2 border-t border-stone-100 flex items-center justify-between text-xs">
+                      <div className="pt-2 border-t border-[#f7f6f3] flex items-center justify-between text-xs">
                         <Link
                           href={`/creators/${test.user_id}`}
-                          className="flex items-center gap-1.5 text-stone-600 hover:text-stone-900 group"
+                          className="flex items-center gap-1.5 text-[#787774] hover:text-[#37352f]"
                         >
-                          <div className="w-5 h-5 rounded-full bg-stone-200 text-stone-700 flex items-center justify-center font-bold text-[10px]">
+                          <div className="w-4 h-4 rounded bg-[#f7f6f3] text-[#787774] border border-[#ebebeb] flex items-center justify-center font-bold text-[9px]">
                             {test.created_by_name?.charAt(0) || 'F'}
                           </div>
-                          <div className="truncate max-w-[150px]">
-                            <span className="font-semibold text-stone-800 block truncate group-hover:underline">
-                              {test.created_by_name || 'Nalanda Faculty'}
-                            </span>
-                            <span className="text-[10px] text-stone-400 block truncate">
-                              {test.creator_institute || 'Academic Board'}
-                            </span>
-                          </div>
+                          <span className="truncate max-w-[120px] text-[11px]">
+                            {test.created_by_name || 'Nalanda Faculty'}
+                          </span>
                         </Link>
 
-                        <div className="flex items-center gap-1 text-xs font-mono font-bold text-amber-700 bg-amber-50 px-2 py-0.5 rounded border border-amber-200">
+                        <div className="flex items-center gap-1 text-[11px] font-mono font-medium text-[#37352f]">
                           <Star className="w-3 h-3 fill-amber-500 text-amber-500" />
                           <span>{Number(test.rating || 4.8).toFixed(1)}</span>
                         </div>
                       </div>
                     </div>
 
-                    {/* Bottom Metadata & Actions */}
-                    <div className="pt-3 border-t border-stone-100 space-y-3">
-                      <div className="grid grid-cols-3 gap-2 text-center text-stone-600 text-[11px] font-mono">
-                        <div className="bg-stone-50 p-1.5 rounded-lg border border-stone-200/70">
-                          <span className="block text-stone-400 text-[9px] uppercase font-sans">Questions</span>
-                          <span className="font-bold text-stone-800">{test.question_count || 25}</span>
+                    <div className="pt-2.5 border-t border-[#ebebeb] space-y-2">
+                      <div className="grid grid-cols-3 gap-1.5 text-center text-[#787774] text-[11px] font-mono">
+                        <div className="bg-[#fbfbfa] p-1 rounded border border-[#ebebeb]">
+                          <span className="block text-[#9b9a97] text-[9px] uppercase font-sans">Qs</span>
+                          <span className="font-medium text-[#37352f]">{test.question_count || 25}</span>
                         </div>
-                        <div className="bg-stone-50 p-1.5 rounded-lg border border-stone-200/70">
-                          <span className="block text-stone-400 text-[9px] uppercase font-sans">Duration</span>
-                          <span className="font-bold text-stone-800">{formatDuration(test.duration_seconds)}</span>
+                        <div className="bg-[#fbfbfa] p-1 rounded border border-[#ebebeb]">
+                          <span className="block text-[#9b9a97] text-[9px] uppercase font-sans">Time</span>
+                          <span className="font-medium text-[#37352f]">{formatDuration(test.duration_seconds)}</span>
                         </div>
-                        <div className="bg-stone-50 p-1.5 rounded-lg border border-stone-200/70">
-                          <span className="block text-stone-400 text-[9px] uppercase font-sans">Attempts</span>
-                          <span className="font-bold text-stone-800">{test.attempts_count || 0}</span>
+                        <div className="bg-[#fbfbfa] p-1 rounded border border-[#ebebeb]">
+                          <span className="block text-[#9b9a97] text-[9px] uppercase font-sans">Tries</span>
+                          <span className="font-medium text-[#37352f]">{test.attempts_count || 0}</span>
                         </div>
                       </div>
 
-                      <div className="flex items-center gap-2 pt-1">
+                      <div className="flex items-center gap-2 pt-0.5">
                         <Link href={`/tests/${test.id}`} className="flex-1">
-                          <Button variant="secondary" size="sm" className="w-full text-xs">
-                            View Details
+                          <Button variant="outline" size="sm" className="w-full text-xs">
+                            Blueprint
                           </Button>
                         </Link>
                         <Link href={`/tests/${test.id}/start`} className="flex-1">
-                          <Button
-                            variant="primary"
-                            size="sm"
-                            className="w-full text-xs"
-                            icon={<Play className="w-3 h-3 fill-current" />}
-                          >
+                          <Button variant="primary" size="sm" className="w-full text-xs">
+                            <Play className="w-3 h-3 mr-1 fill-current" />
                             Take Exam
                           </Button>
                         </Link>
                       </div>
                     </div>
                   </div>
-                );
-              })}
-            </div>
-          )}
-        </div>
-      )}
+                ))}
+              </div>
+            )}
+          </div>
+        )}
 
-      {/* TAB 2: TEST SERIES */}
-      {activeTab === 'series' && (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {testSeries.map((s) => (
-            <Card key={s.id} className="p-6 bg-white hover:border-stone-300 transition-all flex flex-col justify-between">
-              <div className="space-y-3">
-                <div className="flex items-start justify-between gap-3">
-                  <div>
-                    <div className="flex items-center gap-2 mb-1 flex-wrap">
-                      <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded bg-amber-50 text-amber-800 border border-amber-200">
-                        {s.exam_title || 'SSC CGL 2026'}
-                      </span>
-                      <span className={`text-[10px] font-mono font-bold px-2 py-0.5 rounded ${
-                        s.is_paid
-                          ? 'bg-emerald-50 text-emerald-800 border border-emerald-200'
-                          : 'bg-stone-100 text-stone-700 border border-stone-200'
-                      }`}>
-                        {s.is_paid ? `₹${s.price_inr}` : 'Free Access'}
-                      </span>
-                      <span className="text-xs text-stone-500 font-medium font-mono">
-                        {s.total_tests || 10} Mock Exams
-                      </span>
+        {/* TAB 2: TEST SERIES */}
+        {activeTab === 'series' && (
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {testSeries.map((s) => (
+              <div
+                key={s.id}
+                className="p-4 bg-white rounded-lg border border-[#ebebeb] hover:border-[#d4d4d4] transition-colors flex flex-col justify-between space-y-3"
+              >
+                <div className="space-y-2">
+                  <div className="flex items-start justify-between gap-2">
+                    <div>
+                      <div className="flex items-center gap-1.5 mb-1 flex-wrap">
+                        <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-[#f7f6f3] text-[#787774] border border-[#ebebeb]">
+                          {s.exam_title || 'SSC CGL 2026'}
+                        </span>
+                        <Badge variant={s.is_paid ? 'gray' : 'emerald'} size="sm">
+                          {s.is_paid ? `₹${s.price_inr}` : 'Free'}
+                        </Badge>
+                        <span className="text-[11px] text-[#787774] font-mono">
+                          {s.total_tests || 10} Mock Exams
+                        </span>
+                      </div>
+                      <h3 className="text-xs sm:text-sm font-semibold text-[#37352f]">
+                        {s.title}
+                      </h3>
                     </div>
-                    <h3 className="text-base font-serif font-bold text-stone-900">
-                      {s.title}
-                    </h3>
+
+                    <div className="flex items-center gap-1 text-[11px] font-mono font-medium text-[#37352f] shrink-0 bg-[#fbfbfa] px-1.5 py-0.5 rounded border border-[#ebebeb]">
+                      <Star className="w-3 h-3 fill-amber-500 text-amber-500" />
+                      <span>{Number(s.rating || 4.9).toFixed(1)}</span>
+                    </div>
                   </div>
 
-                  <div className="flex items-center gap-1 text-xs font-mono font-bold text-amber-700 shrink-0 bg-amber-50 px-2 py-1 rounded border border-amber-200">
-                    <Star className="w-3.5 h-3.5 fill-amber-500 text-amber-500" />
-                    <span>{Number(s.rating || 4.9).toFixed(2)}</span>
+                  <div className="text-xs text-[#787774]">
+                    <span>By {s.creator_name || 'Senior Faculty'}</span>
+                    {s.creator_institute && <span> • {s.creator_institute}</span>}
                   </div>
+
+                  <p className="text-xs text-[#787774] leading-relaxed">
+                    {s.description}
+                  </p>
                 </div>
 
-                <div className="text-xs text-stone-500 space-y-0.5">
-                  <div className="font-semibold text-stone-800">{s.creator_name || 'Senior Academic Faculty'}</div>
-                  <div className="text-[11px] text-stone-500 flex items-center gap-1">
-                    <ShieldCheck className="w-3 h-3 text-emerald-600" />
-                    {s.creator_institute || 'Nalanda Academic Board'}
+                <div className="pt-3 border-t border-[#ebebeb] flex items-center justify-between gap-3">
+                  <div className="text-xs text-[#787774] flex items-center gap-1 font-mono">
+                    <Users className="w-3.5 h-3.5 text-[#9b9a97]" />
+                    <span>{(s.enrolled_count || 1200).toLocaleString()} enrolled</span>
                   </div>
-                </div>
 
-                <p className="text-xs text-stone-600 leading-relaxed pt-1">
-                  {s.description}
-                </p>
-
-                <div className="flex flex-wrap gap-1.5 pt-2">
-                  <span className="text-[10px] px-2 py-0.5 bg-stone-50 text-stone-600 border border-stone-200 rounded font-medium">
-                    ✓ Full Cognitive Forensics
-                  </span>
-                  <span className="text-[10px] px-2 py-0.5 bg-stone-50 text-stone-600 border border-stone-200 rounded font-medium">
-                    ✓ Sectional Percentile Benchmarks
-                  </span>
-                  <span className="text-[10px] px-2 py-0.5 bg-stone-50 text-stone-600 border border-stone-200 rounded font-medium">
-                    ✓ TCS Interface Emulation
-                  </span>
+                  <Link href={`/series/${s.id}`}>
+                    <Button variant="primary" size="sm">
+                      Access Series <ArrowRight className="w-3.5 h-3.5 ml-1" />
+                    </Button>
+                  </Link>
                 </div>
               </div>
+            ))}
+          </div>
+        )}
 
-              <div className="pt-5 border-t border-stone-100 flex items-center justify-between gap-3 mt-4">
-                <div className="text-xs text-stone-500 flex items-center gap-1.5 font-mono">
-                  <Users className="w-3.5 h-3.5 text-stone-400" />
-                  <span>{(s.enrolled_count || 1200).toLocaleString()} Aspirants Enrolled</span>
-                </div>
-
-                <Link href={`/series/${s.id}`}>
-                  <Button variant="saffron" size="sm">
-                    Access Series <ArrowRight className="w-3.5 h-3.5 ml-1" />
-                  </Button>
-                </Link>
-              </div>
-            </Card>
-          ))}
-        </div>
-      )}
-
-      {/* TAB 3: VERIFIED EDUCATORS */}
-      {activeTab === 'creators' && (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
-          {creators.map((creator) => (
-            <div
-              key={creator.id}
-              className="bg-white rounded-2xl border border-stone-200 p-6 shadow-2xs hover:border-stone-300 transition-all flex flex-col justify-between space-y-4"
-            >
-              <div className="space-y-3">
-                <div className="flex items-start justify-between gap-3">
-                  <div className="w-12 h-12 rounded-2xl bg-amber-50 border border-amber-200 text-amber-800 flex items-center justify-center font-serif font-bold text-lg">
-                    {creator.name?.charAt(0) || 'E'}
-                  </div>
-                  <button
-                    onClick={() => handleFollowToggle(creator.id)}
-                    className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-colors ${
-                      creator.is_following
-                        ? 'bg-stone-100 text-stone-700 border border-stone-200 hover:bg-rose-50 hover:text-rose-600 hover:border-rose-200'
-                        : 'bg-stone-900 text-white hover:bg-stone-800'
-                    }`}
-                  >
-                    {creator.is_following ? 'Following' : 'Follow'}
-                  </button>
-                </div>
-
-                <div>
-                  <div className="flex items-center gap-1.5">
-                    <h3 className="text-sm font-serif font-bold text-stone-900">{creator.name}</h3>
-                    <ShieldCheck className="w-3.5 h-3.5 text-emerald-600" />
-                  </div>
-                  <p className="text-[11px] text-amber-700 font-medium">{creator.headline}</p>
-                  <p className="text-[10px] text-stone-400">{creator.institute_name}</p>
-                </div>
-
-                <p className="text-xs text-stone-600 line-clamp-3 leading-relaxed">
-                  {creator.bio}
-                </p>
-
-                {/* Specializations */}
-                <div className="flex flex-wrap gap-1">
-                  {(creator.specializations || []).slice(0, 3).map((subj: string) => (
-                    <span
-                      key={subj}
-                      className="text-[10px] px-2 py-0.5 rounded bg-stone-100 text-stone-600 border border-stone-200 font-mono"
+        {/* TAB 3: VERIFIED EDUCATORS */}
+        {activeTab === 'creators' && (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3.5">
+            {creators.map((creator) => (
+              <div
+                key={creator.id}
+                className="bg-white rounded-lg border border-[#ebebeb] p-4 hover:border-[#d4d4d4] transition-colors flex flex-col justify-between space-y-3"
+              >
+                <div className="space-y-2.5">
+                  <div className="flex items-start justify-between gap-2">
+                    <div className="w-9 h-9 rounded-md bg-[#f7f6f3] border border-[#ebebeb] text-[#37352f] flex items-center justify-center font-semibold text-sm">
+                      {creator.name?.charAt(0) || 'E'}
+                    </div>
+                    <button
+                      onClick={() => handleFollowToggle(creator.id)}
+                      className={`px-2.5 py-1 rounded-md text-xs font-medium transition-colors ${
+                        creator.is_following
+                          ? 'bg-[#f7f6f3] text-[#787774] border border-[#ebebeb] hover:bg-[#fff0f0] hover:text-[#e03e3e]'
+                          : 'bg-[#37352f] text-white hover:bg-[#22211e]'
+                      }`}
                     >
-                      {subj}
-                    </span>
-                  ))}
+                      {creator.is_following ? 'Following' : 'Follow'}
+                    </button>
+                  </div>
+
+                  <div>
+                    <div className="flex items-center gap-1">
+                      <h3 className="text-xs sm:text-sm font-semibold text-[#37352f]">{creator.name}</h3>
+                      <ShieldCheck className="w-3.5 h-3.5 text-emerald-600" />
+                    </div>
+                    <p className="text-[11px] text-[#787774]">{creator.headline}</p>
+                    <p className="text-[10px] text-[#9b9a97]">{creator.institute_name}</p>
+                  </div>
+
+                  <p className="text-xs text-[#787774] line-clamp-2 leading-relaxed">
+                    {creator.bio}
+                  </p>
+
+                  <div className="flex flex-wrap gap-1">
+                    {(creator.specializations || []).slice(0, 3).map((subj: string) => (
+                      <span
+                        key={subj}
+                        className="text-[10px] px-1.5 py-0.5 rounded bg-[#f7f6f3] text-[#787774] border border-[#ebebeb] font-mono"
+                      >
+                        {subj}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="pt-3 border-t border-[#ebebeb] space-y-2">
+                  <div className="grid grid-cols-3 gap-1 text-center text-[10px] font-mono text-[#787774]">
+                    <div className="bg-[#fbfbfa] p-1 rounded border border-[#ebebeb]">
+                      <span className="block text-[#9b9a97] text-[9px] uppercase font-sans">Students</span>
+                      <span className="font-medium text-[#37352f]">{creator.total_students || 1200}</span>
+                    </div>
+                    <div className="bg-[#fbfbfa] p-1 rounded border border-[#ebebeb]">
+                      <span className="block text-[#9b9a97] text-[9px] uppercase font-sans">Papers</span>
+                      <span className="font-medium text-[#37352f]">{creator.published_tests_count || 12}</span>
+                    </div>
+                    <div className="bg-[#fbfbfa] p-1 rounded border border-[#ebebeb]">
+                      <span className="block text-[#9b9a97] text-[9px] uppercase font-sans">Followers</span>
+                      <span className="font-medium text-[#37352f]">{creator.followers_count || 0}</span>
+                    </div>
+                  </div>
+
+                  <Link href={`/creators/${creator.id}`} className="block">
+                    <Button variant="outline" size="sm" className="w-full text-xs">
+                      View Educator Portfolio <ChevronRight className="w-3.5 h-3.5 ml-1" />
+                    </Button>
+                  </Link>
                 </div>
               </div>
-
-              {/* Creator stats */}
-              <div className="pt-4 border-t border-stone-100 space-y-3">
-                <div className="grid grid-cols-3 gap-2 text-center text-[10px] font-mono text-stone-600">
-                  <div className="bg-stone-50 p-2 rounded-lg border border-stone-200/60">
-                    <span className="block text-stone-400 text-[9px] uppercase font-sans">Students</span>
-                    <span className="font-bold text-stone-800">{creator.total_students || 1200}</span>
-                  </div>
-                  <div className="bg-stone-50 p-2 rounded-lg border border-stone-200/60">
-                    <span className="block text-stone-400 text-[9px] uppercase font-sans">Papers</span>
-                    <span className="font-bold text-stone-800">{creator.published_tests_count || 12}</span>
-                  </div>
-                  <div className="bg-stone-50 p-2 rounded-lg border border-stone-200/60">
-                    <span className="block text-stone-400 text-[9px] uppercase font-sans">Followers</span>
-                    <span className="font-bold text-stone-800">{creator.followers_count || 0}</span>
-                  </div>
-                </div>
-
-                <Link href={`/creators/${creator.id}`} className="block">
-                  <Button variant="secondary" size="sm" className="w-full text-xs">
-                    View Educator Portfolio <ChevronRight className="w-3.5 h-3.5 ml-1" />
-                  </Button>
-                </Link>
-              </div>
-            </div>
-          ))}
-        </div>
-      )}
+            ))}
+          </div>
+        )}
+      </div>
     </AppShell>
   );
 }
