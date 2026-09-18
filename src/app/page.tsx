@@ -4,50 +4,22 @@ import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import {
-  Clock,
   ArrowRight,
-  Sparkles,
   Play,
-  FileCheck,
-  Building2,
   BookOpen,
-  CheckCircle2,
-  ShieldCheck,
-  BookMarked,
-  ChevronRight,
-  Check,
-  FileText,
   Target,
   BarChart3,
+  BookMarked,
+  Clock,
+  CheckCircle2,
+  Sparkles,
+  TrendingUp,
   Layers,
 } from 'lucide-react';
-import { Badge } from '@/components/ui/Badge';
-import { Button } from '@/components/ui/Button';
-import CalloutBlock from '@/components/ui/CalloutBlock';
 
 export default function LandingPage() {
   const router = useRouter();
   const [loadingDemo, setLoadingDemo] = useState(false);
-
-  // Live Interactive Hero Exam Simulator State
-  const [selectedOption, setSelectedOption] = useState<string | null>(null);
-  const [isAnswerRevealed, setIsAnswerRevealed] = useState(false);
-  const [activeSection, setActiveSection] = useState('Quant');
-  const [timerSeconds, setTimerSeconds] = useState(3582); // ~59:42 mins
-
-  // Countdown timer effect
-  useEffect(() => {
-    const timer = setInterval(() => {
-      setTimerSeconds((prev) => (prev > 0 ? prev - 1 : 3600));
-    }, 1000);
-    return () => clearInterval(timer);
-  }, []);
-
-  const formatTimer = (totalSecs: number) => {
-    const mins = Math.floor(totalSecs / 60);
-    const secs = totalSecs % 60;
-    return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
-  };
 
   const handleStartQuickDemo = async () => {
     setLoadingDemo(true);
@@ -67,566 +39,289 @@ export default function LandingPage() {
   };
 
   return (
-    <div className="bg-[#F7F7F5] text-[#202124] min-h-screen selection:bg-[#EEF0FB] selection:text-[#4F46A5]">
-      <div className="space-y-16 sm:space-y-24 pb-20">
-        {/* ========================================================================= */}
-        {/* 1. HERO SECTION (WORKSPACE SHOWCASE & LIVE CBT SIMULATOR) */}
-        {/* ========================================================================= */}
-        <section className="pt-10 sm:pt-16 md:pt-20">
-          <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 text-center space-y-6">
-            {/* Top Minimal Pill */}
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white border border-[#E6E6E3] text-xs text-[#787774] shadow-xs">
-              <span className="w-1.5 h-1.5 rounded-full bg-[#4F46A5]" />
-              <span className="font-medium text-[#202124]">Nalanda Learning Workspace &middot; Deliberate Practice, Measurable Progress</span>
-            </div>
+    <div className="bg-white text-[#202124] min-h-screen selection:bg-[#EEF0FB] selection:text-[#4F46A5] overflow-hidden">
 
-            {/* Editorial Headline */}
-            <div className="space-y-3.5 max-w-3xl mx-auto">
-              <h1 className="text-3xl sm:text-5xl lg:text-5xl font-semibold tracking-tight text-[#202124] leading-[1.2]">
-                Master competitive examinations through structured intelligence.
-              </h1>
-              <p className="text-sm sm:text-base text-[#787774] max-w-2xl mx-auto leading-relaxed font-normal">
-                A calm, intelligent knowledge workspace unifying prerequisite-mapped syllabus trees, 100% authentic computer-based testing, mistake forensics, and spaced repetition.
-              </p>
-            </div>
+      {/* ============================================================= */}
+      {/* HERO SECTION */}
+      {/* ============================================================= */}
+      <section className="relative pt-20 sm:pt-28 md:pt-36 pb-20 sm:pb-28">
+        {/* Subtle radial gradient background */}
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_80%_60%_at_50%_-10%,rgba(79,70,165,0.06),transparent)]" />
 
-            {/* Minimalist Action Controls */}
-            <div className="flex flex-col sm:flex-row items-center justify-center gap-2.5 max-w-md mx-auto pt-2">
-              <Link href="/dashboard" className="w-full sm:w-auto">
-                <Button variant="primary" size="md" className="w-full sm:w-auto font-medium">
-                  <span>Open Workspace</span>
-                  <ArrowRight className="w-3.5 h-3.5 ml-1.5" />
-                </Button>
-              </Link>
-
-              <button
-                onClick={handleStartQuickDemo}
-                disabled={loadingDemo}
-                className="w-full sm:w-auto px-3.5 py-1.5 rounded-md border border-[#E6E6E3] bg-white hover:bg-[#F1F1EF] text-[#202124] text-xs sm:text-sm font-medium transition-colors flex items-center justify-center gap-1.5 min-h-[34px]"
+        <div className="relative max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+          {/* Central Brand Icon */}
+          <div className="flex justify-center mb-8 sm:mb-10">
+            <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-2xl bg-[#4F46A5] text-white flex items-center justify-center shadow-lg shadow-[#4F46A5]/20">
+              <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+                className="w-8 h-8 sm:w-9 sm:h-9 text-white"
               >
-                {loadingDemo ? (
-                  <>
-                    <div className="w-3.5 h-3.5 border-2 border-current border-t-transparent rounded-full animate-spin" />
-                    <span>Launching CBT Simulator...</span>
-                  </>
-                ) : (
-                  <>
-                    <Play className="w-3.5 h-3.5 text-[#787774]" />
-                    <span>Try Sample Mock Exam</span>
-                  </>
-                )}
-              </button>
-
-              <Link href="/tests/create" className="w-full sm:w-auto">
-                <Button variant="ghost" size="md" className="w-full sm:w-auto text-[#787774] hover:text-[#202124]">
-                  Test Studio
-                </Button>
-              </Link>
+                <line x1="5" y1="5" x2="5" y2="19" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" />
+                <line x1="19" y1="5" x2="19" y2="19" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" />
+                <line x1="5" y1="5" x2="19" y2="19" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" />
+                <circle cx="19" cy="5" r="2" fill="#B7791F" />
+              </svg>
             </div>
+          </div>
 
-            {/* Interactive Live CBT Exam Sandbox Preview Document */}
-            <div className="pt-6 sm:pt-8 max-w-3xl mx-auto text-left">
-              <div className="rounded-md border border-[#E6E6E3] bg-white shadow-xs overflow-hidden">
-                {/* Simulator Header Bar */}
-                <div className="bg-[#F1F1EF] border-b border-[#E6E6E3] px-4 sm:px-5 py-2.5 flex flex-wrap items-center justify-between gap-2.5 text-xs">
-                  <div className="flex items-center gap-2">
-                    <span className="w-2 h-2 rounded-full bg-[#1B5E20]" />
-                    <span className="font-medium text-[#202124] tracking-tight">
-                      CBT Simulator &middot; SSC CGL Tier-I
-                    </span>
-                    <span className="hidden sm:inline px-1.5 py-0.5 rounded bg-white text-[#787774] text-[11px] border border-[#E6E6E3]">
-                      100 Qs &middot; 200 Marks
-                    </span>
-                  </div>
+          {/* Giant Hero Headline */}
+          <h1 className="text-4xl sm:text-6xl lg:text-7xl font-semibold tracking-tight leading-[1.1] text-[#202124]">
+            Learn, practice, and master
+          </h1>
+          <h1 className="text-4xl sm:text-6xl lg:text-7xl font-semibold tracking-tight leading-[1.1] text-[#4F46A5] mt-1 sm:mt-2">
+            all in one place
+          </h1>
 
-                  <div className="flex items-center gap-2.5">
-                    <div className="flex items-center gap-1 px-2 py-0.5 rounded bg-[#FDF6EC] text-[#B7791F] font-mono text-xs font-semibold border border-[#F6E3C7]">
-                      <Clock className="w-3 h-3" />
-                      <span>{formatTimer(timerSeconds)}</span>
-                    </div>
-                    <span className="px-1.5 py-0.5 rounded bg-white text-[#787774] text-[11px] font-mono border border-[#E6E6E3]">
-                      +2.0 / -0.50
-                    </span>
-                  </div>
+          {/* Subtitle */}
+          <p className="mt-6 sm:mt-8 text-base sm:text-lg text-[#787774] max-w-xl mx-auto leading-relaxed font-normal">
+            Structured knowledge paths, realistic exam simulations, and intelligent progress tracking.
+          </p>
+
+          {/* Single CTA */}
+          <div className="mt-8 sm:mt-10 flex justify-center">
+            <button
+              onClick={handleStartQuickDemo}
+              disabled={loadingDemo}
+              className="inline-flex items-center gap-2.5 px-7 py-3.5 rounded-full bg-[#4F46A5] hover:bg-[#433B91] text-white text-sm sm:text-base font-medium shadow-lg shadow-[#4F46A5]/25 transition-all duration-200 hover:shadow-xl hover:shadow-[#4F46A5]/30 hover:-translate-y-0.5 active:translate-y-0"
+            >
+              {loadingDemo ? (
+                <>
+                  <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                  <span>Launching...</span>
+                </>
+              ) : (
+                <>
+                  <span>Get free demo</span>
+                </>
+              )}
+            </button>
+          </div>
+        </div>
+
+        {/* ============================================================= */}
+        {/* FLOATING FEATURE CARDS */}
+        {/* ============================================================= */}
+
+        {/* Card: Left Bottom — Mock Tests */}
+        <div className="hidden lg:block absolute left-[3%] xl:left-[6%] bottom-[2%] w-56">
+          <div className="bg-white rounded-xl border border-[#E6E6E3] shadow-lg shadow-black/[0.04] p-4 space-y-3 transform -rotate-3 hover:rotate-0 transition-transform duration-500">
+            <div className="flex items-center justify-between">
+              <span className="text-xs font-semibold text-[#202124]">Today&apos;s Practice</span>
+              <span className="w-2 h-2 rounded-full bg-[#1B5E20]" />
+            </div>
+            <div className="space-y-2.5">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <span className="w-5 h-5 rounded bg-[#EEF0FB] text-[#4F46A5] text-[10px] font-bold flex items-center justify-center">1</span>
+                  <span className="text-xs text-[#202124]">SSC CGL Mock #4</span>
                 </div>
-
-                {/* Section Switcher Tabs */}
-                <div className="bg-white border-b border-[#E6E6E3] px-4 sm:px-5 py-1.5 flex items-center gap-1.5 overflow-x-auto text-xs">
-                  {[
-                    { id: 'Quant', label: 'Quantitative Aptitude' },
-                    { id: 'Reasoning', label: 'General Intelligence' },
-                    { id: 'English', label: 'English Language' },
-                    { id: 'GA', label: 'General Awareness' },
-                  ].map((sec) => (
-                    <button
-                      key={sec.id}
-                      onClick={() => {
-                        setActiveSection(sec.id);
-                        setSelectedOption(null);
-                        setIsAnswerRevealed(false);
-                      }}
-                      className={`px-2.5 py-1 rounded text-xs transition-colors whitespace-nowrap ${
-                        activeSection === sec.id
-                          ? 'bg-[#EEF0FB] text-[#4F46A5] font-medium'
-                          : 'text-[#787774] hover:text-[#202124] hover:bg-[#F1F1EF]'
-                      }`}
-                    >
-                      {sec.label}
-                    </button>
-                  ))}
+                <span className="text-[10px] text-[#1B5E20] font-medium">82%</span>
+              </div>
+              <div className="w-full bg-[#E6E6E3] rounded-full h-1.5">
+                <div className="bg-[#4F46A5] h-1.5 rounded-full" style={{ width: '82%' }} />
+              </div>
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <span className="w-5 h-5 rounded bg-[#FDF6EC] text-[#B7791F] text-[10px] font-bold flex items-center justify-center">2</span>
+                  <span className="text-xs text-[#202124]">Quant Speed Drill</span>
                 </div>
-
-                {/* Question Area */}
-                <div className="p-4 sm:p-6 space-y-4">
-                  <div className="flex items-center justify-between text-xs">
-                    <span className="text-[11px] font-mono text-[#787774]">
-                      Question 14 of 25 &middot; Geometry Circles
-                    </span>
-                    <span className="text-[11px] text-[#787774]">
-                      Click an option to test instant evaluation:
-                    </span>
-                  </div>
-
-                  <p className="text-xs sm:text-sm font-normal text-[#202124] leading-relaxed">
-                    In a circle with centre O, two chords <strong>AB</strong> and <strong>CD</strong> intersect internally at point <strong>P</strong>. If <strong>AP = 6 cm</strong>, <strong>PB = 4 cm</strong>, and <strong>CP = 3 cm</strong>, find the length of segment <strong>PD</strong>.
-                  </p>
-
-                  {/* 4 Clean Options */}
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-1">
-                    {[
-                      { label: 'A', text: '7.0 cm', isCorrect: false },
-                      { label: 'B', text: '8.0 cm', isCorrect: true },
-                      { label: 'C', text: '9.0 cm', isCorrect: false },
-                      { label: 'D', text: '10.5 cm', isCorrect: false },
-                    ].map((opt) => {
-                      const isSelected = selectedOption === opt.label;
-                      let btnStyle = 'border-[#E6E6E3] bg-white hover:bg-[#F1F1EF] text-[#202124]';
-
-                      if (isAnswerRevealed) {
-                        if (opt.isCorrect) {
-                          btnStyle = 'border-[#C8E6C9] bg-[#EDF7ED] text-[#1B5E20]';
-                        } else if (isSelected && !opt.isCorrect) {
-                          btnStyle = 'border-[#FEE2E2] bg-[#FEF2F2] text-[#C53030]';
-                        }
-                      } else if (isSelected) {
-                        btnStyle = 'border-[#4F46A5] bg-[#EEF0FB] text-[#4F46A5]';
-                      }
-
-                      return (
-                        <button
-                          key={opt.label}
-                          onClick={() => {
-                            setSelectedOption(opt.label);
-                            setIsAnswerRevealed(true);
-                          }}
-                          className={`p-2.5 rounded-md border text-left flex items-center justify-between gap-2 text-xs font-normal transition-colors ${btnStyle}`}
-                        >
-                          <div className="flex items-center gap-2">
-                            <span className="w-5 h-5 rounded bg-[#F1F1EF] font-mono text-xs flex items-center justify-center text-[#787774] shrink-0">
-                              {opt.label}
-                            </span>
-                            <span>{opt.text}</span>
-                          </div>
-
-                          {isAnswerRevealed && opt.isCorrect && (
-                            <span className="text-[#1B5E20] text-[11px] font-medium flex items-center gap-0.5">
-                              <Check className="w-3 h-3" /> Correct (+2.0)
-                            </span>
-                          )}
-                          {isAnswerRevealed && isSelected && !opt.isCorrect && (
-                            <span className="text-[#C53030] text-[11px] font-medium">
-                              Incorrect (-0.50)
-                            </span>
-                          )}
-                        </button>
-                      );
-                    })}
-                  </div>
-
-                  {/* Immediate Feedback Callout Block */}
-                  {isAnswerRevealed && (
-                    <CalloutBlock
-                      variant="saffron"
-                      icon={<Sparkles className="w-4 h-4 text-[#B7791F]" />}
-                      title="Intersecting Chords Theorem Derivation"
-                    >
-                      <p className="text-xs leading-relaxed">
-                        When two chords intersect internally, the products of their segments are equal:
-                        <br />
-                        <span className="font-mono font-medium pt-0.5 block">
-                          AP &times; PB = CP &times; PD &rArr; 6 &times; 4 = 3 &times; PD &rArr; PD = 8 cm.
-                        </span>
-                      </p>
-                      {selectedOption !== 'B' && (
-                        <p className="text-[11px] text-[#C53030] pt-1 font-medium">
-                          &bull; Automatically logged to Mistake Notebook under &ldquo;Calculation Slip&rdquo; for spaced review.
-                        </p>
-                      )}
-                    </CalloutBlock>
-                  )}
-                </div>
-
-                {/* Simulator Footer Dock */}
-                <div className="bg-[#F1F1EF] border-t border-[#E6E6E3] px-4 sm:px-5 py-2.5 flex flex-wrap items-center justify-between gap-2 text-xs text-[#787774]">
-                  <div className="flex items-center gap-2">
-                    <ShieldCheck className="w-3.5 h-3.5 text-[#1B5E20]" />
-                    <span>Autosave active &middot; 5-state question palette enabled</span>
-                  </div>
-
-                  <button
-                    onClick={handleStartQuickDemo}
-                    className="text-xs text-[#4F46A5] hover:underline font-medium flex items-center gap-1 transition-colors"
-                  >
-                    <span>Launch 100-Q Exam</span>
-                    <ChevronRight className="w-3 h-3" />
-                  </button>
-                </div>
+                <span className="text-[10px] text-[#B7791F] font-medium">64%</span>
+              </div>
+              <div className="w-full bg-[#E6E6E3] rounded-full h-1.5">
+                <div className="bg-[#B7791F] h-1.5 rounded-full" style={{ width: '64%' }} />
               </div>
             </div>
           </div>
-        </section>
+        </div>
 
-        {/* ========================================================================= */}
-        {/* 2. STATS & OPERATIONAL PROOF METRICS (CLEAN BORDERED STRIP) */}
-        {/* ========================================================================= */}
-        <section className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 p-5 rounded-md border border-[#E6E6E3] bg-white">
-            <div className="space-y-0.5 text-center sm:text-left">
-              <span className="text-2xl sm:text-3xl font-semibold text-[#202124] font-sans">12+</span>
-              <p className="text-xs font-medium text-[#787774]">Test Frameworks</p>
-              <span className="text-[11px] text-[#787774] block">Full Mocks, PYQs, Drills</span>
-            </div>
-
-            <div className="space-y-0.5 text-center sm:text-left">
-              <span className="text-2xl sm:text-3xl font-semibold text-[#1B5E20] font-sans">100%</span>
-              <p className="text-xs font-medium text-[#787774]">CBT Simulation Fidelity</p>
-              <span className="text-[11px] text-[#787774] block">Official TCS iON compliance</span>
-            </div>
-
-            <div className="space-y-0.5 text-center sm:text-left">
-              <span className="text-2xl sm:text-3xl font-semibold text-[#B7791F] font-sans">5-Tier</span>
-              <p className="text-xs font-medium text-[#787774]">Syllabus Depth</p>
-              <span className="text-[11px] text-[#787774] block">Exam &rarr; Subject &rarr; Topic</span>
-            </div>
-
-            <div className="space-y-0.5 text-center sm:text-left">
-              <span className="text-2xl sm:text-3xl font-semibold text-[#4F46A5] font-sans">3-Day</span>
-              <p className="text-xs font-medium text-[#787774]">Active Recall Cadence</p>
-              <span className="text-[11px] text-[#787774] block">Spaced repetition engine</span>
+        {/* Card: Right Bottom — Exam Coverage */}
+        <div className="hidden lg:block absolute right-[3%] xl:right-[6%] bottom-[2%] w-52">
+          <div className="bg-white rounded-xl border border-[#E6E6E3] shadow-lg shadow-black/[0.04] p-4 space-y-3 transform rotate-2 hover:rotate-0 transition-transform duration-500">
+            <span className="text-xs font-semibold text-[#202124]">12+ Exam Frameworks</span>
+            <div className="flex items-center gap-2 flex-wrap pt-1">
+              <span className="px-2 py-1 rounded-md bg-[#EEF0FB] text-[#4F46A5] text-[10px] font-medium">SSC CGL</span>
+              <span className="px-2 py-1 rounded-md bg-[#FDF6EC] text-[#B7791F] text-[10px] font-medium">IBPS PO</span>
+              <span className="px-2 py-1 rounded-md bg-[#EDF7ED] text-[#1B5E20] text-[10px] font-medium">UPSC</span>
+              <span className="px-2 py-1 rounded-md bg-[#F1F1EF] text-[#787774] text-[10px] font-medium">RRB NTPC</span>
+              <span className="px-2 py-1 rounded-md bg-[#EEF0FB] text-[#4F46A5] text-[10px] font-medium">JEE</span>
+              <span className="px-2 py-1 rounded-md bg-[#FDF6EC] text-[#B7791F] text-[10px] font-medium">NEET</span>
             </div>
           </div>
-        </section>
+        </div>
 
-        {/* ========================================================================= */}
-        {/* 3. THE 4 ARCHITECTURAL PILLARS (MODULAR CONTENT BLOCKS) */}
-        {/* ========================================================================= */}
-        <section className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 space-y-6">
-          <div className="space-y-1">
-            <span className="text-[10px] font-semibold uppercase tracking-wider text-[#787774]">
-              Platform Architecture
-            </span>
-            <h2 className="text-xl sm:text-2xl font-semibold text-[#202124] tracking-tight">
-              The Four Architectural Pillars of Nalanda
+        {/* Card: Top Left — Syllabus Progress (rotated post-it style) */}
+        <div className="hidden xl:block absolute left-[8%] top-[10%] w-44">
+          <div className="bg-[#FFFBEB] rounded-lg border border-[#FEF3C7] shadow-md shadow-black/[0.03] p-3 space-y-1.5 transform -rotate-6 hover:rotate-0 transition-transform duration-500">
+            <div className="flex items-center gap-1.5">
+              <BookOpen className="w-3.5 h-3.5 text-[#B7791F]" />
+              <span className="text-[11px] font-semibold text-[#B7791F]">Syllabus Progress</span>
+            </div>
+            <p className="text-[10px] text-[#787774] leading-relaxed">
+              28 topics mapped across 4 subjects with prerequisite trees.
+            </p>
+            <div className="flex items-center gap-1 pt-0.5">
+              <div className="flex-1 bg-[#FEF3C7] rounded-full h-1">
+                <div className="bg-[#B7791F] h-1 rounded-full" style={{ width: '67%' }} />
+              </div>
+              <span className="text-[9px] font-mono text-[#B7791F]">67%</span>
+            </div>
+          </div>
+        </div>
+
+        {/* Card: Top Right — Readiness Score */}
+        <div className="hidden xl:block absolute right-[6%] top-[8%] w-48">
+          <div className="bg-white rounded-xl border border-[#E6E6E3] shadow-md shadow-black/[0.03] p-3.5 space-y-2 transform rotate-3 hover:rotate-0 transition-transform duration-500">
+            <div className="flex items-center gap-1.5">
+              <Target className="w-3.5 h-3.5 text-[#4F46A5]" />
+              <span className="text-[11px] font-semibold text-[#202124]">Readiness Index</span>
+            </div>
+            <div className="flex items-end gap-2">
+              <span className="text-2xl font-bold text-[#4F46A5]">74</span>
+              <span className="text-[10px] text-[#1B5E20] font-medium flex items-center gap-0.5 mb-1">
+                <TrendingUp className="w-3 h-3" /> +6 this week
+              </span>
+            </div>
+            <div className="grid grid-cols-7 gap-0.5">
+              {[30, 45, 55, 60, 58, 68, 74].map((v, i) => (
+                <div key={i} className="bg-[#E6E6E3] rounded-sm overflow-hidden h-6">
+                  <div
+                    className="bg-[#4F46A5] rounded-sm w-full transition-all"
+                    style={{ height: `${v}%`, marginTop: `${100 - v}%` }}
+                  />
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ============================================================= */}
+      {/* FEATURES GRID */}
+      {/* ============================================================= */}
+      <section className="py-16 sm:py-24 bg-[#F7F7F5]">
+        <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-12 sm:mb-16">
+            <h2 className="text-2xl sm:text-3xl lg:text-4xl font-semibold text-[#202124] tracking-tight">
+              Everything you need to succeed
             </h2>
-            <p className="text-xs sm:text-sm text-[#787774] leading-relaxed max-w-2xl">
-              Every system is interconnected: learning informs testing, testing fuels mistake forensics, and forensics dictate spaced revision.
+            <p className="mt-3 text-sm sm:text-base text-[#787774] max-w-lg mx-auto">
+              A complete workspace for deliberate practice and measurable progress.
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {/* Pillar 1 */}
-            <div className="rounded-md border border-[#E6E6E3] bg-white p-5 space-y-3 hover:border-[#CBD5E1] transition-colors">
-              <div className="flex items-center justify-between text-xs">
-                <span className="px-2 py-0.5 rounded bg-[#EEF0FB] text-[#4F46A5] font-medium text-[11px]">
-                  Pillar 01 &middot; Pedagogy
-                </span>
-                <span className="text-[11px] text-[#787774]">14 Units</span>
-              </div>
-              <h3 className="text-sm sm:text-base font-semibold text-[#202124] flex items-center gap-2">
-                <BookOpen className="w-4 h-4 text-[#4F46A5]" />
-                Prerequisite-Mapped Knowledge Trees
-              </h3>
-              <p className="text-xs text-[#787774] leading-relaxed">
-                Foundational concepts unlock complex multi-step problems in a directed syllabus graph, eliminating cognitive overload.
-              </p>
-              <div className="pt-2 border-t border-[#E6E6E3] flex items-center justify-between text-xs">
-                <span className="text-[#787774]">Structured hierarchy</span>
-                <Link href="/learn" className="text-[#4F46A5] hover:underline font-medium flex items-center gap-0.5">
-                  Explore Syllabus <ChevronRight className="w-3 h-3" />
-                </Link>
-              </div>
-            </div>
-
-            {/* Pillar 2 */}
-            <div className="rounded-md border border-[#E6E6E3] bg-white p-5 space-y-3 hover:border-[#CBD5E1] transition-colors">
-              <div className="flex items-center justify-between text-xs">
-                <span className="px-2 py-0.5 rounded bg-[#FDF6EC] text-[#B7791F] font-medium text-[11px]">
-                  Pillar 02 &middot; Testing
-                </span>
-                <span className="text-[11px] text-[#787774]">TCS Standard</span>
-              </div>
-              <h3 className="text-sm sm:text-base font-semibold text-[#202124] flex items-center gap-2">
-                <ShieldCheck className="w-4 h-4 text-[#B7791F]" />
-                High-Fidelity CBT Test Simulator
-              </h3>
-              <p className="text-xs text-[#787774] leading-relaxed">
-                Realistic exam conditions featuring the official 5-state question palette, composite section switches, autosave, and negative marking discipline.
-              </p>
-              <div className="pt-2 border-t border-[#E6E6E3] flex items-center justify-between text-xs">
-                <span className="text-[#787774]">Real time pressure</span>
-                <Link href="/tests" className="text-[#4F46A5] hover:underline font-medium flex items-center gap-0.5">
-                  Browse Tests <ChevronRight className="w-3 h-3" />
-                </Link>
-              </div>
-            </div>
-
-            {/* Pillar 3 */}
-            <div className="rounded-md border border-[#E6E6E3] bg-white p-5 space-y-3 hover:border-[#CBD5E1] transition-colors">
-              <div className="flex items-center justify-between text-xs">
-                <span className="px-2 py-0.5 rounded bg-[#FEF2F2] text-[#C53030] font-medium text-[11px]">
-                  Pillar 03 &middot; Forensics
-                </span>
-                <span className="text-[11px] text-[#787774]">8 Categories</span>
-              </div>
-              <h3 className="text-sm sm:text-base font-semibold text-[#202124] flex items-center gap-2">
-                <BookMarked className="w-4 h-4 text-[#C53030]" />
-                Autonomous Mistake Notebook
-              </h3>
-              <p className="text-xs text-[#787774] leading-relaxed">
-                Every incorrect pick is logged automatically with error classifications: calculation slips, conceptual gaps, and question misreads with blind retries.
-              </p>
-              <div className="pt-2 border-t border-[#E6E6E3] flex items-center justify-between text-xs">
-                <span className="text-[#787774]">Continuous revision</span>
-                <Link href="/mistakes" className="text-[#4F46A5] hover:underline font-medium flex items-center gap-0.5">
-                  Open Notebook <ChevronRight className="w-3 h-3" />
-                </Link>
-              </div>
-            </div>
-
-            {/* Pillar 4 */}
-            <div className="rounded-md border border-[#E6E6E3] bg-white p-5 space-y-3 hover:border-[#CBD5E1] transition-colors">
-              <div className="flex items-center justify-between text-xs">
-                <span className="px-2 py-0.5 rounded bg-[#EDF7ED] text-[#1B5E20] font-medium text-[11px]">
-                  Pillar 04 &middot; Intelligence
-                </span>
-                <span className="text-[11px] text-[#787774]">Gemini 3.6</span>
-              </div>
-              <h3 className="text-sm sm:text-base font-semibold text-[#202124] flex items-center gap-2">
-                <Sparkles className="w-4 h-4 text-[#1B5E20]" />
-                Scientific Spaced Repetition & Coach
-              </h3>
-              <p className="text-xs text-[#787774] leading-relaxed">
-                Topic accuracy updates mastery across 6 stages. High scores extend recall intervals; weak areas trigger immediate remedial drills.
-              </p>
-              <div className="pt-2 border-t border-[#E6E6E3] flex items-center justify-between text-xs">
-                <span className="text-[#787774]">Leitner intervals</span>
-                <Link href="/dashboard" className="text-[#4F46A5] hover:underline font-medium flex items-center gap-0.5">
-                  View Readiness <ChevronRight className="w-3 h-3" />
-                </Link>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        {/* ========================================================================= */}
-        {/* 4. SUPPORTED EXAM ECOSYSTEMS (DATABASE PREVIEW) */}
-        {/* ========================================================================= */}
-        <section className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 space-y-4">
-          <div className="flex items-end justify-between border-b border-[#E6E6E3] pb-2.5">
-            <div>
-              <span className="text-[10px] font-semibold uppercase tracking-wider text-[#787774]">
-                Exam Coverage
-              </span>
-              <h2 className="text-xl font-semibold text-[#202124] tracking-tight mt-0.5">
-                National Exam Ecosystems
-              </h2>
-            </div>
-            <Link href="/exams" className="text-xs font-medium text-[#4F46A5] hover:underline flex items-center gap-1">
-              View All <ChevronRight className="w-3 h-3" />
-            </Link>
-          </div>
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-5">
             {[
               {
-                title: 'SSC CGL 2026',
-                subtitle: 'Staff Selection Commission',
-                tag: 'Tier I & II',
-                desc: '100-Q Mocks, 14 topic units, official 2023 papers, and speed drills.',
+                icon: BookOpen,
+                iconBg: 'bg-[#EEF0FB]',
+                iconColor: 'text-[#4F46A5]',
+                title: 'Structured Knowledge Trees',
+                desc: 'Prerequisite-mapped syllabus paths across 4 subjects and 28 topics. Learn in the right order.',
+                link: '/learn',
+                linkLabel: 'Explore Syllabus',
               },
               {
-                title: 'Banking & Insurance',
-                subtitle: 'IBPS PO / SBI PO / RBI',
-                tag: 'Prelims + Mains',
-                desc: 'Sectional quant speed tests, syllogisms, circular puzzles, financial awareness.',
+                icon: Target,
+                iconBg: 'bg-[#FDF6EC]',
+                iconColor: 'text-[#B7791F]',
+                title: 'CBT Exam Simulator',
+                desc: 'Full-length mock tests with official 5-state question palette, autosave, and negative marking.',
+                link: '/tests',
+                linkLabel: 'Browse Tests',
               },
               {
-                title: 'Railways Recruitment',
-                subtitle: 'RRB NTPC & Group D',
-                tag: 'CBT 1 & 2',
-                desc: 'Applied physics, railway general awareness, fast arithmetic calculation drills.',
+                icon: BookMarked,
+                iconBg: 'bg-[#FEF2F2]',
+                iconColor: 'text-[#C53030]',
+                title: 'Mistake Notebook',
+                desc: 'Every wrong answer is auto-logged with error classification. Blind retry and spaced repetition built in.',
+                link: '/mistakes',
+                linkLabel: 'View Notebook',
               },
               {
-                title: 'Civil Services CSE',
-                subtitle: 'UPSC Prelims & State PSCs',
-                tag: 'GS Paper I & II',
-                desc: 'Reading comprehension, logical deductions, data sufficiency, policy frameworks.',
+                icon: BarChart3,
+                iconBg: 'bg-[#EDF7ED]',
+                iconColor: 'text-[#1B5E20]',
+                title: 'Performance Analytics',
+                desc: 'Readiness index, topic-level accuracy breakdowns, predicted scores, and improvement recommendations.',
+                link: '/performance',
+                linkLabel: 'See Analytics',
               },
-            ].map((ex, i) => (
+            ].map((feature, i) => (
               <div
                 key={i}
-                className="p-4 rounded-md border border-[#E6E6E3] bg-white space-y-2 hover:border-[#CBD5E1] transition-colors flex flex-col justify-between"
+                className="group bg-white rounded-xl border border-[#E6E6E3] p-6 sm:p-7 hover:border-[#DCDDF7] hover:shadow-md hover:shadow-black/[0.03] transition-all duration-300"
               >
-                <div className="space-y-1.5">
-                  <div className="flex items-center justify-between">
-                    <span className="text-[10px] font-mono px-1.5 py-0.2 rounded bg-[#F1F1EF] text-[#787774] border border-[#E6E6E3]">
-                      {ex.tag}
-                    </span>
-                  </div>
-                  <h3 className="font-semibold text-sm text-[#202124]">{ex.title}</h3>
-                  <p className="text-[10px] text-[#787774]">{ex.subtitle}</p>
-                  <p className="text-xs text-[#787774] leading-relaxed pt-0.5">{ex.desc}</p>
+                <div className={`w-10 h-10 rounded-lg ${feature.iconBg} ${feature.iconColor} flex items-center justify-center mb-4`}>
+                  <feature.icon className="w-5 h-5" />
                 </div>
-                <div className="pt-2 border-t border-[#E6E6E3] mt-2">
-                  <Link href="/tests" className="text-xs font-medium text-[#4F46A5] hover:underline flex items-center gap-1">
-                    Start Mocks <ArrowRight className="w-3 h-3" />
-                  </Link>
-                </div>
+                <h3 className="text-base sm:text-lg font-semibold text-[#202124] mb-1.5">{feature.title}</h3>
+                <p className="text-sm text-[#787774] leading-relaxed mb-4">{feature.desc}</p>
+                <Link
+                  href={feature.link}
+                  className="inline-flex items-center gap-1 text-sm font-medium text-[#4F46A5] group-hover:gap-2 transition-all duration-200"
+                >
+                  {feature.linkLabel}
+                  <ArrowRight className="w-3.5 h-3.5" />
+                </Link>
               </div>
             ))}
           </div>
-        </section>
+        </div>
+      </section>
 
-        {/* ========================================================================= */}
-        {/* 5. OFFICIAL 5-STATE QUESTION PALETTE */}
-        {/* ========================================================================= */}
-        <section className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="rounded-md border border-[#E6E6E3] bg-white p-5 sm:p-6 space-y-3.5">
-            <div className="space-y-0.5">
-              <span className="text-[10px] font-semibold uppercase tracking-wider text-[#787774]">
-                TCS iON Examination Standards
-              </span>
-              <h2 className="text-base font-semibold text-[#202124]">
-                Official 5-State Question Palette Protocol
-              </h2>
-              <p className="text-xs text-[#787774]">
-                Nalanda trains candidates to navigate the exact 5-state color-coded palette used in national CBT examinations.
-              </p>
-            </div>
-
-            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2.5">
-              <div className="p-2.5 rounded-md bg-[#F1F1EF] border border-[#E6E6E3] flex items-center gap-2.5 text-xs">
-                <span className="w-5 h-5 rounded-[3px] bg-white text-[#787774] font-mono text-xs font-medium flex items-center justify-center shrink-0 border border-[#E6E6E3]">
-                  01
-                </span>
-                <div>
-                  <span className="font-medium text-[#202124] block text-xs">Not Visited</span>
-                  <span className="text-[10px] text-[#787774]">Unopened</span>
-                </div>
+      {/* ============================================================= */}
+      {/* STATS STRIP */}
+      {/* ============================================================= */}
+      <section className="py-12 sm:py-16 bg-white border-y border-[#E6E6E3]">
+        <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-8 sm:gap-12 text-center">
+            {[
+              { value: '12+', label: 'Exam Frameworks', sub: 'SSC, Banking, UPSC, Railways' },
+              { value: '100%', label: 'CBT Fidelity', sub: 'Official TCS iON standard' },
+              { value: '5-Tier', label: 'Syllabus Depth', sub: 'Exam → Subject → Topic' },
+              { value: '3-Day', label: 'Recall Cadence', sub: 'Spaced repetition engine' },
+            ].map((stat, i) => (
+              <div key={i} className="space-y-1">
+                <span className="text-3xl sm:text-4xl font-bold text-[#202124]">{stat.value}</span>
+                <p className="text-sm font-medium text-[#202124]">{stat.label}</p>
+                <p className="text-xs text-[#787774]">{stat.sub}</p>
               </div>
-
-              <div className="p-2.5 rounded-md bg-[#FFFBEB] border border-[#FEF3C7] flex items-center gap-2.5 text-xs">
-                <span className="w-5 h-5 rounded-[3px] bg-[#B7791F] text-white font-mono text-xs font-medium flex items-center justify-center shrink-0">
-                  02
-                </span>
-                <div>
-                  <span className="font-medium text-[#B7791F] block text-xs">Unanswered</span>
-                  <span className="text-[10px] text-[#787774]">Visited, left blank</span>
-                </div>
-              </div>
-
-              <div className="p-2.5 rounded-md bg-[#EDF7ED] border border-[#C8E6C9] flex items-center gap-2.5 text-xs">
-                <span className="w-5 h-5 rounded-[3px] bg-[#1B5E20] text-white font-mono text-xs font-medium flex items-center justify-center shrink-0">
-                  03
-                </span>
-                <div>
-                  <span className="font-medium text-[#1B5E20] block text-xs">Answered</span>
-                  <span className="text-[10px] text-[#787774]">Saved in score</span>
-                </div>
-              </div>
-
-              <div className="p-2.5 rounded-md bg-[#EEF0FB] border border-[#DCDDF7] flex items-center gap-2.5 text-xs">
-                <span className="w-5 h-5 rounded-[3px] bg-[#4F46A5] text-white font-mono text-xs font-medium flex items-center justify-center shrink-0">
-                  04
-                </span>
-                <div>
-                  <span className="font-medium text-[#4F46A5] block text-xs">Review Flag</span>
-                  <span className="text-[10px] text-[#787774]">For later review</span>
-                </div>
-              </div>
-
-              <div className="p-2.5 rounded-md bg-[#EEF0FB] border border-[#DCDDF7] flex items-center gap-2.5 text-xs col-span-2 sm:col-span-1">
-                <span className="w-5 h-5 rounded-[3px] bg-[#4F46A5] text-white font-mono text-xs font-medium flex items-center justify-center shrink-0 relative">
-                  05
-                  <span className="w-1.5 h-1.5 rounded-full bg-[#1B5E20] absolute -top-0.5 -right-0.5" />
-                </span>
-                <div>
-                  <span className="font-medium text-[#202124] block text-xs">Answered & Review</span>
-                  <span className="text-[10px] text-[#1B5E20]">Evaluated</span>
-                </div>
-              </div>
-            </div>
+            ))}
           </div>
-        </section>
+        </div>
+      </section>
 
-        {/* ========================================================================= */}
-        {/* 6. EDUCATOR & PUBLISHING STUDIO */}
-        {/* ========================================================================= */}
-        <section className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="rounded-md border border-[#E6E6E3] bg-white p-6 sm:p-7 flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
-            <div className="space-y-1.5 max-w-xl">
-              <span className="inline-flex items-center gap-1.5 text-xs font-medium text-[#4F46A5] bg-[#EEF0FB] px-2 py-0.5 rounded border border-[#DCDDF7]">
-                <Building2 className="w-3.5 h-3.5" /> Educator & Publishing Hub
-              </span>
-              <h2 className="text-lg sm:text-xl font-semibold text-[#202124] tracking-tight">
-                Publish tests, ingest question papers, and run student cohorts
-              </h2>
-              <p className="text-xs sm:text-sm text-[#787774] leading-relaxed">
-                Upload existing PDFs or DOCX files to automatically generate structured CBE assessments, manage curriculum series, and publish free or paid resources to the public library.
-              </p>
-            </div>
-
-            <div className="flex flex-col sm:flex-row md:flex-col gap-2 w-full md:w-auto shrink-0">
-              <Link href="/tests/create" className="w-full">
-                <Button variant="primary" size="md" className="w-full">
-                  <span>Open Test Studio</span>
-                  <ArrowRight className="w-3.5 h-3.5 ml-1" />
-                </Button>
-              </Link>
-              <Link href="/dashboard/educator" className="w-full">
-                <Button variant="secondary" size="md" className="w-full text-[#787774] hover:text-[#202124]">
-                  Educator Dashboard
-                </Button>
-              </Link>
-            </div>
-          </div>
-        </section>
-
-        {/* ========================================================================= */}
-        {/* 7. BOTTOM CALLOUT */}
-        {/* ========================================================================= */}
-        <section className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 text-center space-y-3.5">
-          <h2 className="text-2xl sm:text-3xl font-semibold text-[#202124] tracking-tight">
-            Begin your deliberate exam preparation.
+      {/* ============================================================= */}
+      {/* BOTTOM CTA */}
+      {/* ============================================================= */}
+      <section className="py-20 sm:py-28 bg-[#F7F7F5]">
+        <div className="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+          <h2 className="text-2xl sm:text-4xl font-semibold text-[#202124] tracking-tight">
+            Start your preparation today
           </h2>
-          <p className="text-xs sm:text-sm text-[#787774] leading-relaxed">
-            Explore the SSC CGL syllabus tree, take official previous-year papers, and diagnose your conceptual blindspots in real time.
+          <p className="mt-4 text-sm sm:text-base text-[#787774] leading-relaxed">
+            Explore syllabus trees, take full-length mocks, and track your improvement — completely free.
           </p>
-          <div className="pt-2 flex items-center justify-center gap-2">
-            <Link href="/onboarding">
-              <Button variant="primary" size="md">
-                <span>Start Free Onboarding</span>
-                <ArrowRight className="w-3.5 h-3.5 ml-1" />
-              </Button>
+          <div className="mt-8 flex flex-col sm:flex-row items-center justify-center gap-3">
+            <Link
+              href="/onboarding"
+              className="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-[#4F46A5] hover:bg-[#433B91] text-white text-sm font-medium shadow-lg shadow-[#4F46A5]/20 transition-all duration-200 hover:-translate-y-0.5"
+            >
+              Get started free
+              <ArrowRight className="w-4 h-4" />
             </Link>
-            <Link href="/dashboard">
-              <Button variant="secondary" size="md">
-                Direct Workspace Access
-              </Button>
+            <Link
+              href="/dashboard"
+              className="inline-flex items-center gap-2 px-6 py-3 rounded-full border border-[#E6E6E3] bg-white hover:bg-[#F7F7F5] text-[#202124] text-sm font-medium transition-colors"
+            >
+              Open workspace
             </Link>
           </div>
-        </section>
-      </div>
+        </div>
+      </section>
     </div>
   );
 }

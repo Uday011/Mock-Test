@@ -23,7 +23,6 @@ import {
   Library,
 } from 'lucide-react';
 import { UserRole } from '@/lib/types';
-import Logo from '@/components/ui/Logo';
 
 interface AuthUser {
   id: string;
@@ -39,19 +38,14 @@ export default function Navbar() {
   const [user, setUser] = useState<AuthUser | null>(null);
   const [showSettings, setShowSettings] = useState(false);
   const [showRoleMenu, setShowRoleMenu] = useState(false);
-  const [showExamMenu, setShowExamMenu] = useState(false);
-  const [selectedExam, setSelectedExam] = useState('NEET UG 2026');
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [geminiKey, setGeminiKey] = useState('');
   const [isSaved, setIsSaved] = useState(false);
   const roleMenuRef = useRef<HTMLDivElement>(null);
-  const examMenuRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    // Close mobile menu on route change
     setMobileMenuOpen(false);
     setShowRoleMenu(false);
-    // Check current user session
     fetch('/api/auth/me')
       .then((res) => res.json())
       .then((data) => {
@@ -63,34 +57,23 @@ export default function Navbar() {
       })
       .catch(() => {});
 
-    // Read stored active target exam
-    const savedExam = localStorage.getItem('nalanda_active_exam');
-    if (savedExam) setSelectedExam(savedExam);
-
-    // Read stored Gemini key from localStorage
     const savedKey = localStorage.getItem('mocktest_gemini_api_key');
     if (savedKey) setGeminiKey(savedKey);
 
-    // Close dropdowns on outside click
     const handleClickOutside = (e: MouseEvent) => {
       if (roleMenuRef.current && !roleMenuRef.current.contains(e.target as Node)) {
         setShowRoleMenu(false);
-      }
-      if (examMenuRef.current && !examMenuRef.current.contains(e.target as Node)) {
-        setShowExamMenu(false);
       }
     };
     document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, [pathname]);
 
-  // Close mobile menu whenever the route changes
   useEffect(() => {
     setMobileMenuOpen(false);
     setShowRoleMenu(false);
   }, [pathname]);
 
-  // Lock background scroll when mobile drawer is open
   useEffect(() => {
     if (mobileMenuOpen) {
       document.body.style.overflow = 'hidden';
@@ -158,332 +141,126 @@ export default function Navbar() {
   }
 
   const role = user?.role || 'student';
-  const isHome = pathname === '/';
 
   return (
     <>
-      <header className="sticky top-0 z-50 w-full border-b border-[#E6E6E3] bg-white/90 text-[#202124] backdrop-blur-md select-none">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-14 flex items-center justify-between">
-          {/* Logo & Brand */}
-          <div className="flex items-center gap-4 lg:gap-6">
-            <Logo size="md" href="/" />
-
-            {/* Target Exam Switcher (Desktop) */}
-            <div className="relative hidden lg:block" ref={examMenuRef}>
-              <button
-                onClick={() => setShowExamMenu(!showExamMenu)}
-                className="px-2.5 py-1 rounded border border-[#E6E6E3] text-xs font-medium flex items-center gap-1.5 transition-colors bg-[#F1F1EF] hover:bg-[#F1F1EF] text-[#202124]"
-                title="Active Target Exam"
+      <header className="sticky top-0 z-50 w-full bg-white/80 backdrop-blur-lg border-b border-transparent select-none">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+          {/* Left — Brand Wordmark */}
+          <Link href="/" className="flex items-center gap-2.5 hover:opacity-80 transition-opacity">
+            <div className="w-7 h-7 rounded-md bg-[#4F46A5] text-white flex items-center justify-center">
+              <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+                className="w-4 h-4 text-white"
               >
-                <span className="w-1.5 h-1.5 rounded-full bg-[#1B5E20] shrink-0" />
-                <span className="text-[#787774]">Target:</span>
-                <span>{selectedExam}</span>
-                <ChevronDown className="w-3 h-3 ml-0.5 text-[#787774]" />
-              </button>
-
-              {showExamMenu && (
-                <div className="absolute left-0 mt-2 w-64 bg-white rounded-xl shadow-lg border border-stone-200 p-2 z-50 animate-in fade-in-50 zoom-in-95">
-                  <div className="px-3 py-1.5 border-b border-stone-100 mb-1">
-                    <p className="text-[10px] font-bold uppercase tracking-wider text-slate-400">
-                      Select Target Exam
-                    </p>
-                  </div>
-                  {[
-                    { code: 'exam-neet-2026', title: 'NEET UG 2026', tag: 'Medical' },
-                    { code: 'exam-upsc-2026', title: 'UPSC CSE Prelims 2026', tag: 'Civil Services' },
-                    { code: 'exam-jee-2026', title: 'JEE Advanced 2026', tag: 'Engineering' },
-                  ].map((ex) => (
-                    <button
-                      key={ex.code}
-                      onClick={() => {
-                        setSelectedExam(ex.title);
-                        setShowExamMenu(false);
-                        localStorage.setItem('nalanda_active_exam', ex.title);
-                      }}
-                      className={`w-full flex items-center justify-between p-2 rounded-lg text-left text-xs font-bold transition-colors ${
-                        selectedExam === ex.title
-                          ? 'bg-amber-50 text-amber-900 border border-amber-200/80'
-                          : 'text-slate-700 hover:bg-stone-50'
-                      }`}
-                    >
-                      <span>{ex.title}</span>
-                      <span className="text-[10px] px-1.5 py-0.5 rounded bg-stone-100 text-slate-600">
-                        {ex.tag}
-                      </span>
-                    </button>
-                  ))}
-                </div>
-              )}
+                <line x1="5" y1="5" x2="5" y2="19" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" />
+                <line x1="19" y1="5" x2="19" y2="19" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" />
+                <line x1="5" y1="5" x2="19" y2="19" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" />
+                <circle cx="19" cy="5" r="2" fill="#B7791F" />
+              </svg>
             </div>
+            <span className="text-[15px] font-bold tracking-[0.12em] text-[#202124] uppercase">
+              Nalanda
+            </span>
+          </Link>
 
-            {/* Desktop Navigation Links */}
-            <nav className="hidden md:flex items-center gap-1">
-              {role === 'superadmin' && (
-                <Link
-                  href="/dashboard/superadmin"
-                  className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-colors flex items-center gap-1.5 ${
-                    pathname === '/dashboard/superadmin'
-                      ? 'bg-slate-900 text-white shadow-2xs'
-                      : isHome ? 'text-stone-300 hover:text-white hover:bg-white/10' : 'text-slate-600 hover:text-slate-900 hover:bg-stone-100'
-                  }`}
-                >
-                  <Crown className="w-3.5 h-3.5 text-purple-400" />
-                  Super Admin
-                </Link>
-              )}
-
-              {(role === 'admin' || role === 'superadmin') && (
-                <Link
-                  href="/dashboard/admin"
-                  className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-colors flex items-center gap-1.5 ${
-                    pathname === '/dashboard/admin'
-                      ? 'bg-slate-900 text-white shadow-2xs'
-                      : isHome ? 'text-stone-300 hover:text-white hover:bg-white/10' : 'text-slate-600 hover:text-slate-900 hover:bg-stone-100'
-                  }`}
-                >
-                  <Building2 className="w-3.5 h-3.5 text-amber-500" />
-                  Educator Hub
-                </Link>
-              )}
-
+          {/* Center — Navigation Links (Desktop) */}
+          <nav className="hidden md:flex items-center gap-8">
+            {[
+              { href: '/dashboard', label: 'Dashboard' },
+              { href: '/learn', label: 'Learn' },
+              { href: '/tests', label: 'Tests' },
+              { href: '/library', label: 'Library' },
+            ].map((link) => (
               <Link
-                href="/dashboard"
-                className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-colors flex items-center gap-1.5 ${
-                  pathname === '/dashboard'
-                    ? 'bg-slate-900 text-white shadow-2xs'
-                    : isHome ? 'text-stone-300 hover:text-white hover:bg-white/10' : 'text-slate-600 hover:text-slate-900 hover:bg-stone-100'
-                }`}
+                key={link.href}
+                href={link.href}
+                className="text-sm text-[#787774] hover:text-[#202124] transition-colors font-normal"
               >
-                <LayoutDashboard className="w-3.5 h-3.5 text-blue-400" />
-                {role === 'student' ? 'Learning & Mocks' : 'Student View'}
+                {link.label}
               </Link>
+            ))}
+          </nav>
 
-              <Link
-                href="/library"
-                className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-colors flex items-center gap-1.5 ${
-                  pathname === '/library'
-                    ? 'bg-slate-900 text-white shadow-2xs'
-                    : isHome ? 'text-stone-300 hover:text-white hover:bg-white/10' : 'text-slate-600 hover:text-slate-900 hover:bg-stone-100'
-                }`}
-              >
-                <Library className="w-3.5 h-3.5 text-emerald-400" />
-                Library
-              </Link>
-
-              <Link
-                href="/tests/create"
-                className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-colors flex items-center gap-1.5 ${
-                  pathname === '/tests/create'
-                    ? 'bg-slate-900 text-white shadow-2xs'
-                    : isHome ? 'text-stone-300 hover:text-white hover:bg-white/10' : 'text-slate-600 hover:text-slate-900 hover:bg-stone-100'
-                }`}
-              >
-                <PlusCircle className="w-3.5 h-3.5 text-amber-400" />
-                Test Studio
-              </Link>
-
-              <Link
-                href="/dashboard/educator"
-                className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-colors flex items-center gap-1.5 ${
-                  pathname === '/dashboard/educator'
-                    ? 'bg-slate-900 text-white shadow-2xs'
-                    : isHome ? 'text-stone-300 hover:text-white hover:bg-white/10' : 'text-slate-600 hover:text-slate-900 hover:bg-stone-100'
-                }`}
-              >
-                <GraduationCap className="w-3.5 h-3.5 text-amber-400" />
-                Educators
-              </Link>
-            </nav>
-          </div>
-
-          {/* Right Action Bar */}
-          <div className="flex items-center gap-2 sm:gap-3">
-            {/* Persona / Role Switcher Menu (Desktop) */}
-            <div className="relative hidden sm:block" ref={roleMenuRef}>
-              <button
-                onClick={() => setShowRoleMenu(!showRoleMenu)}
-                className={`px-2.5 py-1.5 rounded-lg border text-xs font-semibold flex items-center gap-1.5 transition-all shadow-2xs ${
-                  isHome 
-                    ? 'border-white/10 bg-white/5 hover:bg-white/10 text-stone-200' 
-                    : 'border-slate-200 hover:border-slate-300 bg-slate-50 hover:bg-slate-100 text-slate-700'
-                }`}
-                title="Switch between Student, Administrator, and Superadmin roles"
-              >
-                {role === 'superadmin' && (
-                  <span className="flex items-center gap-1 font-bold">
-                    <Crown className="w-3.5 h-3.5 text-purple-400" />
-                    <span className={isHome ? 'text-white' : 'text-slate-900'}>Super Admin</span>
-                  </span>
-                )}
-                {role === 'admin' && (
-                  <span className="flex items-center gap-1 font-bold">
-                    <Building2 className="w-3.5 h-3.5 text-amber-500" />
-                    <span className={isHome ? 'text-white' : 'text-slate-900'}>Administrator</span>
-                  </span>
-                )}
-                {role === 'student' && (
-                  <span className="flex items-center gap-1 font-bold">
-                    <GraduationCap className="w-3.5 h-3.5 text-emerald-400" />
-                    <span className={isHome ? 'text-white' : 'text-slate-900'}>Student</span>
-                  </span>
-                )}
-                <ChevronDown className={`w-3 h-3 ml-0.5 ${isHome ? 'text-stone-400' : 'text-slate-400'}`} />
-              </button>
-
-              {/* Role Dropdown */}
-              {showRoleMenu && (
-                <div className={`absolute right-0 mt-2 w-72 rounded-xl shadow-xl border p-2 z-50 text-left animate-in fade-in-50 zoom-in-95 ${
-                  isHome ? 'bg-[#1e1e22] text-white border-white/15 shadow-2xl' : 'bg-white border-slate-200'
-                }`}>
-                  <div className={`px-3 py-1.5 border-b mb-1 ${isHome ? 'border-white/10' : 'border-slate-100'}`}>
-                    <p className={`text-[10px] font-bold uppercase tracking-wider ${isHome ? 'text-stone-400' : 'text-slate-400'}`}>
-                      Switch Role Persona
-                    </p>
-                    <p className={`text-[11px] ${isHome ? 'text-stone-400' : 'text-slate-500'}`}>
-                      Instant 1-click preview of role capabilities
-                    </p>
-                  </div>
-
-                  <div className="space-y-1">
-                    <button
-                      onClick={() => handleSwitchRole('student')}
-                      className={`w-full flex items-start gap-3 p-2.5 rounded-lg text-left transition-colors ${
-                        role === 'student'
-                          ? (isHome ? 'bg-emerald-950/40 border border-emerald-500/30' : 'bg-emerald-50/80 border border-emerald-200/60')
-                          : (isHome ? 'hover:bg-white/5' : 'hover:bg-slate-50')
-                      }`}
-                    >
-                      <div className="w-7 h-7 rounded-lg bg-emerald-500/20 text-emerald-400 flex items-center justify-center shrink-0 mt-0.5">
-                        <GraduationCap className="w-4 h-4" />
-                      </div>
-                      <div className="flex-1">
-                        <div className="flex items-center justify-between">
-                          <span className={`text-xs font-bold ${isHome ? 'text-white' : 'text-slate-900'}`}>Student (Candidate)</span>
-                          {role === 'student' && <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" />}
-                        </div>
-                        <p className={`text-[11px] leading-tight mt-0.5 ${isHome ? 'text-stone-400' : 'text-slate-500'}`}>
-                          Take mock tests, view AI score breakdown & create practice exams.
-                        </p>
-                      </div>
-                    </button>
-
-                    <button
-                      onClick={() => handleSwitchRole('admin')}
-                      className={`w-full flex items-start gap-3 p-2.5 rounded-lg text-left transition-colors ${
-                        role === 'admin'
-                          ? (isHome ? 'bg-amber-950/40 border border-amber-500/30' : 'bg-amber-50/80 border border-amber-200/60')
-                          : (isHome ? 'hover:bg-white/5' : 'hover:bg-slate-50')
-                      }`}
-                    >
-                      <div className="w-7 h-7 rounded-lg bg-amber-500/20 text-amber-400 flex items-center justify-center shrink-0 mt-0.5">
-                        <Building2 className="w-4 h-4" />
-                      </div>
-                      <div className="flex-1">
-                        <div className="flex items-center justify-between">
-                          <span className={`text-xs font-bold ${isHome ? 'text-white' : 'text-slate-900'}`}>Administrator (Teacher)</span>
-                          {role === 'admin' && <CheckCircle2 className="w-3.5 h-3.5 text-amber-400" />}
-                        </div>
-                        <p className={`text-[11px] leading-tight mt-0.5 ${isHome ? 'text-stone-400' : 'text-slate-500'}`}>
-                          Publish batch mocks, manage enrolled student accounts & review submissions.
-                        </p>
-                      </div>
-                    </button>
-
-                    <button
-                      onClick={() => handleSwitchRole('superadmin')}
-                      className={`w-full flex items-start gap-3 p-2.5 rounded-lg text-left transition-colors ${
-                        role === 'superadmin'
-                          ? (isHome ? 'bg-purple-950/40 border border-purple-500/30' : 'bg-slate-100 border border-slate-300')
-                          : (isHome ? 'hover:bg-white/5' : 'hover:bg-slate-50')
-                      }`}
-                    >
-                      <div className="w-7 h-7 rounded-lg bg-purple-500/20 text-purple-300 flex items-center justify-center shrink-0 mt-0.5">
-                        <Crown className="w-4 h-4" />
-                      </div>
-                      <div className="flex-1">
-                        <div className="flex items-center justify-between">
-                          <span className={`text-xs font-bold ${isHome ? 'text-white' : 'text-slate-900'}`}>Super Administrator</span>
-                          {role === 'superadmin' && <CheckCircle2 className="w-3.5 h-3.5 text-purple-400" />}
-                        </div>
-                        <p className={`text-[11px] leading-tight mt-0.5 ${isHome ? 'text-stone-400' : 'text-slate-500'}`}>
-                          Absolute system control: modify admins, students, all tests & exam sections.
-                        </p>
-                      </div>
-                    </button>
-                  </div>
-                </div>
-              )}
-            </div>
-
-            {/* AI Insights / Key Status */}
-            <button
-              onClick={() => setShowSettings(true)}
-              title="Gemini AI Performance Coach Status"
-              className={`p-2 rounded-lg border text-xs font-medium flex items-center gap-1.5 transition-colors ${
-                isHome 
-                  ? 'text-stone-300 hover:text-white hover:bg-white/10 border-white/10' 
-                  : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100 border-slate-200'
-              }`}
-            >
-              <Sparkles className="w-4 h-4 text-amber-400" />
-              <span className="hidden lg:inline text-xs font-semibold">AI Coach</span>
-            </button>
-
-            {/* User Session Info or Login Links */}
+          {/* Right — Auth Actions */}
+          <div className="flex items-center gap-3">
             {user ? (
-              <div className={`flex items-center gap-2 pl-1 border-l ${isHome ? 'border-white/10' : 'border-slate-200'}`}>
-                <div className="hidden sm:flex flex-col text-right">
-                  <span className={`text-xs font-bold leading-tight ${isHome ? 'text-white' : 'text-slate-900'}`}>{user.name}</span>
-                  <span className={`text-[10px] truncate max-w-[130px] ${isHome ? 'text-stone-400' : 'text-slate-500'}`}>{user.email}</span>
+              <>
+                <div className="hidden sm:flex items-center gap-2.5" ref={roleMenuRef}>
+                  <div className="relative">
+                    <button
+                      onClick={() => setShowRoleMenu(!showRoleMenu)}
+                      className="flex items-center gap-1.5 text-sm text-[#787774] hover:text-[#202124] transition-colors font-normal"
+                    >
+                      <span>{user.name}</span>
+                      <ChevronDown className="w-3.5 h-3.5" />
+                    </button>
+
+                    {showRoleMenu && (
+                      <div className="absolute right-0 mt-3 w-56 bg-white rounded-lg border border-[#E6E6E3] shadow-xl shadow-black/[0.06] py-1.5 z-50">
+                        <div className="px-3 py-1.5 text-[10px] font-semibold uppercase tracking-wider text-[#787774]">
+                          Switch Role
+                        </div>
+                        {[
+                          { role: 'student' as UserRole, label: 'Student', icon: GraduationCap },
+                          { role: 'admin' as UserRole, label: 'Administrator', icon: Building2 },
+                          { role: 'superadmin' as UserRole, label: 'Super Admin', icon: Crown },
+                        ].map((r) => (
+                          <button
+                            key={r.role}
+                            onClick={() => handleSwitchRole(r.role)}
+                            className="w-full flex items-center justify-between px-3 py-2 text-sm text-[#202124] hover:bg-[#F7F7F5] transition-colors"
+                          >
+                            <span className="flex items-center gap-2">
+                              <r.icon className="w-3.5 h-3.5 text-[#787774]" />
+                              {r.label}
+                            </span>
+                            {user?.role === r.role && <CheckCircle2 className="w-3.5 h-3.5 text-[#4F46A5]" />}
+                          </button>
+                        ))}
+                        <div className="border-t border-[#E6E6E3] mt-1 pt-1">
+                          <button
+                            onClick={handleLogout}
+                            className="w-full flex items-center gap-2 px-3 py-2 text-sm text-[#C53030] hover:bg-[#FEF2F2] transition-colors"
+                          >
+                            <LogOut className="w-3.5 h-3.5" />
+                            Sign out
+                          </button>
+                        </div>
+                      </div>
+                    )}
+                  </div>
                 </div>
-                <div
-                  className={`w-8 h-8 rounded-full font-bold text-xs flex items-center justify-center border shadow-2xs ${
-                    isHome ? 'bg-blue-600 text-white border-blue-400' : 'bg-slate-900 text-white border-slate-800'
-                  }`}
-                  title={`${user.name} (${role})`}
+                <Link
+                  href="/dashboard"
+                  className="hidden sm:inline-flex items-center px-4 py-2 rounded-full border border-[#202124] text-[#202124] text-sm font-medium hover:bg-[#202124] hover:text-white transition-all duration-200"
                 >
-                  {user.name.charAt(0).toUpperCase()}
-                </div>
-                <button
-                  onClick={handleLogout}
-                  title="Log out"
-                  className="p-1.5 text-stone-400 hover:text-rose-400 hover:bg-white/5 rounded-lg transition-colors hidden sm:block"
-                >
-                  <LogOut className="w-4 h-4" />
-                </button>
-              </div>
+                  Open workspace
+                </Link>
+              </>
             ) : (
-              <div className="hidden sm:flex items-center gap-2">
+              <>
                 <button
                   onClick={() => handleSwitchRole('student')}
-                  className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors flex items-center gap-1.5 ${
-                    isHome ? 'bg-white/10 hover:bg-white/15 text-stone-200' : 'bg-slate-100 hover:bg-slate-200 text-slate-700'
-                  }`}
+                  className="hidden sm:inline-flex text-sm text-[#787774] hover:text-[#202124] transition-colors font-normal"
                 >
-                  <GraduationCap className="w-3.5 h-3.5" />
-                  Try Demo
+                  Sign in
                 </button>
                 <Link
-                  href="/login"
-                  className={`px-3.5 py-1.5 rounded-lg text-xs font-semibold shadow-xs transition-all ${
-                    isHome 
-                      ? 'bg-white hover:bg-stone-100 text-stone-950 font-bold' 
-                      : 'bg-slate-900 hover:bg-slate-800 text-white'
-                  }`}
+                  href="/dashboard"
+                  className="hidden sm:inline-flex items-center px-4 py-2 rounded-full border border-[#202124] text-[#202124] text-sm font-medium hover:bg-[#202124] hover:text-white transition-all duration-200"
                 >
-                  Sign In
+                  Get demo
                 </Link>
-              </div>
+              </>
             )}
 
-            {/* Mobile Menu Toggle Button */}
+            {/* Mobile Menu Toggle */}
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className={`md:hidden p-2 rounded-xl border transition-colors ${
-                isHome 
-                  ? 'text-white hover:bg-white/10 border-white/10' 
-                  : 'text-slate-700 hover:bg-slate-100 border-slate-200'
-              }`}
+              className="md:hidden p-2 text-[#202124] hover:bg-[#F1F1EF] rounded-lg transition-colors"
               aria-label="Toggle Navigation Menu"
             >
               {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
@@ -492,290 +269,159 @@ export default function Navbar() {
         </div>
       </header>
 
-      {/* Mobile Slide-Out Drawer Menu - High z-index (z-[100]) outside header to eliminate any clipping or backdrop-blur nesting issues */}
+      {/* Mobile Drawer */}
       {mobileMenuOpen && (
-        <div className="md:hidden fixed inset-0 z-[100] flex flex-col bg-slate-950/60 backdrop-blur-xs animate-fade-in">
-          {/* Backdrop Tap to Close */}
+        <div className="md:hidden fixed inset-0 z-[100] flex flex-col bg-black/30 backdrop-blur-xs animate-fade-in">
           <div
             className="absolute inset-0 -z-10"
             onClick={() => setMobileMenuOpen(false)}
             aria-hidden="true"
           />
 
-          {/* Drawer Top Navigation Bar */}
-          <div className="h-16 px-4 flex items-center justify-between bg-white border-b border-stone-200 shrink-0 shadow-2xs">
-            <Logo size="sm" href="/" />
-
+          <div className="h-16 px-4 flex items-center justify-between bg-white border-b border-[#E6E6E3] shrink-0">
+            <Link href="/" onClick={() => setMobileMenuOpen(false)} className="flex items-center gap-2">
+              <div className="w-6 h-6 rounded-md bg-[#4F46A5] text-white flex items-center justify-center">
+                <svg viewBox="0 0 24 24" fill="none" className="w-3.5 h-3.5 text-white">
+                  <line x1="5" y1="5" x2="5" y2="19" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" />
+                  <line x1="19" y1="5" x2="19" y2="19" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" />
+                  <line x1="5" y1="5" x2="19" y2="19" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" />
+                  <circle cx="19" cy="5" r="2" fill="#B7791F" />
+                </svg>
+              </div>
+              <span className="text-sm font-bold tracking-[0.1em] text-[#202124] uppercase">Nalanda</span>
+            </Link>
             <button
               onClick={() => setMobileMenuOpen(false)}
-              className="w-10 h-10 rounded-xl flex items-center justify-center text-slate-700 hover:bg-stone-100 border border-stone-200 transition-colors"
-              aria-label="Close Navigation Menu"
+              className="p-2 text-[#787774] hover:text-[#202124] hover:bg-[#F1F1EF] rounded-lg transition-colors"
+              aria-label="Close"
             >
               <X className="w-5 h-5" />
             </button>
           </div>
 
-          {/* Drawer Scrollable Content */}
-          <div className="flex-1 bg-white p-4 sm:p-5 space-y-4 overflow-y-auto pb-safe">
-            {/* Active Target Exam Selector on Mobile */}
-            <div className="p-3 rounded-2xl bg-stone-50 border border-stone-200">
-              <div className="flex items-center justify-between mb-2">
-                <span className="text-[10px] font-bold uppercase tracking-wider text-slate-500">
-                  Target Exam
-                </span>
-                <span className="w-2 h-2 rounded-full bg-amber-600" />
+          <div className="flex-1 bg-white p-5 space-y-2 overflow-y-auto pb-safe">
+            {/* User info */}
+            {user && (
+              <div className="flex items-center justify-between p-3.5 rounded-lg bg-[#F7F7F5] border border-[#E6E6E3] mb-3">
+                <div className="flex items-center gap-3">
+                  <div className="w-8 h-8 rounded-full bg-[#4F46A5] text-white text-xs font-bold flex items-center justify-center">
+                    {user.name.charAt(0).toUpperCase()}
+                  </div>
+                  <div>
+                    <div className="text-sm font-medium text-[#202124]">{user.name}</div>
+                    <div className="text-[11px] text-[#787774]">{user.email}</div>
+                  </div>
+                </div>
+                <button
+                  onClick={() => { setMobileMenuOpen(false); handleLogout(); }}
+                  className="p-1.5 text-[#787774] hover:text-[#C53030] rounded transition-colors"
+                >
+                  <LogOut className="w-4 h-4" />
+                </button>
               </div>
-              <div className="grid grid-cols-1 gap-1.5">
+            )}
+
+            {/* Nav links */}
+            {[
+              { href: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
+              { href: '/learn', label: 'Learn', icon: BookOpen },
+              { href: '/tests', label: 'Tests', icon: Target },
+              { href: '/library', label: 'Library', icon: Library },
+              { href: '/tests/create', label: 'Test Studio', icon: PlusCircle },
+              { href: '/dashboard/educator', label: 'Educator Hub', icon: GraduationCap },
+            ].map((link) => (
+              <Link
+                key={link.href}
+                href={link.href}
+                onClick={() => setMobileMenuOpen(false)}
+                className="flex items-center gap-3 px-3.5 py-3 rounded-lg text-sm font-medium text-[#202124] hover:bg-[#F1F1EF] transition-colors"
+              >
+                <link.icon className="w-4 h-4 text-[#787774]" />
+                {link.label}
+              </Link>
+            ))}
+
+            {/* Role switcher */}
+            <div className="pt-3 border-t border-[#E6E6E3]">
+              <p className="text-[10px] font-semibold uppercase tracking-wider text-[#787774] mb-2 px-1">Switch Role</p>
+              <div className="grid grid-cols-3 gap-2">
                 {[
-                  { code: 'exam-neet-2026', title: 'NEET UG 2026', tag: 'Medical' },
-                  { code: 'exam-upsc-2026', title: 'UPSC CSE Prelims 2026', tag: 'Civil Services' },
-                  { code: 'exam-jee-2026', title: 'JEE Advanced 2026', tag: 'Engineering' },
-                ].map((ex) => (
+                  { role: 'student' as UserRole, label: 'Student', icon: GraduationCap },
+                  { role: 'admin' as UserRole, label: 'Admin', icon: Building2 },
+                  { role: 'superadmin' as UserRole, label: 'Super', icon: Crown },
+                ].map((r) => (
                   <button
-                    key={ex.code}
-                    onClick={() => {
-                      setSelectedExam(ex.title);
-                      localStorage.setItem('nalanda_active_exam', ex.title);
-                    }}
-                    className={`flex items-center justify-between px-3 py-2 rounded-xl text-xs font-bold transition-all min-h-[40px] ${
-                      selectedExam === ex.title
-                        ? 'bg-amber-100/80 text-amber-900 border border-amber-300'
-                        : 'bg-white text-slate-700 border border-stone-200 hover:bg-stone-50'
+                    key={r.role}
+                    onClick={() => { setMobileMenuOpen(false); handleSwitchRole(r.role); }}
+                    className={`p-2.5 rounded-lg border text-center transition-all flex flex-col items-center gap-1 ${
+                      role === r.role
+                        ? 'border-[#4F46A5] bg-[#EEF0FB] text-[#4F46A5] font-semibold'
+                        : 'border-[#E6E6E3] text-[#787774] hover:bg-[#F7F7F5]'
                     }`}
                   >
-                    <span>{ex.title}</span>
-                    <span className="text-[10px] px-1.5 py-0.5 rounded bg-stone-100 text-slate-600">
-                      {ex.tag}
-                    </span>
+                    <r.icon className="w-4 h-4" />
+                    <span className="text-[11px]">{r.label}</span>
                   </button>
                 ))}
               </div>
             </div>
 
-            {/* User Info on Mobile */}
-            {user ? (
-              <div className="flex items-center justify-between p-3.5 rounded-2xl bg-stone-50 border border-stone-200">
-                <div className="flex items-center gap-3">
-                  <div className="w-9 h-9 rounded-full bg-slate-900 text-white font-bold text-xs flex items-center justify-center">
-                    {user.name.charAt(0).toUpperCase()}
-                  </div>
-                  <div>
-                    <div className="text-xs font-bold text-slate-900">{user.name}</div>
-                    <div className="text-[10px] text-slate-500">{user.email}</div>
-                  </div>
-                </div>
+            {/* Auth */}
+            {!user && (
+              <div className="grid grid-cols-2 gap-2 pt-3 border-t border-[#E6E6E3]">
                 <button
-                  onClick={() => {
-                    setMobileMenuOpen(false);
-                    handleLogout();
-                  }}
-                  className="px-3 py-1.5 rounded-lg text-xs font-bold text-rose-600 hover:bg-rose-50 border border-rose-200 flex items-center gap-1 min-h-[36px]"
-                >
-                  <LogOut className="w-3.5 h-3.5" />
-                  Logout
-                </button>
-              </div>
-            ) : (
-              <div className="grid grid-cols-2 gap-2">
-                <button
-                  onClick={() => {
-                    setMobileMenuOpen(false);
-                    handleSwitchRole('student');
-                  }}
-                  className="min-h-[44px] py-2.5 rounded-xl bg-stone-100 hover:bg-stone-200 text-slate-800 text-xs font-bold text-center border border-stone-200 transition-colors flex items-center justify-center"
+                  onClick={() => { setMobileMenuOpen(false); handleSwitchRole('student'); }}
+                  className="py-2.5 rounded-lg bg-[#F1F1EF] text-[#202124] text-sm font-medium text-center"
                 >
                   Try Demo
                 </button>
                 <Link
                   href="/login"
                   onClick={() => setMobileMenuOpen(false)}
-                  className="min-h-[44px] py-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold text-center shadow-2xs transition-colors flex items-center justify-center"
+                  className="py-2.5 rounded-lg bg-[#202124] text-white text-sm font-medium text-center flex items-center justify-center"
                 >
                   Sign In
                 </Link>
               </div>
             )}
-
-            {/* 1-Click Role Switcher on Mobile */}
-            <div>
-              <p className="text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-2">
-                Active Persona (Tap to Switch)
-              </p>
-              <div className="grid grid-cols-3 gap-2">
-                <button
-                  onClick={() => {
-                    setMobileMenuOpen(false);
-                    handleSwitchRole('student');
-                  }}
-                  className={`p-2.5 rounded-xl border text-center transition-all flex flex-col items-center min-h-[48px] ${
-                    role === 'student'
-                      ? 'border-emerald-600 bg-emerald-50 text-emerald-900 font-bold shadow-2xs'
-                      : 'border-stone-200 text-slate-600 hover:bg-stone-50'
-                  }`}
-                >
-                  <GraduationCap className="w-4 h-4 text-emerald-600 mb-1" />
-                  <span className="text-[11px] font-bold leading-tight">Student</span>
-                </button>
-
-                <button
-                  onClick={() => {
-                    setMobileMenuOpen(false);
-                    handleSwitchRole('admin');
-                  }}
-                  className={`p-2.5 rounded-xl border text-center transition-all flex flex-col items-center min-h-[48px] ${
-                    role === 'admin'
-                      ? 'border-amber-600 bg-amber-50 text-amber-900 font-bold shadow-2xs'
-                      : 'border-stone-200 text-slate-600 hover:bg-stone-50'
-                  }`}
-                >
-                  <Building2 className="w-4 h-4 text-amber-600 mb-1" />
-                  <span className="text-[11px] font-bold leading-tight">Admin</span>
-                </button>
-
-                <button
-                  onClick={() => {
-                    setMobileMenuOpen(false);
-                    handleSwitchRole('superadmin');
-                  }}
-                  className={`p-2.5 rounded-xl border text-center transition-all flex flex-col items-center min-h-[48px] ${
-                    role === 'superadmin'
-                      ? 'border-blue-600 bg-blue-50 text-blue-900 font-bold shadow-2xs'
-                      : 'border-stone-200 text-slate-600 hover:bg-stone-50'
-                  }`}
-                >
-                  <Crown className="w-4 h-4 text-blue-600 mb-1" />
-                  <span className="text-[11px] font-bold leading-tight">Super Admin</span>
-                </button>
-              </div>
-            </div>
-
-            {/* Mobile Navigation Links */}
-            <div className="space-y-1.5 pt-2 border-t border-stone-100">
-              <Link
-                href="/dashboard"
-                onClick={() => setMobileMenuOpen(false)}
-                className={`flex items-center gap-2.5 px-3.5 py-3 rounded-xl text-xs font-bold min-h-[44px] transition-colors ${
-                  pathname === '/dashboard' ? 'bg-slate-900 text-white' : 'text-slate-700 hover:bg-stone-50'
-                }`}
-              >
-                <LayoutDashboard className="w-4 h-4 text-blue-500" />
-                {role === 'student' ? 'Learning Paths & Mocks' : 'Student View'}
-              </Link>
-
-              <Link
-                href="/tests/create"
-                onClick={() => setMobileMenuOpen(false)}
-                className={`flex items-center gap-2.5 px-3.5 py-3 rounded-xl text-xs font-bold min-h-[44px] transition-colors ${
-                  pathname === '/tests/create' ? 'bg-slate-900 text-white' : 'text-slate-700 hover:bg-stone-50'
-                }`}
-              >
-                <PlusCircle className="w-4 h-4 text-amber-600" />
-                Test Studio & Parser
-              </Link>
-
-              <Link
-                href="/library"
-                onClick={() => setMobileMenuOpen(false)}
-                className={`flex items-center gap-2.5 px-3.5 py-3 rounded-xl text-xs font-bold min-h-[44px] transition-colors ${
-                  pathname === '/library' ? 'bg-slate-900 text-white' : 'text-slate-700 hover:bg-stone-50'
-                }`}
-              >
-                <Library className="w-4 h-4 text-emerald-600" />
-                Public Assessment Library
-              </Link>
-
-              <Link
-                href="/dashboard/educator"
-                onClick={() => setMobileMenuOpen(false)}
-                className={`flex items-center gap-2.5 px-3.5 py-3 rounded-xl text-xs font-bold min-h-[44px] transition-colors ${
-                  pathname === '/dashboard/educator' ? 'bg-slate-900 text-white' : 'text-slate-700 hover:bg-stone-50'
-                }`}
-              >
-                <GraduationCap className="w-4 h-4 text-amber-600" />
-                Educator Studio & Publishing
-              </Link>
-
-              {(role === 'admin' || role === 'superadmin') && (
-                <Link
-                  href="/dashboard/admin"
-                  onClick={() => setMobileMenuOpen(false)}
-                  className={`flex items-center gap-2.5 px-3.5 py-3 rounded-xl text-xs font-bold min-h-[44px] transition-colors ${
-                    pathname === '/dashboard/admin' ? 'bg-slate-900 text-white' : 'text-slate-700 hover:bg-stone-50'
-                  }`}
-                >
-                  <Building2 className="w-4 h-4 text-amber-500" />
-                  Educator & Institute Hub
-                </Link>
-              )}
-
-              {role === 'superadmin' && (
-                <Link
-                  href="/dashboard/superadmin"
-                  onClick={() => setMobileMenuOpen(false)}
-                  className={`flex items-center gap-2.5 px-3.5 py-3 rounded-xl text-xs font-bold min-h-[44px] transition-colors ${
-                    pathname === '/dashboard/superadmin' ? 'bg-slate-900 text-white' : 'text-slate-700 hover:bg-stone-50'
-                  }`}
-                >
-                  <Crown className="w-4 h-4 text-purple-400" />
-                  Superadmin Master Console
-                </Link>
-              )}
-            </div>
-
-            {/* AI Status on Mobile */}
-            <button
-              onClick={() => {
-                setMobileMenuOpen(false);
-                setShowSettings(true);
-              }}
-              className="w-full flex items-center justify-between p-3.5 rounded-xl bg-slate-50 hover:bg-slate-100 border border-slate-200 text-xs font-semibold text-slate-700 min-h-[44px] transition-colors"
-            >
-              <div className="flex items-center gap-2">
-                <Sparkles className="w-4 h-4 text-amber-500" />
-                <span>Gemini AI Coach & Parser Status</span>
-              </div>
-              <span className="text-[10px] font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200">
-                Active
-              </span>
-            </button>
           </div>
         </div>
       )}
 
       {/* AI Settings Modal */}
       {showSettings && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/40 backdrop-blur-sm p-4">
-          <div className="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl border border-slate-200">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30 backdrop-blur-sm p-4">
+          <div className="bg-white rounded-xl max-w-md w-full p-6 shadow-2xl border border-[#E6E6E3]">
             <div className="flex items-center justify-between mb-4">
               <div className="flex items-center gap-2">
-                <div className="w-8 h-8 rounded-lg bg-amber-50 text-amber-600 flex items-center justify-center">
+                <div className="w-8 h-8 rounded-lg bg-[#EEF0FB] text-[#4F46A5] flex items-center justify-center">
                   <Sparkles className="w-4 h-4" />
                 </div>
-                <h3 className="font-bold text-slate-900">Gemini AI Coach & Extraction</h3>
+                <h3 className="font-semibold text-[#202124]">Gemini AI Coach</h3>
               </div>
               <button
                 onClick={() => setShowSettings(false)}
-                className="text-slate-400 hover:text-slate-600 text-xl font-semibold"
+                className="text-[#787774] hover:text-[#202124] text-xl"
               >
                 &times;
               </button>
             </div>
 
-            <div className="p-3 bg-emerald-50 border border-emerald-200 rounded-xl mb-4 text-xs text-emerald-800">
-              <div className="flex items-center gap-1.5 font-bold mb-1">
-                <ShieldCheck className="w-4 h-4 text-emerald-600" />
+            <div className="p-3 bg-[#EDF7ED] border border-[#C8E6C9] rounded-lg mb-4 text-xs text-[#1B5E20]">
+              <div className="flex items-center gap-1.5 font-semibold mb-1">
+                <ShieldCheck className="w-4 h-4 text-[#1B5E20]" />
                 Server Key Active (gemini-3.6-flash)
               </div>
-              Your platform is equipped with an active Google Gemini API key configured on the server. AI Exam Analysis, Weak Spot Detection, and Strategic Recommendations run automatically!
+              AI Exam Analysis, Weak Spot Detection, and Strategic Recommendations are running automatically.
             </div>
 
-            <p className="text-xs text-slate-600 mb-4 leading-relaxed">
-              If you wish to override with a personal custom Gemini API Key for client-side extraction, enter it below:
+            <p className="text-xs text-[#787774] mb-4 leading-relaxed">
+              Override with a personal Gemini API Key for client-side extraction:
             </p>
 
             <div className="space-y-3">
               <div>
-                <label className="block text-xs font-semibold text-slate-700 mb-1">
+                <label className="block text-xs font-medium text-[#202124] mb-1">
                   Custom Gemini API Key (Optional)
                 </label>
                 <input
@@ -783,24 +429,24 @@ export default function Navbar() {
                   placeholder="AQ.Ab8RN6... or AIzaSy..."
                   value={geminiKey}
                   onChange={(e) => setGeminiKey(e.target.value)}
-                  className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 font-mono"
+                  className="w-full px-3 py-2 border border-[#E6E6E3] rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#4F46A5]/30 focus:border-[#4F46A5] font-mono transition-all"
                 />
               </div>
 
               <div className="flex items-center justify-between pt-2">
-                <span className="text-xs text-emerald-600 font-medium">
+                <span className="text-xs text-[#1B5E20] font-medium">
                   {isSaved ? '✓ Key Saved' : ''}
                 </span>
                 <div className="flex gap-2">
                   <button
                     onClick={() => setShowSettings(false)}
-                    className="px-3.5 py-1.5 text-xs text-slate-600 hover:bg-slate-100 rounded-lg font-medium"
+                    className="px-3.5 py-1.5 text-xs text-[#787774] hover:bg-[#F1F1EF] rounded-lg font-medium transition-colors"
                   >
                     Close
                   </button>
                   <button
                     onClick={handleSaveKey}
-                    className="px-4 py-1.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg text-xs font-semibold shadow-sm"
+                    className="px-4 py-1.5 bg-[#4F46A5] hover:bg-[#433B91] text-white rounded-lg text-xs font-medium transition-colors"
                   >
                     Save Key
                   </button>
