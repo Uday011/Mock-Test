@@ -268,8 +268,8 @@ export default function TestDetailsPage() {
                 >
                   {test.difficulty || 'Medium'} Difficulty
                 </Badge>
-                <Badge variant={test.is_paid ? 'emerald' : 'gray'} size="sm">
-                  {test.is_paid ? `₹${test.price_inr}` : 'Free Access'}
+                <Badge variant="emerald" size="sm">
+                  Free Practice
                 </Badge>
               </div>
 
@@ -286,32 +286,18 @@ export default function TestDetailsPage() {
 
             {/* Launch CTA */}
             <div className="flex flex-col sm:flex-row md:flex-col gap-1.5 shrink-0">
-              {test.is_paid && !test.has_access ? (
+              <Link href={`/tests/${test.id}/start`}>
                 <Button
                   variant="primary"
                   size="md"
-                  onClick={() => setIsCheckoutModalOpen(true)}
                   className="w-full"
                 >
-                  <Lock className="w-3.5 h-3.5 mr-1.5" />
-                  Unlock Assessment (₹{test.price_inr})
+                  <Play className="w-3.5 h-3.5 mr-1.5 fill-current" />
+                  {attempts.length > 0 ? 'Retake Exam' : 'Start Assessment'}
                 </Button>
-              ) : (
-                <Link href={`/tests/${test.id}/start`}>
-                  <Button
-                    variant="primary"
-                    size="md"
-                    className="w-full"
-                  >
-                    <Play className="w-3.5 h-3.5 mr-1.5 fill-current" />
-                    {attempts.length > 0 ? 'Retake Exam' : 'Start Assessment'}
-                  </Button>
-                </Link>
-              )}
+              </Link>
               <p className="text-[11px] text-center text-[#9b9a97]">
-                {test.is_paid && !test.has_access
-                  ? 'Premium access required to launch'
-                  : 'CBT interface with countdown timer'}
+                CBT interface with countdown timer
               </p>
             </div>
           </div>
@@ -529,20 +515,6 @@ export default function TestDetailsPage() {
           )}
         </div>
 
-        {/* Mock Checkout Modal for Paid Tests */}
-        <MockCheckoutModal
-          isOpen={isCheckoutModalOpen}
-          onClose={() => setIsCheckoutModalOpen(false)}
-          itemType="test"
-          itemId={test.id}
-          itemTitle={test.title}
-          creatorName={test.creator_name}
-          priceInr={test.price_inr}
-          onSuccess={() => {
-            showToast('Access granted! Assessment unlocked.');
-            fetchTestDetails();
-          }}
-        />
       </div>
     </AppShell>
   );

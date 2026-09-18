@@ -796,13 +796,13 @@ Explanation: Binary search halves the search space at every comparison, giving $
   return (
     <AppShell
       breadcrumbs={[
-        { label: 'Studio & Repository', href: '/tests/create' },
-        { label: 'Test Studio' },
+        { label: 'Tests', href: '/tests' },
+        { label: 'Create Test' },
       ]}
     >
       <PageHeader
-        title="Nalanda Test Studio"
-        description="End-to-end authoring suite: import PDFs/DOCX, synthesize AI questions, reuse question bank items, and run quality control validation before publishing."
+        title="Create Test · PDF to Test"
+        description="Turn question papers, PDFs, and notes into interactive CBT mock exams, or author practice questions from scratch."
         actions={
           <div className="flex items-center gap-2.5">
             {questions.length > 0 && (
@@ -922,7 +922,7 @@ Explanation: Binary search halves the search space at every comparison, giving $
       {currentStep === 1 && (
         <div className="space-y-6">
           <div className="grid grid-cols-1 md:grid-cols-5 gap-3">
-            {/* Pathway 1: Upload Document */}
+            {/* Pathway 1: PDF to Test */}
             <div
               className={`p-4 rounded-md border cursor-pointer transition-all ${
                 activePathway === 'upload'
@@ -934,13 +934,13 @@ Explanation: Binary search halves the search space at every comparison, giving $
               <div className="w-8 h-8 rounded bg-notion-sidebar border border-notion-border text-notion-text flex items-center justify-center mb-2.5">
                 <UploadCloud className="w-4 h-4" />
               </div>
-              <h3 className="text-xs font-semibold text-notion-text">Document Upload</h3>
+              <h3 className="text-xs font-semibold text-notion-text">PDF to Test</h3>
               <p className="text-[11px] text-notion-muted mt-1 leading-relaxed">
-                Import PDF, DOCX, TXT, CSV, or spreadsheet mock papers.
+                Import PDF or document question papers and extract questions.
               </p>
             </div>
 
-            {/* Pathway 2: Manual Authoring */}
+            {/* Pathway 2: Create Test (Manual) */}
             <div
               className={`p-4 rounded-md border cursor-pointer transition-all ${
                 activePathway === 'manual'
@@ -952,9 +952,9 @@ Explanation: Binary search halves the search space at every comparison, giving $
               <div className="w-8 h-8 rounded bg-notion-sidebar border border-notion-border text-notion-text flex items-center justify-center mb-2.5">
                 <Plus className="w-4 h-4" />
               </div>
-              <h3 className="text-xs font-semibold text-notion-text">Manual Authoring</h3>
+              <h3 className="text-xs font-semibold text-notion-text">Create Test</h3>
               <p className="text-[11px] text-notion-muted mt-1 leading-relaxed">
-                Draft questions from scratch in the split-screen editor.
+                Draft practice questions from scratch in the split-screen editor.
               </p>
             </div>
 
@@ -1786,39 +1786,13 @@ Explanation: Binary search halves the search space at every comparison, giving $
                 </div>
 
                 <div>
-                  <label className="block text-xs font-medium text-notion-text mb-1">Access & Pricing</label>
-                  <select
-                    value={isPaid ? 'paid' : 'free'}
-                    onChange={(e) => setIsPaid(e.target.value === 'paid')}
-                    className="w-full px-2 py-1.5 rounded-md bg-white border border-notion-border text-xs text-notion-text focus:border-notion-text focus:outline-none"
-                  >
-                    <option value="free">Free Open Access</option>
-                    <option value="paid">Paid Premium Access</option>
-                  </select>
+                  <label className="block text-xs font-medium text-notion-text mb-1">Access Model</label>
+                  <div className="w-full px-2.5 py-1.5 rounded-md bg-[#F1F1EF] border border-notion-border text-xs text-notion-text font-medium flex items-center gap-1.5">
+                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-600" />
+                    <span>Free Practice Assessment</span>
+                  </div>
                 </div>
               </div>
-
-              {isPaid && (
-                <div className="p-3 bg-amber-50/50 rounded-md border border-amber-200 text-xs space-y-2">
-                  <div className="flex items-center justify-between">
-                    <label className="font-semibold text-amber-950">Tuition Price (₹ INR)</label>
-                    <span className="text-[10px] text-amber-800 font-mono">Platform fee: 15%</span>
-                  </div>
-                  <div className="relative">
-                    <span className="absolute left-2.5 top-1/2 -translate-y-1/2 font-mono font-semibold text-notion-muted">₹</span>
-                    <input
-                      type="number"
-                      min={1}
-                      value={priceInr}
-                      onChange={(e) => setPriceInr(Math.max(1, Number(e.target.value)))}
-                      className="w-full pl-7 pr-3 py-1.5 rounded-md bg-white border border-amber-300 text-xs text-notion-text font-semibold font-mono"
-                    />
-                  </div>
-                  <p className="text-[11px] text-notion-muted">
-                    Learners will unlock this test via Nalanda checkout. Payouts accrue to your Educator Ledger.
-                  </p>
-                </div>
-              )}
 
               {/* Test Series Assignment */}
               <div>

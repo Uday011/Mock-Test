@@ -26,6 +26,8 @@ import {
   Sparkles,
   PanelLeft,
   Search,
+  FileText,
+  PlusCircle,
 } from 'lucide-react';
 import Logo from '@/components/ui/Logo';
 import { Badge } from '@/components/ui/Badge';
@@ -128,35 +130,58 @@ export function AppShell({
 
   const navGroups: NavGroup[] = [
     {
-      title: 'KNOWLEDGE & SYLLABUS',
+      title: 'HOME',
       items: [
-        { label: 'Overview', href: '/dashboard', icon: LayoutDashboard },
-        { label: 'Exam Workspace', href: '/exams/exam-ssc-cgl-2026', icon: Compass },
-        { label: 'Syllabus Tree', href: '/learn', icon: BookOpen },
+        { label: 'Home', href: '/dashboard', icon: LayoutDashboard },
       ],
     },
     {
-      title: 'PRACTICE & DIAGNOSTICS',
+      title: 'LEARN',
       items: [
-        { label: 'Tests & Mocks', href: '/tests', icon: FileCheck },
-        { label: 'Mistake Notebook', href: '/mistakes', icon: BookMarked, badge: '3' },
-        { label: 'Performance Analytics', href: '/performance', icon: TrendingUp },
+        { label: 'My Exam', href: '/exams/exam-ssc-cgl-2026', icon: Compass },
+        { label: 'Syllabus', href: '/learn', icon: BookOpen },
+        { label: 'Learning Pathways', href: '/learn?tab=pathways', icon: Target },
       ],
     },
     {
-      title: 'STUDIO & PUBLISHING',
+      title: 'RESOURCES',
       items: [
-        { label: 'Educator Dashboard', href: '/dashboard/educator', icon: GraduationCap },
-        { label: 'Test Studio', href: '/tests/create', icon: PenTool },
+        { label: 'Resource Library', href: '/library', icon: Library },
+        { label: 'My Resources', href: '/library?tab=saved', icon: BookMarked },
+        { label: 'Add Resource', href: '/library?action=add', icon: PlusCircle },
+      ],
+    },
+    {
+      title: 'PRACTICE',
+      items: [
         { label: 'Question Bank', href: '/question-bank', icon: Layers },
-        { label: 'Public Library', href: '/library', icon: Library },
+        { label: 'Practice Sets', href: '/tests?type=practice', icon: FileCheck },
       ],
     },
     {
-      title: 'WORKSPACE SETTINGS',
+      title: 'TESTS',
       items: [
-        { label: 'Admin Moderation', href: '/dashboard/admin', icon: ShieldCheck },
-        { label: 'Exam Catalog', href: '/exams', icon: Target },
+        { label: 'My Tests', href: '/tests', icon: FileCheck },
+        { label: 'Test Library', href: '/library', icon: Library },
+        { label: 'Create Test', href: '/tests/create', icon: PenTool },
+        { label: 'PDF to Test', href: '/tests/create?pathway=upload', icon: FileText },
+      ],
+    },
+    {
+      title: 'REVIEW',
+      items: [
+        { label: 'Mistakes', href: '/mistakes', icon: BookMarked, badge: '3' },
+      ],
+    },
+    {
+      title: 'PROGRESS',
+      items: [
+        { label: 'Progress', href: '/performance', icon: TrendingUp },
+      ],
+    },
+    {
+      title: 'SETTINGS',
+      items: [
         { label: 'Settings', href: '/settings', icon: Settings },
       ],
     },
@@ -312,12 +337,11 @@ export function AppShell({
           <Badge variant="indigo" size="sm">
             {selectedExam.split(' ')[0]}
           </Badge>
-          <button
-            onClick={() => setRoleDropdownOpen(!roleDropdownOpen)}
-            className="w-6 h-6 rounded-full bg-[#F1F1EF] text-[#202124] flex items-center justify-center text-[10px] font-medium"
+          <div
+            className="w-6 h-6 rounded-full bg-[#EEF0FB] text-[#4F46A5] flex items-center justify-center text-[10px] font-medium"
           >
             {user?.name ? user.name.slice(0, 1).toUpperCase() : 'N'}
-          </button>
+          </div>
         </div>
       </div>
 
@@ -444,61 +468,19 @@ export function AppShell({
               )}
             </div>
 
-            {/* Persona Switcher Dropdown */}
-            <div className="relative" ref={roleMenuRef}>
-              <button
-                onClick={() => setRoleDropdownOpen(!roleDropdownOpen)}
-                className="flex items-center gap-1.5 px-2 py-1 text-xs text-[#202124] hover:bg-[#F1F1EF] rounded transition-colors"
-                title="Switch Workspace Role"
-              >
-                <ShieldCheck className="w-3.5 h-3.5 text-[#787774]" />
-                <span className="capitalize">{user?.role || 'student'}</span>
-                <ChevronDown className="w-3 h-3 text-[#787774]" />
-              </button>
-
-              {roleDropdownOpen && (
-                <div className="absolute right-0 mt-1 w-52 bg-white rounded-md shadow-[0_4px_16px_rgba(0,0,0,0.06)] border border-[#E6E6E3] py-1 z-50 animate-in fade-in zoom-in-95">
-                  <div className="px-2.5 py-1 text-[10px] font-semibold uppercase tracking-wider text-[#787774]">
-                    Active Workspace Role
-                  </div>
-                  {[
-                    { role: 'student', label: 'Learner (Aspirant)' },
-                    { role: 'educator', label: 'Educator (Faculty)' },
-                    { role: 'creator', label: 'Creator (Author)' },
-                    { role: 'admin', label: 'Administrator' },
-                  ].map((r) => (
-                    <button
-                      key={r.role}
-                      onClick={() => handleSwitchRole(r.role)}
-                      className="w-full text-left px-2.5 py-1.5 text-xs hover:bg-[#F7F7F5] text-[#202124] flex items-center justify-between"
-                    >
-                      <span>{r.label}</span>
-                      {user?.role === r.role && <Check className="w-3.5 h-3.5 text-[#4F46A5]" />}
-                    </button>
-                  ))}
-                  <div className="p-1.5 border-t border-[#E6E6E3] mt-0.5">
-                    <button
-                      onClick={async () => {
-                        try {
-                          await fetch('/api/user/roles', {
-                            method: 'POST',
-                            headers: { 'Content-Type': 'application/json' },
-                            body: JSON.stringify({ role: 'educator' }),
-                          });
-                          window.location.href = '/dashboard/educator';
-                        } catch (e) {
-                          console.error(e);
-                        }
-                      }}
-                      className="w-full py-1 px-2 rounded bg-[#EEF0FB] hover:bg-[#DCDDF7] text-[#4F46A5] text-[11px] font-medium flex items-center justify-center gap-1 transition-colors"
-                    >
-                      <Sparkles className="w-3 h-3" />
-                      <span>Become an Educator</span>
-                    </button>
-                  </div>
-                </div>
-              )}
-            </div>
+            {/* User Session Info */}
+            {user && (
+              <div className="flex items-center gap-2 text-xs text-[#787774]">
+                <span className="font-medium text-[#202124]">{user.name}</span>
+                <button
+                  onClick={handleLogout}
+                  className="p-1 text-[#787774] hover:text-[#C53030] rounded hover:bg-[#F1F1EF] transition-colors"
+                  title="Sign Out"
+                >
+                  <LogOut className="w-3.5 h-3.5" />
+                </button>
+              </div>
+            )}
 
             {actions}
           </div>
@@ -555,13 +537,13 @@ export function AppShell({
           </Link>
 
           <Link
-            href="/library"
+            href="/question-bank"
             className={`flex flex-col items-center justify-center py-1 px-2 rounded text-[10px] min-w-[52px] transition-colors ${
-              pathname === '/library' ? 'text-[#4F46A5] font-semibold' : 'text-[#787774] hover:text-[#202124]'
+              pathname === '/question-bank' ? 'text-[#4F46A5] font-semibold' : 'text-[#787774] hover:text-[#202124]'
             }`}
           >
-            <Library className={`w-4 h-4 mb-0.5 ${pathname === '/library' ? 'text-[#4F46A5]' : 'text-[#787774]'}`} />
-            <span>Library</span>
+            <Layers className={`w-4 h-4 mb-0.5 ${pathname === '/question-bank' ? 'text-[#4F46A5]' : 'text-[#787774]'}`} />
+            <span>Practice</span>
           </Link>
         </nav>
       </div>

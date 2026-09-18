@@ -29,6 +29,11 @@ export default function CreatorProfilePage() {
   const router = useRouter();
   const creatorId = params.id as string;
 
+  // In learner-first workspace mode, creator profiles redirect to the public assessment library
+  useEffect(() => {
+    router.replace('/library');
+  }, [router]);
+
   const [creator, setCreator] = useState<any | null>(null);
   const [tests, setTests] = useState<any[]>([]);
   const [testSeries, setTestSeries] = useState<any[]>([]);

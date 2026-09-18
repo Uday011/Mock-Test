@@ -81,7 +81,18 @@ const SUBJECTS = [
 ];
 
 export default function PublicLibraryPage() {
-  const [activeTab, setActiveTab] = useState<'tests' | 'series' | 'creators'>('tests');
+  const [activeTab, setActiveTab] = useState<'tests' | 'series' | 'saved'>('tests');
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const urlParams = new URLSearchParams(window.location.search);
+      const tabParam = urlParams.get('tab');
+      if (tabParam === 'saved') setActiveTab('saved');
+      else if (tabParam === 'series') setActiveTab('series');
+      else if (tabParam === 'tests') setActiveTab('tests');
+    }
+  }, []);
+
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedExam, setSelectedExam] = useState('all');
   const [selectedSubject, setSelectedSubject] = useState('all');
@@ -272,7 +283,7 @@ export default function PublicLibraryPage() {
               }`}
             >
               <Layers className="w-3.5 h-3.5" />
-              <span>Individual Tests</span>
+              <span>All Assessments</span>
               <span className={`text-[10px] font-mono px-1 rounded ${activeTab === 'tests' ? 'bg-[#4f4d47]' : 'bg-[#F1F1EF]'}`}>
                 {tests.length}
               </span>
@@ -287,24 +298,24 @@ export default function PublicLibraryPage() {
               }`}
             >
               <BookOpen className="w-3.5 h-3.5" />
-              <span>Test Series</span>
+              <span>Curriculum Tracks</span>
               <span className={`text-[10px] font-mono px-1 rounded ${activeTab === 'series' ? 'bg-[#4f4d47]' : 'bg-[#F1F1EF]'}`}>
                 {testSeries.length}
               </span>
             </button>
 
             <button
-              onClick={() => setActiveTab('creators')}
+              onClick={() => setActiveTab('saved')}
               className={`px-3 py-1.5 rounded-md text-xs font-medium flex items-center gap-1.5 transition-colors ${
-                activeTab === 'creators'
+                activeTab === 'saved'
                   ? 'bg-[#202124] text-white'
                   : 'bg-white border border-[#E6E6E3] text-[#787774] hover:bg-[#F1F1EF]'
               }`}
             >
-              <GraduationCap className="w-3.5 h-3.5" />
-              <span>Verified Educators</span>
-              <span className={`text-[10px] font-mono px-1 rounded ${activeTab === 'creators' ? 'bg-[#4f4d47]' : 'bg-[#F1F1EF]'}`}>
-                {creators.length}
+              <Bookmark className="w-3.5 h-3.5" />
+              <span>Saved Resources</span>
+              <span className={`text-[10px] font-mono px-1 rounded ${activeTab === 'saved' ? 'bg-[#4f4d47]' : 'bg-[#F1F1EF]'}`}>
+                {tests.filter((t) => t.is_bookmarked).length}
               </span>
             </button>
           </div>
@@ -525,8 +536,8 @@ export default function PublicLibraryPage() {
                         >
                           {test.difficulty || 'medium'}
                         </Badge>
-                        <Badge variant={test.is_paid ? 'gray' : 'emerald'} size="sm">
-                          {test.is_paid ? `₹${test.price_inr || 149}` : 'Free'}
+                        <Badge variant="emerald" size="sm">
+                          Free
                         </Badge>
                       </div>
 
@@ -545,17 +556,14 @@ export default function PublicLibraryPage() {
                       </div>
 
                       <div className="pt-2 border-t border-[#F1F1EF] flex items-center justify-between text-xs">
-                        <Link
-                          href={`/creators/${test.user_id}`}
-                          className="flex items-center gap-1.5 text-[#787774] hover:text-[#202124]"
-                        >
+                        <div className="flex items-center gap-1.5 text-[#787774]">
                           <div className="w-4 h-4 rounded bg-[#F1F1EF] text-[#787774] border border-[#E6E6E3] flex items-center justify-center font-bold text-[9px]">
-                            {test.created_by_name?.charAt(0) || 'F'}
+                            {test.created_by_name?.charAt(0) || 'N'}
                           </div>
                           <span className="truncate max-w-[120px] text-[11px]">
                             {test.created_by_name || 'Nalanda Faculty'}
                           </span>
-                        </Link>
+                        </div>
 
                         <div className="flex items-center gap-1 text-[11px] font-mono font-medium text-[#202124]">
                           <Star className="w-3 h-3 fill-amber-500 text-amber-500" />
@@ -616,8 +624,8 @@ export default function PublicLibraryPage() {
                         <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-[#F1F1EF] text-[#787774] border border-[#E6E6E3]">
                           {s.exam_title || 'SSC CGL 2026'}
                         </span>
-                        <Badge variant={s.is_paid ? 'gray' : 'emerald'} size="sm">
-                          {s.is_paid ? `₹${s.price_inr}` : 'Free'}
+                        <Badge variant="emerald" size="sm">
+                          Free Track
                         </Badge>
                         <span className="text-[11px] text-[#787774] font-mono">
                           {s.total_tests || 10} Mock Exams
@@ -635,7 +643,7 @@ export default function PublicLibraryPage() {
                   </div>
 
                   <div className="text-xs text-[#787774]">
-                    <span>By {s.creator_name || 'Senior Faculty'}</span>
+                    <span>Curriculum Pathway</span>
                     {s.creator_institute && <span> • {s.creator_institute}</span>}
                   </div>
 
@@ -647,7 +655,7 @@ export default function PublicLibraryPage() {
                 <div className="pt-3 border-t border-[#E6E6E3] flex items-center justify-between gap-3">
                   <div className="text-xs text-[#787774] flex items-center gap-1 font-mono">
                     <Users className="w-3.5 h-3.5 text-[#9b9a97]" />
-                    <span>{(s.enrolled_count || 1200).toLocaleString()} enrolled</span>
+                    <span>{(s.enrolled_count || 1200).toLocaleString()} learners</span>
                   </div>
 
                   <Link href={`/series/${s.id}`}>
@@ -661,80 +669,94 @@ export default function PublicLibraryPage() {
           </div>
         )}
 
-        {/* TAB 3: VERIFIED EDUCATORS */}
-        {activeTab === 'creators' && (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3.5">
-            {creators.map((creator) => (
-              <div
-                key={creator.id}
-                className="bg-white rounded-lg border border-[#E6E6E3] p-4 hover:border-[#d4d4d4] transition-colors flex flex-col justify-between space-y-3"
-              >
-                <div className="space-y-2.5">
-                  <div className="flex items-start justify-between gap-2">
-                    <div className="w-9 h-9 rounded-md bg-[#F1F1EF] border border-[#E6E6E3] text-[#202124] flex items-center justify-center font-semibold text-sm">
-                      {creator.name?.charAt(0) || 'E'}
-                    </div>
-                    <button
-                      onClick={() => handleFollowToggle(creator.id)}
-                      className={`px-2.5 py-1 rounded-md text-xs font-medium transition-colors ${
-                        creator.is_following
-                          ? 'bg-[#F1F1EF] text-[#787774] border border-[#E6E6E3] hover:bg-[#fff0f0] hover:text-[#e03e3e]'
-                          : 'bg-[#202124] text-white hover:bg-[#22211e]'
-                      }`}
-                    >
-                      {creator.is_following ? 'Following' : 'Follow'}
-                    </button>
-                  </div>
-
-                  <div>
-                    <div className="flex items-center gap-1">
-                      <h3 className="text-xs sm:text-sm font-semibold text-[#202124]">{creator.name}</h3>
-                      <ShieldCheck className="w-3.5 h-3.5 text-emerald-600" />
-                    </div>
-                    <p className="text-[11px] text-[#787774]">{creator.headline}</p>
-                    <p className="text-[10px] text-[#9b9a97]">{creator.institute_name}</p>
-                  </div>
-
-                  <p className="text-xs text-[#787774] line-clamp-2 leading-relaxed">
-                    {creator.bio}
-                  </p>
-
-                  <div className="flex flex-wrap gap-1">
-                    {(creator.specializations || []).slice(0, 3).map((subj: string) => (
-                      <span
-                        key={subj}
-                        className="text-[10px] px-1.5 py-0.5 rounded bg-[#F1F1EF] text-[#787774] border border-[#E6E6E3] font-mono"
-                      >
-                        {subj}
-                      </span>
-                    ))}
-                  </div>
-                </div>
-
-                <div className="pt-3 border-t border-[#E6E6E3] space-y-2">
-                  <div className="grid grid-cols-3 gap-1 text-center text-[10px] font-mono text-[#787774]">
-                    <div className="bg-[#F7F7F5] p-1 rounded border border-[#E6E6E3]">
-                      <span className="block text-[#9b9a97] text-[9px] uppercase font-sans">Students</span>
-                      <span className="font-medium text-[#202124]">{creator.total_students || 1200}</span>
-                    </div>
-                    <div className="bg-[#F7F7F5] p-1 rounded border border-[#E6E6E3]">
-                      <span className="block text-[#9b9a97] text-[9px] uppercase font-sans">Papers</span>
-                      <span className="font-medium text-[#202124]">{creator.published_tests_count || 12}</span>
-                    </div>
-                    <div className="bg-[#F7F7F5] p-1 rounded border border-[#E6E6E3]">
-                      <span className="block text-[#9b9a97] text-[9px] uppercase font-sans">Followers</span>
-                      <span className="font-medium text-[#202124]">{creator.followers_count || 0}</span>
-                    </div>
-                  </div>
-
-                  <Link href={`/creators/${creator.id}`} className="block">
-                    <Button variant="outline" size="sm" className="w-full text-xs">
-                      View Educator Portfolio <ChevronRight className="w-3.5 h-3.5 ml-1" />
-                    </Button>
-                  </Link>
-                </div>
+        {/* TAB 3: SAVED RESOURCES */}
+        {activeTab === 'saved' && (
+          <div>
+            {tests.filter((t) => t.is_bookmarked).length === 0 ? (
+              <div className="bg-white border border-[#E6E6E3] rounded-lg p-10 text-center space-y-3">
+                <Bookmark className="w-8 h-8 text-[#9b9a97] mx-auto" />
+                <h3 className="font-semibold text-sm text-[#202124]">No Saved Resources Yet</h3>
+                <p className="text-xs text-[#787774] max-w-sm mx-auto">
+                  Click the bookmark icon on any assessment paper or curriculum track in the library to save it for quick access.
+                </p>
+                <Button variant="outline" size="sm" onClick={() => setActiveTab('tests')}>
+                  Explore Assessments
+                </Button>
               </div>
-            ))}
+            ) : (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3.5">
+                {tests
+                  .filter((t) => t.is_bookmarked)
+                  .map((test) => (
+                    <div
+                      key={test.id}
+                      className="bg-white rounded-lg border border-[#E6E6E3] hover:border-[#d4d4d4] transition-colors flex flex-col justify-between p-4 space-y-3"
+                    >
+                      <div className="space-y-2">
+                        <div className="flex items-center justify-between gap-2">
+                          <TrustLabel label={test.trust_label} size="sm" showTooltip />
+                          <div className="flex items-center gap-1">
+                            <button
+                              onClick={() => handleBookmarkToggle(test.id)}
+                              title="Remove bookmark"
+                              className="p-1 rounded border text-xs bg-[#fdf5e8] border-[#fae2be] text-[#8f4f00] transition-colors"
+                            >
+                              <Bookmark className="w-3 h-3 fill-amber-600" />
+                            </button>
+                            <button
+                              onClick={() => handleShare(test.id, test.title)}
+                              title="Share test link"
+                              className="p-1 rounded border border-[#E6E6E3] bg-[#F7F7F5] text-[#787774] hover:bg-[#F1F1EF] transition-colors"
+                            >
+                              <Share2 className="w-3 h-3" />
+                            </button>
+                          </div>
+                        </div>
+
+                        <div className="flex items-center gap-1.5 flex-wrap">
+                          <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-[#F1F1EF] text-[#787774] border border-[#E6E6E3]">
+                            {test.subject || 'General Studies'}
+                          </span>
+                          <Badge variant="blue" size="sm">
+                            {formatTestType(test.test_type)}
+                          </Badge>
+                          <Badge variant="emerald" size="sm">
+                            Free
+                          </Badge>
+                        </div>
+
+                        <div>
+                          <Link
+                            href={`/tests/${test.id}`}
+                            className="font-medium text-xs sm:text-sm text-[#202124] hover:underline line-clamp-1 leading-snug"
+                          >
+                            {test.title}
+                          </Link>
+                          {test.description && (
+                            <p className="text-xs text-[#787774] line-clamp-2 mt-1 leading-relaxed">
+                              {test.description}
+                            </p>
+                          )}
+                        </div>
+                      </div>
+
+                      <div className="pt-2.5 border-t border-[#E6E6E3] flex items-center gap-2">
+                        <Link href={`/tests/${test.id}`} className="flex-1">
+                          <Button variant="outline" size="sm" className="w-full text-xs">
+                            Blueprint
+                          </Button>
+                        </Link>
+                        <Link href={`/tests/${test.id}/start`} className="flex-1">
+                          <Button variant="primary" size="sm" className="w-full text-xs">
+                            <Play className="w-3 h-3 mr-1 fill-current" />
+                            Take Exam
+                          </Button>
+                        </Link>
+                      </div>
+                    </div>
+                  ))}
+              </div>
+            )}
           </div>
         )}
       </div>

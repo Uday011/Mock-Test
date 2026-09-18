@@ -147,20 +147,7 @@ export default function TestSeriesDetailPage() {
         </div>
       )}
 
-      {/* Checkout Modal */}
-      <MockCheckoutModal
-        isOpen={checkoutOpen}
-        onClose={() => setCheckoutOpen(false)}
-        itemType="test_series"
-        itemId={series.id}
-        itemTitle={series.title}
-        creatorName={series.creator_name}
-        priceInr={series.price_inr}
-        onSuccess={() => {
-          showToast('Payment confirmed! Series unlocked.');
-          fetchSeriesData();
-        }}
-      />
+
 
       <div className="space-y-6 max-w-5xl mx-auto">
         {/* Navigation & Action Bar */}
@@ -229,25 +216,23 @@ export default function TestSeriesDetailPage() {
               </div>
             </div>
 
-            {/* CTA Pricing & Action Box */}
-            <div className="bg-[#fcfbf9] p-4 rounded-md border border-[#E6E6E3] text-center space-y-3 shrink-0 w-full md:w-60">
+            {/* Action Box */}
+            <div className="bg-[#F7F7F5] p-4 rounded-md border border-[#E6E6E3] text-center space-y-3 shrink-0 w-full md:w-60">
               <div>
                 <span className="text-[10px] uppercase tracking-wider font-semibold text-[#787774] block">
-                  Series Enrollment
+                  Curriculum Track
                 </span>
-                <div className="font-bold text-xl text-[#202124] mt-1">
-                  {series.is_paid ? `₹${series.price_inr}` : 'Free'}
+                <div className="font-semibold text-sm text-[#202124] mt-1">
+                  Free Open Access
                 </div>
-                {series.is_paid && (
-                  <p className="text-[10px] text-[#787774]">Includes all {items.length} mock tests & forensics</p>
-                )}
+                <p className="text-[10px] text-[#787774] mt-0.5">Includes all {items.length} mock tests</p>
               </div>
 
               {series.has_access ? (
                 <div className="space-y-2">
                   <div className="inline-flex items-center gap-1 text-[11px] font-medium text-emerald-800 bg-[#edf6f9] px-2.5 py-0.5 rounded-[3px] border border-[#cbe4eb]">
                     <CheckCircle2 className="w-3 h-3 text-emerald-600" />
-                    <span>Access Active</span>
+                    <span>In My Study Plan</span>
                   </div>
                   {nextIncompleteTest && (
                     <Link href={`/tests/${nextIncompleteTest.test_id}/start`} className="block">
@@ -257,16 +242,6 @@ export default function TestSeriesDetailPage() {
                     </Link>
                   )}
                 </div>
-              ) : series.is_paid ? (
-                <Button
-                  variant="primary"
-                  size="sm"
-                  onClick={() => setCheckoutOpen(true)}
-                  className="w-full text-xs"
-                  icon={<Lock className="w-3.5 h-3.5" />}
-                >
-                  Unlock Series Access
-                </Button>
               ) : (
                 <Button
                   variant="primary"
@@ -275,7 +250,7 @@ export default function TestSeriesDetailPage() {
                   disabled={enrolling}
                   className="w-full text-xs"
                 >
-                  {enrolling ? 'Enrolling...' : 'Enroll in Free Series'}
+                  {enrolling ? 'Adding...' : 'Add to My Study Plan'}
                 </Button>
               )}
 
@@ -390,28 +365,16 @@ export default function TestSeriesDetailPage() {
                       </Button>
                     </Link>
 
-                    {item.has_access ? (
-                      <Link href={`/tests/${item.test_id}/start`}>
-                        <Button
-                          variant="primary"
-                          size="sm"
-                          className="text-xs"
-                          icon={<Play className="w-3 h-3 fill-current" />}
-                        >
-                          {item.is_attempted ? 'Retake' : 'Start Mock'}
-                        </Button>
-                      </Link>
-                    ) : (
+                    <Link href={`/tests/${item.test_id}/start`}>
                       <Button
-                        variant="secondary"
+                        variant="primary"
                         size="sm"
-                        onClick={() => setCheckoutOpen(true)}
                         className="text-xs"
-                        icon={<Lock className="w-3 h-3 text-[#787774]" />}
+                        icon={<Play className="w-3 h-3 fill-current" />}
                       >
-                        Unlock Test
+                        {item.is_attempted ? 'Retake' : 'Start Mock'}
                       </Button>
-                    )}
+                    </Link>
                   </div>
                 </div>
               );

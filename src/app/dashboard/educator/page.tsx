@@ -38,6 +38,12 @@ import { Button } from '@/components/ui/Button';
 
 export default function EducatorDashboardPage() {
   const router = useRouter();
+
+  // In learner-first workspace mode, safely redirect learners back to the central workspace
+  useEffect(() => {
+    router.replace('/dashboard');
+  }, [router]);
+
   const [data, setData] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);

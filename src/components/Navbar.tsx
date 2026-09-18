@@ -21,6 +21,7 @@ import {
   X,
   Target,
   Library,
+  FileCheck,
 } from 'lucide-react';
 import { UserRole } from '@/lib/types';
 
@@ -169,10 +170,11 @@ export default function Navbar() {
           {/* Center — Navigation Links (Desktop) */}
           <nav className="hidden md:flex items-center gap-8">
             {[
-              { href: '/dashboard', label: 'Dashboard' },
+              { href: '/dashboard', label: 'Home' },
               { href: '/learn', label: 'Learn' },
+              { href: '/question-bank', label: 'Practice' },
               { href: '/tests', label: 'Tests' },
-              { href: '/library', label: 'Library' },
+              { href: '/library', label: 'Resources' },
             ].map((link) => (
               <Link
                 key={link.href}
@@ -188,50 +190,15 @@ export default function Navbar() {
           <div className="flex items-center gap-3">
             {user ? (
               <>
-                <div className="hidden sm:flex items-center gap-2.5" ref={roleMenuRef}>
-                  <div className="relative">
-                    <button
-                      onClick={() => setShowRoleMenu(!showRoleMenu)}
-                      className="flex items-center gap-1.5 text-sm text-[#787774] hover:text-[#202124] transition-colors font-normal"
-                    >
-                      <span>{user.name}</span>
-                      <ChevronDown className="w-3.5 h-3.5" />
-                    </button>
-
-                    {showRoleMenu && (
-                      <div className="absolute right-0 mt-3 w-56 bg-white rounded-lg border border-[#E6E6E3] shadow-xl shadow-black/[0.06] py-1.5 z-50">
-                        <div className="px-3 py-1.5 text-[10px] font-semibold uppercase tracking-wider text-[#787774]">
-                          Switch Role
-                        </div>
-                        {[
-                          { role: 'student' as UserRole, label: 'Student', icon: GraduationCap },
-                          { role: 'admin' as UserRole, label: 'Administrator', icon: Building2 },
-                          { role: 'superadmin' as UserRole, label: 'Super Admin', icon: Crown },
-                        ].map((r) => (
-                          <button
-                            key={r.role}
-                            onClick={() => handleSwitchRole(r.role)}
-                            className="w-full flex items-center justify-between px-3 py-2 text-sm text-[#202124] hover:bg-[#F7F7F5] transition-colors"
-                          >
-                            <span className="flex items-center gap-2">
-                              <r.icon className="w-3.5 h-3.5 text-[#787774]" />
-                              {r.label}
-                            </span>
-                            {user?.role === r.role && <CheckCircle2 className="w-3.5 h-3.5 text-[#4F46A5]" />}
-                          </button>
-                        ))}
-                        <div className="border-t border-[#E6E6E3] mt-1 pt-1">
-                          <button
-                            onClick={handleLogout}
-                            className="w-full flex items-center gap-2 px-3 py-2 text-sm text-[#C53030] hover:bg-[#FEF2F2] transition-colors"
-                          >
-                            <LogOut className="w-3.5 h-3.5" />
-                            Sign out
-                          </button>
-                        </div>
-                      </div>
-                    )}
-                  </div>
+                <div className="hidden sm:flex items-center gap-2">
+                  <span className="text-sm font-medium text-[#202124]">{user.name}</span>
+                  <button
+                    onClick={handleLogout}
+                    className="text-xs text-[#787774] hover:text-[#C53030] transition-colors px-1 py-0.5"
+                    title="Sign Out"
+                  >
+                    Sign out
+                  </button>
                 </div>
                 <Link
                   href="/dashboard"
@@ -242,18 +209,18 @@ export default function Navbar() {
               </>
             ) : (
               <>
-                <button
-                  onClick={() => handleSwitchRole('student')}
+                <Link
+                  href="/login"
                   className="hidden sm:inline-flex text-sm text-[#787774] hover:text-[#202124] transition-colors font-normal"
                 >
                   Sign in
-                </button>
-                <Link
-                  href="/dashboard"
+                </Link>
+                <button
+                  onClick={() => handleSwitchRole('student')}
                   className="hidden sm:inline-flex items-center px-4 py-2 rounded-full border border-[#202124] text-[#202124] text-sm font-medium hover:bg-[#202124] hover:text-white transition-all duration-200"
                 >
                   Get demo
-                </Link>
+                </button>
               </>
             )}
 
@@ -323,12 +290,12 @@ export default function Navbar() {
 
             {/* Nav links */}
             {[
-              { href: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
+              { href: '/dashboard', label: 'Home', icon: LayoutDashboard },
               { href: '/learn', label: 'Learn', icon: BookOpen },
-              { href: '/tests', label: 'Tests', icon: Target },
-              { href: '/library', label: 'Library', icon: Library },
-              { href: '/tests/create', label: 'Test Studio', icon: PlusCircle },
-              { href: '/dashboard/educator', label: 'Educator Hub', icon: GraduationCap },
+              { href: '/question-bank', label: 'Practice', icon: Target },
+              { href: '/tests', label: 'Tests', icon: FileCheck },
+              { href: '/library', label: 'Resources', icon: Library },
+              { href: '/mistakes', label: 'Mistakes', icon: BookOpen },
             ].map((link) => (
               <Link
                 key={link.href}
@@ -340,31 +307,6 @@ export default function Navbar() {
                 {link.label}
               </Link>
             ))}
-
-            {/* Role switcher */}
-            <div className="pt-3 border-t border-[#E6E6E3]">
-              <p className="text-[10px] font-semibold uppercase tracking-wider text-[#787774] mb-2 px-1">Switch Role</p>
-              <div className="grid grid-cols-3 gap-2">
-                {[
-                  { role: 'student' as UserRole, label: 'Student', icon: GraduationCap },
-                  { role: 'admin' as UserRole, label: 'Admin', icon: Building2 },
-                  { role: 'superadmin' as UserRole, label: 'Super', icon: Crown },
-                ].map((r) => (
-                  <button
-                    key={r.role}
-                    onClick={() => { setMobileMenuOpen(false); handleSwitchRole(r.role); }}
-                    className={`p-2.5 rounded-lg border text-center transition-all flex flex-col items-center gap-1 ${
-                      role === r.role
-                        ? 'border-[#4F46A5] bg-[#EEF0FB] text-[#4F46A5] font-semibold'
-                        : 'border-[#E6E6E3] text-[#787774] hover:bg-[#F7F7F5]'
-                    }`}
-                  >
-                    <r.icon className="w-4 h-4" />
-                    <span className="text-[11px]">{r.label}</span>
-                  </button>
-                ))}
-              </div>
-            </div>
 
             {/* Auth */}
             {!user && (
