@@ -23,6 +23,7 @@ import {
   PanelLeft,
   PlusCircle,
   Clock,
+  MoreHorizontal,
 } from 'lucide-react';
 import Logo from '@/components/ui/Logo';
 import { Breadcrumbs, BreadcrumbItem } from '@/components/ui/Breadcrumbs';
@@ -66,6 +67,7 @@ export function AppShell({
   const router = useRouter();
   const [mobileOpen, setMobileOpen] = useState(false);
   const [mobileExamSheetOpen, setMobileExamSheetOpen] = useState(false);
+  const [mobileMoreSheetOpen, setMobileMoreSheetOpen] = useState(false);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [user, setUser] = useState<{ id: string; name: string; email: string; role: string } | null>(null);
   const [examDropdownOpen, setExamDropdownOpen] = useState(false);
@@ -77,6 +79,7 @@ export function AppShell({
   useEffect(() => {
     setMobileOpen(false);
     setMobileExamSheetOpen(false);
+    setMobileMoreSheetOpen(false);
     setExamDropdownOpen(false);
     if (typeof window !== 'undefined') {
       setCurrentSearch(window.location.search);
@@ -641,6 +644,139 @@ export function AppShell({
           </div>
         )}
 
+        {/* Mobile More Drawer / Sheet */}
+        {mobileMoreSheetOpen && (
+          <div className="fixed inset-0 z-[110] md:hidden flex flex-col justify-end" role="dialog" aria-modal="true">
+            <div
+              className="fixed inset-0 bg-black/50 backdrop-blur-xs transition-opacity"
+              onClick={() => setMobileMoreSheetOpen(false)}
+            />
+            <div className="relative bg-surface rounded-t-2xl shadow-2xl border-t border-line p-5 max-h-[85vh] overflow-y-auto z-10 animate-slide-up space-y-5">
+              <div className="w-10 h-1 bg-line rounded-full mx-auto" />
+
+              <div className="flex items-center justify-between pb-3 border-b border-line">
+                <div>
+                  <h3 className="text-sm font-semibold text-ink">More Workspace Areas</h3>
+                  <p className="text-[11px] text-ink-muted">Insights, revision queue, tools and preferences</p>
+                </div>
+                <button
+                  onClick={() => setMobileMoreSheetOpen(false)}
+                  className="min-w-[36px] min-h-[36px] flex items-center justify-center text-ink-muted hover:text-ink rounded-btn hover:bg-secondary"
+                >
+                  <X className="w-4 h-4" />
+                </button>
+              </div>
+
+              {/* Quick Navigation Items */}
+              <div className="grid grid-cols-2 gap-2.5">
+                <Link
+                  href="/performance"
+                  onClick={() => setMobileMoreSheetOpen(false)}
+                  className="flex items-center gap-3 p-3 rounded-card border border-line bg-secondary/30 hover:bg-secondary transition-colors"
+                >
+                  <div className="w-8 h-8 rounded-full bg-accent/10 text-accent flex items-center justify-center">
+                    <TrendingUp className="w-4 h-4" />
+                  </div>
+                  <div>
+                    <div className="text-xs font-semibold text-ink">Analysis</div>
+                    <div className="text-[10px] text-ink-muted">Accuracy & Trends</div>
+                  </div>
+                </Link>
+
+                <Link
+                  href="/mistakes"
+                  onClick={() => setMobileMoreSheetOpen(false)}
+                  className="flex items-center gap-3 p-3 rounded-card border border-line bg-secondary/30 hover:bg-secondary transition-colors"
+                >
+                  <div className="w-8 h-8 rounded-full bg-lavender/10 text-lavender flex items-center justify-center">
+                    <BookMarked className="w-4 h-4" />
+                  </div>
+                  <div>
+                    <div className="text-xs font-semibold text-ink">Notebook</div>
+                    <div className="text-[10px] text-ink-muted">Saved Mistakes</div>
+                  </div>
+                </Link>
+
+                <Link
+                  href="/mistakes?tab=revision"
+                  onClick={() => setMobileMoreSheetOpen(false)}
+                  className="flex items-center gap-3 p-3 rounded-card border border-line bg-secondary/30 hover:bg-secondary transition-colors"
+                >
+                  <div className="w-8 h-8 rounded-full bg-coral/10 text-coral flex items-center justify-center">
+                    <Clock className="w-4 h-4" />
+                  </div>
+                  <div>
+                    <div className="text-xs font-semibold text-ink">Revision</div>
+                    <div className="text-[10px] text-ink-muted">Spaced Practice</div>
+                  </div>
+                </Link>
+
+                <Link
+                  href="/settings"
+                  onClick={() => setMobileMoreSheetOpen(false)}
+                  className="flex items-center gap-3 p-3 rounded-card border border-line bg-secondary/30 hover:bg-secondary transition-colors"
+                >
+                  <div className="w-8 h-8 rounded-full bg-line text-ink-muted flex items-center justify-center">
+                    <Settings className="w-4 h-4" />
+                  </div>
+                  <div>
+                    <div className="text-xs font-semibold text-ink">Settings</div>
+                    <div className="text-[10px] text-ink-muted">Preferences</div>
+                  </div>
+                </Link>
+              </div>
+
+              {/* Target Exam Switcher Button */}
+              <div className="pt-2 border-t border-line">
+                <div className="text-[10px] font-semibold uppercase tracking-wider text-ink-muted mb-2">Target Exam</div>
+                <button
+                  onClick={() => {
+                    setMobileMoreSheetOpen(false);
+                    setMobileExamSheetOpen(true);
+                  }}
+                  className="w-full flex items-center justify-between p-3 rounded-card border border-line bg-surface hover:bg-secondary transition-colors"
+                >
+                  <div className="flex items-center gap-2.5">
+                    <Target className="w-4 h-4 text-accent" />
+                    <span className="text-xs font-medium text-ink">{selectedExam}</span>
+                  </div>
+                  <span className="text-[11px] text-accent font-medium">Switch &rarr;</span>
+                </button>
+              </div>
+
+              {/* Theme Selector */}
+              <div className="pt-2 border-t border-line">
+                <div className="text-[10px] font-semibold uppercase tracking-wider text-ink-muted mb-2">Theme Mode</div>
+                <div className="flex justify-center">
+                  <ThemeSelector />
+                </div>
+              </div>
+
+              {/* User / Sign Out */}
+              {user && (
+                <div className="pt-2 border-t border-line flex items-center justify-between">
+                  <div className="flex items-center gap-2.5">
+                    <div className="w-7 h-7 rounded-full bg-accent/20 text-accent flex items-center justify-center text-xs font-semibold">
+                      {user.name.charAt(0).toUpperCase()}
+                    </div>
+                    <div>
+                      <div className="text-xs font-medium text-ink">{user.name}</div>
+                      <div className="text-[10px] text-ink-muted">{user.email}</div>
+                    </div>
+                  </div>
+                  <button
+                    onClick={handleLogout}
+                    className="flex items-center gap-1.5 px-3 py-1.5 text-xs text-coral hover:bg-coral/10 rounded-btn transition-colors"
+                  >
+                    <LogOut className="w-3.5 h-3.5" />
+                    <span>Sign Out</span>
+                  </button>
+                </div>
+              )}
+            </div>
+          </div>
+        )}
+
         {/* Mobile Bottom Navigation */}
         <nav
           aria-label="Mobile Bottom Navigation"
@@ -651,7 +787,6 @@ export function AppShell({
             { href: '/learn', label: 'Learn', icon: BookOpen, exact: false },
             { href: '/question-bank', label: 'Practice', icon: Layers, exact: true },
             { href: '/tests', label: 'Tests', icon: FileCheck, exact: false },
-            { href: '/performance', label: 'Insight', icon: TrendingUp, exact: false },
           ].map((item) => {
             const isActive = item.exact
               ? pathname === item.href
@@ -672,6 +807,23 @@ export function AppShell({
               </Link>
             );
           })}
+          <button
+            onClick={() => setMobileMoreSheetOpen(true)}
+            className={`flex-1 flex flex-col items-center justify-center h-full min-h-[48px] py-1 rounded-btn text-[11px] transition-all active:scale-95 ${
+              mobileMoreSheetOpen || pathname === '/performance' || pathname === '/mistakes' || pathname === '/settings'
+                ? 'text-accent font-semibold'
+                : 'text-ink-muted hover:text-ink'
+            }`}
+          >
+            <div className={`p-1.5 rounded-full transition-colors ${
+              mobileMoreSheetOpen || pathname === '/performance' || pathname === '/mistakes' || pathname === '/settings'
+                ? 'bg-accent/10 text-accent'
+                : ''
+            }`}>
+              <MoreHorizontal className="w-4 h-4" />
+            </div>
+            <span className="mt-0.5">More</span>
+          </button>
         </nav>
       </div>
     </div>

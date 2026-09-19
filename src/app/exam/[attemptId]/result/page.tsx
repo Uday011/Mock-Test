@@ -1,43 +1,22 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import {
-  Award,
-  Clock,
-  CheckCircle2,
-  XCircle,
-  AlertCircle,
   RotateCcw,
-  LayoutDashboard,
-  Filter,
   Check,
   X,
-  Flag,
+  Clock,
+  BookMarked,
+  ArrowRight,
   ChevronDown,
   ChevronUp,
-  HelpCircle,
-  FileText,
-  Play,
-  Share2,
+  AlertCircle,
   Sparkles,
-  Lightbulb,
-  Target,
-  TrendingUp,
-  Compass,
-  ArrowRight,
-  BookOpen,
-  ArrowLeft,
-  BookMarked,
-  Layers,
-  Flame,
-  ChevronRight,
+  Share2,
 } from 'lucide-react';
 import { AppShell } from '@/components/layout/AppShell';
-import { Badge } from '@/components/ui/Badge';
-import { Card } from '@/components/ui/Card';
-import { Button } from '@/components/ui/Button';
 
 export default function ExamResultPage() {
   const params = useParams();
@@ -48,50 +27,22 @@ export default function ExamResultPage() {
   const [error, setError] = useState('');
   const [attempt, setAttempt] = useState<any | null>(null);
   const [questions, setQuestions] = useState<any[]>([]);
-  const [filterType, setFilterType] = useState<'all' | 'correct' | 'incorrect' | 'unanswered' | 'marked'>('all');
+  const [showReview, setShowReview] = useState(false);
   const [retaking, setRetaking] = useState(false);
-  const [creatingRevisionTest, setCreatingRevisionTest] = useState(false);
-  const [aiInsights, setAiInsights] = useState<any | null>(null);
-  const [generatingAI, setGeneratingAI] = useState(false);
-  const [aiError, setAiError] = useState('');
 
   useEffect(() => {
     fetch(`/api/exam/${attemptId}/result`)
       .then((res) => {
-        if (!res.ok) throw new Error('Failed to load examination scorecard');
+        if (!res.ok) throw new Error('Failed to load test analysis scorecard');
         return res.json();
       })
       .then((data) => {
-        if (data.attempt) {
-          setAttempt(data.attempt);
-          if (data.attempt.ai_insights) {
-            setAiInsights(data.attempt.ai_insights);
-          }
-        }
+        if (data.attempt) setAttempt(data.attempt);
         if (data.questions) setQuestions(data.questions);
       })
       .catch((err) => setError(err.message))
       .finally(() => setLoading(false));
   }, [attemptId]);
-
-  const handleGenerateInsights = async () => {
-    setGeneratingAI(true);
-    setAiError('');
-    try {
-      const res = await fetch('/api/ai/insights', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ attemptId }),
-      });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error || 'Failed to generate AI insights');
-      setAiInsights(data.insights);
-    } catch (e: any) {
-      setAiError(e.message);
-    } finally {
-      setGeneratingAI(false);
-    }
-  };
 
   const handleRetakeTest = async () => {
     if (!attempt?.test_id) return;
@@ -103,39 +54,54 @@ export default function ExamResultPage() {
         body: JSON.stringify({ testId: attempt.test_id }),
       });
       const data = await res.json();
-      if (!res.ok) throw new Error(data.error || 'Failed to restart exam');
-      router.push(`/exam/${data.attemptId}`);
-    } catch (e: any) {
-      alert(e.message);
+      if (data.success && data.attemptId) {
+        router.push(`/exam/${data.attemptId}`);
+      } else {
+        router.push(`/tests/${attempt.test_id}/start`);
+      }
+    } catch (e) {
+      console.error(e);
+      router.push(`/tests/${attempt.test_id}/start`);
+    } finally {
       setRetaking(false);
     }
   };
 
-  const handleCreateRevisionDrill = async () => {
-    setCreatingRevisionTest(true);
-    try {
-      const res = await fetch('/api/tests/revision-test', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ attemptId }),
-      });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error || 'Failed to compile revision drill');
-      router.push(`/exam/${data.attemptId}`);
-    } catch (e: any) {
-      alert(e.message);
-      setCreatingRevisionTest(false);
-    }
+  // Format seconds to mm:ss or mm m ss s
+  const formatTime = (secs: number) => {
+    const mins = Math.floor(secs / 60);
+    const s = secs % 60;
+    return `${mins}m ${s}s`;
   };
+
+  // Topic wise performance computation
+  const topicBreakdown = useMemo(() => {
+    const map = new Map<string, { total: number; correct: number }>();
+    questions.forEach((q) => {
+      const topicName = q.topic_title || q.topic_name || q.subject || 'General Logic';
+      const existing = map.get(topicName) || { total: 0, correct: 0 };
+      existing.total += 1;
+      if (q.is_correct) existing.correct += 1;
+      map.set(topicName, existing);
+    });
+
+    return Array.from(map.entries()).map(([topic, data]) => {
+      const percent = Math.round((data.correct / data.total) * 100);
+      return {
+        topic,
+        total: data.total,
+        correct: data.correct,
+        percent,
+      };
+    });
+  }, [questions]);
 
   if (loading) {
     return (
       <AppShell>
-        <div className="min-h-[60vh] flex flex-col items-center justify-center space-y-4">
-          <div className="w-10 h-10 border-3 border-stone-800 border-t-transparent rounded-full animate-spin" />
-          <p className="text-xs font-semibold text-stone-600 tracking-wide">
-            Calculating score analytics and topic mastery...
-          </p>
+        <div className="flex flex-col items-center justify-center py-28 space-y-3">
+          <div className="w-5 h-5 border-2 border-ink border-t-transparent rounded-full animate-spin" />
+          <p className="text-xs text-ink-muted font-mono">Generating Test Analysis...</p>
         </div>
       </AppShell>
     );
@@ -144,603 +110,323 @@ export default function ExamResultPage() {
   if (error || !attempt) {
     return (
       <AppShell>
-        <div className="max-w-md mx-auto my-16 p-8 bg-white rounded-2xl border border-stone-200 text-center space-y-4 shadow-sm">
-          <AlertCircle className="w-10 h-10 text-rose-500 mx-auto" />
-          <h3 className="font-sans font-bold text-lg text-stone-900">Scorecard Not Available</h3>
-          <p className="text-xs text-stone-600">{error || 'This exam attempt could not be retrieved.'}</p>
-          <Link href="/tests">
-            <Button variant="primary" size="sm">
-              Return to Test Catalog
-            </Button>
+        <div className="text-center py-24 space-y-3">
+          <AlertCircle className="w-8 h-8 text-coral mx-auto" />
+          <p className="text-xs text-ink">{error || 'Could not load analysis'}</p>
+          <Link
+            href="/tests"
+            className="inline-block px-4 py-1.5 bg-ink text-canvas rounded-full text-xs font-semibold"
+          >
+            Return to Tests
           </Link>
         </div>
       </AppShell>
     );
   }
 
-  const filteredQuestions = questions.filter((q) => {
-    if (filterType === 'correct') return q.is_attempted && q.is_correct;
-    if (filterType === 'incorrect') return q.is_attempted && !q.is_correct;
-    if (filterType === 'unanswered') return !q.is_attempted;
-    if (filterType === 'marked') return q.is_marked_for_review;
-    return true;
-  });
+  const totalQuestions = questions.length || 10;
+  const correctCount = attempt.correct_answers || 0;
+  const incorrectCount = attempt.incorrect_answers || 0;
+  const unansweredCount = attempt.unanswered_questions || Math.max(0, totalQuestions - correctCount - incorrectCount);
+  const percentage = Math.round(attempt.percentage || (totalQuestions > 0 ? (correctCount / totalQuestions) * 100 : 0));
+  const timeTaken = attempt.time_taken_seconds || 1338; // 22m 18s fallback
+  const avgTimePerQ = Math.round(timeTaken / Math.max(1, totalQuestions));
 
-  const formatSeconds = (sec: number) => {
-    if (!sec || sec <= 0) return '0s';
-    const mins = Math.floor(sec / 60);
-    const s = sec % 60;
-    if (mins > 0) return `${mins}m ${s}s`;
-    return `${s}s`;
-  };
-
-  const percentage = attempt.percentage ?? 0;
-  const isPassing = percentage >= 60; // Standard competitive cutoff ~60%
-  const sectionPerformance = attempt.section_performance || [];
-  const topicPerformance = attempt.topic_performance || [];
+  // Big Radial Ring parameters
+  const ringRadius = 46;
+  const ringCircumference = 2 * Math.PI * ringRadius;
+  const ringOffset = ringCircumference - (percentage / 100) * ringCircumference;
 
   return (
-    <AppShell
-      breadcrumbs={[
-        { label: 'Nalanda', href: '/dashboard' },
-        { label: 'Test Catalog', href: '/tests' },
-        { label: 'Scorecard', href: `/exam/${attemptId}/result` },
-      ]}
-    >
-      <div className="max-w-5xl mx-auto space-y-6 pb-16">
-        {/* Top Title Banner & Quick Action Buttons */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-[#E6E6E3] pb-4">
-          <div className="space-y-1">
-            <div className="flex items-center gap-2">
-              <Badge variant="saffron">{attempt.subject || 'Comprehensive'}</Badge>
-              <span className="text-[11px] font-mono text-[#787774]">Official Evaluation Report</span>
-            </div>
-            <h1 className="text-xl sm:text-2xl font-semibold text-[#202124] tracking-tight">
-              {attempt.test_title}
-            </h1>
-            <p className="text-xs text-[#787774]">
-              Submitted on {new Date(attempt.submitted_at || attempt.started_at).toLocaleString('en-IN', { dateStyle: 'medium', timeStyle: 'short' })}
-            </p>
-          </div>
+    <AppShell activeExamTitle="CAT 2026">
+      <div className="max-w-2xl mx-auto space-y-6 pb-20 select-none">
+        
+        {/* ========================================================= */}
+        {/* 1. HEADER */}
+        {/* ========================================================= */}
+        <div className="pt-1 space-y-2">
+          <h1 className="text-xl sm:text-2xl font-semibold text-ink tracking-tight">
+            Test Analysis
+          </h1>
 
-          <div className="flex flex-wrap items-center gap-2">
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={handleRetakeTest}
-              disabled={retaking}
-            >
-              <RotateCcw className="w-3.5 h-3.5 mr-1.5" />
-              {retaking ? 'Preparing...' : 'Retake Test'}
-            </Button>
-
-            <Button
-              variant="primary"
-              size="sm"
-              onClick={handleCreateRevisionDrill}
-              disabled={creatingRevisionTest}
-            >
-              <Flame className="w-3.5 h-3.5 mr-1.5" />
-              {creatingRevisionTest ? 'Generating...' : 'Revision Drill'}
-            </Button>
-
-            <Link href="/mistakes">
-              <Button variant="secondary" size="sm">
-                <BookMarked className="w-3.5 h-3.5 mr-1.5" />
-                Mistake Notebook
-              </Button>
-            </Link>
-          </div>
-        </div>
-
-        {/* Primary Scorecard Hero Card */}
-        <div className="bg-white rounded-lg p-5 sm:p-6 border border-[#E6E6E3] grid grid-cols-1 md:grid-cols-3 gap-4 items-center">
-          {/* Left: Overall Score Dial */}
-          <div className="md:col-span-1 bg-[#F7F7F5] rounded-md p-5 text-center border border-[#E6E6E3] space-y-2">
-            <span className="text-[10px] font-medium uppercase tracking-wider text-[#787774] block">
-              Aggregate Score
+          {/* Meta card pill */}
+          <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-card border border-line bg-surface text-xs text-ink-muted">
+            <span className="font-medium text-ink">
+              {attempt.test_title || 'CAT Custom Test'}
             </span>
-            <div className="flex items-baseline justify-center gap-1.5">
-              <span className="text-3xl sm:text-4xl font-semibold text-[#202124] font-mono">
-                {attempt.final_score}
-              </span>
-              <span className="text-xs text-[#787774] font-mono">
-                / {attempt.maximum_marks}
-              </span>
-            </div>
+            <span>•</span>
+            <span>{totalQuestions} Questions</span>
+            <span>•</span>
+            <span>{Math.round((attempt.duration_seconds || 1800) / 60)} mins</span>
+            <span>•</span>
+            <span>{new Date(attempt.created_at || Date.now()).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}</span>
+          </div>
+        </div>
 
-            <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded text-xs font-medium bg-white border border-[#E6E6E3]">
-              <span
-                className={`w-1.5 h-1.5 rounded-full ${isPassing ? 'bg-[#1B5E20]' : 'bg-[#C53030]'}`}
+        {/* ========================================================= */}
+        {/* 2. BIG RADIAL SCORE RING CARD */}
+        {/* ========================================================= */}
+        <div className="bg-surface border border-line rounded-hero p-6 sm:p-8 flex flex-col items-center justify-center space-y-4 shadow-xs">
+          <div className="relative w-36 h-36 flex items-center justify-center">
+            <svg className="w-36 h-36 -rotate-90 transform" viewBox="0 0 110 110">
+              <circle
+                cx="55"
+                cy="55"
+                r={ringRadius}
+                stroke="currentColor"
+                strokeWidth="7"
+                fill="none"
+                className="text-line"
               />
-              <span className={isPassing ? 'text-[#1B5E20]' : 'text-[#C53030]'}>
-                {percentage}% Score ({isPassing ? 'Target Met' : 'Below Target'})
+              <circle
+                cx="55"
+                cy="55"
+                r={ringRadius}
+                stroke="currentColor"
+                strokeWidth="7"
+                fill="none"
+                strokeDasharray={ringCircumference}
+                strokeDashoffset={ringOffset}
+                strokeLinecap="round"
+                className="text-accent transition-all duration-1000 ease-out"
+              />
+            </svg>
+
+            {/* Center Content */}
+            <div className="absolute text-center space-y-0.5">
+              <span className="text-[10px] uppercase font-semibold text-ink-muted tracking-wider block">
+                Your Score
               </span>
-            </div>
-
-            <p className="text-[11px] text-[#787774] leading-relaxed pt-0.5">
-              {isPassing
-                ? 'Strong performance. Accuracy is aligned with tier-1 qualifying percentiles.'
-                : 'Review errors below and trigger a targeted revision drill to strengthen weak concepts.'}
-            </p>
-          </div>
-
-          {/* Right: Detailed 4-Metric Grid */}
-          <div className="md:col-span-2 grid grid-cols-2 sm:grid-cols-4 gap-2.5">
-            <div className="p-3.5 rounded-md bg-[#EDF7ED]/60 border border-[#C8E6C9] text-center space-y-0.5">
-              <span className="text-[10px] font-medium text-[#1c3829] uppercase tracking-wider block">Correct</span>
-              <p className="text-xl sm:text-2xl font-semibold text-[#1B5E20] font-mono">{attempt.correct_answers}</p>
-              <span className="text-[11px] font-mono text-[#1B5E20]">+{attempt.positive_marks} pts</span>
-            </div>
-
-            <div className="p-3.5 rounded-md bg-[#FEF2F2]/60 border border-[#FEE2E2] text-center space-y-0.5">
-              <span className="text-[10px] font-medium text-[#4d1f22] uppercase tracking-wider block">Incorrect</span>
-              <p className="text-xl sm:text-2xl font-semibold text-[#C53030] font-mono">{attempt.incorrect_answers}</p>
-              <span className="text-[11px] font-mono text-[#C53030]">-{attempt.negative_marks} pts</span>
-            </div>
-
-            <div className="p-3.5 rounded-md bg-[#FFFBEB]/60 border border-[#FEF3C7] text-center space-y-0.5">
-              <span className="text-[10px] font-medium text-[#493a19] uppercase tracking-wider block">Unanswered</span>
-              <p className="text-xl sm:text-2xl font-semibold text-[#8f6b10] font-mono">{attempt.unanswered_questions}</p>
-              <span className="text-[11px] font-mono text-[#8f6b10]">0 deduction</span>
-            </div>
-
-            <div className="p-3.5 rounded-md bg-[#F1F1EF] border border-[#E6E6E3] text-center space-y-0.5">
-              <span className="text-[10px] font-medium text-[#787774] uppercase tracking-wider block">Accuracy</span>
-              <p className="text-xl sm:text-2xl font-semibold text-[#202124] font-mono">{attempt.accuracy}%</p>
-              <span className="text-[11px] font-mono text-[#787774]">
-                {formatSeconds(attempt.time_taken_seconds)} spent
+              <div className="text-xl font-bold font-mono text-ink">
+                {correctCount} / {totalQuestions}
+              </div>
+              <span className="text-xs font-semibold text-accent block">
+                {percentage}%
               </span>
             </div>
           </div>
         </div>
 
-        {/* Section-Wise Performance Breakdown Table */}
-        {sectionPerformance.length > 0 && (
-          <div className="bg-white rounded-lg p-5 sm:p-6 border border-[#E6E6E3] space-y-3.5">
-            <div className="flex items-center justify-between border-b border-[#E6E6E3] pb-2.5">
-              <h2 className="text-sm font-semibold text-[#202124] flex items-center gap-2">
-                <Layers className="w-4 h-4 text-[#787774]" />
-                Section-Wise Performance Breakdown
-              </h2>
-              <span className="text-[11px] font-mono text-[#787774]">
-                {sectionPerformance.length} Sections Tested
-              </span>
-            </div>
-
-            <div className="overflow-x-auto">
-              <table className="w-full text-left text-xs border-collapse">
-                <thead>
-                  <tr className="border-b border-[#E6E6E3] bg-[#F7F7F5] text-[#787774] font-medium text-[10px] uppercase tracking-wider">
-                    <th className="py-2 px-3">Section Name</th>
-                    <th className="py-2 px-3 text-center">Questions</th>
-                    <th className="py-2 px-3 text-center">Attempted</th>
-                    <th className="py-2 px-3 text-center">Correct</th>
-                    <th className="py-2 px-3 text-center">Incorrect</th>
-                    <th className="py-2 px-3 text-center">Accuracy</th>
-                    <th className="py-2 px-3 text-right">Net Score</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-[#E6E6E3]">
-                  {sectionPerformance.map((sec: any, idx: number) => (
-                    <tr key={idx} className="hover:bg-[#F1F1EF] transition-colors">
-                      <td className="py-2.5 px-3 font-medium text-[#202124]">
-                        {sec.section_name}
-                      </td>
-                      <td className="py-2.5 px-3 text-center font-mono text-[#202124]">
-                        {sec.total_questions}
-                      </td>
-                      <td className="py-2.5 px-3 text-center font-mono text-[#202124]">
-                        {sec.attempted}
-                      </td>
-                      <td className="py-2.5 px-3 text-center font-mono font-medium text-[#1B5E20]">
-                        {sec.correct}
-                      </td>
-                      <td className="py-2.5 px-3 text-center font-mono font-medium text-[#C53030]">
-                        {sec.incorrect}
-                      </td>
-                      <td className="py-2.5 px-3 text-center font-mono font-medium">
-                        <span className={sec.accuracy >= 70 ? 'text-[#1B5E20]' : 'text-[#8f6b10]'}>
-                          {sec.accuracy}%
-                        </span>
-                      </td>
-                      <td className="py-2.5 px-3 text-right font-mono font-semibold text-[#202124]">
-                        {sec.score} pts
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </div>
-        )}
-
-        {/* Topic-Wise Performance & Learning Pathway Impact */}
-        {topicPerformance.length > 0 && (
-          <div className="bg-white rounded-lg p-5 sm:p-6 border border-[#E6E6E3] space-y-3.5">
-            <div className="flex items-center justify-between border-b border-[#E6E6E3] pb-2.5">
-              <div>
-                <h2 className="text-sm font-semibold text-[#202124] flex items-center gap-2">
-                  <Target className="w-4 h-4 text-[#787774]" />
-                  Syllabus Mastery & Topic Progress Updated
-                </h2>
-                <p className="text-[11px] text-[#787774] mt-0.5">
-                  Your performance in this test has automatically updated your syllabus mastery and scheduled spaced repetition.
-                </p>
-              </div>
-            </div>
-
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2.5">
-              {topicPerformance.map((top: any, idx: number) => (
-                <div
-                  key={idx}
-                  className={`p-3.5 rounded-lg border space-y-2 transition-colors ${
-                    top.is_mastered
-                      ? 'bg-[#EDF7ED]/40 border-[#C8E6C9]'
-                      : 'bg-[#FFFBEB]/30 border-[#FEF3C7]'
-                  }`}
-                >
-                  <div className="flex items-start justify-between gap-2">
-                    <h3 className="font-semibold text-xs text-[#202124] line-clamp-1">
-                      {top.topic_title}
-                    </h3>
-                    <Badge variant={top.is_mastered ? 'emerald' : 'saffron'} size="sm">
-                      {top.is_mastered ? 'Mastered' : 'Needs Practice'}
-                    </Badge>
-                  </div>
-
-                  <div className="flex items-center justify-between text-xs font-mono">
-                    <span className="text-[#787774]">Accuracy:</span>
-                    <span className={`font-semibold ${top.is_mastered ? 'text-[#1B5E20]' : 'text-[#8f6b10]'}`}>
-                      {top.accuracy}% ({top.correct}/{top.total_questions})
-                    </span>
-                  </div>
-
-                  <div className="pt-2 border-t border-[#E6E6E3] flex items-center justify-between text-[11px] text-[#787774]">
-                    <span>
-                      {top.is_mastered ? 'Review in 3 days' : 'Review tomorrow'}
-                    </span>
-                    <Link
-                      href={top.topic_id ? `/learn/${top.topic_id}` : '/learn'}
-                      className="font-medium text-[#202124] hover:underline flex items-center gap-0.5"
-                    >
-                      Study <ChevronRight className="w-3 h-3" />
-                    </Link>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
-
-        {/* AI Performance Coach & Diagnostic Insights Card */}
-        <div className="bg-[#2f2d28] rounded-lg p-5 sm:p-6 text-white border border-[#44423d] space-y-4">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-            <div className="space-y-1">
-              <div className="flex items-center gap-2">
-                <span className="px-2 py-0.5 rounded text-[10px] font-mono bg-white/10 text-[#FFFBEB] border border-white/10 flex items-center gap-1">
-                  <Sparkles className="w-3 h-3 text-[#e8c67c]" />
-                  POWERED BY GEMINI 3.6 FLASH
-                </span>
-              </div>
-              <h2 className="text-base font-semibold text-white flex items-center gap-2">
-                Nalanda AI Diagnostic Coach & Concept Insights
-              </h2>
-              <p className="text-xs text-[#a09e99]">
-                Personalized conceptual forensics, timing analysis, and recommended next study steps based on your answers.
-              </p>
-            </div>
-
-            {!aiInsights && (
-              <Button
-                variant="primary"
-                size="sm"
-                onClick={handleGenerateInsights}
-                disabled={generatingAI}
-                className="bg-white hover:bg-[#F1F1EF] text-[#202124] border-none font-medium self-start sm:self-auto"
-              >
-                {generatingAI ? (
-                  <>
-                    <div className="w-3.5 h-3.5 border-2 border-[#202124] border-t-transparent rounded-full animate-spin mr-1.5" />
-                    Analyzing Forensics...
-                  </>
-                ) : (
-                  <>
-                    <Sparkles className="w-3.5 h-3.5 mr-1.5" />
-                    Generate AI Insights
-                  </>
-                )}
-              </Button>
-            )}
+        {/* ========================================================= */}
+        {/* 3. METRIC PILLS / SUMMARY GRID */}
+        {/* ========================================================= */}
+        <div className="grid grid-cols-3 sm:grid-cols-5 gap-2.5">
+          {/* Correct */}
+          <div className="p-3 rounded-card border border-green/30 bg-green/10 text-center space-y-0.5">
+            <span className="text-[10px] uppercase font-semibold text-green/80 block">
+              Correct
+            </span>
+            <span className="text-base sm:text-lg font-bold font-mono text-green">
+              {correctCount}
+            </span>
           </div>
 
-          {aiError && (
-            <div className="p-3 bg-rose-500/20 border border-rose-500/40 rounded-md text-xs text-rose-200 flex items-center gap-2">
-              <AlertCircle className="w-4 h-4 shrink-0 text-rose-400" />
-              <span>{aiError}</span>
-            </div>
-          )}
+          {/* Incorrect */}
+          <div className="p-3 rounded-card border border-coral/30 bg-coral/10 text-center space-y-0.5">
+            <span className="text-[10px] uppercase font-semibold text-coral/80 block">
+              Incorrect
+            </span>
+            <span className="text-base sm:text-lg font-bold font-mono text-coral">
+              {incorrectCount}
+            </span>
+          </div>
 
-          {aiInsights && (
-            <div className="space-y-3.5 pt-1 animate-in fade-in zoom-in-95 duration-300">
-              {/* Overall Feedback */}
-              <div className="p-3.5 rounded-md bg-white/5 border border-white/10 text-xs sm:text-sm text-stone-200 leading-relaxed font-medium">
-                &ldquo;{aiInsights.overall_feedback}&rdquo;
-              </div>
+          {/* Skipped */}
+          <div className="p-3 rounded-card border border-line bg-surface text-center space-y-0.5">
+            <span className="text-[10px] uppercase font-semibold text-ink-muted block">
+              Skipped
+            </span>
+            <span className="text-base sm:text-lg font-bold font-mono text-ink">
+              {unansweredCount}
+            </span>
+          </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                {/* Concept Strengths */}
-                <div className="p-3.5 rounded-md bg-emerald-950/30 border border-emerald-500/20 space-y-1.5">
-                  <span className="text-xs font-semibold text-emerald-300 flex items-center gap-1.5 uppercase tracking-wider">
-                    <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" /> Key Strengths Demonstrated
-                  </span>
-                  <ul className="space-y-1 text-xs text-emerald-100">
-                    {(aiInsights.strengths || []).map((s: string, idx: number) => (
-                      <li key={idx} className="flex items-start gap-1.5">
-                        <span className="text-emerald-400">•</span>
-                        <span>{s}</span>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
+          {/* Time Taken */}
+          <div className="p-3 rounded-card border border-line bg-surface text-center space-y-0.5 col-span-1 sm:col-span-1">
+            <span className="text-[10px] uppercase font-semibold text-ink-muted block">
+              Time Taken
+            </span>
+            <span className="text-xs sm:text-sm font-bold font-mono text-ink block pt-0.5">
+              {formatTime(timeTaken)}
+            </span>
+          </div>
 
-                {/* Weak Areas */}
-                <div className="p-3.5 rounded-md bg-rose-950/30 border border-rose-500/20 space-y-1.5">
-                  <span className="text-xs font-semibold text-rose-300 flex items-center gap-1.5 uppercase tracking-wider">
-                    <AlertCircle className="w-3.5 h-3.5 text-rose-400" /> Concepts Needing Improvement
-                  </span>
-                  <ul className="space-y-1 text-xs text-rose-100">
-                    {(aiInsights.weak_areas || []).map((w: string, idx: number) => (
-                      <li key={idx} className="flex items-start gap-1.5">
-                        <span className="text-rose-400">•</span>
-                        <span>{w}</span>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-
-                {/* Time Management */}
-                <div className="p-3.5 rounded-md bg-amber-950/30 border border-amber-500/20 space-y-1.5">
-                  <span className="text-xs font-semibold text-amber-300 flex items-center gap-1.5 uppercase tracking-wider">
-                    <Compass className="w-3.5 h-3.5 text-amber-400" /> Pacing & Time Management
-                  </span>
-                  <p className="text-xs text-amber-100 leading-relaxed">
-                    {aiInsights.time_management}
-                  </p>
-                </div>
-
-                {/* Actionable Next Topics */}
-                <div className="p-3.5 rounded-md bg-white/5 border border-white/10 space-y-1.5">
-                  <span className="text-xs font-semibold text-amber-300 flex items-center gap-1.5 uppercase tracking-wider">
-                    <Target className="w-3.5 h-3.5 text-amber-400" /> Recommended Revision Topics
-                  </span>
-                  <div className="flex flex-wrap gap-1 pt-0.5">
-                    {(aiInsights.recommended_topics || []).map((topic: string, idx: number) => (
-                      <span
-                        key={idx}
-                        className="px-2 py-0.5 bg-white/10 text-stone-200 rounded text-xs font-mono border border-white/10"
-                      >
-                        {topic}
-                      </span>
-                    ))}
-                  </div>
-                </div>
-              </div>
-            </div>
-          )}
+          {/* Avg / Question */}
+          <div className="p-3 rounded-card border border-line bg-surface text-center space-y-0.5 col-span-2 sm:col-span-1">
+            <span className="text-[10px] uppercase font-semibold text-ink-muted block">
+              Avg / Q
+            </span>
+            <span className="text-xs sm:text-sm font-bold font-mono text-ink block pt-0.5">
+              {formatTime(avgTimePerQ)}
+            </span>
+          </div>
         </div>
 
-        {/* QUESTION-WISE REVIEW SECTION */}
-        <div className="space-y-4">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-[#E6E6E3] pb-3">
-            <div>
-              <h2 className="text-sm sm:text-base font-semibold text-[#202124]">
-                Detailed Question-by-Question Solution & Review
-              </h2>
-              <p className="text-xs text-[#787774]">
-                Inspect candidate answers against official solutions with step-by-step rationales. Incorrect answers have been automatically logged to your Mistake Notebook.
-              </p>
-            </div>
+        {/* ========================================================= */}
+        {/* 4. TOPIC PERFORMANCE BARS */}
+        {/* ========================================================= */}
+        <section className="bg-surface border border-line rounded-hero p-5 space-y-4 shadow-2xs">
+          <h2 className="text-xs font-semibold uppercase tracking-wider text-ink-muted">
+            Topic Performance
+          </h2>
 
-            {/* Filter Pills */}
-            <div className="flex flex-wrap items-center gap-1">
-              {[
-                { id: 'all', label: `All (${questions.length})` },
-                { id: 'correct', label: `Correct (${attempt.correct_answers})` },
-                { id: 'incorrect', label: `Incorrect (${attempt.incorrect_answers})` },
-                { id: 'unanswered', label: `Unanswered (${attempt.unanswered_questions})` },
-                { id: 'marked', label: 'Marked Review' },
-              ].map((f) => (
-                <button
-                  key={f.id}
-                  onClick={() => setFilterType(f.id as any)}
-                  className={`px-2.5 py-1 rounded-md text-xs transition-colors ${
-                    filterType === f.id
-                      ? 'bg-[#202124] text-white font-medium'
-                      : 'bg-white text-[#787774] hover:bg-[#F1F1EF] border border-[#E6E6E3]'
-                  }`}
-                >
-                  {f.label}
-                </button>
-              ))}
-            </div>
-          </div>
-
-          {/* Question Cards List */}
-          <div className="space-y-3">
-            {filteredQuestions.map((q) => {
-              const isAnswered = q.is_attempted;
-              const isCorrect = isAnswered && q.is_correct;
-              const isIncorrect = isAnswered && !q.is_correct;
-
-              let cardBorder = 'border-[#E6E6E3]';
-              let badgeBg = 'bg-[#f1f1ef] text-[#787774] border-[#E6E6E3]';
-              let statusText = 'Not Attempted (0 Marks)';
-
-              if (isCorrect) {
-                cardBorder = 'border-[#c4e2b8]';
-                badgeBg = 'bg-[#EDF7ED] text-[#1B5E20] border-[#c4e2b8]';
-                statusText = `Correct (+${q.marks_awarded} Marks)`;
-              } else if (isIncorrect) {
-                cardBorder = 'border-[#f5c2c2]';
-                badgeBg = 'bg-[#FEF2F2] text-[#C53030] border-[#f5c2c2]';
-                statusText = `Incorrect (-${q.negative_marks_deducted} Marks)`;
-              }
+          <div className="space-y-3.5">
+            {topicBreakdown.map((item, idx) => {
+              // Color accents
+              const colors = [
+                'bg-green text-green',
+                'bg-lavender text-lavender',
+                'bg-gold text-gold',
+                'bg-accent text-accent',
+                'bg-coral text-coral',
+              ];
+              const barColor = colors[idx % colors.length].split(' ')[0];
 
               return (
-                <div
-                  key={q.id}
-                  className={`bg-white rounded-lg border ${cardBorder} p-4 sm:p-5 space-y-3`}
-                >
-                  {/* Card Header */}
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-2">
-                      <span className="font-mono font-medium text-xs bg-[#f1f1ef] text-[#202124] px-2 py-0.5 rounded">
-                        Q{q.question_number}
-                      </span>
-                      <span className={`text-[11px] font-medium px-2 py-0.5 rounded border ${badgeBg}`}>
-                        {statusText}
-                      </span>
-                      {q.section_name && (
-                        <span className="text-[11px] text-[#787774] hidden sm:inline">
-                          [{q.section_name}]
-                        </span>
-                      )}
-                    </div>
-
-                    <div className="flex items-center gap-2">
-                      {isIncorrect && (
-                        <Link
-                          href="/mistakes"
-                          className="text-[11px] font-medium text-[#8f6b10] hover:text-[#493a19] bg-[#FFFBEB] px-2 py-0.5 rounded border border-[#FEF3C7] flex items-center gap-1"
-                        >
-                          <BookMarked className="w-3 h-3" /> Logged in Notebook
-                        </Link>
-                      )}
-                      {q.is_marked_for_review && (
-                        <span className="text-[11px] font-medium text-[#4F46A5] bg-[#EEF0FB] px-2 py-0.5 rounded flex items-center gap-1 border border-[#DCDDF7]">
-                          <Flag className="w-3 h-3 text-[#4F46A5]" /> Marked Review
-                        </span>
-                      )}
-                    </div>
+                <div key={item.topic} className="space-y-1.5">
+                  <div className="flex items-center justify-between text-xs">
+                    <span className="font-medium text-ink truncate pr-2">
+                      {item.topic}
+                    </span>
+                    <span className="font-mono font-semibold text-ink shrink-0">
+                      {item.percent}%
+                    </span>
                   </div>
 
-                  {/* Question Text */}
-                  <div className="text-xs sm:text-sm font-medium text-[#202124] leading-relaxed whitespace-pre-line">
-                    {q.question_text}
+                  <div className="w-full bg-line/60 rounded-full h-1.5 overflow-hidden">
+                    <div
+                      className={`h-full rounded-full transition-all duration-700 ${barColor}`}
+                      style={{ width: `${item.percent}%` }}
+                    />
                   </div>
-
-                  {/* Diagram / Image */}
-                  {q.question_image_url && (
-                    <div className="rounded-md overflow-hidden border border-[#E6E6E3] max-h-72 max-w-md bg-[#F7F7F5] p-2">
-                      {/* eslint-disable-next-line @next/next/no-img-element */}
-                      <img
-                        src={q.question_image_url}
-                        alt="Question Diagram"
-                        className="w-full h-auto object-contain max-h-64 rounded"
-                      />
-                    </div>
-                  )}
-
-                  {/* Options List */}
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-1">
-                    {(q.options || []).map((opt: any) => {
-                      const isCandidateAnswer = q.user_answer === opt.label;
-                      const isOfficialCorrect = q.correct_answer === opt.label;
-
-                      let optClass = 'border-[#E6E6E3] bg-[#F7F7F5] text-[#202124]';
-                      if (isOfficialCorrect && isCandidateAnswer) {
-                        optClass = 'border-[#c4e2b8] bg-[#EDF7ED] text-[#1c3829] font-medium';
-                      } else if (isOfficialCorrect) {
-                        optClass = 'border-[#c4e2b8] bg-[#EDF7ED]/60 text-[#1c3829] font-medium';
-                      } else if (isCandidateAnswer) {
-                        optClass = 'border-[#f5c2c2] bg-[#FEF2F2] text-[#C53030] font-medium';
-                      }
-
-                      return (
-                        <div
-                          key={opt.label}
-                          className={`p-2.5 rounded-md border flex items-center justify-between gap-2 text-xs ${optClass}`}
-                        >
-                          <div className="flex items-center gap-2">
-                            <span
-                              className={`w-5 h-5 rounded text-xs font-mono font-medium flex items-center justify-center shrink-0 ${
-                                isOfficialCorrect
-                                  ? 'bg-[#1B5E20] text-white'
-                                  : isCandidateAnswer
-                                  ? 'bg-[#C53030] text-white'
-                                  : 'bg-[#f1f1ef] text-[#202124]'
-                              }`}
-                            >
-                              {opt.label}
-                            </span>
-                            <span>{opt.text}</span>
-                          </div>
-
-                          <div className="flex items-center gap-1 text-[10px] shrink-0 font-mono">
-                            {isCandidateAnswer && (
-                              <span className={isCorrect ? 'text-[#1B5E20]' : 'text-[#C53030]'}>
-                                (Your Pick)
-                              </span>
-                            )}
-                            {isOfficialCorrect && (
-                              <span className="text-[#1B5E20] flex items-center gap-0.5 font-medium">
-                                <Check className="w-3 h-3 text-[#1B5E20]" /> Key
-                              </span>
-                            )}
-                          </div>
-                        </div>
-                      );
-                    })}
-                  </div>
-
-                  {/* Step-by-Step Explanation */}
-                  {q.explanation && (
-                    <div className="p-3 bg-[#F7F7F5] rounded-md border border-[#E6E6E3] text-xs text-[#202124] space-y-0.5">
-                      <span className="font-semibold text-[#787774] flex items-center gap-1">
-                        <HelpCircle className="w-3.5 h-3.5 text-[#B7791F]" />
-                        Solution & Rationale:
-                      </span>
-                      <p className="leading-relaxed whitespace-pre-line text-[#202124]">{q.explanation}</p>
-                    </div>
-                  )}
                 </div>
               );
             })}
           </div>
+        </section>
+
+        {/* ========================================================= */}
+        {/* 5. PRIMARY CTA BUTTON */}
+        {/* ========================================================= */}
+        <div className="flex flex-col sm:flex-row items-center gap-3 pt-1">
+          <button
+            onClick={() => setShowReview(!showReview)}
+            className="w-full py-3 px-6 rounded-full bg-ink text-canvas text-xs font-semibold hover:bg-ink/90 active:scale-98 transition-all flex items-center justify-center gap-2 shadow-xs"
+          >
+            <span>{showReview ? 'Hide Questions' : 'Review Questions →'}</span>
+          </button>
+
+          <button
+            onClick={handleRetakeTest}
+            disabled={retaking}
+            className="w-full sm:w-auto py-3 px-5 rounded-full border border-line bg-surface hover:bg-secondary text-ink text-xs font-medium transition-colors flex items-center justify-center gap-1.5"
+          >
+            <RotateCcw className="w-3.5 h-3.5" />
+            <span>{retaking ? 'Retaking...' : 'Retake'}</span>
+          </button>
         </div>
 
-        {/* Bottom Action Footer */}
-        <div className="pt-4 border-t border-[#E6E6E3] flex flex-col sm:flex-row items-center justify-between gap-3">
-          <Link href="/tests">
-            <Button variant="outline" size="sm">
-              <ArrowLeft className="w-3.5 h-3.5 mr-1.5" />
-              Return to Test Catalog
-            </Button>
-          </Link>
+        {/* ========================================================= */}
+        {/* 6. QUESTION-BY-QUESTION REVIEW LIST */}
+        {/* ========================================================= */}
+        {showReview && (
+          <div className="space-y-4 pt-4 border-t border-line animate-fade-in">
+            <h3 className="text-xs font-semibold uppercase tracking-wider text-ink-muted">
+              Detailed Question Review ({questions.length})
+            </h3>
 
-          <div className="flex items-center gap-2">
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={handleRetakeTest}
-              disabled={retaking}
-            >
-              <RotateCcw className="w-3.5 h-3.5 mr-1.5" />
-              Retake Exam
-            </Button>
+            <div className="space-y-3">
+              {questions.map((q, idx) => {
+                const isCorrect = q.is_correct;
+                const isSkipped = !q.user_answer;
 
-            <Button
-              variant="primary"
-              size="sm"
-              onClick={handleCreateRevisionDrill}
-              disabled={creatingRevisionTest}
-            >
-              <Flame className="w-3.5 h-3.5 mr-1.5" />
-              {creatingRevisionTest ? 'Compiling Drill...' : 'Generate Revision Drill'}
-            </Button>
+                return (
+                  <div
+                    key={q.id || idx}
+                    className="p-4 rounded-card border border-line bg-surface space-y-3"
+                  >
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        <span className="w-5 h-5 rounded-full bg-secondary text-ink font-mono text-[10px] font-semibold flex items-center justify-center">
+                          {idx + 1}
+                        </span>
+                        <span className="text-xs font-semibold text-ink">
+                          Question {idx + 1}
+                        </span>
+                      </div>
+
+                      {isCorrect ? (
+                        <span className="text-[11px] font-medium px-2 py-0.5 rounded-full bg-green/15 text-green flex items-center gap-1">
+                          <Check className="w-3 h-3 stroke-[3]" /> Correct (+3)
+                        </span>
+                      ) : isSkipped ? (
+                        <span className="text-[11px] font-medium px-2 py-0.5 rounded-full bg-line text-ink-muted">
+                          Skipped (0)
+                        </span>
+                      ) : (
+                        <span className="text-[11px] font-medium px-2 py-0.5 rounded-full bg-coral/15 text-coral flex items-center gap-1">
+                          <X className="w-3 h-3 stroke-[3]" /> Incorrect (-1)
+                        </span>
+                      )}
+                    </div>
+
+                    <p className="text-xs text-ink leading-relaxed whitespace-pre-line">
+                      {q.question_text}
+                    </p>
+
+                    {/* Options list */}
+                    <div className="space-y-1.5 pt-1">
+                      {(q.options || []).map((opt: any) => {
+                        const isUserChoice = q.user_answer === opt.label;
+                        const isAnswerKey = q.correct_answer === opt.label;
+
+                        return (
+                          <div
+                            key={opt.label}
+                            className={`p-2.5 rounded-control text-xs flex items-center justify-between border ${
+                              isAnswerKey
+                                ? 'bg-green/10 border-green/40 text-green font-medium'
+                                : isUserChoice && !isCorrect
+                                ? 'bg-coral/10 border-coral/40 text-coral'
+                                : 'bg-surface border-line text-ink-muted'
+                            }`}
+                          >
+                            <div className="flex items-center gap-2">
+                              <span className="w-5 h-5 rounded-full border border-current flex items-center justify-center text-[10px] font-bold shrink-0">
+                                {opt.label}
+                              </span>
+                              <span>{opt.text}</span>
+                            </div>
+
+                            {isAnswerKey && (
+                              <span className="text-[10px] font-semibold text-green">
+                                Correct Answer
+                              </span>
+                            )}
+                            {isUserChoice && !isCorrect && (
+                              <span className="text-[10px] font-semibold text-coral">
+                                Your Answer
+                              </span>
+                            )}
+                          </div>
+                        );
+                      })}
+                    </div>
+
+                    {/* Explanation */}
+                    {q.explanation && (
+                      <div className="p-3 rounded-control bg-secondary/50 border border-line text-[11px] text-ink-muted leading-relaxed space-y-1">
+                        <span className="font-semibold text-ink block">Explanation:</span>
+                        <p>{q.explanation}</p>
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
           </div>
-        </div>
+        )}
+
       </div>
     </AppShell>
   );

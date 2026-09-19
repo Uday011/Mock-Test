@@ -17,10 +17,12 @@ import {
   Flame,
   Check,
   RotateCcw,
+  Bell,
+  Compass,
+  Layers,
 } from 'lucide-react';
 import { AppShell } from '@/components/layout/AppShell';
 import { Button } from '@/components/ui/Button';
-import { ProgressBar } from '@/components/ui/ProgressBar';
 import { DailyWarmupModals } from '@/components/dashboard/DailyWarmupModals';
 
 interface WarmupState {
@@ -32,7 +34,9 @@ interface WarmupState {
 interface PlanTask {
   id: string;
   subject: string;
+  dotColor: string;
   title: string;
+  sub: string;
   durationMinutes: number;
   completed: boolean;
   href: string;
@@ -49,41 +53,49 @@ export default function ExamCraftDashboardPage() {
 
   // Warmup completion state
   const [warmupState, setWarmupState] = useState<WarmupState>({
-    read: false,
-    think: false,
+    read: true,
+    think: true,
     calculate: false,
   });
 
-  // Daily plan tasks
+  // Daily plan tasks matching North Star
   const [planTasks, setPlanTasks] = useState<PlanTask[]>([
     {
       id: 'task-qa',
-      subject: 'QA',
-      title: 'Arithmetic — 30 questions',
+      subject: 'QA: Arithmetic',
+      dotColor: 'bg-coral',
+      title: 'QA: Arithmetic',
+      sub: '30 questions',
       durationMinutes: 35,
       completed: false,
       href: '/question-bank?section=QA&topic=Arithmetic',
     },
     {
       id: 'task-dilr',
-      subject: 'DILR',
-      title: '2 sets (Arrangements & Selection)',
+      subject: 'DILR: 2 Sets',
+      dotColor: 'bg-lavender',
+      title: 'DILR: 2 Sets',
+      sub: 'Arrangements',
       durationMinutes: 40,
       completed: false,
       href: '/question-bank?section=DILR&topic=Arrangements',
     },
     {
       id: 'task-varc',
-      subject: 'VARC',
-      title: '2 RC passages (Inference & Tone)',
+      subject: 'VARC: 2 RC Passages',
+      dotColor: 'bg-accent',
+      title: 'VARC: 2 RC Passages',
+      sub: 'Philosophy & Economics',
       durationMinutes: 35,
       completed: false,
       href: '/question-bank?section=VARC&topic=Reading+Comprehension',
     },
     {
       id: 'task-revision',
-      subject: 'REVISION',
-      title: '10 mistake questions',
+      subject: 'Revision: Review 10 mistakes',
+      dotColor: 'bg-gold',
+      title: 'Revision',
+      sub: 'Review 10 mistakes',
       durationMinutes: 15,
       completed: false,
       href: '/mistakes',
@@ -138,561 +150,294 @@ export default function ExamCraftDashboardPage() {
     });
   };
 
-  // Time-aware greeting
-  const getGreeting = () => {
-    const hour = new Date().getHours();
-    if (hour < 12) return 'Good morning';
-    if (hour < 17) return 'Good afternoon';
-    return 'Good evening';
-  };
-
-  if (loading) {
-    return (
-      <AppShell>
-         <div className="flex flex-col items-center justify-center py-28 space-y-3">
-           <div className="w-5 h-5 border-2 border-ink border-t-transparent rounded-full animate-spin" />
-           <p className="text-xs text-ink-muted font-mono tracking-wide">
-             Loading ExamCraft Command Center...
-           </p>
-        </div>
-      </AppShell>
-    );
-  }
-
-  const daysRemaining = data?.daysRemaining || 436;
-  const currentFocus = data?.currentFocus || {
-    subject: 'DILR',
-    topic: 'Arrangements',
-    accuracy: 54,
-    mistakesCount: 12,
-    totalRecent: 30,
-    recommendation: 'Practice 2 medium-difficulty arrangement sets.',
-    practiceUrl: '/question-bank?section=DILR&topic=Arrangements',
-  };
-  const sectionAcc = data?.stats?.sectionAccuracy || {
-    varc: 78,
-    dilr: 61,
-    qa: 69,
-    overall: 69,
-  };
-  const streakDays = data?.stats?.streakDays || 8;
-  const weeklyHours = data?.stats?.weeklyHours || 12.4;
-
   const completedWarmupCount =
     (warmupState.read ? 1 : 0) + (warmupState.think ? 1 : 0) + (warmupState.calculate ? 1 : 0);
   const isBrainWarmedUp = completedWarmupCount === 3;
 
   const completedPlanCount = planTasks.filter((t) => t.completed).length;
-  const completedMinutes = planTasks
-    .filter((t) => t.completed)
-    .reduce((acc, t) => acc + t.durationMinutes, 0);
 
-  const nextUncompletedTask = planTasks.find((t) => !t.completed) || planTasks[0];
+  // Find next incomplete warmup item
+  const handleContinueWarmup = () => {
+    if (!warmupState.read) {
+      setActiveModal('read');
+    } else if (!warmupState.think) {
+      setActiveModal('think');
+    } else if (!warmupState.calculate) {
+      setActiveModal('calculate');
+    } else {
+      router.push('/question-bank');
+    }
+  };
+
+  if (loading) {
+    return (
+      <AppShell>
+        <div className="flex flex-col items-center justify-center py-28 space-y-3">
+          <div className="w-5 h-5 border-2 border-ink border-t-transparent rounded-full animate-spin" />
+          <p className="text-xs text-ink-muted font-mono tracking-wide">
+            Loading ExamCraft Command Center...
+          </p>
+        </div>
+      </AppShell>
+    );
+  }
+
+  const daysRemaining = 68; // Matching North Star reference pill
 
   return (
     <AppShell activeExamTitle="CAT 2026">
-      <div className="max-w-4xl mx-auto space-y-7 pb-20 select-none">
+      <div className="max-w-2xl mx-auto space-y-5 pb-16 select-none">
         
         {/* ========================================================= */}
         {/* 1. HEADER & GREETING */}
         {/* ========================================================= */}
-        <div className="border-b border-line pb-5 pt-1 flex flex-col sm:flex-row sm:items-end justify-between gap-3">
+        <div className="flex items-start justify-between pt-1">
           <div>
-            <div className="flex items-center gap-2 text-xs text-ink-muted mb-1">
-              <span className="font-semibold text-accent">ExamCraft</span>
-              <span>·</span>
-              <span>Command Center</span>
-            </div>
-            <h1 className="text-2xl sm:text-3xl font-bold text-ink tracking-tight">
-              {getGreeting()}, {user?.name?.split(' ')[0] || 'Aspirant'}.
+            <h1 className="text-2xl sm:text-[26px] font-semibold text-ink tracking-tight">
+              Good morning, {user?.name?.split(' ')[0] || 'Uday'}.
             </h1>
-            <p className="text-xs text-ink-muted mt-0.5">
-              Let's get your brain warmed up.
+            <p className="text-xs text-ink-muted mt-1 font-normal">
+              Small steps compound into big results.
             </p>
           </div>
 
-          <div className="flex items-center gap-2 self-start sm:self-auto bg-surface px-3 py-1.5 rounded-full border border-line">
-            <span className="w-2 h-2 rounded-full bg-accent animate-pulse" />
-            <span className="text-xs font-semibold text-ink">CAT 2026</span>
-            <span className="text-[11px] text-ink-muted">·</span>
-            <span className="text-xs font-mono font-medium text-ink-muted">
-              {daysRemaining} days remaining
-            </span>
+          <div className="flex items-center gap-2.5">
+            <button
+              aria-label="Notifications"
+              className="w-9 h-9 rounded-full border border-line bg-surface hover:bg-secondary flex items-center justify-center text-ink-muted hover:text-ink transition-colors shadow-2xs"
+            >
+              <Bell className="w-4 h-4" />
+            </button>
+            <div className="w-9 h-9 rounded-full bg-ink text-canvas font-semibold text-xs flex items-center justify-center shadow-2xs">
+              {user?.name ? user.name.charAt(0).toUpperCase() : 'U'}
+            </div>
           </div>
         </div>
 
         {/* ========================================================= */}
-        {/* 2. DAILY WARM-UP — HERO SECTION */}
+        {/* 2. MOUNTAIN PEAK HERO BANNER */}
         {/* ========================================================= */}
-        <section className="bg-surface border border-line rounded-hero p-5 sm:p-6 space-y-4">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-3 border-b border-line">
+        <div className="relative overflow-hidden rounded-hero h-44 sm:h-48 border border-line bg-[#16181D] text-white shadow-xs">
+          {/* Stylized Mountain Peaks SVG */}
+          <svg
+            className="absolute inset-0 w-full h-full object-cover"
+            viewBox="0 0 600 200"
+            preserveAspectRatio="none"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            {/* Background Sky Gradient */}
+            <defs>
+              <linearGradient id="skyGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stopColor="#1E222D" />
+                <stop offset="60%" stopColor="#171922" />
+                <stop offset="100%" stopColor="#0F1014" />
+              </linearGradient>
+              <linearGradient id="peakBack" x1="50%" y1="0%" x2="50%" y2="100%">
+                <stop offset="0%" stopColor="#303545" stopOpacity="0.7" />
+                <stop offset="100%" stopColor="#161820" stopOpacity="0.9" />
+              </linearGradient>
+              <linearGradient id="peakMid" x1="50%" y1="0%" x2="50%" y2="100%">
+                <stop offset="0%" stopColor="#41475A" stopOpacity="0.85" />
+                <stop offset="100%" stopColor="#181A22" />
+              </linearGradient>
+              <linearGradient id="peakFront" x1="50%" y1="0%" x2="50%" y2="100%">
+                <stop offset="0%" stopColor="#252936" />
+                <stop offset="100%" stopColor="#0E0F13" />
+              </linearGradient>
+            </defs>
+
+            <rect width="600" height="200" fill="url(#skyGrad)" />
+
+            {/* Back Mountain Ridges */}
+            <path
+              d="M0 200 L60 130 L160 85 L250 145 L340 70 L440 125 L530 65 L600 110 L600 200 Z"
+              fill="url(#peakBack)"
+            />
+            {/* Mid Mountain Ridges */}
+            <path
+              d="M0 200 L90 140 L190 95 L290 160 L380 100 L490 150 L600 105 L600 200 Z"
+              fill="url(#peakMid)"
+            />
+            {/* Front Peak with Sharp Highlight */}
+            <path
+              d="M0 200 L110 165 L210 115 L310 180 L420 120 L520 170 L600 130 L600 200 Z"
+              fill="url(#peakFront)"
+            />
+            {/* Subtle atmospheric mist */}
+            <rect y="170" width="600" height="30" fill="black" opacity="0.3" filter="blur(8px)" />
+          </svg>
+
+          {/* Target Countdown Pill */}
+          <div className="absolute top-4 right-4 z-10">
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-black/40 backdrop-blur-md border border-white/15 text-white/90 text-[11px] font-medium tracking-wide">
+              <span>CAT 2026</span>
+              <span className="text-white/40">|</span>
+              <span>{daysRemaining} days left</span>
+            </div>
+          </div>
+        </div>
+
+        {/* ========================================================= */}
+        {/* 3. DAILY WARM-UP CARD */}
+        {/* ========================================================= */}
+        <section className="bg-[#151617] text-white border border-[#292B2E] rounded-hero p-5 space-y-4 shadow-sm">
+          <div className="flex items-start justify-between">
             <div>
               <div className="flex items-center gap-2">
-                <span className="w-2 h-2 bg-ink rounded-xs" />
-                <h2 className="text-xs font-bold uppercase tracking-wider text-ink">
-                  Daily Warm-Up
+                <h2 className="text-sm font-semibold text-white tracking-tight">
+                  Daily Warm-up
                 </h2>
-                <span className="text-xs text-ink-muted">
-                  ({completedWarmupCount} / 3 completed)
+                <span className="text-[10px] font-medium px-2 py-0.5 rounded-full bg-white/10 text-white/80">
+                  {completedWarmupCount} of 3 completed
                 </span>
               </div>
-              <p className="text-xs text-ink-muted mt-0.5">
-                15–20 minutes to get your brain switched on.
+              <p className="text-xs text-white/60 mt-0.5 font-normal">
+                15–20 min to activate your brain
               </p>
-            </div>
-
-            {/* Progress indicator */}
-            <div className="flex items-center gap-1.5 self-start sm:self-auto">
-              {[
-                { key: 'read', label: 'Read', done: warmupState.read },
-                { key: 'think', label: 'Think', done: warmupState.think },
-                { key: 'calculate', label: 'Calculate', done: warmupState.calculate },
-              ].map((item) => (
-                <div
-                  key={item.key}
-                  className={`flex items-center gap-1 text-[11px] font-medium px-2 py-0.5 rounded-full border ${
-                    item.done
-                      ? 'bg-green/15 border-green/30 text-green'
-                      : 'bg-canvas border-line text-ink-muted'
-                  }`}
-                >
-                  {item.done && <Check className="w-3 h-3 text-green" />}
-                  <span>{item.label}</span>
-                </div>
-              ))}
             </div>
           </div>
 
-          {/* If Brain Warmed Up: Show Signature Transition Banner */}
-          {isBrainWarmedUp ? (
-            <div className="p-4 sm:p-5 rounded-card bg-accent/8 border border-accent/20 flex flex-col sm:flex-row sm:items-center justify-between gap-4 animate-fade-in">
-              <div className="space-y-1">
-                <div className="flex items-center gap-2">
-                  <Sparkles className="w-4 h-4 text-accent" />
-                  <span className="text-xs font-bold uppercase tracking-wider text-accent">
-                    Brain Warmed Up
-                  </span>
-                </div>
-                <p className="text-sm font-semibold text-ink">
-                  You're ready for today's CAT preparation.
-                </p>
-                <div className="flex items-center gap-3 text-xs text-ink-muted pt-0.5">
-                  <span className="flex items-center gap-1 text-green">
-                    <Check className="w-3.5 h-3.5" /> Read
-                  </span>
-                  <span className="flex items-center gap-1 text-green">
-                    <Check className="w-3.5 h-3.5" /> Think
-                  </span>
-                  <span className="flex items-center gap-1 text-green">
-                    <Check className="w-3.5 h-3.5" /> Calculate
-                  </span>
-                </div>
-              </div>
-
-              <Link href={nextUncompletedTask.href}>
-                <Button
-                  variant="primary"
-                  size="md"
-                  className="w-full sm:w-auto shadow-sm active:scale-98"
-                >
-                  <span>Start Today's Plan</span>
-                  <ArrowRight className="w-4 h-4 ml-1.5" />
-                </Button>
-              </Link>
-            </div>
-          ) : (
-            /* 3 Activities Cards Grid */
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-3.5">
-              {/* Activity A: READ */}
-              <div
-                className={`p-4 rounded-xl border transition-all flex flex-col justify-between space-y-3 ${
+          {/* 3 Circular Activity Pills & Continue Button */}
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-1">
+            <div className="flex items-center gap-2 flex-wrap">
+              {/* Read Pill */}
+              <button
+                onClick={() => setActiveModal('read')}
+                className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium transition-all ${
                   warmupState.read
-                    ? 'border-green/30 bg-green/5'
-                    : 'border-line bg-surface hover:border-accent/40'
+                    ? 'bg-white/10 text-white border border-white/20'
+                    : 'bg-white/5 text-white/60 border border-white/10 hover:border-white/20'
                 }`}
               >
-                <div className="space-y-2">
-                  <div className="flex items-center justify-between">
-                    <span className="text-[10px] uppercase font-bold tracking-wider text-[#4F46A5] bg-[#EEF0FB] px-2 py-0.5 rounded">
-                      Read
-                    </span>
-                    <span className="text-[11px] font-mono text-[#787774]">7 min</span>
-                  </div>
-                  <div>
-                    <h3 className="text-sm font-semibold text-[#202124]">
-                      Today's AEON Article
-                    </h3>
-                    <p className="text-xs text-[#787774] mt-1 leading-relaxed">
-                      Build reading comprehension and inference skills.
-                    </p>
-                  </div>
-                </div>
-
-                <button
-                  onClick={() => setActiveModal('read')}
-                  className={`w-full py-2.5 px-3 min-h-[42px] rounded-lg text-xs font-semibold flex items-center justify-center gap-1.5 transition-colors active:scale-98 ${
-                    warmupState.read
-                      ? 'bg-[#E8F5E9] text-[#1B5E20]'
-                      : 'bg-[#202124] hover:bg-[#37352F] text-white'
+                <div
+                  className={`w-4 h-4 rounded-full flex items-center justify-center text-[9px] ${
+                    warmupState.read ? 'bg-white text-black' : 'border border-white/40'
                   }`}
                 >
-                  {warmupState.read ? (
-                    <>
-                      <Check className="w-3.5 h-3.5" /> Completed
-                    </>
-                  ) : (
-                    <>
-                      <span>Read Article</span>
-                      <ArrowRight className="w-3.5 h-3.5" />
-                    </>
-                  )}
-                </button>
-              </div>
+                  {warmupState.read ? <Check className="w-2.5 h-2.5 stroke-[3]" /> : '1'}
+                </div>
+                <span>Read</span>
+              </button>
 
-              {/* Activity B: THINK */}
-              <div
-                className={`p-4 rounded-xl border transition-all flex flex-col justify-between space-y-3 ${
+              {/* Think Pill */}
+              <button
+                onClick={() => setActiveModal('think')}
+                className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium transition-all ${
                   warmupState.think
-                    ? 'border-[#C8E6C9] bg-[#F7FBF7]'
-                    : 'border-[#E6E6E3] bg-white hover:border-[#B7791F]'
+                    ? 'bg-white/10 text-white border border-white/20'
+                    : 'bg-white/5 text-white/60 border border-white/10 hover:border-white/20'
                 }`}
               >
-                <div className="space-y-2">
-                  <div className="flex items-center justify-between">
-                    <span className="text-[10px] uppercase font-bold tracking-wider text-[#B7791F] bg-[#FDF6EC] px-2 py-0.5 rounded">
-                      Think
-                    </span>
-                    <span className="text-[11px] font-mono text-[#787774]">~5 min</span>
-                  </div>
-                  <div>
-                    <h3 className="text-sm font-semibold text-[#202124]">
-                      Today's Brain Puzzle
-                    </h3>
-                    <p className="text-xs text-[#787774] mt-1 leading-relaxed">
-                      Activate logical reasoning with Sudoku logic.
-                    </p>
-                  </div>
-                </div>
-
-                <button
-                  onClick={() => setActiveModal('think')}
-                  className={`w-full py-2.5 px-3 min-h-[42px] rounded-lg text-xs font-semibold flex items-center justify-center gap-1.5 transition-colors active:scale-98 ${
-                    warmupState.think
-                      ? 'bg-[#E8F5E9] text-[#1B5E20]'
-                      : 'bg-[#202124] hover:bg-[#37352F] text-white'
+                <div
+                  className={`w-4 h-4 rounded-full flex items-center justify-center text-[9px] ${
+                    warmupState.think ? 'bg-white text-black' : 'border border-white/40'
                   }`}
                 >
-                  {warmupState.think ? (
-                    <>
-                      <Check className="w-3.5 h-3.5" /> Completed
-                    </>
-                  ) : (
-                    <>
-                      <span>Solve Puzzle</span>
-                      <ArrowRight className="w-3.5 h-3.5" />
-                    </>
-                  )}
-                </button>
-              </div>
+                  {warmupState.think ? <Check className="w-2.5 h-2.5 stroke-[3]" /> : '2'}
+                </div>
+                <span>Think</span>
+              </button>
 
-              {/* Activity C: CALCULATE */}
-              <div
-                className={`p-4 rounded-xl border transition-all flex flex-col justify-between space-y-3 ${
+              {/* Calculate Pill */}
+              <button
+                onClick={() => setActiveModal('calculate')}
+                className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium transition-all ${
                   warmupState.calculate
-                    ? 'border-[#C8E6C9] bg-[#F7FBF7]'
-                    : 'border-[#E6E6E3] bg-white hover:border-[#1B5E20]'
+                    ? 'bg-white/10 text-white border border-white/20'
+                    : 'bg-white/5 text-white/60 border border-white/10 hover:border-white/20'
                 }`}
               >
-                <div className="space-y-2">
-                  <div className="flex items-center justify-between">
-                    <span className="text-[10px] uppercase font-bold tracking-wider text-[#1B5E20] bg-[#EDF7ED] px-2 py-0.5 rounded">
-                      Calculate
-                    </span>
-                    <span className="text-[11px] font-mono text-[#787774]">5 Qs</span>
-                  </div>
-                  <div>
-                    <h3 className="text-sm font-semibold text-[#202124]">
-                      Smart Maths
-                    </h3>
-                    <p className="text-xs text-[#787774] mt-1 leading-relaxed">
-                      Mental maths & numerical agility speed quiz.
-                    </p>
-                  </div>
-                </div>
-
-                <button
-                  onClick={() => setActiveModal('calculate')}
-                  className={`w-full py-2.5 px-3 min-h-[42px] rounded-lg text-xs font-semibold flex items-center justify-center gap-1.5 transition-colors active:scale-98 ${
-                    warmupState.calculate
-                      ? 'bg-[#E8F5E9] text-[#1B5E20]'
-                      : 'bg-[#202124] hover:bg-[#37352F] text-white'
+                <div
+                  className={`w-4 h-4 rounded-full flex items-center justify-center text-[9px] ${
+                    warmupState.calculate ? 'bg-white text-black' : 'border border-white/40'
                   }`}
                 >
-                  {warmupState.calculate ? (
-                    <>
-                      <Check className="w-3.5 h-3.5" /> Completed
-                    </>
-                  ) : (
-                    <>
-                      <span>Start Quiz</span>
-                      <ArrowRight className="w-3.5 h-3.5" />
-                    </>
-                  )}
-                </button>
-              </div>
+                  {warmupState.calculate ? <Check className="w-2.5 h-2.5 stroke-[3]" /> : '3'}
+                </div>
+                <span>Calculate</span>
+              </button>
             </div>
-          )}
+
+            {/* Continue Button */}
+            <button
+              onClick={handleContinueWarmup}
+              className="inline-flex items-center justify-center gap-1.5 px-4 py-1.5 rounded-full bg-white text-black text-xs font-medium hover:bg-white/90 active:scale-98 transition-all shrink-0 self-end sm:self-auto"
+            >
+              <span>{isBrainWarmedUp ? 'Practice →' : 'Continue →'}</span>
+            </button>
+          </div>
         </section>
 
         {/* ========================================================= */}
-        {/* ROW 2: TODAY'S CAT PLAN & CURRENT FOCUS */}
+        {/* 4. TODAY'S PLAN */}
         {/* ========================================================= */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-          
-          {/* TODAY'S CAT PLAN */}
-          <section className="bg-white border border-[#E6E6E3] rounded-2xl p-5 shadow-xs flex flex-col justify-between space-y-4">
-            <div>
-              <div className="flex items-center justify-between pb-3 border-b border-[#F1F1EF]">
-                <div>
-                  <div className="flex items-center gap-2">
-                    <span className="w-2 h-2 bg-[#202124] rounded-xs" />
-                    <h2 className="text-xs font-bold uppercase tracking-wider text-[#202124]">
-                      Today's CAT Plan
-                    </h2>
-                  </div>
-                  <p className="text-xs text-[#787774] mt-0.5">
-                    {completedPlanCount} / {planTasks.length} completed · Estimated time: 2h 25m
-                  </p>
-                </div>
-                {completedMinutes > 0 && (
-                  <span className="text-[11px] font-mono text-[#4F46A5] bg-[#EEF0FB] px-2 py-0.5 rounded font-semibold">
-                    {completedMinutes}m done
-                  </span>
-                )}
-              </div>
+        <section className="bg-surface border border-line rounded-hero p-5 space-y-3.5 shadow-2xs">
+          <div className="flex items-center justify-between pb-1">
+            <h2 className="text-sm font-semibold text-ink tracking-tight">
+              Today's Plan
+            </h2>
+            <span className="text-[11px] font-mono text-ink-muted">
+              {completedPlanCount}/{planTasks.length}
+            </span>
+          </div>
 
-              {/* Task list */}
-              <div className="space-y-2 pt-3">
-                {planTasks.map((task) => (
-                  <div
-                    key={task.id}
-                    className={`flex items-center justify-between p-3 rounded-xl border transition-all ${
-                      task.completed
-                        ? 'border-[#E6E6E3] bg-[#FCFBF9] opacity-75'
-                        : 'border-[#E6E6E3] hover:border-[#202124] bg-white'
-                    }`}
-                  >
-                    <div className="flex items-center gap-3 min-w-0">
-                      <button
-                        onClick={() => handleToggleTask(task.id)}
-                        className={`w-5 h-5 rounded flex items-center justify-center border transition-colors ${
-                          task.completed
-                            ? 'bg-[#1B5E20] border-[#1B5E20] text-white'
-                            : 'border-[#D3D3CE] bg-white hover:border-[#202124]'
-                        }`}
-                        aria-label="Toggle task completion"
-                      >
-                        {task.completed && <Check className="w-3.5 h-3.5" />}
-                      </button>
+          <div className="space-y-2">
+            {planTasks.map((task) => (
+              <div
+                key={task.id}
+                className="flex items-center justify-between p-3 rounded-card border border-line bg-surface hover:bg-secondary/40 transition-colors"
+              >
+                <div className="flex items-center gap-3 min-w-0">
+                  {/* Category dot */}
+                  <span className={`w-2 h-2 rounded-full shrink-0 ${task.dotColor}`} />
 
-                      <div className="min-w-0">
-                        <div className="flex items-center gap-2">
-                          <span className="text-[10px] font-mono font-bold px-1.5 py-0.2 rounded bg-[#F1F1EF] text-[#202124]">
-                            {task.subject}
-                          </span>
-                          <span
-                            className={`text-xs font-medium truncate ${
-                              task.completed ? 'line-through text-[#787774]' : 'text-[#202124]'
-                            }`}
-                          >
-                            {task.title}
-                          </span>
-                        </div>
-                        <span className="text-[10px] text-[#787774] font-mono">
-                          {task.durationMinutes} min
-                        </span>
-                      </div>
-                    </div>
-
-                    <Link
-                      href={task.href}
-                      className="p-1.5 text-[#787774] hover:text-[#4F46A5] rounded-lg transition-colors shrink-0"
-                      title="Launch task"
+                  <div className="min-w-0">
+                    <div
+                      className={`text-xs font-medium truncate ${
+                        task.completed ? 'line-through text-ink-muted' : 'text-ink'
+                      }`}
                     >
-                      <ArrowRight className="w-4 h-4" />
-                    </Link>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            {/* Plan Primary CTA */}
-            <div className="pt-2">
-              <Link href={nextUncompletedTask.href}>
-                <Button
-                  variant="primary"
-                  size="sm"
-                  className="w-full justify-center min-h-[42px]"
-                >
-                  <span>Start Today's Plan</span>
-                  <ArrowRight className="w-4 h-4 ml-1.5" />
-                </Button>
-              </Link>
-            </div>
-          </section>
-
-          {/* CURRENT FOCUS / WEAK AREA */}
-          <section className="bg-white border border-[#E6E6E3] rounded-2xl p-5 shadow-xs flex flex-col justify-between space-y-4">
-            <div>
-              <div className="flex items-center gap-2 pb-3 border-b border-[#F1F1EF]">
-                <span className="w-2 h-2 bg-[#C53030] rounded-xs" />
-                <h2 className="text-xs font-bold uppercase tracking-wider text-[#202124]">
-                  Your Current Focus
-                </h2>
-              </div>
-
-              <div className="pt-3 space-y-3">
-                <div>
-                  <span className="text-xs font-semibold text-[#4F46A5]">
-                    {currentFocus.subject} · {currentFocus.topic}
-                  </span>
-                  <div className="flex items-center gap-3 text-xs text-[#787774] mt-1">
-                    <span className="font-mono text-rose-600 font-semibold">
-                      {currentFocus.accuracy}% accuracy
-                    </span>
-                    <span>•</span>
-                    <span>{currentFocus.mistakesCount} mistakes in last {currentFocus.totalRecent} questions</span>
-                  </div>
-                </div>
-
-                <div className="p-3.5 rounded-xl bg-[#F7F7F5] border border-[#E6E6E3] text-xs text-[#37352F] leading-relaxed">
-                  <span className="font-semibold text-[#202124]">Recommended:</span>{' '}
-                  {currentFocus.recommendation}
-                </div>
-              </div>
-            </div>
-
-            {/* 1-Click Action to Practice pre-filtered */}
-            <div className="pt-2">
-              <Link href={currentFocus.practiceUrl}>
-                <button className="w-full flex items-center justify-center gap-2 px-4 py-2.5 min-h-[42px] rounded-xl bg-[#202124] hover:bg-[#37352F] text-white text-xs font-semibold transition-all active:scale-98">
-                  <span>Practice This Topic</span>
-                  <ArrowRight className="w-3.5 h-3.5" />
-                </button>
-              </Link>
-            </div>
-          </section>
-        </div>
-
-        {/* ========================================================= */}
-        {/* ROW 3: COMPACT PROGRESS & STUDY CONSISTENCY */}
-        {/* ========================================================= */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-          
-          {/* COMPACT PREPARATION PROGRESS */}
-          <section className="bg-white border border-[#E6E6E3] rounded-2xl p-5 shadow-xs flex flex-col justify-between space-y-4">
-            <div className="space-y-3">
-              <div className="flex items-center justify-between pb-3 border-b border-[#F1F1EF]">
-                <div className="flex items-center gap-2">
-                  <span className="w-2 h-2 bg-[#202124] rounded-xs" />
-                  <h2 className="text-xs font-bold uppercase tracking-wider text-[#202124]">
-                    Preparation Progress
-                  </h2>
-                </div>
-                <span className="text-xs font-mono font-bold text-[#202124]">
-                  Overall: {sectionAcc.overall}%
-                </span>
-              </div>
-
-              {/* Progress bars without giant charts */}
-              <div className="space-y-2.5 pt-1">
-                <div>
-                  <div className="flex items-center justify-between text-xs text-[#787774] mb-1">
-                    <span className="font-semibold text-[#202124]">VARC</span>
-                    <span className="font-mono font-medium">{sectionAcc.varc}%</span>
-                  </div>
-                  <ProgressBar value={sectionAcc.varc} max={100} size="sm" variant="indigo" />
-                </div>
-
-                <div>
-                  <div className="flex items-center justify-between text-xs text-[#787774] mb-1">
-                    <span className="font-semibold text-[#202124]">DILR</span>
-                    <span className="font-mono font-medium">{sectionAcc.dilr}%</span>
-                  </div>
-                  <ProgressBar value={sectionAcc.dilr} max={100} size="sm" variant="gold" />
-                </div>
-
-                <div>
-                  <div className="flex items-center justify-between text-xs text-[#787774] mb-1">
-                    <span className="font-semibold text-[#202124]">QA</span>
-                    <span className="font-mono font-medium">{sectionAcc.qa}%</span>
-                  </div>
-                  <ProgressBar value={sectionAcc.qa} max={100} size="sm" variant="green" />
-                </div>
-              </div>
-            </div>
-
-            <div className="pt-2">
-              <Link
-                href="/performance"
-                className="text-xs font-medium text-[#4F46A5] hover:underline flex items-center gap-1"
-              >
-                View Full Analysis &rarr;
-              </Link>
-            </div>
-          </section>
-
-          {/* STUDY CONSISTENCY */}
-          <section className="bg-white border border-[#E6E6E3] rounded-2xl p-5 shadow-xs flex flex-col justify-between space-y-4">
-            <div className="space-y-3">
-              <div className="flex items-center gap-2 pb-3 border-b border-[#F1F1EF]">
-                <span className="w-2 h-2 bg-[#B7791F] rounded-xs" />
-                <h2 className="text-xs font-bold uppercase tracking-wider text-[#202124]">
-                  Study Consistency
-                </h2>
-              </div>
-
-              <div className="pt-2 space-y-2">
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-xl bg-[#FFFBEB] text-[#B7791F] flex items-center justify-center">
-                    <Flame className="w-5 h-5" />
-                  </div>
-                  <div>
-                    <div className="text-sm font-bold text-[#202124]">
-                      {streakDays} day preparation streak
+                      {task.title}
                     </div>
-                    <p className="text-xs text-[#787774]">
-                      Consistent daily practice accelerates test readiness
-                    </p>
+                    {task.sub && (
+                      <div className="text-[11px] text-ink-muted truncate">
+                        {task.sub}
+                      </div>
+                    )}
                   </div>
                 </div>
 
-                <div className="p-3 bg-[#FCFBF9] border border-[#E6E6E3] rounded-xl flex items-center justify-between text-xs">
-                  <span className="text-[#787774]">Studied this week</span>
-                  <span className="font-mono font-bold text-[#202124]">{weeklyHours} hours</span>
-                </div>
+                {/* Checkbox toggle button */}
+                <button
+                  onClick={() => handleToggleTask(task.id)}
+                  aria-label={`Mark ${task.title} complete`}
+                  className={`w-5 h-5 rounded-full flex items-center justify-center border transition-all shrink-0 ml-3 ${
+                    task.completed
+                      ? 'bg-ink border-ink text-canvas'
+                      : 'border-line hover:border-ink/50 bg-transparent'
+                  }`}
+                >
+                  {task.completed && <Check className="w-3 h-3 stroke-[3]" />}
+                </button>
               </div>
-            </div>
+            ))}
+          </div>
+        </section>
 
-            <div className="pt-2">
-              <Link
-                href="/tests?type=sectional"
-                className="text-xs font-medium text-[#787774] hover:text-[#202124] flex items-center gap-1"
-              >
-                Schedule Next Sectional Mock &rarr;
-              </Link>
-            </div>
-          </section>
-        </div>
+        {/* ========================================================= */}
+        {/* 5. MODALS FOR WARMUP (READ, THINK, CALCULATE) */}
+        {/* ========================================================= */}
+        <DailyWarmupModals
+          activeModal={activeModal}
+          onClose={() => setActiveModal(null)}
+          onCompleteActivity={(act) => {
+            handleCompleteActivity(act);
+            setActiveModal(null);
+          }}
+        />
 
       </div>
-
-      {/* Interactive Warm-Up Modals (Read, Think, Calculate) */}
-      <DailyWarmupModals
-        activeModal={activeModal}
-        onClose={() => setActiveModal(null)}
-        onCompleteActivity={handleCompleteActivity}
-      />
     </AppShell>
   );
 }

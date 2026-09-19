@@ -2,48 +2,14 @@
 @tailwind components;
 @tailwind utilities;
 
-:root {
-  --bg-canvas: #F7F7F5;
-  --bg-surface: #FFFFFF;
-  --bg-secondary: #F3F3F1;
-  --bg-elevated: #FFFFFF;
-  --text-primary: #161616;
-  --text-secondary: #6B6B6B;
-  --border-subtle: #E5E5E2;
-  --accent-primary: #5865D8;
-  --accent-subtle: rgba(88, 101, 216, 0.08);
-  --accent-border: rgba(88, 101, 216, 0.22);
-  --color-lavender: #9185C7;
-  --color-green: #72A88F;
-  --color-gold: #C5A05A;
-  --color-coral: #D8897D;
-}
-
-html.dark {
-  --bg-canvas: #0E0F10;
-  --bg-surface: #151617;
-  --bg-secondary: #1B1C1E;
-  --bg-elevated: #202124;
-  --text-primary: #F5F5F3;
-  --text-secondary: #A4A5A7;
-  --border-subtle: #292B2E;
-  --accent-primary: #5865D8;
-  --accent-subtle: rgba(88, 101, 216, 0.16);
-  --accent-border: rgba(88, 101, 216, 0.35);
-  --color-lavender: #9185C7;
-  --color-green: #72A88F;
-  --color-gold: #C5A05A;
-  --color-coral: #D8897D;
-}
-
 html {
   -webkit-tap-highlight-color: transparent;
   scroll-behavior: smooth;
 }
 
 body {
-  color: var(--text-primary);
-  background-color: var(--bg-canvas);
+  background-color: #F7F7F5;
+  color: #161616;
   min-height: 100vh;
   min-height: 100dvh;
   font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
@@ -53,7 +19,84 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
-/* Custom subtle professional scrollbar */
+html.dark body {
+  background-color: #0E0F10;
+  color: #F5F5F3;
+}
+
+/* ============================================================
+   DARK MODE OVERRIDES — all token-based classes
+   ============================================================ */
+
+/* Background tokens */
+html.dark .bg-canvas   { background-color: #0E0F10 !important; }
+html.dark .bg-surface  { background-color: #151617 !important; }
+html.dark .bg-secondary { background-color: #1B1C1E !important; }
+html.dark .bg-elevated  { background-color: #202124 !important; }
+
+/* Text tokens */
+html.dark .text-ink        { color: #F5F5F3 !important; }
+html.dark .text-ink-muted  { color: #A4A5A7 !important; }
+
+/* Border tokens */
+html.dark .border-line { border-color: #292B2E !important; }
+
+/* Accent tokens stay the same in dark mode */
+
+/* Surface-colored components */
+html.dark .bg-white { background-color: #151617 !important; }
+
+/* Sidebar / secondary bg */
+html.dark .bg-\[#F1F1EF\]  { background-color: #1B1C1E !important; }
+html.dark .bg-\[#F7F7F5\]  { background-color: #0E0F10 !important; }
+html.dark .bg-\[#EAEAE7\]  { background-color: #202124 !important; }
+html.dark .bg-\[#F3F3F1\]  { background-color: #1B1C1E !important; }
+
+/* Text colors */
+html.dark .text-\[#202124\]  { color: #F5F5F3 !important; }
+html.dark .text-\[#161616\]  { color: #F5F5F3 !important; }
+html.dark .text-\[#787774\]  { color: #A4A5A7 !important; }
+html.dark .text-\[#6B6B6B\]  { color: #A4A5A7 !important; }
+html.dark .text-\[#37352F\]  { color: #D4D4D2 !important; }
+html.dark .text-\[#5F5E5B\]  { color: #A4A5A7 !important; }
+
+/* Border colors */
+html.dark .border-\[#E6E6E3\]  { border-color: #292B2E !important; }
+html.dark .border-\[#E5E5E2\]  { border-color: #292B2E !important; }
+html.dark .border-\[#F1F1EF\]  { border-color: #292B2E !important; }
+html.dark .border-\[#D3D3CE\]  { border-color: #3A3C40 !important; }
+html.dark .border-\[#CBD5E1\]  { border-color: #3A3C40 !important; }
+
+/* Accent subtle backgrounds */
+html.dark .bg-\[#EEF0FB\]   { background-color: rgba(88,101,216,0.18) !important; }
+html.dark .bg-\[#DCDDF7\]   { background-color: rgba(88,101,216,0.25) !important; }
+html.dark .border-\[#DCDDF7\] { border-color: rgba(88,101,216,0.30) !important; }
+html.dark .text-\[#4F46A5\]   { color: #8B93E8 !important; }
+html.dark .text-\[#5865D8\]   { color: #8B93E8 !important; }
+
+/* Nav active state */
+html.dark .bg-\[#EAEAE7\] { background-color: #202124 !important; }
+
+/* Card hover */
+html.dark .hover\:bg-\[#F1F1EF\]:hover { background-color: #202124 !important; }
+html.dark .hover\:bg-\[#EAEAE7\]:hover { background-color: #202124 !important; }
+html.dark .hover\:bg-\[#F7F7F5\]:hover { background-color: #1B1C1E !important; }
+
+/* Input/form elements */
+html.dark input,
+html.dark textarea,
+html.dark select {
+  background-color: #1B1C1E;
+  color: #F5F5F3;
+  border-color: #292B2E;
+}
+
+html.dark input::placeholder,
+html.dark textarea::placeholder {
+  color: #A4A5A7;
+}
+
+/* Scrollbar */
 ::-webkit-scrollbar {
   width: 6px;
   height: 6px;
@@ -62,28 +105,25 @@ body {
   background: transparent;
 }
 ::-webkit-scrollbar-thumb {
-  background: var(--border-subtle);
+  background: #E5E5E2;
   border-radius: 9999px;
 }
+html.dark ::-webkit-scrollbar-thumb {
+  background: #292B2E;
+}
 ::-webkit-scrollbar-thumb:hover {
-  background: var(--text-secondary);
+  background: #6B6B6B;
 }
 
 /* Animations */
 @keyframes slide-up {
-  from {
-    transform: translateY(100%);
-    opacity: 0;
-  }
-  to {
-    transform: translateY(0);
-    opacity: 1;
-  }
+  from { transform: translateY(100%); opacity: 0; }
+  to   { transform: translateY(0);    opacity: 1; }
 }
 
 @keyframes fade-in {
   from { opacity: 0; }
-  to { opacity: 1; }
+  to   { opacity: 1; }
 }
 
 .animate-slide-up {
@@ -94,14 +134,9 @@ body {
   animation: fade-in 0.2s ease-out forwards;
 }
 
-/* Safe area padding */
-.pb-safe {
-  padding-bottom: env(safe-area-inset-bottom, 1rem);
-}
-
-.pt-safe {
-  padding-top: env(safe-area-inset-top, 0.75rem);
-}
+/* Safe area */
+.pb-safe { padding-bottom: env(safe-area-inset-bottom, 1rem); }
+.pt-safe { padding-top:    env(safe-area-inset-top, 0.75rem); }
 
 button, a, input, select, textarea {
   touch-action: manipulation;
