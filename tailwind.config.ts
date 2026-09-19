@@ -10,24 +10,25 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        // Light mode tokens (default)
-        canvas: "#F7F7F5",
+        // Light mode tokens (default) matching ExamCraft North Star
+        canvas: "#F7F6F3",
         surface: "#FFFFFF",
-        secondary: "#F3F3F1",
+        secondary: "#F0EFEA",
         elevated: "#FFFFFF",
-        line: "#E5E5E2",
+        line: "#E8E6E1",
         ink: {
-          DEFAULT: "#161616",
-          muted: "#6B6B6B",
+          DEFAULT: "#18181B",
+          muted: "#71717A",
         },
         accent: {
-          DEFAULT: "#5865D8",
-          hover: "#4956C7",
+          DEFAULT: "#2E7D62",
+          hover: "#266A53",
+          subtle: "#EBF5F0",
         },
-        lavender: "#9185C7",
-        green: "#72A88F",
-        gold: "#C5A05A",
-        coral: "#D8897D",
+        lavender: "#6E62E5",
+        green: "#2E7D62",
+        gold: "#E07A2B",
+        coral: "#DC4C40",
 
         // Legacy compatibility — map old nalanda tokens to new values
         nalanda: {

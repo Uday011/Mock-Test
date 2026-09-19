@@ -496,15 +496,19 @@ export function AppShell({
             {breadcrumbs && breadcrumbs.length > 0 ? (
               <Breadcrumbs items={breadcrumbs} />
             ) : (
-              <div className="flex items-center gap-1.5 text-xs text-ink-muted">
-                <span className="text-ink font-medium">ExamCraft</span>
-                <span>/</span>
-                <span>{selectedExam}</span>
+              <div className="flex items-center gap-2 text-xs text-ink-muted">
+                <span className="text-ink font-semibold">ExamCraft</span>
+                <span className="text-ink-muted">/</span>
+                <span className="text-ink-muted hidden sm:inline">Plan. Practice. Perform.</span>
               </div>
             )}
           </div>
 
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-3">
+            <span className="text-xs text-ink-muted hidden lg:inline font-normal">
+              Disciplined today. A stronger you tomorrow.
+            </span>
+            <span className="text-xs text-line hidden lg:inline">—</span>
             {/* Target Exam Dropdown */}
             <div className="relative" ref={examMenuRef}>
               <button

@@ -8,22 +8,19 @@ import {
   Brain,
   Calculator,
   ArrowRight,
-  CheckCircle2,
-  Clock,
-  Target,
-  Sparkles,
-  TrendingUp,
-  AlertTriangle,
-  Flame,
   Check,
-  RotateCcw,
   Bell,
-  Compass,
-  Layers,
+  Calendar,
+  ChevronRight,
+  Sparkles,
+  Sun,
+  Moon,
+  Monitor,
+  RotateCcw,
 } from 'lucide-react';
 import { AppShell } from '@/components/layout/AppShell';
-import { Button } from '@/components/ui/Button';
 import { DailyWarmupModals } from '@/components/dashboard/DailyWarmupModals';
+import { useTheme } from '@/components/theme/ThemeProvider';
 
 interface WarmupState {
   read: boolean;
@@ -33,17 +30,16 @@ interface WarmupState {
 
 interface PlanTask {
   id: string;
-  subject: string;
   dotColor: string;
+  badge: string;
   title: string;
-  sub: string;
-  durationMinutes: number;
   completed: boolean;
   href: string;
 }
 
 export default function ExamCraftDashboardPage() {
   const router = useRouter();
+  const { theme, setTheme } = useTheme();
   const [data, setData] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [user, setUser] = useState<{ id: string; name: string } | null>(null);
@@ -58,45 +54,37 @@ export default function ExamCraftDashboardPage() {
     calculate: false,
   });
 
-  // Daily plan tasks matching North Star
+  // Daily plan tasks matching North Star image exactly
   const [planTasks, setPlanTasks] = useState<PlanTask[]>([
     {
       id: 'task-qa',
-      subject: 'QA: Arithmetic',
-      dotColor: 'bg-coral',
-      title: 'QA: Arithmetic',
-      sub: '30 questions',
-      durationMinutes: 35,
+      dotColor: 'bg-[#E07A2B]',
+      badge: 'QA',
+      title: 'Arithmetic — 30 questions',
       completed: false,
       href: '/question-bank?section=QA&topic=Arithmetic',
     },
     {
       id: 'task-dilr',
-      subject: 'DILR: 2 Sets',
-      dotColor: 'bg-lavender',
-      title: 'DILR: 2 Sets',
-      sub: 'Arrangements',
-      durationMinutes: 40,
+      dotColor: 'bg-[#6E62E5]',
+      badge: 'DILR',
+      title: '2 Sets',
       completed: false,
       href: '/question-bank?section=DILR&topic=Arrangements',
     },
     {
       id: 'task-varc',
-      subject: 'VARC: 2 RC Passages',
-      dotColor: 'bg-accent',
-      title: 'VARC: 2 RC Passages',
-      sub: 'Philosophy & Economics',
-      durationMinutes: 35,
+      dotColor: 'bg-[#3B82F6]',
+      badge: 'VARC',
+      title: '2 RC Passages',
       completed: false,
       href: '/question-bank?section=VARC&topic=Reading+Comprehension',
     },
     {
       id: 'task-revision',
-      subject: 'Revision: Review 10 mistakes',
-      dotColor: 'bg-gold',
-      title: 'Revision',
-      sub: 'Review 10 mistakes',
-      durationMinutes: 15,
+      dotColor: 'bg-[#2E7D62]',
+      badge: 'Revision',
+      title: 'Review 10 mistakes',
       completed: false,
       href: '/mistakes',
     },
@@ -121,7 +109,6 @@ export default function ExamCraftDashboardPage() {
       .catch((err) => console.error('Failed to load dashboard data:', err))
       .finally(() => setLoading(false));
 
-    // Restore today's warm-up and plan states from localStorage
     const todayKey = new Date().toISOString().slice(0, 10);
     try {
       const savedWarmup = localStorage.getItem(`examcraft_warmup_${todayKey}`);
@@ -152,11 +139,9 @@ export default function ExamCraftDashboardPage() {
 
   const completedWarmupCount =
     (warmupState.read ? 1 : 0) + (warmupState.think ? 1 : 0) + (warmupState.calculate ? 1 : 0);
-  const isBrainWarmedUp = completedWarmupCount === 3;
 
   const completedPlanCount = planTasks.filter((t) => t.completed).length;
 
-  // Find next incomplete warmup item
   const handleContinueWarmup = () => {
     if (!warmupState.read) {
       setActiveModal('read');
@@ -182,19 +167,20 @@ export default function ExamCraftDashboardPage() {
     );
   }
 
-  const daysRemaining = 68; // Matching North Star reference pill
-
   return (
     <AppShell activeExamTitle="CAT 2026">
-      <div className="max-w-2xl mx-auto space-y-5 pb-16 select-none">
+      <div className="max-w-xl mx-auto space-y-6 pb-20 select-none">
         
         {/* ========================================================= */}
         {/* 1. HEADER & GREETING */}
         {/* ========================================================= */}
         <div className="flex items-start justify-between pt-1">
           <div>
-            <h1 className="text-2xl sm:text-[26px] font-semibold text-ink tracking-tight">
-              Good morning, {user?.name?.split(' ')[0] || 'Uday'}.
+            <span className="text-xs text-ink-muted block font-normal">
+              Good morning,
+            </span>
+            <h1 className="text-3xl font-bold text-ink tracking-tight">
+              {user?.name?.split(' ')[0] || 'Uday'}.
             </h1>
             <p className="text-xs text-ink-muted mt-1 font-normal">
               Small steps compound into big results.
@@ -204,76 +190,38 @@ export default function ExamCraftDashboardPage() {
           <div className="flex items-center gap-2.5">
             <button
               aria-label="Notifications"
-              className="w-9 h-9 rounded-full border border-line bg-surface hover:bg-secondary flex items-center justify-center text-ink-muted hover:text-ink transition-colors shadow-2xs"
+              className="w-10 h-10 rounded-full border border-line bg-surface hover:bg-secondary flex items-center justify-center text-ink-muted hover:text-ink transition-colors shadow-2xs"
             >
               <Bell className="w-4 h-4" />
             </button>
-            <div className="w-9 h-9 rounded-full bg-ink text-canvas font-semibold text-xs flex items-center justify-center shadow-2xs">
+            <div className="w-10 h-10 rounded-full bg-secondary border border-line text-ink font-semibold text-xs flex items-center justify-center shadow-2xs">
               {user?.name ? user.name.charAt(0).toUpperCase() : 'U'}
             </div>
           </div>
         </div>
 
         {/* ========================================================= */}
-        {/* 2. MOUNTAIN PEAK HERO BANNER */}
+        {/* 2. MOUNTAIN PEAK HERO CARD */}
         {/* ========================================================= */}
-        <div className="relative overflow-hidden rounded-hero h-44 sm:h-48 border border-line bg-[#16181D] text-white shadow-xs">
-          {/* Stylized Mountain Peaks SVG */}
-          <svg
-            className="absolute inset-0 w-full h-full object-cover"
-            viewBox="0 0 600 200"
-            preserveAspectRatio="none"
-            fill="none"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            {/* Background Sky Gradient */}
-            <defs>
-              <linearGradient id="skyGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-                <stop offset="0%" stopColor="#1E222D" />
-                <stop offset="60%" stopColor="#171922" />
-                <stop offset="100%" stopColor="#0F1014" />
-              </linearGradient>
-              <linearGradient id="peakBack" x1="50%" y1="0%" x2="50%" y2="100%">
-                <stop offset="0%" stopColor="#303545" stopOpacity="0.7" />
-                <stop offset="100%" stopColor="#161820" stopOpacity="0.9" />
-              </linearGradient>
-              <linearGradient id="peakMid" x1="50%" y1="0%" x2="50%" y2="100%">
-                <stop offset="0%" stopColor="#41475A" stopOpacity="0.85" />
-                <stop offset="100%" stopColor="#181A22" />
-              </linearGradient>
-              <linearGradient id="peakFront" x1="50%" y1="0%" x2="50%" y2="100%">
-                <stop offset="0%" stopColor="#252936" />
-                <stop offset="100%" stopColor="#0E0F13" />
-              </linearGradient>
-            </defs>
+        <div className="relative overflow-hidden rounded-hero h-44 sm:h-48 border border-line shadow-xs group">
+          {/* Authentic Mountain Peak Artwork */}
+          <div 
+            className="absolute inset-0 bg-cover bg-center transition-transform duration-700 group-hover:scale-105"
+            style={{
+              backgroundImage: `linear-gradient(to bottom, rgba(0,0,0,0.1), rgba(0,0,0,0.5)), url('https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&w=1200&q=80')`,
+            }}
+          />
 
-            <rect width="600" height="200" fill="url(#skyGrad)" />
-
-            {/* Back Mountain Ridges */}
-            <path
-              d="M0 200 L60 130 L160 85 L250 145 L340 70 L440 125 L530 65 L600 110 L600 200 Z"
-              fill="url(#peakBack)"
-            />
-            {/* Mid Mountain Ridges */}
-            <path
-              d="M0 200 L90 140 L190 95 L290 160 L380 100 L490 150 L600 105 L600 200 Z"
-              fill="url(#peakMid)"
-            />
-            {/* Front Peak with Sharp Highlight */}
-            <path
-              d="M0 200 L110 165 L210 115 L310 180 L420 120 L520 170 L600 130 L600 200 Z"
-              fill="url(#peakFront)"
-            />
-            {/* Subtle atmospheric mist */}
-            <rect y="170" width="600" height="30" fill="black" opacity="0.3" filter="blur(8px)" />
-          </svg>
-
-          {/* Target Countdown Pill */}
-          <div className="absolute top-4 right-4 z-10">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-black/40 backdrop-blur-md border border-white/15 text-white/90 text-[11px] font-medium tracking-wide">
-              <span>CAT 2026</span>
-              <span className="text-white/40">|</span>
-              <span>{daysRemaining} days left</span>
+          {/* Floating Pill at Bottom of Card */}
+          <div className="absolute bottom-3.5 inset-x-3.5 z-10">
+            <div className="flex items-center justify-between px-4 py-2.5 rounded-full bg-white/95 dark:bg-zinc-900/95 backdrop-blur-md border border-white/30 dark:border-zinc-800 text-ink text-xs font-semibold shadow-sm">
+              <div className="flex items-center gap-2 text-ink">
+                <Calendar className="w-3.5 h-3.5 text-ink-muted" />
+                <span>CAT 2026</span>
+              </div>
+              <span className="text-xs text-ink-muted font-medium">
+                68 days left
+              </span>
             </div>
           </div>
         </div>
@@ -281,90 +229,110 @@ export default function ExamCraftDashboardPage() {
         {/* ========================================================= */}
         {/* 3. DAILY WARM-UP CARD */}
         {/* ========================================================= */}
-        <section className="bg-[#151617] text-white border border-[#292B2E] rounded-hero p-5 space-y-4 shadow-sm">
-          <div className="flex items-start justify-between">
-            <div>
-              <div className="flex items-center gap-2">
+        <section className="bg-[#191A1D] text-white border border-zinc-800/80 rounded-hero p-5 space-y-4 shadow-sm">
+          {/* Card Header */}
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <div className="w-6 h-6 rounded-full bg-accent/20 text-accent flex items-center justify-center">
+                <Sparkles className="w-3.5 h-3.5 text-accent" />
+              </div>
+              <div>
                 <h2 className="text-sm font-semibold text-white tracking-tight">
                   Daily Warm-up
                 </h2>
-                <span className="text-[10px] font-medium px-2 py-0.5 rounded-full bg-white/10 text-white/80">
+                <span className="text-[11px] text-white/50 block font-normal">
                   {completedWarmupCount} of 3 completed
                 </span>
               </div>
-              <p className="text-xs text-white/60 mt-0.5 font-normal">
-                15–20 min to activate your brain
-              </p>
+            </div>
+
+            <button
+              onClick={handleContinueWarmup}
+              className="w-7 h-7 rounded-full bg-white/10 hover:bg-white/20 text-white flex items-center justify-center transition-colors"
+            >
+              <ArrowRight className="w-3.5 h-3.5" />
+            </button>
+          </div>
+
+          {/* 3 Connected Activity Circles with Labels Below */}
+          <div className="pt-2 pb-1">
+            <div className="flex items-center justify-between max-w-xs mx-auto relative px-2">
+              {/* Connector Line between Circle 1 and Circle 2 */}
+              <div
+                className={`absolute top-6 left-12 right-12 h-0.5 z-0 ${
+                  warmupState.read && warmupState.think ? 'bg-[#2E7D62]' : 'bg-white/15'
+                }`}
+              />
+
+              {/* Activity 1: Read */}
+              <div className="flex flex-col items-center z-10">
+                <button
+                  onClick={() => setActiveModal('read')}
+                  className={`w-12 h-12 rounded-full flex items-center justify-center transition-all ${
+                    warmupState.read
+                      ? 'bg-[#1E3A34] text-[#4ADE80] border border-[#2E6857] shadow-sm'
+                      : 'bg-[#292B30] text-white/60 border border-white/10 hover:border-white/20'
+                  }`}
+                >
+                  <BookOpen className="w-5 h-5" />
+                </button>
+                <span className="text-[11px] text-white/80 font-medium mt-1.5">
+                  Read
+                </span>
+              </div>
+
+              {/* Activity 2: Think */}
+              <div className="flex flex-col items-center z-10">
+                <button
+                  onClick={() => setActiveModal('think')}
+                  className={`w-12 h-12 rounded-full flex items-center justify-center transition-all ${
+                    warmupState.think
+                      ? 'bg-[#2E7D62] text-white border border-[#357A64] shadow-sm'
+                      : 'bg-[#292B30] text-white/60 border border-white/10 hover:border-white/20'
+                  }`}
+                >
+                  {warmupState.think ? (
+                    <Check className="w-5 h-5 stroke-[3]" />
+                  ) : (
+                    <Brain className="w-5 h-5" />
+                  )}
+                </button>
+                <span className="text-[11px] text-white/80 font-medium mt-1.5">
+                  Think
+                </span>
+              </div>
+
+              {/* Activity 3: Calculate */}
+              <div className="flex flex-col items-center z-10">
+                <button
+                  onClick={() => setActiveModal('calculate')}
+                  className={`w-12 h-12 rounded-full flex items-center justify-center transition-all ${
+                    warmupState.calculate
+                      ? 'bg-[#2E7D62] text-white border border-[#357A64] shadow-sm'
+                      : 'bg-[#292B30] text-white/60 border border-white/10 hover:border-white/20'
+                  }`}
+                >
+                  {warmupState.calculate ? (
+                    <Check className="w-5 h-5 stroke-[3]" />
+                  ) : (
+                    <Calculator className="w-5 h-5" />
+                  )}
+                </button>
+                <span className="text-[11px] text-white/50 font-medium mt-1.5">
+                  Calculate
+                </span>
+              </div>
             </div>
           </div>
 
-          {/* 3 Circular Activity Pills & Continue Button */}
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-1">
-            <div className="flex items-center gap-2 flex-wrap">
-              {/* Read Pill */}
-              <button
-                onClick={() => setActiveModal('read')}
-                className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium transition-all ${
-                  warmupState.read
-                    ? 'bg-white/10 text-white border border-white/20'
-                    : 'bg-white/5 text-white/60 border border-white/10 hover:border-white/20'
-                }`}
-              >
-                <div
-                  className={`w-4 h-4 rounded-full flex items-center justify-center text-[9px] ${
-                    warmupState.read ? 'bg-white text-black' : 'border border-white/40'
-                  }`}
-                >
-                  {warmupState.read ? <Check className="w-2.5 h-2.5 stroke-[3]" /> : '1'}
-                </div>
-                <span>Read</span>
-              </button>
-
-              {/* Think Pill */}
-              <button
-                onClick={() => setActiveModal('think')}
-                className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium transition-all ${
-                  warmupState.think
-                    ? 'bg-white/10 text-white border border-white/20'
-                    : 'bg-white/5 text-white/60 border border-white/10 hover:border-white/20'
-                }`}
-              >
-                <div
-                  className={`w-4 h-4 rounded-full flex items-center justify-center text-[9px] ${
-                    warmupState.think ? 'bg-white text-black' : 'border border-white/40'
-                  }`}
-                >
-                  {warmupState.think ? <Check className="w-2.5 h-2.5 stroke-[3]" /> : '2'}
-                </div>
-                <span>Think</span>
-              </button>
-
-              {/* Calculate Pill */}
-              <button
-                onClick={() => setActiveModal('calculate')}
-                className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium transition-all ${
-                  warmupState.calculate
-                    ? 'bg-white/10 text-white border border-white/20'
-                    : 'bg-white/5 text-white/60 border border-white/10 hover:border-white/20'
-                }`}
-              >
-                <div
-                  className={`w-4 h-4 rounded-full flex items-center justify-center text-[9px] ${
-                    warmupState.calculate ? 'bg-white text-black' : 'border border-white/40'
-                  }`}
-                >
-                  {warmupState.calculate ? <Check className="w-2.5 h-2.5 stroke-[3]" /> : '3'}
-                </div>
-                <span>Calculate</span>
-              </button>
-            </div>
-
-            {/* Continue Button */}
+          {/* Continue Wide Pill Button */}
+          <div className="pt-1">
             <button
               onClick={handleContinueWarmup}
-              className="inline-flex items-center justify-center gap-1.5 px-4 py-1.5 rounded-full bg-white text-black text-xs font-medium hover:bg-white/90 active:scale-98 transition-all shrink-0 self-end sm:self-auto"
+              className="w-full py-2.5 rounded-full bg-white text-black text-xs font-semibold hover:bg-white/90 active:scale-98 transition-all flex items-center justify-center gap-1.5 shadow-xs"
             >
-              <span>{isBrainWarmedUp ? 'Practice →' : 'Continue →'}</span>
+              <span>Continue</span>
+              <ArrowRight className="w-3.5 h-3.5" />
             </button>
           </div>
         </section>
@@ -372,13 +340,13 @@ export default function ExamCraftDashboardPage() {
         {/* ========================================================= */}
         {/* 4. TODAY'S PLAN */}
         {/* ========================================================= */}
-        <section className="bg-surface border border-line rounded-hero p-5 space-y-3.5 shadow-2xs">
-          <div className="flex items-center justify-between pb-1">
+        <section className="space-y-2.5">
+          <div className="flex items-center justify-between px-1">
             <h2 className="text-sm font-semibold text-ink tracking-tight">
               Today's Plan
             </h2>
-            <span className="text-[11px] font-mono text-ink-muted">
-              {completedPlanCount}/{planTasks.length}
+            <span className="text-xs font-mono text-ink-muted">
+              {completedPlanCount} / {planTasks.length}
             </span>
           </div>
 
@@ -386,48 +354,88 @@ export default function ExamCraftDashboardPage() {
             {planTasks.map((task) => (
               <div
                 key={task.id}
-                className="flex items-center justify-between p-3 rounded-card border border-line bg-surface hover:bg-secondary/40 transition-colors"
+                onClick={() => handleToggleTask(task.id)}
+                className="group flex items-center justify-between p-3.5 rounded-card border border-line bg-surface hover:border-line/80 cursor-pointer transition-all shadow-2xs"
               >
                 <div className="flex items-center gap-3 min-w-0">
-                  {/* Category dot */}
-                  <span className={`w-2 h-2 rounded-full shrink-0 ${task.dotColor}`} />
+                  {/* Category colored dot */}
+                  <span className={`w-2.5 h-2.5 rounded-full shrink-0 ${task.dotColor}`} />
 
-                  <div className="min-w-0">
-                    <div
-                      className={`text-xs font-medium truncate ${
-                        task.completed ? 'line-through text-ink-muted' : 'text-ink'
-                      }`}
-                    >
+                  {/* Badge + Title */}
+                  <div className="flex items-center gap-2 min-w-0">
+                    <span className="text-xs font-semibold text-ink">
+                      {task.badge}
+                    </span>
+                    <span className="text-xs text-ink-muted truncate">
                       {task.title}
-                    </div>
-                    {task.sub && (
-                      <div className="text-[11px] text-ink-muted truncate">
-                        {task.sub}
-                      </div>
-                    )}
+                    </span>
                   </div>
                 </div>
 
-                {/* Checkbox toggle button */}
-                <button
-                  onClick={() => handleToggleTask(task.id)}
-                  aria-label={`Mark ${task.title} complete`}
-                  className={`w-5 h-5 rounded-full flex items-center justify-center border transition-all shrink-0 ml-3 ${
-                    task.completed
-                      ? 'bg-ink border-ink text-canvas'
-                      : 'border-line hover:border-ink/50 bg-transparent'
-                  }`}
-                >
-                  {task.completed && <Check className="w-3 h-3 stroke-[3]" />}
-                </button>
+                {/* Arrow Right chevron */}
+                <div className="text-ink-muted group-hover:text-ink transition-colors pl-2 shrink-0">
+                  <ChevronRight className="w-4 h-4" />
+                </div>
               </div>
             ))}
           </div>
         </section>
 
         {/* ========================================================= */}
-        {/* 5. MODALS FOR WARMUP (READ, THINK, CALCULATE) */}
+        {/* 5. INSPIRATION / PHILOSOPHY SHOWCASE ROW */}
         {/* ========================================================= */}
+        <div className="pt-6 border-t border-line space-y-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+            {/* Theme Card */}
+            <div className="p-4 rounded-hero border border-line bg-surface flex flex-col justify-between space-y-3">
+              <div className="flex items-center justify-center p-1 rounded-full bg-secondary border border-line/60">
+                <button
+                  onClick={() => setTheme('light')}
+                  className={`flex-1 flex items-center justify-center gap-1.5 py-1.5 rounded-full text-xs font-medium transition-all ${
+                    theme === 'light' ? 'bg-surface text-ink shadow-xs font-semibold' : 'text-ink-muted hover:text-ink'
+                  }`}
+                >
+                  <Sun className="w-3.5 h-3.5" />
+                  <span>Light</span>
+                </button>
+                <button
+                  onClick={() => setTheme('dark')}
+                  className={`flex-1 flex items-center justify-center gap-1.5 py-1.5 rounded-full text-xs font-medium transition-all ${
+                    theme === 'dark' ? 'bg-surface text-ink shadow-xs font-semibold' : 'text-ink-muted hover:text-ink'
+                  }`}
+                >
+                  <Moon className="w-3.5 h-3.5" />
+                  <span>Dark</span>
+                </button>
+                <button
+                  onClick={() => setTheme('system')}
+                  className={`flex-1 flex items-center justify-center gap-1.5 py-1.5 rounded-full text-xs font-medium transition-all ${
+                    theme === 'system' ? 'bg-surface text-ink shadow-xs font-semibold' : 'text-ink-muted hover:text-ink'
+                  }`}
+                >
+                  <Monitor className="w-3.5 h-3.5" />
+                  <span>System</span>
+                </button>
+              </div>
+              <p className="text-xs text-ink-muted text-center">
+                Your experience, your way.
+              </p>
+            </div>
+
+            {/* Quote Card */}
+            <div className="p-4 rounded-hero border border-line bg-surface flex flex-col justify-between space-y-2">
+              <span className="text-base text-ink-muted font-serif">“</span>
+              <p className="text-xs font-medium text-ink leading-relaxed">
+                Better questions create a better you.
+              </p>
+              <span className="text-[11px] text-ink-muted font-mono block">
+                — ExamCraft
+              </span>
+            </div>
+          </div>
+        </div>
+
+        {/* Daily Warmup Modals */}
         <DailyWarmupModals
           activeModal={activeModal}
           onClose={() => setActiveModal(null)}

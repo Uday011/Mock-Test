@@ -33,43 +33,47 @@ export default function Logo({
   };
 
   const content = (
-    <div className={`flex items-center gap-2 ${className}`}>
-      {/* Contemporary Minimal Geometric Monogram */}
-      <div
-        className={`${iconSizes[size]} rounded-[4px] bg-[#4F46A5] text-white flex items-center justify-center shrink-0 shadow-xs relative overflow-hidden`}
-      >
+    <div className={`flex items-center gap-2.5 ${className}`}>
+      {/* ExamCraft Geometric Prism Delta Mark */}
+      <div className={`${iconSizes[size]} shrink-0 flex items-center justify-center`}>
         <svg
-          viewBox="0 0 24 24"
+          viewBox="0 0 28 28"
           fill="none"
           xmlns="http://www.w3.org/2000/svg"
-          className="w-4 h-4 text-white"
+          className="w-full h-full"
         >
-          {/* Two parallel structural verticals with dynamic diagonal connector */}
-          <line x1="5" y1="5" x2="5" y2="19" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" />
-          <line x1="19" y1="5" x2="19" y2="19" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" />
-          <line x1="5" y1="5" x2="19" y2="19" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" />
-          {/* Subtle Muted Saffron Focus Dot */}
-          <circle cx="19" cy="5" r="2" fill="#B7791F" />
+          {/* Top vertex facet */}
+          <path
+            d="M14 2 L25 21 L19 21 L14 11 L9 21 L3 21 Z"
+            fill="#18181B"
+            className="dark:fill-white"
+          />
+          {/* Inner prism facets with lighting illusion */}
+          <path
+            d="M14 7 L21 19 L16.5 19 L14 14 L11.5 19 L7 19 Z"
+            fill="#3F3F46"
+            className="dark:fill-zinc-400"
+          />
+          {/* Bottom stabilizing bar */}
+          <rect
+            x="8.5"
+            y="23"
+            width="11"
+            height="2"
+            rx="1"
+            fill="#2E7D62"
+          />
         </svg>
       </div>
 
       {/* Typography */}
-      <div className="flex flex-col leading-none">
-        <div className="flex items-center gap-1.5">
-          <span
-            className={`tracking-tight text-[#202124] ${titleSizes[size]}`}
-          >
-            ExamCraft
-          </span>
-          <span className="px-1.5 py-0.5 rounded text-[9px] font-semibold bg-[#EEF2FF] text-[#4338CA] border border-[#C7D2FE]">
-            CAT 2026
-          </span>
-        </div>
+      <div className="flex flex-col leading-tight">
+        <span className={`tracking-tight text-ink ${titleSizes[size]}`}>
+          ExamCraft
+        </span>
         {showSubtitle && (
-          <span
-            className={`text-[#787774] font-normal tracking-normal mt-0.5 ${subtitleSizes[size]}`}
-          >
-            CAT Preparation Engine
+          <span className={`text-ink-muted font-normal tracking-tight mt-0.5 ${subtitleSizes[size]}`}>
+            Plan. Practice. Perform.
           </span>
         )}
       </div>
@@ -86,5 +90,3 @@ export default function Logo({
 
   return content;
 }
-
-export { Logo };

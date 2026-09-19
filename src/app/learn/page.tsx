@@ -2,33 +2,26 @@
 
 import React, { useState, useEffect, Suspense } from 'react';
 import Link from 'next/link';
-import { useSearchParams } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import {
+  ArrowLeft,
   Search,
-  BookOpen,
-  Layers,
-  Sparkles,
-  ArrowRight,
-  CheckCircle2,
-  FileCheck,
-  X,
   ChevronRight,
+  Sparkles,
+  X,
 } from 'lucide-react';
 import { AppShell } from '@/components/layout/AppShell';
 
 interface TopicItem {
   id: string;
-  code?: string;
+  number: number;
   title: string;
   progressPercent: number;
-  questionCount?: number;
-  weightage?: number;
-  status?: string;
+  topicsCount: number;
 }
 
 interface SubjectData {
-  id: string;
-  code: string;
+  code: 'VARC' | 'DILR' | 'QA';
   name: string;
   tagline: string;
   totalTopics: number;
@@ -38,150 +31,113 @@ interface SubjectData {
 }
 
 function LearnContent() {
+  const router = useRouter();
   const searchParams = useSearchParams();
   const sectionParam = searchParams.get('section');
-  const [selectedSubjectCode, setSelectedSubjectCode] = useState<'VARC' | 'DILR' | 'QA'>('DILR');
+  const [selectedSubject, setSelectedSubject] = useState<'VARC' | 'DILR' | 'QA'>('DILR');
   const [activeSecondaryTab, setActiveSecondaryTab] = useState<'syllabus' | 'sets' | 'pyqs'>('syllabus');
   const [searchOpen, setSearchOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
-  const [loading, setLoading] = useState(true);
 
-  // Live subject datasets initialized with CAT 2026 curriculum and North Star standards
-  const [subjectsData, setSubjectsData] = useState<Record<'VARC' | 'DILR' | 'QA', SubjectData>>({
-    VARC: {
-      id: 'sub-varc',
-      code: 'VARC',
-      name: 'Verbal Ability & Reading Comprehension',
-      tagline: 'Master tone, inference & precision',
-      totalTopics: 16,
-      completedTopics: 11,
-      overallPercent: 68,
-      topics: [
-        { id: 'varc-1', code: 'RC-1', title: 'Reading Comprehension: Inference', progressPercent: 74, questionCount: 65 },
-        { id: 'varc-2', code: 'RC-2', title: 'Philosophy & Abstract Passages', progressPercent: 62, questionCount: 45 },
-        { id: 'varc-3', code: 'VA-1', title: 'Para Jumbles & Flow', progressPercent: 80, questionCount: 50 },
-        { id: 'varc-4', code: 'VA-2', title: 'Para Summary & Main Idea', progressPercent: 70, questionCount: 40 },
-        { id: 'varc-5', code: 'VA-3', title: 'Odd Sentence Out', progressPercent: 58, questionCount: 35 },
-      ],
-    },
+  // Exact data from North Star reference image
+  const subjects: Record<'VARC' | 'DILR' | 'QA', SubjectData> = {
     DILR: {
-      id: 'sub-dilr',
       code: 'DILR',
       name: 'Data Interpretation & Logical Reasoning',
-      tagline: 'Build logical clarity',
+      tagline: 'Build logical clarity.',
       totalTopics: 18,
       completedTopics: 12,
       overallPercent: 61,
       topics: [
-        { id: 'dilr-1', code: 'LR-1', title: 'Arrangements (Linear & Circular)', progressPercent: 54, questionCount: 48 },
-        { id: 'dilr-2', code: 'LR-2', title: 'Binary Logic & Truth Tellers', progressPercent: 68, questionCount: 36 },
-        { id: 'dilr-3', code: 'DI-1', title: 'Tables & Charts (Missing Data)', progressPercent: 72, questionCount: 42 },
-        { id: 'dilr-4', code: 'LR-3', title: 'Games & Tournaments', progressPercent: 48, questionCount: 30 },
-        { id: 'dilr-5', code: 'LR-4', title: 'Syllogisms & Deductions', progressPercent: 61, questionCount: 38 },
-        { id: 'dilr-6', code: 'DI-2', title: 'Venn Diagrams & Set Theory', progressPercent: 65, questionCount: 40 },
+        { id: 'topic-arr', number: 1, title: 'Arrangements', progressPercent: 54, topicsCount: 12 },
+        { id: 'topic-bin', number: 2, title: 'Binary Logic', progressPercent: 68, topicsCount: 10 },
+        { id: 'topic-tab', number: 3, title: 'Tables & Charts', progressPercent: 72, topicsCount: 8 },
+        { id: 'topic-gam', number: 4, title: 'Games & Tournaments', progressPercent: 48, topicsCount: 10 },
+        { id: 'topic-syl', number: 5, title: 'Syllogisms', progressPercent: 61, topicsCount: 6 },
+      ],
+    },
+    VARC: {
+      code: 'VARC',
+      name: 'Verbal Ability & Reading Comprehension',
+      tagline: 'Master tone & precision.',
+      totalTopics: 16,
+      completedTopics: 11,
+      overallPercent: 68,
+      topics: [
+        { id: 'topic-rc', number: 1, title: 'Reading Comprehension', progressPercent: 74, topicsCount: 14 },
+        { id: 'topic-pj', number: 2, title: 'Para Jumbles', progressPercent: 82, topicsCount: 8 },
+        { id: 'topic-ps', number: 3, title: 'Para Summary', progressPercent: 65, topicsCount: 6 },
+        { id: 'topic-oso', number: 4, title: 'Odd Sentence Out', progressPercent: 58, topicsCount: 6 },
       ],
     },
     QA: {
-      id: 'sub-qa',
       code: 'QA',
       name: 'Quantitative Aptitude',
-      tagline: 'Strengthen speed & numerical intuition',
+      tagline: 'Strengthen numerical speed.',
       totalTopics: 22,
       completedTopics: 14,
       overallPercent: 64,
       topics: [
-        { id: 'qa-1', code: 'AR-1', title: 'Arithmetic: Percentages & Profit', progressPercent: 78, questionCount: 90 },
-        { id: 'qa-2', code: 'AR-2', title: 'Time, Speed & Distance', progressPercent: 55, questionCount: 60 },
-        { id: 'qa-3', code: 'AL-1', title: 'Algebra: Quadratic & Polynomials', progressPercent: 66, questionCount: 55 },
-        { id: 'qa-4', code: 'GE-1', title: 'Geometry & Mensuration', progressPercent: 52, questionCount: 70 },
-        { id: 'qa-5', code: 'NT-1', title: 'Number Systems & Remainders', progressPercent: 60, questionCount: 45 },
+        { id: 'topic-arith', number: 1, title: 'Arithmetic', progressPercent: 78, topicsCount: 16 },
+        { id: 'topic-alg', number: 2, title: 'Algebra', progressPercent: 66, topicsCount: 12 },
+        { id: 'topic-geo', number: 3, title: 'Geometry & Mensuration', progressPercent: 52, topicsCount: 10 },
+        { id: 'topic-num', number: 4, title: 'Number Systems', progressPercent: 60, topicsCount: 8 },
       ],
     },
-  });
+  };
 
   useEffect(() => {
     if (sectionParam) {
       const upper = sectionParam.toUpperCase();
       if (upper === 'VARC' || upper === 'DILR' || upper === 'QA') {
-        setSelectedSubjectCode(upper as any);
+        setSelectedSubject(upper as any);
       }
     }
   }, [sectionParam]);
 
-  useEffect(() => {
-    fetch('/api/learn/tree')
-      .then((res) => res.json())
-      .then((data) => {
-        if (data.success && data.subjects?.length) {
-          // Merge database topics into subjectsData if available
-          setSubjectsData((prev) => {
-            const updated = { ...prev };
-            data.subjects.forEach((dbSub: any) => {
-              const code = dbSub.code?.toUpperCase() as 'VARC' | 'DILR' | 'QA';
-              if (updated[code]) {
-                const dbTopics = (dbSub.topics || []).map((t: any, idx: number) => ({
-                  id: t.id,
-                  code: t.code,
-                  title: t.title,
-                  progressPercent: t.user_status === 'mastered' ? 85 : t.user_status === 'studied' ? 55 : 40 + ((idx * 7) % 35),
-                  questionCount: 40,
-                }));
-                if (dbTopics.length > 0) {
-                  updated[code] = {
-                    ...updated[code],
-                    topics: dbTopics,
-                    totalTopics: dbTopics.length,
-                    completedTopics: dbTopics.filter((t: any) => t.progressPercent > 50).length,
-                  };
-                }
-              }
-            });
-            return updated;
-          });
-        }
-      })
-      .catch((err) => console.error('Error fetching tree data:', err))
-      .finally(() => setLoading(false));
-  }, []);
+  const current = subjects[selectedSubject];
 
-  const currentSubject = subjectsData[selectedSubjectCode];
-  const ringRadius = 28;
+  // Radial progress ring calculation
+  const ringRadius = 26;
   const ringCircumference = 2 * Math.PI * ringRadius;
-  const ringOffset = ringCircumference - (currentSubject.overallPercent / 100) * ringCircumference;
+  const ringOffset = ringCircumference - (current.overallPercent / 100) * ringCircumference;
 
-  // Filter topics by search query if applicable
-  const displayedTopics = searchQuery.trim()
-    ? currentSubject.topics.filter((t) =>
-        t.title.toLowerCase().includes(searchQuery.toLowerCase())
-      )
-    : currentSubject.topics;
+  const filteredTopics = searchQuery.trim()
+    ? current.topics.filter((t) => t.title.toLowerCase().includes(searchQuery.toLowerCase()))
+    : current.topics;
 
   return (
     <AppShell activeExamTitle="CAT 2026">
-      <div className="max-w-2xl mx-auto space-y-5 pb-16 select-none">
+      <div className="max-w-xl mx-auto space-y-5 pb-20 select-none">
         
         {/* ========================================================= */}
-        {/* 1. HEADER & SEARCH */}
+        {/* 1. HEADER (Back arrow on left, Learn center, Search right) */}
         {/* ========================================================= */}
         <div className="flex items-center justify-between pt-1">
-          <div className="w-9" /> {/* Spacer to center the title */}
+          <button
+            onClick={() => router.push('/dashboard')}
+            className="w-9 h-9 rounded-full border border-line bg-surface hover:bg-secondary flex items-center justify-center text-ink-muted hover:text-ink transition-colors shadow-2xs"
+            aria-label="Back to dashboard"
+          >
+            <ArrowLeft className="w-4 h-4" />
+          </button>
 
-          <h1 className="text-xl font-semibold text-ink tracking-tight">
+          <h1 className="text-base font-semibold text-ink tracking-tight">
             Learn
           </h1>
 
           <button
             onClick={() => setSearchOpen(!searchOpen)}
-            aria-label="Search syllabus"
             className={`w-9 h-9 rounded-full border border-line flex items-center justify-center transition-colors shadow-2xs ${
               searchOpen ? 'bg-secondary text-ink' : 'bg-surface text-ink-muted hover:text-ink'
             }`}
+            aria-label="Search syllabus"
           >
             {searchOpen ? <X className="w-4 h-4" /> : <Search className="w-4 h-4" />}
           </button>
         </div>
 
-        {/* Expandable Search Input */}
+        {/* Search bar */}
         {searchOpen && (
           <div className="relative animate-fade-in">
             <input
@@ -189,7 +145,7 @@ function LearnContent() {
               autoFocus
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="Search topics, formulas, or concepts..."
+              placeholder="Search topics or concepts..."
               className="w-full pl-9 pr-4 py-2 text-xs rounded-card border border-line bg-surface text-ink focus:outline-hidden focus:border-accent"
             />
             <Search className="w-3.5 h-3.5 text-ink-muted absolute left-3 top-3" />
@@ -197,23 +153,23 @@ function LearnContent() {
         )}
 
         {/* ========================================================= */}
-        {/* 2. SEGMENTED SUBJECT TABS (VARC | DILR | QA) */}
+        {/* 2. SEGMENTED SUBJECT PILLS (VARC | DILR | QA) */}
         {/* ========================================================= */}
         <div className="flex justify-center">
-          <div className="inline-flex p-1 rounded-full bg-secondary/80 border border-line/50">
-            {(['VARC', 'DILR', 'QA'] as const).map((subject) => {
-              const isSelected = selectedSubjectCode === subject;
+          <div className="inline-flex p-1 rounded-full bg-[#EAE8E3] dark:bg-zinc-800">
+            {(['VARC', 'DILR', 'QA'] as const).map((sub) => {
+              const isSelected = selectedSubject === sub;
               return (
                 <button
-                  key={subject}
-                  onClick={() => setSelectedSubjectCode(subject)}
-                  className={`px-6 py-1.5 rounded-full text-xs font-medium transition-all ${
+                  key={sub}
+                  onClick={() => setSelectedSubject(sub)}
+                  className={`px-7 py-1.5 rounded-full text-xs font-medium transition-all ${
                     isSelected
-                      ? 'bg-ink text-canvas font-semibold shadow-2xs'
+                      ? 'bg-ink text-canvas font-semibold shadow-xs'
                       : 'text-ink-muted hover:text-ink'
                   }`}
                 >
-                  {subject}
+                  {sub}
                 </button>
               );
             })}
@@ -223,55 +179,54 @@ function LearnContent() {
         {/* ========================================================= */}
         {/* 3. SUBJECT SUMMARY HERO CARD */}
         {/* ========================================================= */}
-        <div className="bg-surface border border-line rounded-hero p-5 shadow-2xs flex items-center gap-5">
-          {/* Circular Percentage Ring */}
-          <div className="relative w-18 h-18 shrink-0 flex items-center justify-center">
-            <svg className="w-18 h-18 -rotate-90 transform" viewBox="0 0 72 72">
+        <div className="bg-surface border border-line rounded-hero p-5 sm:p-6 shadow-2xs flex items-center justify-between gap-4">
+          <div className="space-y-1 min-w-0">
+            <h2 className="text-2xl font-bold text-ink tracking-tight">
+              {current.code}
+            </h2>
+            <p className="text-xs text-ink-muted">
+              {current.tagline}
+            </p>
+            <div className="text-[11px] text-ink-muted pt-2 font-normal">
+              {current.completedTopics} of {current.totalTopics} topics completed
+            </div>
+          </div>
+
+          {/* Radial Progress Ring with exact emerald stroke */}
+          <div className="relative w-20 h-20 shrink-0 flex items-center justify-center">
+            <svg className="w-20 h-20 -rotate-90 transform" viewBox="0 0 68 68">
               <circle
-                cx="36"
-                cy="36"
+                cx="34"
+                cy="34"
                 r={ringRadius}
                 stroke="currentColor"
                 strokeWidth="5"
                 fill="none"
-                className="text-line"
+                className="text-[#E8E6E1] dark:text-zinc-800"
               />
               <circle
-                cx="36"
-                cy="36"
+                cx="34"
+                cy="34"
                 r={ringRadius}
-                stroke="currentColor"
+                stroke="#2E7D62"
                 strokeWidth="5"
                 fill="none"
                 strokeDasharray={ringCircumference}
                 strokeDashoffset={ringOffset}
                 strokeLinecap="round"
-                className="text-accent transition-all duration-700 ease-out"
+                className="transition-all duration-700 ease-out"
               />
             </svg>
             <span className="absolute text-sm font-bold text-ink">
-              {currentSubject.overallPercent}%
+              {current.overallPercent}%
             </span>
-          </div>
-
-          {/* Subject Meta Details */}
-          <div className="space-y-1 min-w-0">
-            <h2 className="text-base font-semibold text-ink tracking-tight">
-              {currentSubject.code}
-            </h2>
-            <p className="text-xs text-ink-muted">
-              {currentSubject.tagline}
-            </p>
-            <div className="text-[11px] font-medium text-ink-muted pt-0.5">
-              {currentSubject.completedTopics} of {currentSubject.totalTopics} topics
-            </div>
           </div>
         </div>
 
         {/* ========================================================= */}
         {/* 4. SECONDARY TABS (Syllabus | Sets | PYQs) */}
         {/* ========================================================= */}
-        <div className="flex items-center gap-6 border-b border-line px-1 text-xs">
+        <div className="flex items-center gap-2 p-1 rounded-full bg-[#EAE8E3]/60 dark:bg-zinc-800/60 max-w-xs">
           {[
             { id: 'syllabus', label: 'Syllabus' },
             { id: 'sets', label: 'Sets' },
@@ -282,16 +237,13 @@ function LearnContent() {
               <button
                 key={tab.id}
                 onClick={() => setActiveSecondaryTab(tab.id as any)}
-                className={`pb-2.5 font-medium transition-all relative ${
+                className={`flex-1 py-1.5 rounded-full text-xs font-medium text-center transition-all ${
                   isTabActive
-                    ? 'text-ink font-semibold'
+                    ? 'bg-surface text-ink font-semibold shadow-2xs'
                     : 'text-ink-muted hover:text-ink'
                 }`}
               >
-                <span>{tab.label}</span>
-                {isTabActive && (
-                  <span className="absolute bottom-0 inset-x-0 h-0.5 bg-ink rounded-full" />
-                )}
+                {tab.label}
               </button>
             );
           })}
@@ -300,77 +252,57 @@ function LearnContent() {
         {/* ========================================================= */}
         {/* 5. NUMBERED TOPIC ROWS */}
         {/* ========================================================= */}
-        <div className="space-y-2.5">
-          {displayedTopics.map((topic, index) => (
-            <div
+        <div className="space-y-2">
+          {filteredTopics.map((topic) => (
+            <Link
               key={topic.id}
-              className="group bg-surface border border-line rounded-card p-3.5 hover:border-line/80 transition-all shadow-2xs space-y-2"
+              href={`/question-bank?section=${selectedSubject}&topic=${encodeURIComponent(topic.title)}`}
+              className="group flex items-center justify-between p-3.5 rounded-card border border-line bg-surface hover:border-line/80 transition-all shadow-2xs"
             >
-              <div className="flex items-center justify-between gap-3">
-                <div className="flex items-center gap-3 min-w-0">
-                  {/* Numbered Circle */}
-                  <span className="w-6 h-6 rounded-full border border-line bg-secondary/60 text-ink font-mono text-[11px] font-semibold flex items-center justify-center shrink-0">
-                    {index + 1}
-                  </span>
+              <div className="flex items-center gap-3.5 min-w-0">
+                {/* Number Circle in light stone */}
+                <span className="w-7 h-7 rounded-full bg-[#EAE8E3] dark:bg-zinc-800 text-ink font-mono text-xs font-semibold flex items-center justify-center shrink-0">
+                  {topic.number}
+                </span>
 
-                  {/* Topic Title */}
-                  <div className="min-w-0">
-                    <h3 className="text-xs font-semibold text-ink truncate">
-                      {topic.title}
-                    </h3>
-                  </div>
-                </div>
-
-                {/* Progress Percentage */}
-                <div className="text-xs font-mono font-medium text-ink-muted shrink-0">
-                  {topic.progressPercent}%
+                {/* Topic Title & Subtitle */}
+                <div className="min-w-0">
+                  <h3 className="text-xs font-semibold text-ink truncate">
+                    {topic.title}
+                  </h3>
+                  <p className="text-[11px] text-ink-muted">
+                    {topic.progressPercent}% • {topic.topicsCount} topics
+                  </p>
                 </div>
               </div>
 
-              {/* Subtle Progress Bar */}
-              <div className="w-full bg-line/60 rounded-full h-1 overflow-hidden">
-                <div
-                  className="bg-accent h-full rounded-full transition-all duration-500"
-                  style={{ width: `${topic.progressPercent}%` }}
-                />
+              {/* Chevron Arrow */}
+              <div className="text-ink-muted group-hover:text-ink transition-colors shrink-0 pl-2">
+                <ChevronRight className="w-4 h-4" />
               </div>
-
-              {/* Direct Study / Practice Link on Hover or Tap */}
-              <div className="flex items-center justify-end gap-2 pt-1">
-                <Link
-                  href={`/learn/${topic.id}`}
-                  className="text-[11px] text-ink-muted hover:text-ink font-medium px-2 py-0.5 rounded hover:bg-secondary transition-colors"
-                >
-                  Notes
-                </Link>
-                <Link
-                  href={`/question-bank?section=${selectedSubjectCode}&topic=${encodeURIComponent(topic.title)}`}
-                  className="inline-flex items-center gap-1 text-[11px] text-accent font-semibold px-2 py-0.5 rounded hover:bg-accent/10 transition-colors"
-                >
-                  <span>Practice</span>
-                  <ArrowRight className="w-3 h-3" />
-                </Link>
-              </div>
-            </div>
+            </Link>
           ))}
         </div>
 
         {/* ========================================================= */}
-        {/* 6. MOTIVATIONAL CARD */}
+        {/* 6. BOTTOM INSPIRATION CARD */}
         {/* ========================================================= */}
-        <div className="p-4 rounded-hero border border-line bg-secondary/40 flex items-center justify-between gap-3">
-          <div className="flex items-center gap-3 min-w-0">
-            <div className="w-8 h-8 rounded-full bg-accent/10 text-accent flex items-center justify-center shrink-0">
-              <Sparkles className="w-4 h-4" />
-            </div>
-            <div>
-              <div className="text-xs font-semibold text-ink">
-                Keep going • You're doing great!
-              </div>
-              <div className="text-[11px] text-ink-muted">
-                Consistent daily effort is what separates 99th percentiles.
-              </div>
-            </div>
+        <div className="relative overflow-hidden p-5 rounded-hero bg-[#191A1D] text-white border border-zinc-800 shadow-sm flex items-center justify-between">
+          <div className="space-y-0.5 z-10">
+            <h3 className="text-xs font-semibold text-white">
+              Keep going
+            </h3>
+            <p className="text-[11px] text-white/60">
+              You're doing great!
+            </p>
+          </div>
+
+          {/* Plant / Leaf Silhouette Silhouette SVG */}
+          <div className="opacity-20 transform scale-125">
+            <svg width="60" height="60" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+              <path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10Z" />
+              <path d="M2 21c0-3 1.85-5.36 5.08-6C9.5 14.52 12 13 13 12" />
+            </svg>
           </div>
         </div>
 
