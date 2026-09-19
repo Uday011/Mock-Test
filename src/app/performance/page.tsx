@@ -16,30 +16,23 @@ import {
   BarChart3,
   BookOpen,
   HelpCircle,
-  Compass,
   Sparkles,
-  ChevronRight,
   Layers,
   CheckCircle,
-  XCircle,
-  Flame,
-  AlertCircle,
   Activity,
+  FileText,
 } from 'lucide-react';
 import { AppShell } from '@/components/layout/AppShell';
 import { PageHeader } from '@/components/ui/PageHeader';
-import { MetricCallout } from '@/components/ui/MetricCallout';
 import { Card } from '@/components/ui/Card';
 import { Badge } from '@/components/ui/Badge';
 import { Button } from '@/components/ui/Button';
 import { ProgressBar } from '@/components/ui/ProgressBar';
-import { CalloutBlock } from '@/components/ui/CalloutBlock';
-import { PropertyTable, PropertyRow } from '@/components/ui/PropertyTable';
 
 export default function PerformanceAnalyticsPage() {
   const [data, setData] = useState<any>(null);
   const [loading, setLoading] = useState(true);
-  const [activeTab, setActiveTab] = useState<'readiness' | 'trends' | 'mastery' | 'history'>('readiness');
+  const [activeTab, setActiveTab] = useState<'overview' | 'history' | 'subjects'>('overview');
 
   useEffect(() => {
     fetch('/api/performance')
@@ -56,115 +49,121 @@ export default function PerformanceAnalyticsPage() {
       <AppShell>
         <div className="py-24 text-center text-xs text-[#787774] font-mono flex flex-col items-center justify-center gap-2">
           <div className="w-5 h-5 border-2 border-[#202124] border-t-transparent rounded-full animate-spin" />
-          <span>Loading performance analytics...</span>
+          <span>Loading progress data...</span>
         </div>
       </AppShell>
     );
   }
 
-  const exam = data?.exam || { title: 'SSC CGL 2026' };
+  const exam = data?.exam || { title: 'CAT 2026' };
   const stats = data?.stats || {};
   const readiness = data?.readiness || {};
   const triad = readiness?.triad || {};
-  const factors = readiness?.contributingFactors || [];
-  const bottlenecks = readiness?.areasHoldingBack || [];
-  const recommendations = data?.recommendations || [];
-  const scoreTrends = data?.scoreTrends || [];
   const subjects = data?.subjects || [];
   const topicMastery = data?.topicMastery || { distribution: {}, strongTopics: [], weakTopics: [], neglectedTopics: [] };
   const attempts = data?.attempts || [];
   const mistakeMetrics = data?.mistakeMetrics || {};
 
+  const syllabusPercent = triad.learningProgress?.value || 68;
+  const practiceAccuracy = stats.accuracyRate || 78.5;
+
   return (
     <AppShell
       activeExamTitle={exam.title}
       breadcrumbs={[
-        { label: 'Learner Workspace', href: '/dashboard' },
-        { label: 'Performance Analytics & Readiness' },
+        { label: 'Progress' },
       ]}
     >
       <div className="max-w-5xl mx-auto space-y-6 pb-16">
         <PageHeader
           icon={Activity}
-          title="Performance & Examination Readiness"
-          description="Diagnostic intelligence: score trajectories, accuracy calibration, speed pacing, topic mastery lifecycle, and the Nalanda Readiness Index."
+          title="Progress"
+          description="Track your syllabus completion, practice accuracy, test history, and weak topics in one calm workspace."
           badge={
             <Badge variant="emerald" size="sm" dot>
-              Readiness: {readiness.index || 74}% • {readiness.qualitativeBand || 'Competitive'}
+              {syllabusPercent}% Syllabus Covered
             </Badge>
           }
           actions={
-            <div className="flex items-center gap-2">
-              <Link href="/mistakes">
-                <Button variant="outline" size="sm">
-                  <RotateCcw className="w-3.5 h-3.5 mr-1.5 text-[#787774]" />
-                  Mistakes ({mistakeMetrics.unresolved_count || 0})
+            <div className="flex items-center gap-2 w-full sm:w-auto">
+              <Link href="/question-bank" className="flex-1 sm:flex-initial">
+                <Button variant="outline" size="sm" className="w-full sm:w-auto min-h-[38px] sm:min-h-0">
+                  Practice
                 </Button>
               </Link>
-              <Link href="/tests">
-                <Button variant="primary" size="sm">
+              <Link href="/tests" className="flex-1 sm:flex-initial">
+                <Button variant="primary" size="sm" className="w-full sm:w-auto min-h-[38px] sm:min-h-0">
                   <Zap className="w-3.5 h-3.5 mr-1.5" />
-                  Attempt Mock Test
+                  Take Test
                 </Button>
               </Link>
             </div>
           }
         />
 
-        {/* Top Properties Table */}
-        <div className="bg-white border border-[#E6E6E3] rounded-lg p-3.5">
-          <PropertyTable>
-            <PropertyRow icon={ShieldCheck} label="Readiness Index">
-              <div className="flex items-center gap-3 w-full max-w-md">
-                <span className="font-mono text-xs font-semibold text-[#202124]">
-                  {readiness.index || 74} / 100
-                </span>
-                <div className="flex-1">
-                  <ProgressBar value={readiness.index || 74} max={100} size="sm" variant="emerald" />
-                </div>
-                <Badge variant="emerald" size="sm">
-                  {readiness.qualitativeBand || 'Competitive'}
-                </Badge>
-                <span className="text-[11px] font-mono text-emerald-700">
-                  {readiness.delta14Days || '+4.2 pts in 14d'}
-                </span>
-              </div>
-            </PropertyRow>
+        {/* 4 Core Metric Cards (2x2 on mobile, 4 columns on desktop) */}
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-2.5 sm:gap-3">
+          <div className="p-3.5 sm:p-4 rounded-md border border-notion-border bg-white space-y-1.5 sm:space-y-2">
+            <div className="flex items-center justify-between text-xs text-notion-muted">
+              <span className="truncate pr-1">Syllabus</span>
+              <BookOpen className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-notion-muted shrink-0" />
+            </div>
+            <div className="text-xl sm:text-2xl font-bold text-notion-text font-mono">
+              {syllabusPercent}%
+            </div>
+            <ProgressBar value={syllabusPercent} max={100} size="sm" variant="emerald" />
+            <p className="text-[10px] sm:text-[11px] text-notion-muted truncate">Completed topics</p>
+          </div>
 
-            <PropertyRow icon={Target} label="Predicted Score">
-              <div className="flex items-center gap-2 font-mono text-xs">
-                <span className="font-semibold text-[#202124]">
-                  {stats.predictedScore?.toFixed(0) || '142'} / {stats.maxScore || 200}
-                </span>
-                <span className="text-[#9b9a97]">
-                  (Cutoff Est: ~138 • Target: {stats.targetScore || 165})
-                </span>
-              </div>
-            </PropertyRow>
+          <div className="p-3.5 sm:p-4 rounded-md border border-notion-border bg-white space-y-1.5 sm:space-y-2">
+            <div className="flex items-center justify-between text-xs text-notion-muted">
+              <span className="truncate pr-1">Accuracy</span>
+              <CheckCircle2 className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-emerald-600 shrink-0" />
+            </div>
+            <div className="text-xl sm:text-2xl font-bold text-notion-text font-mono">
+              {practiceAccuracy}%
+            </div>
+            <ProgressBar value={practiceAccuracy} max={100} size="sm" variant="emerald" />
+            <p className="text-[10px] sm:text-[11px] text-notion-muted truncate">In practice sets</p>
+          </div>
 
-            <PropertyRow icon={CheckCircle2} label="Diagnostic Accuracy">
-              <div className="flex items-center gap-2 font-mono text-xs">
-                <span className="font-semibold text-[#202124]">{stats.accuracyRate || 78.5}%</span>
-                <span className="text-[#9b9a97]">(Target benchmark: ≥ 82.0%)</span>
-              </div>
-            </PropertyRow>
+          <div className="p-3.5 sm:p-4 rounded-md border border-notion-border bg-white space-y-1.5 sm:space-y-2">
+            <div className="flex items-center justify-between text-xs text-notion-muted">
+              <span className="truncate pr-1">Avg Score</span>
+              <Target className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-indigo-600 shrink-0" />
+            </div>
+            <div className="text-xl sm:text-2xl font-bold text-notion-text font-mono">
+              {stats.predictedScore?.toFixed(0) || '142'} <span className="text-xs font-normal text-notion-muted">/ {stats.maxScore || 200}</span>
+            </div>
+            <ProgressBar value={stats.predictedScore || 142} max={stats.maxScore || 200} size="sm" variant="blue" />
+            <p className="text-[10px] sm:text-[11px] text-notion-muted truncate">Mock test average</p>
+          </div>
 
-            <PropertyRow icon={Clock} label="Pacing Cadence">
-              <div className="flex items-center gap-2 font-mono text-xs">
-                <span className="font-semibold text-[#202124]">{stats.pacingCadenceSeconds || 52}s / Q</span>
-                <span className="text-[#9b9a97]">(Target tempo: {stats.targetTempoSeconds || 52}s)</span>
-              </div>
-            </PropertyRow>
-          </PropertyTable>
+          <div className="p-3.5 sm:p-4 rounded-md border border-notion-border bg-white space-y-1.5 sm:space-y-2">
+            <div className="flex items-center justify-between text-xs text-notion-muted">
+              <span className="truncate pr-1">Mistakes</span>
+              <RotateCcw className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-amber-600 shrink-0" />
+            </div>
+            <div className="text-xl sm:text-2xl font-bold text-notion-text font-mono">
+              {mistakeMetrics.unresolved_count || 0}
+            </div>
+            <div className="pt-1">
+              <Link href="/mistakes">
+                <span className="text-xs text-indigo-700 hover:text-indigo-900 font-medium flex items-center gap-1">
+                  Review <ArrowRight className="w-3 h-3" />
+                </span>
+              </Link>
+            </div>
+            <p className="text-[10px] sm:text-[11px] text-notion-muted truncate">Pending revision</p>
+          </div>
         </div>
 
-        {/* Analytics Tabs Navigation */}
-        <div className="flex border-b border-[#E6E6E3] overflow-x-auto no-scrollbar gap-1">
+        {/* Tab Navigation (Swipeable horizontal bar on mobile) */}
+        <div className="flex border-b border-notion-border gap-1 overflow-x-auto no-scrollbar -mx-4 px-4 sm:mx-0 sm:px-0">
           {[
-            { id: 'readiness', label: 'Readiness Index & Diagnostics', icon: ShieldCheck },
-            { id: 'trends', label: 'Score & Accuracy Trends', icon: TrendingUp },
-            { id: 'mastery', label: 'Topic Mastery & Syllabus Health', icon: Layers },
-            { id: 'history', label: 'Test & Mock History', icon: BookOpen },
+            { id: 'overview', label: 'Overview', icon: TrendingUp },
+            { id: 'history', label: `Test History (${attempts.length})`, icon: Clock },
+            { id: 'subjects', label: 'Subject Progress', icon: Layers },
           ].map((tab) => {
             const Icon = tab.icon;
             const isActive = activeTab === tab.id;
@@ -172,10 +171,10 @@ export default function PerformanceAnalyticsPage() {
               <button
                 key={tab.id}
                 onClick={() => setActiveTab(tab.id as any)}
-                className={`flex items-center gap-1.5 px-3 py-2 text-xs font-medium border-b-2 transition-colors whitespace-nowrap ${
+                className={`flex items-center gap-1.5 px-3.5 py-2.5 sm:py-2 text-xs font-medium border-b-2 transition-colors whitespace-nowrap min-h-[42px] sm:min-h-0 ${
                   isActive
-                    ? 'border-[#202124] text-[#202124]'
-                    : 'border-transparent text-[#787774] hover:text-[#202124]'
+                    ? 'border-notion-text text-notion-text'
+                    : 'border-transparent text-notion-muted hover:text-notion-text'
                 }`}
               >
                 <Icon className="w-3.5 h-3.5" />
@@ -185,487 +184,314 @@ export default function PerformanceAnalyticsPage() {
           })}
         </div>
 
-        {/* TAB 1: READINESS INDEX & DIAGNOSTICS */}
-        {activeTab === 'readiness' && (
+        {/* TAB 1: OVERVIEW */}
+        {activeTab === 'overview' && (
           <div className="space-y-6">
-            {/* Readiness Index Architecture */}
-            <div className="p-4 bg-white border border-[#E6E6E3] rounded-lg space-y-4">
-              <div className="flex flex-col lg:flex-row lg:items-start justify-between gap-6 pb-4 border-b border-[#E6E6E3]">
-                <div className="space-y-2 max-w-xl">
-                  <div className="flex items-center gap-2">
-                    <ShieldCheck className="w-4 h-4 text-emerald-600" />
-                    <h2 className="text-sm font-semibold text-[#202124]">
-                      Readiness Index Engine
-                    </h2>
-                  </div>
+            {/* Subject Progress Overview */}
+            <div className="p-4 sm:p-5 bg-white border border-notion-border rounded-md space-y-4">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                <div>
+                  <h3 className="text-sm font-semibold text-notion-text">Syllabus Progress by Subject</h3>
+                  <p className="text-xs text-notion-muted mt-0.5">Your study coverage across key subjects</p>
+                </div>
+                <Link href="/learn">
+                  <Button variant="outline" size="sm" className="w-full sm:w-auto">
+                    View Full Syllabus
+                  </Button>
+                </Link>
+              </div>
 
-                  <p className="text-xs text-[#787774] leading-relaxed">
-                    The Readiness Index measures the structural maturity of your preparation across 9 continuous inputs including topic mastery depth, timed accuracy, speed tempo, and memory retention.
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
+                {subjects.map((sub: any) => (
+                  <div key={sub.id} className="p-3.5 rounded-md border border-notion-border bg-[#FAFAFA] space-y-2">
+                    <div className="flex items-center justify-between text-xs">
+                      <span className="font-semibold text-notion-text">{sub.name}</span>
+                      <span className="font-mono text-notion-muted">{sub.avg_mastery}%</span>
+                    </div>
+                    <ProgressBar value={sub.avg_mastery} max={100} size="sm" variant="emerald" />
+                    <div className="flex items-center justify-between text-[11px] text-notion-muted pt-1">
+                      <span>{sub.total_practiced} questions practiced</span>
+                      <span className="text-emerald-700 font-medium">{sub.accuracy}% accuracy</span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Weak Topics to Review */}
+            <div className="p-4 sm:p-5 bg-white border border-notion-border rounded-md space-y-4">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                <div>
+                  <h3 className="text-sm font-semibold text-notion-text flex items-center gap-2">
+                    <AlertTriangle className="w-4 h-4 text-amber-600" />
+                    Weak Topics to Review
+                  </h3>
+                  <p className="text-xs text-notion-muted mt-0.5">
+                    Topics where you scored below 60% or had mistakes
                   </p>
-
-                  <CalloutBlock
-                    icon={ShieldCheck}
-                    variant="neutral"
-                    title="Methodological Disclaimer"
-                  >
-                    <p className="text-xs text-[#787774]">
-                      {readiness.disclaimer}
-                    </p>
-                  </CalloutBlock>
                 </div>
-
-                <div className="flex items-center gap-4 p-3.5 bg-[#F7F7F5] rounded-lg border border-[#E6E6E3] self-start">
-                  <div className="text-center font-mono">
-                    <div className="text-2xl font-bold text-[#202124] leading-none">
-                      {readiness.index || 74}
-                    </div>
-                    <div className="text-[10px] text-[#9b9a97] mt-0.5">/ 100</div>
-                  </div>
-
-                  <div className="space-y-0.5 text-xs">
-                    <div className="font-medium text-[#202124]">
-                      {readiness.qualitativeBand || 'Competitive'}
-                    </div>
-                    <div className="text-[11px] text-emerald-700 font-mono">
-                      {readiness.delta14Days || '+4.2 pts'} in 14d
-                    </div>
-                  </div>
-                </div>
+                <Link href="/mistakes">
+                  <Button variant="outline" size="sm" className="w-full sm:w-auto">
+                    Open Mistakes
+                  </Button>
+                </Link>
               </div>
 
-              {/* Triad Distinction: Learning Progress vs Topic Mastery vs Exam Preparedness */}
-              <div className="space-y-2">
-                <div className="text-xs font-semibold uppercase text-[#787774] tracking-wider">
-                  Preparation Triad Distinction
-                </div>
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-                  {triad.learningProgress && (
-                    <div className="p-3 rounded-md border border-[#E6E6E3] bg-[#F7F7F5] space-y-1.5">
-                      <div className="flex justify-between items-center text-xs font-mono">
-                        <span className="text-[#787774] font-medium">{triad.learningProgress.label}</span>
-                        <span className="font-semibold text-[#202124]">{triad.learningProgress.value}%</span>
-                      </div>
-                      <ProgressBar value={triad.learningProgress.value} max={100} size="sm" variant="amber" />
-                      <p className="text-[11px] text-[#787774] leading-relaxed pt-0.5">
-                        {triad.learningProgress.definition}
-                      </p>
-                    </div>
-                  )}
-
-                  {triad.topicMastery && (
-                    <div className="p-3 rounded-md border border-[#E6E6E3] bg-[#F7F7F5] space-y-1.5">
-                      <div className="flex justify-between items-center text-xs font-mono">
-                        <span className="text-[#787774] font-medium">{triad.topicMastery.label}</span>
-                        <span className="font-semibold text-[#202124]">{triad.topicMastery.value}%</span>
-                      </div>
-                      <ProgressBar value={triad.topicMastery.value} max={100} size="sm" variant="emerald" />
-                      <p className="text-[11px] text-[#787774] leading-relaxed pt-0.5">
-                        {triad.topicMastery.definition}
-                      </p>
-                    </div>
-                  )}
-
-                  {triad.examPreparedness && (
-                    <div className="p-3 rounded-md border border-[#E6E6E3] bg-[#F7F7F5] space-y-1.5">
-                      <div className="flex justify-between items-center text-xs font-mono">
-                        <span className="text-[#787774] font-medium">{triad.examPreparedness.label}</span>
-                        <span className="font-semibold text-[#202124]">{triad.examPreparedness.value}%</span>
-                      </div>
-                      <ProgressBar value={triad.examPreparedness.value} max={100} size="sm" variant="blue" />
-                      <p className="text-[11px] text-[#787774] leading-relaxed pt-0.5">
-                        {triad.examPreparedness.definition}
-                      </p>
-                    </div>
-                  )}
-                </div>
-              </div>
-
-              {/* 9 Contributing Factors Breakdown */}
-              <div className="space-y-2 pt-2">
-                <h3 className="text-xs font-semibold uppercase text-[#787774] tracking-wider">
-                  9 Contributing Diagnostic Factors
-                </h3>
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
-                  {factors.map((f: any, i: number) => (
-                    <div key={i} className="p-2.5 rounded-md border border-[#E6E6E3] bg-[#F7F7F5] space-y-1">
-                      <div className="flex items-center justify-between text-xs">
-                        <span className="font-medium text-[#202124]">{f.name}</span>
-                        <span className="font-mono text-[10px] text-[#9b9a97]">wt: {f.weight}</span>
-                      </div>
-                      <div className="flex items-center justify-between font-mono text-xs">
-                        <ProgressBar value={f.score} max={100} size="xs" variant="emerald" className="flex-1 mr-2" />
-                        <span className="font-medium text-[#202124]">{f.score}%</span>
-                      </div>
-                      <div className="text-[10px] text-[#787774] font-mono flex items-center justify-between">
-                        <span>Status:</span>
-                        <span className="font-medium text-[#202124]">{f.status}</span>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </div>
-
-            {/* Bottlenecks Callout */}
-            {bottlenecks.length > 0 && (
-              <CalloutBlock
-                icon={AlertCircle}
-                variant="rose"
-                title="Key Friction Points Holding Your Readiness Score Back"
-              >
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs pt-1">
-                  {bottlenecks.map((item: string, idx: number) => (
-                    <div key={idx} className="flex items-start gap-2 p-2 rounded bg-white border border-[#f5c2c2]">
-                      <span className="w-1.5 h-1.5 rounded-full bg-rose-600 shrink-0 mt-1.5" />
-                      <span className="text-[#202124] leading-relaxed">{item}</span>
-                    </div>
-                  ))}
-                </div>
-              </CalloutBlock>
-            )}
-
-            {/* Contextual Recommendations */}
-            <div className="space-y-3">
-              <div>
-                <h3 className="text-xs font-semibold text-[#787774] uppercase tracking-wider">
-                  Adaptive Learning Recommendations
-                </h3>
-                <p className="text-xs text-[#787774] mt-0.5">
-                  Next steps synthesized from your actual assessment history and weak topics.
-                </p>
-              </div>
-
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                {recommendations.map((rec: any) => (
-                  <div
-                    key={rec.id}
-                    className="p-3.5 bg-white border border-[#E6E6E3] rounded-lg hover:border-[#d4d4d4] transition-colors flex flex-col justify-between space-y-2.5"
-                  >
-                    <div className="space-y-1">
-                      <div className="flex items-center justify-between">
-                        <span className="text-[10px] font-mono uppercase px-1.5 py-0.5 rounded bg-[#F1F1EF] text-[#787774] border border-[#E6E6E3]">
-                          {rec.type.replace('_', ' ')}
-                        </span>
-                        {rec.urgency === 'critical' && (
-                          <Badge variant="rose" size="sm">High Priority</Badge>
-                        )}
-                      </div>
-                      <h4 className="text-xs font-semibold text-[#202124]">{rec.title}</h4>
-                      <p className="text-xs text-[#787774] leading-relaxed">{rec.description}</p>
-                    </div>
-                    <Link href={rec.href}>
-                      <Button variant="outline" size="sm" className="w-full justify-between">
-                        <span>{rec.actionLabel}</span>
-                        <ArrowRight className="w-3.5 h-3.5" />
-                      </Button>
-                    </Link>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
-        )}
-
-        {/* TAB 2: SCORE & ACCURACY TRENDS */}
-        {activeTab === 'trends' && (
-          <div className="space-y-6">
-            <div className="p-4 bg-white border border-[#E6E6E3] rounded-lg space-y-4">
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-                <div>
-                  <h3 className="text-xs font-semibold text-[#202124]">Score Trajectory & Cutoff Delta</h3>
-                  <p className="text-xs text-[#787774]">Tier-I Marks compared against UR General Cutoff (~138)</p>
-                </div>
-                <div className="flex items-center gap-3 text-xs font-mono text-[#787774]">
-                  <span>Current: 142.0</span>
-                  <span>•</span>
-                  <span>Cutoff: 138.0</span>
-                  <span>•</span>
-                  <span>Target: 165.0</span>
-                </div>
-              </div>
-
-              <div className="space-y-3">
-                <div>
-                  <div className="flex justify-between text-xs font-mono mb-1">
-                    <span className="text-[#787774]">Current Predicted Level</span>
-                    <strong className="text-[#202124]">142.0 / 200 (71.0%)</strong>
-                  </div>
-                  <ProgressBar value={142} max={200} size="sm" variant="emerald" />
-                </div>
-
-                <div>
-                  <div className="flex justify-between text-xs font-mono mb-1">
-                    <span className="text-[#787774]">SSC CGL Tier-I General Cutoff</span>
-                    <strong className="text-[#787774]">138.0 / 200 (69.0%)</strong>
-                  </div>
-                  <ProgressBar value={138} max={200} size="sm" variant="stone" />
-                </div>
-
-                <div>
-                  <div className="flex justify-between text-xs font-mono mb-1">
-                    <span className="text-[#787774]">Aspirational Target Score</span>
-                    <strong className="text-[#202124]">165.0 / 200 (82.5%)</strong>
-                  </div>
-                  <ProgressBar value={165} max={200} size="sm" variant="blue" />
-                </div>
-              </div>
-
-              {/* Historical Progression Timeline */}
-              <div className="pt-3 border-t border-[#E6E6E3]">
-                <h4 className="text-xs font-semibold uppercase text-[#787774] tracking-wider mb-2.5">
-                  Historical Progression
-                </h4>
-                <div className="overflow-x-auto border border-[#E6E6E3] rounded-md">
-                  <table className="w-full text-left text-xs">
-                    <thead className="bg-[#F7F7F5] text-[#787774] font-mono text-[10px] uppercase border-b border-[#E6E6E3]">
-                      <tr>
-                        <th className="py-2.5 px-3">Date</th>
-                        <th className="py-2.5 px-3">Test</th>
-                        <th className="py-2.5 px-3">Type</th>
-                        <th className="py-2.5 px-3">Score</th>
-                        <th className="py-2.5 px-3">Accuracy</th>
-                        <th className="py-2.5 px-3">Pacing</th>
-                        <th className="py-2.5 px-3 text-right">Action</th>
-                      </tr>
-                    </thead>
-                    <tbody className="divide-y divide-[#E6E6E3]">
-                      {scoreTrends.map((st: any, idx: number) => (
-                        <tr key={idx} className="hover:bg-[#F7F7F5]">
-                          <td className="py-2.5 px-3 font-mono text-[#787774]">{st.date}</td>
-                          <td className="py-2.5 px-3 font-medium text-[#202124]">{st.test_title}</td>
-                          <td className="py-2.5 px-3">
-                            <span className="text-[10px] font-mono px-1 py-0.5 rounded bg-[#F1F1EF] text-[#787774] uppercase">
-                              {st.test_type.replace('_', ' ')}
-                            </span>
-                          </td>
-                          <td className="py-2.5 px-3 font-mono text-[#202124]">
-                            {st.score.toFixed(1)} <span className="text-[#9b9a97]">/ {st.max_score}</span>
-                          </td>
-                          <td className="py-2.5 px-3 font-mono text-emerald-700">{st.accuracy}%</td>
-                          <td className="py-2.5 px-3 font-mono text-[#787774]">{st.pace_seconds}s / Q</td>
-                          <td className="py-2.5 px-3 text-right">
-                            <Link href={`/exam/${st.attempt_id}/result`} className="text-[#202124] hover:underline">
-                              Scorecard →
-                            </Link>
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-              </div>
-            </div>
-          </div>
-        )}
-
-        {/* TAB 3: SUBJECT & TOPIC MASTERY */}
-        {activeTab === 'mastery' && (
-          <div className="space-y-6">
-            <div className="p-4 bg-white border border-[#E6E6E3] rounded-lg space-y-4">
-              <div>
-                <h3 className="text-xs font-semibold text-[#202124]">
-                  Topic Mastery Distribution
-                </h3>
-                <p className="text-xs text-[#787774] mt-0.5">
-                  Mastery is earned through repeated assessments and decays over time without revision.
-                </p>
-              </div>
-
-              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2">
-                {[
-                  { label: 'Not Started', count: topicMastery.distribution.not_started || 0 },
-                  { label: 'Studying', count: topicMastery.distribution.studying || 0 },
-                  { label: 'Practiced', count: topicMastery.distribution.practiced || 0 },
-                  { label: 'Developing', count: topicMastery.distribution.developing || 0 },
-                  { label: 'Proficient', count: topicMastery.distribution.proficient || 0 },
-                  { label: 'Needs Revision', count: topicMastery.distribution.needs_revision || 0 },
-                ].map((m, idx) => (
-                  <div key={idx} className="p-2.5 rounded-md border border-[#E6E6E3] bg-[#F7F7F5] text-center">
-                    <div className="text-lg font-bold font-mono text-[#202124]">{m.count}</div>
-                    <div className="text-[11px] text-[#787774] mt-0.5">{m.label}</div>
-                  </div>
-                ))}
-              </div>
-
-              {/* Subject Competencies Table */}
-              <div className="overflow-x-auto border border-[#E6E6E3] rounded-md">
-                <table className="w-full text-left text-xs">
-                  <thead className="bg-[#F7F7F5] text-[#787774] font-mono uppercase text-[10px] border-b border-[#E6E6E3]">
-                    <tr>
-                      <th className="py-2.5 px-3">Subject</th>
-                      <th className="py-2.5 px-3">Tier</th>
-                      <th className="py-2.5 px-3">Mastery</th>
-                      <th className="py-2.5 px-3">Practiced</th>
-                      <th className="py-2.5 px-3">Accuracy</th>
-                      <th className="py-2.5 px-3">Pacing</th>
-                      <th className="py-2.5 px-3 text-right">Action</th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-[#E6E6E3]">
-                    {subjects.map((sub: any) => (
-                      <tr key={sub.id} className="hover:bg-[#F7F7F5]">
-                        <td className="py-2.5 px-3 font-medium text-[#202124]">
-                          <div className="flex items-center gap-1.5">
-                            <span className="font-mono text-[10px] px-1 py-0.5 rounded bg-[#F1F1EF] text-[#787774]">
-                              {sub.code}
-                            </span>
-                            <span>{sub.name}</span>
-                          </div>
-                        </td>
-                        <td className="py-2.5 px-3">
-                          <Badge
-                            variant={sub.competency_tier === 'Proficient' ? 'emerald' : sub.competency_tier === 'Developing' ? 'amber' : 'rose'}
-                            size="sm"
-                          >
-                            {sub.competency_tier}
-                          </Badge>
-                        </td>
-                        <td className="py-2.5 px-3 font-mono font-medium text-[#202124]">{sub.avg_mastery}%</td>
-                        <td className="py-2.5 px-3 font-mono text-[#787774]">{sub.total_practiced} Qs</td>
-                        <td className="py-2.5 px-3 font-mono text-emerald-700">{sub.accuracy}%</td>
-                        <td className="py-2.5 px-3 font-mono text-[#787774]">{sub.avg_pacing_seconds}s / Q</td>
-                        <td className="py-2.5 px-3 text-right">
-                          <Link href={`/exams/exam-ssc-cgl-2026?subject=${sub.id}`} className="text-[#202124] hover:underline">
-                            Syllabus →
-                          </Link>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            </div>
-
-            {/* Strong vs Weak vs Neglected Areas */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-              {/* Strong Areas */}
-              <div className="p-3.5 bg-white border border-[#E6E6E3] rounded-lg space-y-2.5">
-                <div className="flex items-center gap-1.5 text-xs font-semibold text-[#2b593f]">
-                  <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
-                  <span>Strong Areas (≥ 75%)</span>
-                </div>
-                <div className="space-y-1.5">
-                  {topicMastery.strongTopics.map((t: any) => (
-                    <div key={t.id} className="p-2 rounded bg-[#ebf5e8] border border-[#c4e2b8] flex items-center justify-between text-xs">
-                      <div>
-                        <div className="font-medium text-[#202124]">{t.title}</div>
-                        <div className="text-[10px] text-[#787774] font-mono">{t.subject_name}</div>
-                      </div>
-                      <span className="font-mono text-emerald-700">{t.mastery_percentage}%</span>
-                    </div>
-                  ))}
-                </div>
-              </div>
-
-              {/* Weak Areas */}
-              <div className="p-3.5 bg-white border border-[#E6E6E3] rounded-lg space-y-2.5">
-                <div className="flex items-center gap-1.5 text-xs font-semibold text-[#e03e3e]">
-                  <AlertTriangle className="w-3.5 h-3.5 text-rose-600" />
-                  <span>Weak Areas (&lt; 60%)</span>
-                </div>
-                <div className="space-y-1.5">
+              {topicMastery.weakTopics && topicMastery.weakTopics.length > 0 ? (
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   {topicMastery.weakTopics.map((t: any) => (
-                    <div key={t.id} className="p-2 rounded bg-[#fff0f0] border border-[#f5c2c2] flex items-center justify-between text-xs">
+                    <div key={t.id} className="p-3.5 rounded-md border border-amber-200 bg-amber-50/40 flex flex-col justify-between space-y-3">
                       <div>
-                        <div className="font-medium text-[#202124]">{t.title}</div>
-                        <div className="text-[10px] text-[#787774] font-mono">{t.subject_name}</div>
+                        <div className="flex items-center justify-between">
+                          <span className="text-[10px] font-mono uppercase px-1.5 py-0.5 rounded bg-white border border-amber-200 text-amber-800">
+                            {t.subject_name}
+                          </span>
+                          <span className="text-xs font-mono font-semibold text-rose-700">
+                            {t.mastery_percentage}% mastery
+                          </span>
+                        </div>
+                        <h4 className="text-xs font-semibold text-notion-text mt-2">{t.title}</h4>
                       </div>
-                      <div className="text-right">
-                        <span className="font-mono text-[#e03e3e] block">{t.mastery_percentage}%</span>
-                        <Link href={`/learn/${t.id}`} className="text-[10px] text-[#202124] hover:underline">
-                          Drill →
+
+                      <div className="flex items-center gap-2 pt-1 border-t border-amber-200/60">
+                        <Link href={`/learn/${t.id}`} className="flex-1">
+                          <Button variant="outline" size="sm" className="w-full text-xs min-h-[38px] sm:min-h-0">
+                            Study Topic
+                          </Button>
+                        </Link>
+                        <Link href={`/tests/create`} className="flex-1">
+                          <Button variant="secondary" size="sm" className="w-full text-xs min-h-[38px] sm:min-h-0">
+                            Practice Test
+                          </Button>
                         </Link>
                       </div>
                     </div>
                   ))}
                 </div>
-              </div>
-
-              {/* Neglected Areas */}
-              <div className="p-3.5 bg-white border border-[#E6E6E3] rounded-lg space-y-2.5">
-                <div className="flex items-center gap-1.5 text-xs font-semibold text-[#787774]">
-                  <Clock className="w-3.5 h-3.5 text-[#9b9a97]" />
-                  <span>Unattempted Areas</span>
+              ) : (
+                <div className="p-6 text-center text-xs text-notion-muted bg-[#FAFAFA] rounded-md border border-notion-border">
+                  No weak topics identified yet. Keep taking mock tests to pinpoint revision areas!
                 </div>
-                <div className="space-y-1.5">
-                  {topicMastery.neglectedTopics.map((t: any) => (
-                    <div key={t.id} className="p-2 rounded bg-[#F7F7F5] border border-[#E6E6E3] flex items-center justify-between text-xs">
-                      <div>
-                        <div className="font-medium text-[#202124]">{t.title}</div>
-                        <div className="text-[10px] text-[#787774] font-mono">0 attempted</div>
-                      </div>
-                      <Link href={`/learn/${t.id}`} className="text-[10px] text-[#202124] hover:underline">
-                        Start →
-                      </Link>
-                    </div>
-                  ))}
-                </div>
-              </div>
+              )}
             </div>
-          </div>
-        )}
 
-        {/* TAB 4: TEST & MOCK HISTORY */}
-        {activeTab === 'history' && (
-          <div className="space-y-4">
-            <div className="p-4 bg-white border border-[#E6E6E3] rounded-lg space-y-3">
+            {/* Recent Study Activity */}
+            <div className="p-4 sm:p-5 bg-white border border-notion-border rounded-md space-y-4">
               <div>
-                <h3 className="text-xs font-semibold text-[#202124]">
-                  Assessment History
-                </h3>
-                <p className="text-xs text-[#787774] mt-0.5">
-                  Chronological ledger of mock examinations, topic tests, and remedial drills.
-                </p>
+                <h3 className="text-sm font-semibold text-notion-text">Recent Study Activity</h3>
+                <p className="text-xs text-notion-muted mt-0.5">Your recent tests and practice sessions</p>
               </div>
 
-              <div className="divide-y divide-[#E6E6E3] border border-[#E6E6E3] rounded-md overflow-hidden">
-                {attempts.map((att: any) => {
-                  const isFullMock = att.test_type === 'full_mock';
+              <div className="divide-y divide-notion-border border border-notion-border rounded-md overflow-hidden">
+                {attempts.slice(0, 5).map((att: any) => {
                   const durationMin = Math.round((att.time_taken_seconds || 0) / 60);
 
                   return (
                     <div
                       key={att.id}
-                      className="p-3.5 bg-white hover:bg-[#F7F7F5] transition-colors flex flex-col sm:flex-row sm:items-center justify-between gap-3"
+                      className="p-3.5 bg-white hover:bg-stone-50 transition-colors flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs"
                     >
                       <div className="space-y-1">
                         <div className="flex items-center gap-2">
-                          <Badge variant={isFullMock ? 'amber' : 'gray'} size="sm">
-                            {isFullMock ? 'Full Mock' : att.test_type ? att.test_type.replace('_', ' ') : 'Assessment'}
+                          <Badge variant="stone" size="sm">
+                            {att.test_type ? att.test_type.replace('_', ' ') : 'Test'}
                           </Badge>
-                          <span className="text-xs font-mono text-[#9b9a97]">
+                          <span className="font-mono text-[11px] text-notion-muted">
                             {new Date(att.created_at).toLocaleDateString()}
                           </span>
                         </div>
-                        <div className="text-xs font-medium text-[#202124]">
+                        <div className="font-medium text-notion-text">
                           {att.test_title_snapshot || att.test_title}
                         </div>
-                        <div className="text-xs text-[#787774] flex items-center gap-3 font-mono">
-                          <span>Time: {durationMin}m</span>
+                        <div className="text-notion-muted text-[11px] flex items-center gap-2 font-mono">
+                          <span>{durationMin} mins</span>
                           <span>•</span>
-                          <span>Attempted: {att.attempted_questions} / {att.total_questions}</span>
+                          <span>{att.attempted_questions} / {att.total_questions} answered</span>
                         </div>
                       </div>
 
-                      <div className="flex items-center gap-4">
-                        <div className="text-right">
-                          <div className="text-xs font-mono font-medium text-[#202124]">
-                            {att.final_score.toFixed(1)} <span className="text-[#9b9a97]">/ {att.maximum_marks}</span>
+                      <div className="flex items-center justify-between sm:justify-end gap-4 pt-2 sm:pt-0 border-t sm:border-t-0 border-notion-border">
+                        <div className="sm:text-right">
+                          <div className="font-mono font-semibold text-notion-text">
+                            {att.final_score.toFixed(1)} <span className="text-notion-muted text-[11px]">/ {att.maximum_marks}</span>
                           </div>
-                          <div className="text-xs font-mono text-emerald-700">
-                            {att.accuracy}% Acc
+                          <div className="font-mono text-emerald-700 text-[11px]">
+                            {att.accuracy}% Accuracy
                           </div>
                         </div>
 
                         <Link href={`/exam/${att.id}/result`}>
-                          <Button variant="outline" size="sm">
-                            Review
+                          <Button variant="outline" size="sm" className="min-h-[38px] sm:min-h-0">
+                            Scorecard
                           </Button>
                         </Link>
                       </div>
                     </div>
                   );
                 })}
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* TAB 2: TEST HISTORY */}
+        {activeTab === 'history' && (
+          <div className="p-4 sm:p-5 bg-white border border-notion-border rounded-md space-y-4">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+              <div>
+                <h3 className="text-sm font-semibold text-notion-text">Test Performance History</h3>
+                <p className="text-xs text-notion-muted mt-0.5">
+                  Complete record of all mock exams, chapter tests, and practice sets attempted
+                </p>
+              </div>
+              <Link href="/tests">
+                <Button variant="primary" size="sm" className="w-full sm:w-auto">
+                  Take a Test
+                </Button>
+              </Link>
+            </div>
+
+            {attempts.length === 0 ? (
+              <div className="py-12 text-center text-xs text-notion-muted">
+                No test attempts recorded yet. Take a test to see your history!
+              </div>
+            ) : (
+              <div className="divide-y divide-notion-border border border-notion-border rounded-md overflow-hidden">
+                {attempts.map((att: any) => {
+                  const durationMin = Math.round((att.time_taken_seconds || 0) / 60);
+
+                  return (
+                    <div
+                      key={att.id}
+                      className="p-3.5 sm:p-4 bg-white hover:bg-stone-50 transition-colors flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs"
+                    >
+                      <div className="space-y-1">
+                        <div className="flex items-center gap-2">
+                          <Badge variant="stone" size="sm">
+                            {att.test_type ? att.test_type.replace('_', ' ') : 'Test'}
+                          </Badge>
+                          <span className="font-mono text-notion-muted text-[11px]">
+                            {new Date(att.created_at).toLocaleDateString()}
+                          </span>
+                        </div>
+                        <div className="font-medium text-notion-text text-sm">
+                          {att.test_title_snapshot || att.test_title}
+                        </div>
+                        <div className="text-notion-muted text-xs flex items-center gap-2 font-mono">
+                          <span>Time: {durationMin}m</span>
+                          <span>•</span>
+                          <span>Attempted: {att.attempted_questions} / {att.total_questions}</span>
+                        </div>
+                      </div>
+
+                      <div className="flex items-center justify-between sm:justify-end gap-4 pt-2 sm:pt-0 border-t sm:border-t-0 border-notion-border">
+                        <div className="sm:text-right">
+                          <div className="font-mono font-semibold text-notion-text">
+                            {att.final_score.toFixed(1)} <span className="text-notion-muted">/ {att.maximum_marks}</span>
+                          </div>
+                          <div className="font-mono text-emerald-700 text-xs">
+                            {att.accuracy}% Accuracy
+                          </div>
+                        </div>
+
+                        <Link href={`/exam/${att.id}/result`}>
+                          <Button variant="outline" size="sm" className="min-h-[38px] sm:min-h-0">
+                            View Scorecard
+                          </Button>
+                        </Link>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* TAB 3: SUBJECT PROGRESS */}
+        {activeTab === 'subjects' && (
+          <div className="space-y-4">
+            <div className="p-4 sm:p-5 bg-white border border-notion-border rounded-md space-y-4">
+              <div>
+                <h3 className="text-sm font-semibold text-notion-text">Subject Performance Breakdown</h3>
+                <p className="text-xs text-notion-muted mt-0.5">
+                  Detailed accuracy, question volume, and topic mastery by syllabus subject
+                </p>
+              </div>
+
+              {/* Mobile Card List (< sm) */}
+              <div className="sm:hidden divide-y divide-notion-border border border-notion-border rounded-md overflow-hidden">
+                {subjects.map((sub: any) => (
+                  <div key={sub.id} className="p-3.5 bg-white space-y-2.5 text-xs">
+                    <div className="flex items-center justify-between">
+                      <span className="font-medium text-notion-text text-sm">{sub.name}</span>
+                      <Badge
+                        variant={sub.competency_tier === 'Proficient' ? 'emerald' : sub.competency_tier === 'Developing' ? 'amber' : 'stone'}
+                        size="sm"
+                      >
+                        {sub.competency_tier || 'In Progress'}
+                      </Badge>
+                    </div>
+                    <div className="grid grid-cols-3 gap-2 py-1.5 bg-[#F7F7F5] rounded p-2 text-center font-mono">
+                      <div>
+                        <div className="text-[10px] text-notion-muted uppercase">Mastery</div>
+                        <div className="font-semibold text-notion-text">{sub.avg_mastery}%</div>
+                      </div>
+                      <div>
+                        <div className="text-[10px] text-notion-muted uppercase">Practiced</div>
+                        <div className="font-semibold text-notion-text">{sub.total_practiced} Qs</div>
+                      </div>
+                      <div>
+                        <div className="text-[10px] text-notion-muted uppercase">Accuracy</div>
+                        <div className="font-semibold text-emerald-700">{sub.accuracy}%</div>
+                      </div>
+                    </div>
+                    <Link href={`/learn`} className="block text-center py-2 text-xs text-indigo-700 font-medium bg-indigo-50/50 hover:bg-indigo-50 rounded border border-indigo-100 min-h-[38px] flex items-center justify-center">
+                      Study Topics →
+                    </Link>
+                  </div>
+                ))}
+              </div>
+
+              {/* Desktop Table (>= sm) */}
+              <div className="hidden sm:block overflow-x-auto border border-notion-border rounded-md">
+                <table className="w-full text-left text-xs">
+                  <thead className="bg-[#F7F7F5] text-notion-muted font-mono uppercase text-[10px] border-b border-notion-border">
+                    <tr>
+                      <th className="py-2.5 px-3">Subject</th>
+                      <th className="py-2.5 px-3">Status</th>
+                      <th className="py-2.5 px-3">Mastery</th>
+                      <th className="py-2.5 px-3">Practiced</th>
+                      <th className="py-2.5 px-3">Accuracy</th>
+                      <th className="py-2.5 px-3 text-right">Action</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-notion-border">
+                    {subjects.map((sub: any) => (
+                      <tr key={sub.id} className="hover:bg-[#F7F7F5]">
+                        <td className="py-3 px-3 font-medium text-notion-text">
+                          {sub.name}
+                        </td>
+                        <td className="py-3 px-3">
+                          <Badge
+                            variant={sub.competency_tier === 'Proficient' ? 'emerald' : sub.competency_tier === 'Developing' ? 'amber' : 'stone'}
+                            size="sm"
+                          >
+                            {sub.competency_tier || 'In Progress'}
+                          </Badge>
+                        </td>
+                        <td className="py-3 px-3 font-mono font-medium text-notion-text">{sub.avg_mastery}%</td>
+                        <td className="py-3 px-3 font-mono text-notion-muted">{sub.total_practiced} Qs</td>
+                        <td className="py-3 px-3 font-mono text-emerald-700">{sub.accuracy}%</td>
+                        <td className="py-3 px-3 text-right">
+                          <Link href={`/learn`} className="text-indigo-700 hover:underline font-medium">
+                            Study Topics →
+                          </Link>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
               </div>
             </div>
           </div>

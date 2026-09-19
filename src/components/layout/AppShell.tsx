@@ -12,26 +12,21 @@ import {
   TrendingUp,
   PenTool,
   Layers,
-  Library,
-  GraduationCap,
   Target,
   Settings,
   Menu,
   X,
   ChevronDown,
   LogOut,
-  ShieldCheck,
   Check,
   ExternalLink,
-  Sparkles,
   PanelLeft,
-  Search,
-  FileText,
   PlusCircle,
+  Clock,
 } from 'lucide-react';
 import Logo from '@/components/ui/Logo';
-import { Badge } from '@/components/ui/Badge';
 import { Breadcrumbs, BreadcrumbItem } from '@/components/ui/Breadcrumbs';
+import { ThemeSelector } from '@/components/theme/ThemeSelector';
 
 interface AppShellProps {
   children: React.ReactNode;
@@ -52,31 +47,42 @@ interface NavGroup {
   items: NavItem[];
 }
 
+function sanitizeExamName(examName?: string | null): string {
+  if (!examName) return 'CAT 2026';
+  if (examName.includes('CAT')) return 'CAT 2026';
+  if (examName.includes('XAT')) return 'XAT 2026';
+  if (examName.includes('NMAT')) return 'NMAT 2026';
+  if (examName.includes('SNAP')) return 'SNAP 2026';
+  return 'CAT 2026';
+}
+
 export function AppShell({
   children,
   breadcrumbs,
-  activeExamTitle = 'SSC CGL 2026',
+  activeExamTitle = 'CAT 2026',
   actions,
 }: AppShellProps) {
   const pathname = usePathname();
   const router = useRouter();
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [mobileExamSheetOpen, setMobileExamSheetOpen] = useState(false);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [user, setUser] = useState<{ id: string; name: string; email: string; role: string } | null>(null);
   const [examDropdownOpen, setExamDropdownOpen] = useState(false);
-  const [roleDropdownOpen, setRoleDropdownOpen] = useState(false);
-  const [selectedExam, setSelectedExam] = useState(activeExamTitle);
+  const [selectedExam, setSelectedExam] = useState(() => sanitizeExamName(activeExamTitle));
   const examMenuRef = useRef<HTMLDivElement>(null);
-  const roleMenuRef = useRef<HTMLDivElement>(null);
 
-  // Close mobile drawer on route change
+  const [currentSearch, setCurrentSearch] = useState('');
+
   useEffect(() => {
     setMobileOpen(false);
+    setMobileExamSheetOpen(false);
     setExamDropdownOpen(false);
-    setRoleDropdownOpen(false);
+    if (typeof window !== 'undefined') {
+      setCurrentSearch(window.location.search);
+    }
   }, [pathname]);
 
-  // Fetch current user
   useEffect(() => {
     fetch('/api/auth/me')
       .then((res) => res.json())
@@ -86,37 +92,27 @@ export function AppShell({
       .catch(() => {});
 
     const savedExam = localStorage.getItem('nalanda_active_exam');
-    if (savedExam) setSelectedExam(savedExam);
+    const sanitized = sanitizeExamName(savedExam || activeExamTitle);
+    setSelectedExam(sanitized);
+    if (savedExam !== sanitized) {
+      localStorage.setItem('nalanda_active_exam', sanitized);
+    }
 
     const handleClickOutside = (e: MouseEvent) => {
       if (examMenuRef.current && !examMenuRef.current.contains(e.target as Node)) {
         setExamDropdownOpen(false);
       }
-      if (roleMenuRef.current && !roleMenuRef.current.contains(e.target as Node)) {
-        setRoleDropdownOpen(false);
-      }
     };
     document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, []);
+  }, [activeExamTitle]);
 
   const handleSelectExam = (exam: string) => {
-    setSelectedExam(exam);
-    localStorage.setItem('nalanda_active_exam', exam);
+    const sanitized = sanitizeExamName(exam);
+    setSelectedExam(sanitized);
+    localStorage.setItem('nalanda_active_exam', sanitized);
     setExamDropdownOpen(false);
-  };
-
-  const handleSwitchRole = async (targetRole: string) => {
-    try {
-      await fetch('/api/auth/demo-switch', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ role: targetRole }),
-      });
-      window.location.reload();
-    } catch (e) {
-      console.error(e);
-    }
+    setMobileExamSheetOpen(false);
   };
 
   const handleLogout = async () => {
@@ -130,7 +126,7 @@ export function AppShell({
 
   const navGroups: NavGroup[] = [
     {
-      title: 'HOME',
+      title: 'WORKSPACE',
       items: [
         { label: 'Home', href: '/dashboard', icon: LayoutDashboard },
       ],
@@ -138,49 +134,40 @@ export function AppShell({
     {
       title: 'LEARN',
       items: [
-        { label: 'My Exam', href: '/exams/exam-ssc-cgl-2026', icon: Compass },
         { label: 'Syllabus', href: '/learn', icon: BookOpen },
-        { label: 'Learning Pathways', href: '/learn?tab=pathways', icon: Target },
-      ],
-    },
-    {
-      title: 'RESOURCES',
-      items: [
-        { label: 'Resource Library', href: '/library', icon: Library },
-        { label: 'My Resources', href: '/library?tab=saved', icon: BookMarked },
-        { label: 'Add Resource', href: '/library?action=add', icon: PlusCircle },
+        { label: 'VARC', href: '/learn?section=varc', icon: Compass },
+        { label: 'DILR', href: '/learn?section=dilr', icon: Layers },
+        { label: 'QA', href: '/learn?section=qa', icon: Target },
       ],
     },
     {
       title: 'PRACTICE',
       items: [
         { label: 'Question Bank', href: '/question-bank', icon: Layers },
-        { label: 'Practice Sets', href: '/tests?type=practice', icon: FileCheck },
+        { label: 'VARC', href: '/question-bank?section=VARC', icon: Compass },
+        { label: 'DILR', href: '/question-bank?section=DILR', icon: Layers },
+        { label: 'QA', href: '/question-bank?section=QA', icon: Target },
       ],
     },
     {
       title: 'TESTS',
       items: [
-        { label: 'My Tests', href: '/tests', icon: FileCheck },
-        { label: 'Test Library', href: '/library', icon: Library },
+        { label: 'Full Mocks', href: '/tests?type=full_mock', icon: FileCheck },
+        { label: 'Sectional', href: '/tests?type=sectional', icon: Target },
+        { label: 'PYQs', href: '/tests?type=pyq', icon: BookMarked },
         { label: 'Create Test', href: '/tests/create', icon: PenTool },
-        { label: 'PDF to Test', href: '/tests/create?pathway=upload', icon: FileText },
       ],
     },
     {
-      title: 'REVIEW',
+      title: 'INSIGHT',
       items: [
-        { label: 'Mistakes', href: '/mistakes', icon: BookMarked, badge: '3' },
+        { label: 'Performance', href: '/performance', icon: TrendingUp },
+        { label: 'Mistakes', href: '/mistakes', icon: BookMarked },
+        { label: 'Revision', href: '/mistakes?tab=revision', icon: Clock },
       ],
     },
     {
-      title: 'PROGRESS',
-      items: [
-        { label: 'Progress', href: '/performance', icon: TrendingUp },
-      ],
-    },
-    {
-      title: 'SETTINGS',
+      title: 'ACCOUNT',
       items: [
         { label: 'Settings', href: '/settings', icon: Settings },
       ],
@@ -188,48 +175,75 @@ export function AppShell({
   ];
 
   const availableExams = [
-    { id: 'exam-ssc-cgl-2026', name: 'SSC CGL 2026', sub: 'Staff Selection (Group B/C)' },
-    { id: 'exam-neet-2026', name: 'NEET UG 2026', sub: 'Pre-Medical Entrance' },
-    { id: 'exam-upsc-2026', name: 'UPSC CSE 2026', sub: 'Civil Services Prelims' },
-    { id: 'exam-jee-2026', name: 'JEE Advanced 2026', sub: 'Engineering Entrance' },
+    { id: 'exam-cat-2026', name: 'CAT 2026', sub: 'Common Admission Test (IIMs)' },
+    { id: 'exam-xat-2026', name: 'XAT 2026', sub: 'Xavier Aptitude Test (XLRI)' },
+    { id: 'exam-nmat-2026', name: 'NMAT 2026', sub: 'NMIMS & Leading B-Schools' },
+    { id: 'exam-snap-2026', name: 'SNAP 2026', sub: 'Symbiosis National Aptitude' },
   ];
 
-  const renderNavLinks = () => (
-    <div className="space-y-4">
+  const isItemActive = (itemHref: string) => {
+    const [targetPath, targetQuery] = itemHref.split('?');
+    if (itemHref === '/dashboard') {
+      return pathname === '/dashboard';
+    }
+    if (targetQuery) {
+      return pathname === targetPath && currentSearch.includes(targetQuery);
+    }
+    if (pathname === targetPath) {
+      return !currentSearch || currentSearch === '?';
+    }
+    if (targetPath === '/learn' && pathname.startsWith('/learn/')) {
+      return true;
+    }
+    if (targetPath === '/tests' && pathname.startsWith('/tests/') && !pathname.startsWith('/tests/create')) {
+      return true;
+    }
+    return false;
+  };
+
+  const renderNavLinks = (isMobile = false) => (
+    <div className={isMobile ? 'space-y-4' : 'space-y-5'}>
       {navGroups.map((group, groupIdx) => (
         <div key={groupIdx} className="space-y-0.5">
-          <div className="px-2 text-[10px] font-semibold uppercase tracking-wider text-[#787774]">
+          <div className="px-2 text-[10px] font-semibold uppercase tracking-widest text-ink-muted mb-1">
             {group.title}
           </div>
-          <div className="space-y-0.5 pt-0.5">
+          <div className="space-y-px">
             {group.items.map((item) => {
               const Icon = item.icon;
-              const isActive =
-                item.href === '/dashboard'
-                  ? pathname === '/dashboard'
-                  : pathname.startsWith(item.href);
+              const isActive = isItemActive(item.href);
 
               return (
                 <Link
                   key={item.href}
                   href={item.href}
-                  className={`flex items-center justify-between px-2.5 py-1.5 text-xs rounded-md transition-colors min-h-[30px] select-none ${
+                  onClick={() => {
+                    if (isMobile) setMobileOpen(false);
+                    if (item.href.includes('?')) {
+                      setCurrentSearch(item.href.slice(item.href.indexOf('?')));
+                    } else {
+                      setCurrentSearch('');
+                    }
+                  }}
+                  className={`flex items-center justify-between px-2.5 text-xs rounded-control transition-all select-none ${
+                    isMobile ? 'min-h-[44px] py-2.5 active:scale-[0.98]' : 'min-h-[32px] py-1.5'
+                  } ${
                     isActive
-                      ? 'bg-[#EEF0FB] text-[#4F46A5] font-medium'
-                      : 'text-[#5F5E5B] hover:text-[#202124] hover:bg-[#EAEAE7]'
+                      ? 'bg-accent/10 text-accent font-semibold border border-accent/20'
+                      : 'text-ink-muted hover:text-ink hover:bg-secondary active:bg-line'
                   }`}
                 >
                   <div className="flex items-center gap-2.5 min-w-0">
                     <Icon
-                      className={`w-3.5 h-3.5 flex-shrink-0 ${
-                        isActive ? 'text-[#4F46A5]' : 'text-[#787774]'
+                      className={`${isMobile ? 'w-4 h-4' : 'w-3.5 h-3.5'} flex-shrink-0 ${
+                        isActive ? 'text-accent' : 'text-ink-muted'
                       }`}
                     />
                     <span className="truncate">{item.label}</span>
                   </div>
                   {item.badge && (
-                    <span className={`text-[10px] font-mono px-1.5 py-0.2 rounded ${
-                      isActive ? 'bg-[#DCDDF7] text-[#4F46A5]' : 'bg-[#E6E6E3] text-[#787774]'
+                    <span className={`text-[10px] font-mono px-1.5 py-0.5 rounded-full ${
+                      isActive ? 'bg-accent/10 text-accent' : 'bg-line text-ink-muted'
                     }`}>
                       {item.badge}
                     </span>
@@ -244,104 +258,116 @@ export function AppShell({
   );
 
   return (
-    <div className="min-h-screen bg-[#F7F7F5] flex flex-col md:flex-row text-[#202124]">
-      {/* Nalanda Collapsible Desktop Sidebar */}
+    <div className="min-h-screen bg-canvas flex flex-col md:flex-row text-ink">
+      {/* Desktop Sidebar */}
       <aside
-        className={`hidden md:flex flex-col border-r border-[#E6E6E3] bg-[#F1F1EF] sticky top-0 h-screen overflow-y-auto shrink-0 z-20 transition-all duration-200 select-none ${
+        className={`hidden md:flex flex-col border-r border-line bg-secondary sticky top-0 h-screen overflow-y-auto shrink-0 z-20 transition-all duration-200 select-none ${
           sidebarCollapsed ? 'w-0 -ml-px border-r-0 overflow-hidden' : 'w-60'
         }`}
       >
-        {/* Workspace Brand / Identity Switcher */}
-        <div className="p-3 border-b border-[#E6E6E3] flex items-center justify-between">
-          <div className="flex items-center gap-2 min-w-0">
-            <div className="w-5 h-5 rounded-[4px] bg-[#4F46A5] text-white flex items-center justify-center text-[10px] font-bold shrink-0">
-              N
+        {/* Brand */}
+        <div className="p-3 border-b border-line flex items-center justify-between">
+          <div className="flex items-center gap-2.5 min-w-0">
+            <div className="w-6 h-6 rounded-control bg-accent text-white flex items-center justify-center text-[11px] font-bold shrink-0">
+              E
             </div>
-            <span className="text-xs font-semibold text-[#202124] truncate tracking-tight">
-              Nalanda Workspace
-            </span>
+            <div>
+              <span className="text-xs font-bold text-ink tracking-tight">
+                ExamCraft
+              </span>
+            </div>
           </div>
           <button
             onClick={() => setSidebarCollapsed(true)}
-            className="p-1 rounded text-[#787774] hover:text-[#202124] hover:bg-[#EAEAE7] transition-colors"
+            className="p-1 rounded text-ink-muted hover:text-ink hover:bg-elevated transition-colors"
             title="Collapse Sidebar"
           >
             <PanelLeft className="w-3.5 h-3.5" />
           </button>
         </div>
 
-        {/* Active Target Exam Pill */}
-        <div className="px-3 py-2 border-b border-[#E6E6E3]">
-          <div className="flex items-center justify-between text-[11px] text-[#787774] mb-1">
-            <span>Target Exam</span>
-            <Link href="/exams" className="text-[#4F46A5] hover:underline text-[10px] font-medium">
-              Switch
-            </Link>
+        {/* Target Exam */}
+        <div className="px-3 py-2 border-b border-line">
+          <div className="flex items-center justify-between text-[10px] text-ink-muted mb-1.5">
+            <span className="uppercase tracking-wider font-semibold">Target Exam</span>
+            <span className="font-mono text-accent bg-accent/10 px-1.5 py-0.5 rounded font-medium">CBT</span>
           </div>
-          <div className="flex items-center justify-between text-xs text-[#202124] bg-white px-2 py-1.5 rounded-[4px] border border-[#E6E6E3]">
-            <div className="flex items-center gap-1.5 truncate font-medium">
-              <span className="w-1.5 h-1.5 rounded-full bg-[#4F46A5] shrink-0" />
-              <span className="truncate">{selectedExam}</span>
+          <div className="flex items-center justify-between text-xs text-ink bg-surface px-2.5 py-1.5 rounded-control border border-line">
+            <div className="flex items-center gap-1.5 truncate font-semibold">
+              <span className="w-1.5 h-1.5 rounded-full bg-accent shrink-0" />
+              <span>CAT 2026</span>
             </div>
-            <span className="text-[10px] font-mono text-[#787774]">Tier-I</span>
+            <span className="text-[10px] text-ink-muted font-medium">Nov 2026</span>
           </div>
         </div>
 
-        {/* Navigation List */}
+        {/* Navigation */}
         <div className="p-2.5 flex-1 overflow-y-auto">
           {renderNavLinks()}
         </div>
 
-        {/* User Session Footer */}
-        <div className="p-2.5 border-t border-[#E6E6E3] bg-[#F1F1EF]">
-          <div className="flex items-center justify-between px-2 py-1.5 rounded hover:bg-[#EAEAE7] transition-colors">
+        {/* User Footer */}
+        <div className="p-2.5 border-t border-line bg-secondary">
+          <div className="flex items-center justify-between px-2 py-1.5 rounded-control hover:bg-elevated transition-colors">
             <div className="flex items-center gap-2 min-w-0">
-              <div className="w-6 h-6 rounded-full bg-[#E6E6E3] text-[#202124] flex items-center justify-center text-[10px] font-medium shrink-0">
-                {user?.name ? user.name.slice(0, 2).toUpperCase() : 'NL'}
+              <div className="w-6 h-6 rounded-full bg-accent/15 text-accent flex items-center justify-center text-[10px] font-semibold shrink-0">
+                {user?.name ? user.name.slice(0, 2).toUpperCase() : 'EC'}
               </div>
               <div className="min-w-0">
-                <div className="text-xs font-medium text-[#202124] truncate">
+                <div className="text-xs font-medium text-ink truncate">
                   {user?.name || 'Aspirant'}
                 </div>
-                <div className="text-[10px] text-[#787774] capitalize truncate">
-                  {user?.role || 'student'}
+                <div className="text-[10px] text-ink-muted truncate">
+                  CAT Aspirant
                 </div>
               </div>
             </div>
 
-            <button
-              onClick={handleLogout}
-              className="p-1 text-[#787774] hover:text-[#C53030] rounded hover:bg-white transition-colors"
-              title="Sign Out"
-            >
-              <LogOut className="w-3.5 h-3.5" />
-            </button>
+            <div className="flex items-center gap-0.5">
+              <ThemeSelector />
+              <button
+                onClick={handleLogout}
+                className="p-1 text-ink-muted hover:text-coral rounded hover:bg-elevated transition-colors"
+                title="Sign Out"
+              >
+                <LogOut className="w-3.5 h-3.5" />
+              </button>
+            </div>
           </div>
         </div>
       </aside>
 
-      {/* Mobile Header Bar */}
-      <div className="md:hidden flex items-center justify-between px-3.5 py-2.5 bg-white border-b border-[#E6E6E3] sticky top-0 z-30">
-        <div className="flex items-center gap-2.5">
+      {/* Mobile Top Bar */}
+      <div className="md:hidden flex items-center justify-between px-4 py-2 bg-surface border-b border-line sticky top-0 z-30 select-none">
+        <div className="flex items-center gap-2">
           <button
             onClick={() => setMobileOpen(true)}
-            className="p-1.5 -ml-1 text-[#202124] hover:bg-[#F1F1EF] rounded transition-colors"
+            className="min-w-[44px] min-h-[44px] flex items-center justify-center -ml-1.5 text-ink hover:bg-secondary active:bg-line rounded-btn transition-colors"
             aria-label="Open navigation menu"
           >
-            <Menu className="w-4 h-4" />
+            <Menu className="w-5 h-5" />
           </button>
           <Logo size="sm" />
         </div>
 
         <div className="flex items-center gap-2">
-          <Badge variant="indigo" size="sm">
-            {selectedExam.split(' ')[0]}
-          </Badge>
-          <div
-            className="w-6 h-6 rounded-full bg-[#EEF0FB] text-[#4F46A5] flex items-center justify-center text-[10px] font-medium"
+          <button
+            onClick={() => setMobileExamSheetOpen(true)}
+            className="flex items-center gap-1.5 px-3 py-1.5 min-h-[38px] bg-accent/10 hover:bg-accent/15 active:scale-95 text-accent rounded-full text-xs font-semibold border border-accent/20 transition-all"
+            aria-label="Change target exam"
           >
-            {user?.name ? user.name.slice(0, 1).toUpperCase() : 'N'}
-          </div>
+            <span className="w-1.5 h-1.5 rounded-full bg-accent" />
+            <span>{selectedExam.split(' ')[0]}</span>
+            <ChevronDown className="w-3 h-3" />
+          </button>
+
+          <button
+            onClick={() => setMobileOpen(true)}
+            className="min-w-[38px] min-h-[38px] w-9 h-9 rounded-full bg-secondary text-ink border border-line flex items-center justify-center text-xs font-semibold active:scale-95 transition-transform"
+            aria-label="User profile and menu"
+          >
+            {user?.name ? user.name.slice(0, 1).toUpperCase() : 'E'}
+          </button>
         </div>
       </div>
 
@@ -349,47 +375,100 @@ export function AppShell({
       {mobileOpen && (
         <div className="fixed inset-0 z-[100] md:hidden flex" role="dialog" aria-modal="true">
           <div
-            className="fixed inset-0 bg-black/20 backdrop-blur-2xs transition-opacity"
+            className="fixed inset-0 bg-black/40 backdrop-blur-xs transition-opacity"
             onClick={() => setMobileOpen(false)}
           />
-          <div className="relative flex flex-col w-4/5 max-w-xs bg-[#F1F1EF] h-full shadow-lg z-10 overflow-y-auto border-r border-[#E6E6E3]">
-            <div className="p-3.5 border-b border-[#E6E6E3] flex items-center justify-between bg-white">
+          <div className="relative flex flex-col w-[85%] max-w-xs bg-secondary h-full shadow-2xl z-10 overflow-hidden border-r border-line">
+            <div className="px-4 py-3 border-b border-line flex items-center justify-between bg-surface">
               <Logo size="sm" />
               <button
                 onClick={() => setMobileOpen(false)}
-                className="p-1 text-[#787774] hover:text-[#202124] rounded hover:bg-[#F1F1EF]"
+                className="min-w-[40px] min-h-[40px] flex items-center justify-center text-ink-muted hover:text-ink rounded-btn hover:bg-secondary active:scale-95"
                 aria-label="Close menu"
               >
-                <X className="w-4 h-4" />
+                <X className="w-5 h-5" />
               </button>
             </div>
 
-            <div className="p-3 border-b border-[#E6E6E3]">
-              <div className="text-[10px] uppercase font-semibold text-[#787774] tracking-wider mb-1">
-                Active Target Exam
-              </div>
-              <div className="text-xs font-medium text-[#202124] flex items-center gap-2">
-                <span className="w-1.5 h-1.5 rounded-full bg-[#4F46A5]" />
-                {selectedExam}
-              </div>
-            </div>
-
-            <div className="p-2.5 flex-1 overflow-y-auto">
-              {renderNavLinks()}
-            </div>
-
-            <div className="p-3 border-t border-[#E6E6E3] bg-white">
-              <div className="flex items-center justify-between">
-                <div>
-                  <div className="text-xs font-medium text-[#202124]">{user?.name || 'Aspirant'}</div>
-                  <div className="text-[10px] text-[#787774]">{user?.email || 'aspirant@nalanda.edu'}</div>
+            {/* Target Exam Card */}
+            <div className="p-3 border-b border-line bg-surface/60">
+              <div className="flex items-center justify-between mb-1.5">
+                <div className="text-[10px] uppercase font-semibold text-ink-muted tracking-widest">
+                  Active Target
                 </div>
                 <button
-                  onClick={handleLogout}
-                  className="p-1.5 text-[#787774] hover:text-[#C53030] rounded hover:bg-[#F1F1EF] transition-colors"
+                  onClick={() => {
+                    setMobileOpen(false);
+                    setMobileExamSheetOpen(true);
+                  }}
+                  className="text-[11px] font-semibold text-accent hover:underline px-1 py-0.5"
                 >
-                  <LogOut className="w-4 h-4" />
+                  Change
                 </button>
+              </div>
+              <button
+                onClick={() => {
+                  setMobileOpen(false);
+                  setMobileExamSheetOpen(true);
+                }}
+                className="w-full flex items-center justify-between p-2.5 rounded-card bg-surface border border-line text-left hover:border-accent/40 active:bg-canvas transition-colors"
+              >
+                <div className="flex items-center gap-2 min-w-0">
+                  <span className="w-2 h-2 rounded-full bg-accent flex-shrink-0" />
+                  <span className="text-xs font-semibold text-ink truncate">{selectedExam}</span>
+                </div>
+                <ChevronDown className="w-3.5 h-3.5 text-ink-muted flex-shrink-0 ml-1" />
+              </button>
+            </div>
+
+            {/* Quick Actions */}
+            <div className="px-3 py-2.5 border-b border-line bg-line/20 flex gap-2">
+              <Link
+                href="/tests/create"
+                onClick={() => setMobileOpen(false)}
+                className="flex-1 flex items-center justify-center gap-1.5 py-2 px-2.5 bg-surface border border-line rounded-card text-xs font-semibold text-ink shadow-xs active:scale-95 hover:border-accent/40 transition-all"
+              >
+                <PenTool className="w-3.5 h-3.5 text-accent" />
+                <span>Create Test</span>
+              </Link>
+              <Link
+                href="/library?tab=add"
+                onClick={() => setMobileOpen(false)}
+                className="flex-1 flex items-center justify-center gap-1.5 py-2 px-2.5 bg-surface border border-line rounded-card text-xs font-semibold text-ink shadow-xs active:scale-95 hover:border-accent/40 transition-all"
+              >
+                <PlusCircle className="w-3.5 h-3.5 text-accent" />
+                <span>Add Resource</span>
+              </Link>
+            </div>
+
+            {/* Navigation */}
+            <div className="p-3 flex-1 overflow-y-auto">
+              {renderNavLinks(true)}
+            </div>
+
+            {/* Footer */}
+            <div className="p-3.5 border-t border-line bg-surface">
+              <div className="flex items-center justify-between gap-2">
+                <div className="flex items-center gap-2 min-w-0">
+                  <div className="w-7 h-7 rounded-full bg-accent/15 text-accent flex items-center justify-center text-[11px] font-semibold shrink-0">
+                    {user?.name ? user.name.slice(0, 1).toUpperCase() : 'E'}
+                  </div>
+                  <div className="min-w-0">
+                    <div className="text-xs font-semibold text-ink truncate">{user?.name || 'Aspirant'}</div>
+                    <div className="text-[10px] text-ink-muted truncate">{user?.email || 'aspirant@examcraft.app'}</div>
+                  </div>
+                </div>
+                <div className="flex items-center gap-1">
+                  <ThemeSelector />
+                  <button
+                    onClick={handleLogout}
+                    className="min-h-[40px] min-w-[40px] flex items-center justify-center text-ink-muted hover:text-coral rounded-btn hover:bg-secondary active:scale-95 transition-colors"
+                    title="Sign Out"
+                    aria-label="Sign Out"
+                  >
+                    <LogOut className="w-4 h-4" />
+                  </button>
+                </div>
               </div>
             </div>
           </div>
@@ -397,15 +476,14 @@ export function AppShell({
       )}
 
       {/* Main Content Area */}
-      <div className="flex-1 flex flex-col min-w-0 bg-[#F7F7F5]">
-        {/* Compact Top Header Bar (Height 44px) */}
-        <header className="hidden md:flex items-center justify-between px-5 h-11 bg-white border-b border-[#E6E6E3] sticky top-0 z-10 select-none">
-          {/* Breadcrumbs & Sidebar Toggle */}
+      <div className="flex-1 flex flex-col min-w-0 bg-canvas">
+        {/* Desktop Top Bar */}
+        <header className="hidden md:flex items-center justify-between px-6 h-12 bg-surface border-b border-line sticky top-0 z-10 select-none">
           <div className="flex items-center gap-2 min-w-0">
             {sidebarCollapsed && (
               <button
                 onClick={() => setSidebarCollapsed(false)}
-                className="p-1 rounded text-[#787774] hover:text-[#202124] hover:bg-[#F1F1EF] transition-colors mr-1"
+                className="p-1.5 rounded-control text-ink-muted hover:text-ink hover:bg-secondary transition-colors mr-1"
                 title="Expand Sidebar"
               >
                 <PanelLeft className="w-4 h-4" />
@@ -415,51 +493,50 @@ export function AppShell({
             {breadcrumbs && breadcrumbs.length > 0 ? (
               <Breadcrumbs items={breadcrumbs} />
             ) : (
-              <div className="flex items-center gap-1.5 text-xs text-[#787774]">
-                <span className="text-[#202124] font-medium">Nalanda</span>
+              <div className="flex items-center gap-1.5 text-xs text-ink-muted">
+                <span className="text-ink font-medium">ExamCraft</span>
                 <span>/</span>
                 <span>{selectedExam}</span>
               </div>
             )}
           </div>
 
-          {/* Right Header Utilities: Exam Switcher + Persona + Actions */}
           <div className="flex items-center gap-2">
             {/* Target Exam Dropdown */}
             <div className="relative" ref={examMenuRef}>
               <button
                 onClick={() => setExamDropdownOpen(!examDropdownOpen)}
-                className="flex items-center gap-1.5 px-2.5 py-1 text-xs text-[#202124] hover:bg-[#F1F1EF] rounded transition-colors"
+                className="flex items-center gap-1.5 px-2.5 py-1.5 text-xs text-ink hover:bg-secondary rounded-control transition-colors"
               >
-                <span className="w-1.5 h-1.5 rounded-full bg-[#4F46A5]" />
+                <span className="w-1.5 h-1.5 rounded-full bg-accent" />
                 <span className="font-medium">{selectedExam}</span>
-                <ChevronDown className="w-3 h-3 text-[#787774]" />
+                <ChevronDown className="w-3 h-3 text-ink-muted" />
               </button>
 
               {examDropdownOpen && (
-                <div className="absolute right-0 mt-1 w-60 bg-white rounded-md shadow-[0_4px_16px_rgba(0,0,0,0.06)] border border-[#E6E6E3] py-1 z-50 animate-in fade-in zoom-in-95">
-                  <div className="px-2.5 py-1 text-[10px] font-semibold uppercase tracking-wider text-[#787774]">
+                <div className="absolute right-0 mt-1.5 w-60 bg-surface rounded-card shadow-lg border border-line py-1 z-50 animate-fade-in">
+                  <div className="px-3 py-1.5 text-[10px] font-semibold uppercase tracking-widest text-ink-muted">
                     Switch Target Exam
                   </div>
                   {availableExams.map((ex) => (
                     <button
                       key={ex.id}
                       onClick={() => handleSelectExam(ex.name)}
-                      className="w-full text-left px-2.5 py-1.5 text-xs hover:bg-[#F7F7F5] flex items-center justify-between text-[#202124] transition-colors"
+                      className="w-full text-left px-3 py-2 text-xs hover:bg-secondary flex items-center justify-between text-ink transition-colors"
                     >
                       <div>
                         <div className="font-medium">{ex.name}</div>
-                        <div className="text-[10px] text-[#787774]">{ex.sub}</div>
+                        <div className="text-[10px] text-ink-muted">{ex.sub}</div>
                       </div>
                       {selectedExam === ex.name && (
-                        <Check className="w-3.5 h-3.5 text-[#4F46A5] shrink-0" />
+                        <Check className="w-3.5 h-3.5 text-accent shrink-0" />
                       )}
                     </button>
                   ))}
-                  <div className="p-1.5 border-t border-[#E6E6E3] mt-0.5">
+                  <div className="p-1.5 border-t border-line mt-0.5">
                     <Link
                       href="/exams"
-                      className="text-[11px] text-[#787774] hover:text-[#4F46A5] flex items-center justify-center gap-1 font-medium"
+                      className="text-[11px] text-ink-muted hover:text-accent flex items-center justify-center gap-1 font-medium"
                     >
                       Complete Catalog <ExternalLink className="w-3 h-3" />
                     </Link>
@@ -468,13 +545,14 @@ export function AppShell({
               )}
             </div>
 
-            {/* User Session Info */}
+            <ThemeSelector />
+
             {user && (
-              <div className="flex items-center gap-2 text-xs text-[#787774]">
-                <span className="font-medium text-[#202124]">{user.name}</span>
+              <div className="flex items-center gap-2 text-xs text-ink-muted">
+                <span className="font-medium text-ink">{user.name}</span>
                 <button
                   onClick={handleLogout}
-                  className="p-1 text-[#787774] hover:text-[#C53030] rounded hover:bg-[#F1F1EF] transition-colors"
+                  className="p-1.5 text-ink-muted hover:text-coral rounded-control hover:bg-secondary transition-colors"
                   title="Sign Out"
                 >
                   <LogOut className="w-3.5 h-3.5" />
@@ -487,64 +565,113 @@ export function AppShell({
         </header>
 
         {/* Page Container */}
-        <main className="flex-1 max-w-6xl w-full mx-auto px-4 sm:px-8 lg:px-12 py-6 sm:py-8 pb-24 md:pb-8">
+        <main className="flex-1 max-w-6xl w-full mx-auto px-4 sm:px-8 lg:px-12 py-6 sm:py-8 pb-24 md:pb-10">
           {children}
         </main>
 
-        {/* Mobile Fixed Bottom Navigation Bar (Screens < md:) */}
+        {/* Mobile Exam Switcher Bottom Sheet */}
+        {mobileExamSheetOpen && (
+          <div className="fixed inset-0 z-[110] md:hidden flex flex-col justify-end" role="dialog" aria-modal="true">
+            <div
+              className="fixed inset-0 bg-black/40 backdrop-blur-xs transition-opacity"
+              onClick={() => setMobileExamSheetOpen(false)}
+            />
+            <div className="relative bg-surface rounded-t-2xl shadow-2xl border-t border-line p-4 max-h-[80vh] overflow-y-auto z-10 animate-slide-up">
+              <div className="w-10 h-1 bg-line rounded-full mx-auto mb-4" />
+
+              <div className="flex items-center justify-between pb-3 border-b border-line mb-3">
+                <div>
+                  <h3 className="text-sm font-semibold text-ink">Switch Target Exam</h3>
+                  <p className="text-[11px] text-ink-muted">Select the examination you are preparing for</p>
+                </div>
+                <button
+                  onClick={() => setMobileExamSheetOpen(false)}
+                  className="min-w-[36px] min-h-[36px] flex items-center justify-center text-ink-muted hover:text-ink rounded-btn hover:bg-secondary"
+                >
+                  <X className="w-4 h-4" />
+                </button>
+              </div>
+
+              <div className="space-y-2 mb-4">
+                {availableExams.map((exam) => {
+                  const isSelected = selectedExam.includes(exam.name.split(' ')[0]);
+                  return (
+                    <button
+                      key={exam.id}
+                      onClick={() => {
+                        handleSelectExam(exam.name);
+                        setMobileExamSheetOpen(false);
+                      }}
+                      className={`w-full flex items-center justify-between p-3.5 rounded-card border text-left min-h-[56px] transition-all active:scale-[0.98] ${
+                        isSelected
+                          ? 'border-accent/40 bg-accent/8'
+                          : 'border-line bg-surface hover:border-line/80'
+                      }`}
+                    >
+                      <div>
+                        <div className="text-xs font-semibold text-ink flex items-center gap-2">
+                          {exam.name}
+                          {isSelected && (
+                            <span className="text-[10px] px-1.5 py-0.5 bg-accent text-white rounded font-medium">
+                              Active
+                            </span>
+                          )}
+                        </div>
+                        <div className="text-[11px] text-ink-muted">{exam.sub}</div>
+                      </div>
+                      {isSelected ? (
+                        <div className="w-5 h-5 rounded-full bg-accent text-white flex items-center justify-center">
+                          <Check className="w-3 h-3" />
+                        </div>
+                      ) : (
+                        <div className="w-5 h-5 rounded-full border border-line" />
+                      )}
+                    </button>
+                  );
+                })}
+              </div>
+
+              <button
+                onClick={() => setMobileExamSheetOpen(false)}
+                className="w-full py-2.5 bg-secondary text-ink text-xs font-medium rounded-btn hover:bg-line active:scale-98"
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
+        )}
+
+        {/* Mobile Bottom Navigation */}
         <nav
           aria-label="Mobile Bottom Navigation"
-          className="md:hidden fixed bottom-0 inset-x-0 bg-white/95 backdrop-blur-md border-t border-[#E6E6E3] z-30 flex items-center justify-around py-1.5 px-2 shadow-xs select-none"
+          className="md:hidden fixed bottom-0 inset-x-0 bg-surface/95 backdrop-blur-md border-t border-line z-30 flex items-center justify-around h-16 px-1 select-none"
         >
-          <Link
-            href="/dashboard"
-            className={`flex flex-col items-center justify-center py-1 px-2 rounded text-[10px] min-w-[52px] transition-colors ${
-              pathname === '/dashboard' ? 'text-[#4F46A5] font-semibold' : 'text-[#787774] hover:text-[#202124]'
-            }`}
-          >
-            <LayoutDashboard className={`w-4 h-4 mb-0.5 ${pathname === '/dashboard' ? 'text-[#4F46A5]' : 'text-[#787774]'}`} />
-            <span>Overview</span>
-          </Link>
-
-          <Link
-            href="/learn"
-            className={`flex flex-col items-center justify-center py-1 px-2 rounded text-[10px] min-w-[52px] transition-colors ${
-              pathname.startsWith('/learn') ? 'text-[#4F46A5] font-semibold' : 'text-[#787774] hover:text-[#202124]'
-            }`}
-          >
-            <BookOpen className={`w-4 h-4 mb-0.5 ${pathname.startsWith('/learn') ? 'text-[#4F46A5]' : 'text-[#787774]'}`} />
-            <span>Learn</span>
-          </Link>
-
-          <Link
-            href="/tests"
-            className={`flex flex-col items-center justify-center py-1 px-2 rounded text-[10px] min-w-[52px] transition-colors ${
-              pathname.startsWith('/tests') && !pathname.startsWith('/tests/create') ? 'text-[#4F46A5] font-semibold' : 'text-[#787774] hover:text-[#202124]'
-            }`}
-          >
-            <FileCheck className={`w-4 h-4 mb-0.5 ${pathname.startsWith('/tests') && !pathname.startsWith('/tests/create') ? 'text-[#4F46A5]' : 'text-[#787774]'}`} />
-            <span>Tests</span>
-          </Link>
-
-          <Link
-            href="/mistakes"
-            className={`flex flex-col items-center justify-center py-1 px-2 rounded text-[10px] min-w-[52px] transition-colors ${
-              pathname === '/mistakes' ? 'text-[#C53030] font-semibold' : 'text-[#787774] hover:text-[#202124]'
-            }`}
-          >
-            <BookMarked className={`w-4 h-4 mb-0.5 ${pathname === '/mistakes' ? 'text-[#C53030]' : 'text-[#787774]'}`} />
-            <span>Mistakes</span>
-          </Link>
-
-          <Link
-            href="/question-bank"
-            className={`flex flex-col items-center justify-center py-1 px-2 rounded text-[10px] min-w-[52px] transition-colors ${
-              pathname === '/question-bank' ? 'text-[#4F46A5] font-semibold' : 'text-[#787774] hover:text-[#202124]'
-            }`}
-          >
-            <Layers className={`w-4 h-4 mb-0.5 ${pathname === '/question-bank' ? 'text-[#4F46A5]' : 'text-[#787774]'}`} />
-            <span>Practice</span>
-          </Link>
+          {[
+            { href: '/dashboard', label: 'Home', icon: LayoutDashboard, exact: true },
+            { href: '/learn', label: 'Learn', icon: BookOpen, exact: false },
+            { href: '/question-bank', label: 'Practice', icon: Layers, exact: true },
+            { href: '/tests', label: 'Tests', icon: FileCheck, exact: false },
+            { href: '/performance', label: 'Insight', icon: TrendingUp, exact: false },
+          ].map((item) => {
+            const isActive = item.exact
+              ? pathname === item.href
+              : pathname.startsWith(item.href) && (item.href !== '/tests' || !pathname.startsWith('/tests/create'));
+            const Icon = item.icon;
+            return (
+              <Link
+                key={item.href}
+                href={item.href}
+                className={`flex-1 flex flex-col items-center justify-center h-full min-h-[48px] py-1 rounded-btn text-[11px] transition-all active:scale-95 ${
+                  isActive ? 'text-accent font-semibold' : 'text-ink-muted hover:text-ink'
+                }`}
+              >
+                <div className={`p-1.5 rounded-full transition-colors ${isActive ? 'bg-accent/10 text-accent' : ''}`}>
+                  <Icon className="w-4 h-4" />
+                </div>
+                <span className="mt-0.5">{item.label}</span>
+              </Link>
+            );
+          })}
         </nav>
       </div>
     </div>

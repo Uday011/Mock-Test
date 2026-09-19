@@ -32,13 +32,13 @@ export async function GET(req: NextRequest) {
     }
 
     if (subjectId && subjectId !== 'all') {
-      query += ' AND (qb.subject_id = ? OR s.name = ?)';
-      params.push(subjectId, subjectId);
+      query += ' AND (qb.subject_id = ? OR s.name = ? OR LOWER(s.code) = LOWER(?) OR s.id = ?)';
+      params.push(subjectId, subjectId, subjectId, subjectId);
     }
 
     if (topicId && topicId !== 'all') {
-      query += ' AND (qb.topic_id = ? OR sn.title = ?)';
-      params.push(topicId, topicId);
+      query += ' AND (qb.topic_id = ? OR LOWER(sn.title) LIKE LOWER(?) OR LOWER(qb.topic_id) LIKE LOWER(?))';
+      params.push(topicId, `%${topicId}%`, `%${topicId}%`);
     }
 
     if (difficulty && difficulty !== 'all') {
@@ -130,12 +130,12 @@ export async function POST(req: NextRequest) {
       subject_id,
       topic_id,
       subtopic_id = null,
-      exam_id = 'exam-ssc-cgl-2026',
+      exam_id = 'exam-cat-2026',
       tags = [],
       source_reference = 'Test Studio Manual Authoring',
-      marks = 2.0,
-      negative_marks = 0.5,
-      estimated_seconds = 60,
+      marks = 3.0,
+      negative_marks = 1.0,
+      estimated_seconds = 120,
     } = body;
 
     if (!question_text || !question_text.trim()) {

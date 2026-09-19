@@ -5,20 +5,24 @@ export interface BadgeProps {
   variant?:
     | 'default'
     | 'indigo'
+    | 'accent'
+    | 'lavender'
+    | 'green'
+    | 'gold'
+    | 'coral'
+    | 'stone'
+    | 'gray'
+    | 'outline'
     | 'saffron'
     | 'navy'
     | 'emerald'
     | 'purple'
-    | 'outline'
-    | 'stone'
     | 'danger'
     | 'rose'
     | 'orange'
     | 'amber'
     | 'blue'
-    | 'green'
     | 'red'
-    | 'gray'
     | 'brown'
     | 'yellow'
     | 'pink'
@@ -38,57 +42,65 @@ export default function Badge({
   className = '',
 }: BadgeProps) {
   const baseStyles =
-    'inline-flex items-center font-medium rounded-[3px] transition-colors select-none';
+    'inline-flex items-center font-medium rounded-control transition-colors select-none';
 
   const sizeStyles = {
-    sm: 'text-[11px] px-1.5 py-0.5 gap-1 leading-none',
-    md: 'text-xs px-2 py-0.5 gap-1.5 leading-none',
+    sm: 'text-[11px] px-2 py-0.5 gap-1 leading-none',
+    md: 'text-xs px-2.5 py-1 gap-1.5 leading-none',
   };
 
   const variantStyles: Record<string, string> = {
-    default: 'bg-[#F1F1EF] text-[#202124] border border-[#E6E6E3]',
-    stone: 'bg-[#F1F1EF] text-[#202124] border border-[#E6E6E3]',
-    gray: 'bg-[#F1F1EF] text-[#787774] border border-[#E6E6E3]',
-    indigo: 'bg-[#EEF0FB] text-[#4F46A5] border border-[#DCDDF7]',
-    saffron: 'bg-[#FDF6EC] text-[#B7791F] border border-[#F6E3C7]',
-    navy: 'bg-[#EEF0FB] text-[#4F46A5] border border-[#DCDDF7]',
-    blue: 'bg-[#EEF0FB] text-[#4F46A5] border border-[#DCDDF7]',
-    emerald: 'bg-[#EDF7ED] text-[#1B5E20] border border-[#C8E6C9]',
-    green: 'bg-[#EDF7ED] text-[#1B5E20] border border-[#C8E6C9]',
-    teal: 'bg-[#EDF7ED] text-[#1B5E20] border border-[#C8E6C9]',
-    amber: 'bg-[#FFFBEB] text-[#B7791F] border border-[#FEF3C7]',
-    orange: 'bg-[#FDF6EC] text-[#B7791F] border border-[#F6E3C7]',
-    yellow: 'bg-[#FFFBEB] text-[#B7791F] border border-[#FEF3C7]',
-    purple: 'bg-[#EEF0FB] text-[#4F46A5] border border-[#DCDDF7]',
-    pink: 'bg-[#FAF0F5] text-[#9A2862] border border-[#F5D8E8]',
-    brown: 'bg-[#F4EEEE] text-[#64473A] border border-[#E8DCD9]',
-    danger: 'bg-[#FEF2F2] text-[#C53030] border border-[#FEE2E2]',
-    rose: 'bg-[#FEF2F2] text-[#C53030] border border-[#FEE2E2]',
-    red: 'bg-[#FEF2F2] text-[#C53030] border border-[#FEE2E2]',
-    outline: 'bg-transparent text-[#787774] border border-[#E6E6E3]',
+    default: 'bg-secondary text-ink border border-line',
+    stone: 'bg-secondary text-ink border border-line',
+    gray: 'bg-secondary text-ink-muted border border-line',
+    indigo: 'bg-accent/10 text-accent border border-accent/20',
+    accent: 'bg-accent/10 text-accent border border-accent/20',
+    navy: 'bg-accent/10 text-accent border border-accent/20',
+    blue: 'bg-accent/10 text-accent border border-accent/20',
+    purple: 'bg-accent/10 text-accent border border-accent/20',
+    lavender: 'bg-lavender/15 text-lavender border border-lavender/30',
+    green: 'bg-green/15 text-green border border-green/30',
+    emerald: 'bg-green/15 text-green border border-green/30',
+    teal: 'bg-green/15 text-green border border-green/30',
+    gold: 'bg-gold/15 text-gold border border-gold/30',
+    saffron: 'bg-gold/15 text-gold border border-gold/30',
+    amber: 'bg-gold/15 text-gold border border-gold/30',
+    orange: 'bg-gold/15 text-gold border border-gold/30',
+    yellow: 'bg-gold/15 text-gold border border-gold/30',
+    coral: 'bg-coral/15 text-coral border border-coral/30',
+    danger: 'bg-coral/15 text-coral border border-coral/30',
+    rose: 'bg-coral/15 text-coral border border-coral/30',
+    red: 'bg-coral/15 text-coral border border-coral/30',
+    pink: 'bg-coral/10 text-coral border border-coral/20',
+    brown: 'bg-secondary text-ink-muted border border-line',
+    outline: 'bg-transparent text-ink-muted border border-line',
   };
 
   const dotColors: Record<string, string> = {
-    default: 'bg-[#787774]',
-    stone: 'bg-[#787774]',
-    gray: 'bg-[#787774]',
-    indigo: 'bg-[#4F46A5]',
-    saffron: 'bg-[#B7791F]',
-    navy: 'bg-[#4F46A5]',
-    blue: 'bg-[#4F46A5]',
-    emerald: 'bg-[#1B5E20]',
-    green: 'bg-[#1B5E20]',
-    teal: 'bg-[#1B5E20]',
-    amber: 'bg-[#B7791F]',
-    orange: 'bg-[#B7791F]',
-    yellow: 'bg-[#B7791F]',
-    purple: 'bg-[#4F46A5]',
-    pink: 'bg-[#9A2862]',
-    brown: 'bg-[#64473A]',
-    danger: 'bg-[#C53030]',
-    rose: 'bg-[#C53030]',
-    red: 'bg-[#C53030]',
-    outline: 'bg-[#787774]',
+    default: 'bg-ink-muted',
+    stone: 'bg-ink-muted',
+    gray: 'bg-ink-muted',
+    indigo: 'bg-accent',
+    accent: 'bg-accent',
+    navy: 'bg-accent',
+    blue: 'bg-accent',
+    purple: 'bg-accent',
+    lavender: 'bg-lavender',
+    green: 'bg-green',
+    emerald: 'bg-green',
+    teal: 'bg-green',
+    gold: 'bg-gold',
+    saffron: 'bg-gold',
+    amber: 'bg-gold',
+    orange: 'bg-gold',
+    yellow: 'bg-gold',
+    coral: 'bg-coral',
+    danger: 'bg-coral',
+    rose: 'bg-coral',
+    red: 'bg-coral',
+    pink: 'bg-coral',
+    brown: 'bg-ink-muted',
+    outline: 'bg-ink-muted',
   };
 
   const renderIcon = () => {

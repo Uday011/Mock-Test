@@ -360,9 +360,9 @@ export function getDb(): DatabaseSync {
 
     CREATE TABLE IF NOT EXISTS user_onboarding_profiles (
       user_id TEXT PRIMARY KEY,
-      preferred_exam_id TEXT NOT NULL DEFAULT 'exam-ssc-cgl-2026',
+      preferred_exam_id TEXT NOT NULL DEFAULT 'exam-cat-2026',
       preparation_stage TEXT NOT NULL DEFAULT 'beginner',
-      target_timeline TEXT NOT NULL DEFAULT '2026_tier1',
+      target_timeline TEXT NOT NULL DEFAULT '2026_cat',
       daily_study_hours REAL NOT NULL DEFAULT 3.0,
       strong_subjects_json TEXT NOT NULL DEFAULT '[]',
       weak_subjects_json TEXT NOT NULL DEFAULT '[]',
@@ -524,6 +524,22 @@ export function getDb(): DatabaseSync {
       effective_from TEXT NOT NULL
     );
 
+    CREATE TABLE IF NOT EXISTS learner_resources (
+      id TEXT PRIMARY KEY,
+      user_id TEXT,
+      title TEXT NOT NULL,
+      type TEXT NOT NULL DEFAULT 'notes',
+      subject_id TEXT,
+      subject_name TEXT,
+      topic_id TEXT,
+      topic_name TEXT,
+      source TEXT,
+      url TEXT,
+      notes TEXT,
+      is_saved INTEGER NOT NULL DEFAULT 1,
+      created_at TEXT NOT NULL
+    );
+
     CREATE INDEX IF NOT EXISTS idx_tests_user_id ON tests(user_id);
     CREATE INDEX IF NOT EXISTS idx_questions_test_id ON questions(test_id);
     CREATE INDEX IF NOT EXISTS idx_test_attempts_test_id ON test_attempts(test_id);
@@ -543,6 +559,8 @@ export function getDb(): DatabaseSync {
     CREATE INDEX IF NOT EXISTS idx_series_enroll_user ON user_series_enrollments(user_id);
     CREATE INDEX IF NOT EXISTS idx_orders_user ON orders(user_id);
     CREATE INDEX IF NOT EXISTS idx_purchases_user ON purchases(user_id);
+    CREATE INDEX IF NOT EXISTS idx_learner_resources_user ON learner_resources(user_id);
+    CREATE INDEX IF NOT EXISTS idx_learner_resources_topic ON learner_resources(topic_id);
   `);
 
   // Safe schema migrations for existing database files

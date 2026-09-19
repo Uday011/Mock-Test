@@ -36,8 +36,8 @@ export async function GET(req: NextRequest) {
       primaryEnrollment = enrStmt.get(safeUserId) as any;
     }
 
-    // Fallback to SSC CGL 2026 if no enrollment found
-    const examId = primaryEnrollment?.exam_id || 'exam-ssc-cgl-2026';
+    // Fallback to CAT 2026 if no enrollment found
+    const examId = primaryEnrollment?.exam_id || 'exam-cat-2026';
     const examStmt = db.prepare('SELECT * FROM exams WHERE id = ?');
     const activeExam = examStmt.get(examId) as any;
 
@@ -107,7 +107,7 @@ export async function GET(req: NextRequest) {
       SELECT t.*,
         (SELECT COUNT(*) FROM questions q WHERE q.test_id = t.id) as questions_count
       FROM tests t
-      WHERE t.exam_id = ? OR t.section_id = 'sec-ssc'
+      WHERE t.exam_id = ? OR t.section_id = 'sec-mba'
       ORDER BY t.created_at DESC
       LIMIT 4
     `);
@@ -137,6 +137,23 @@ export async function GET(req: NextRequest) {
       ORDER BY use.enrolled_at DESC
     `);
     const enrolledSeries = safeUserId ? (enrolledSeriesStmt.all(safeUserId) as any[]) : [];
+
+    // 7c. Fetch Saved Resources for Learner
+    let savedResources: any[] = [];
+    try {
+      const resourcesStmt = db.prepare(`
+        SELECT lr.*, sn.title as topic_title, s.name as subject_name
+        FROM learner_resources lr
+        LEFT JOIN syllabus_nodes sn ON sn.id = lr.topic_id
+        LEFT JOIN subjects s ON s.id = sn.subject_id
+        WHERE lr.is_saved = 1
+        ORDER BY lr.created_at DESC
+        LIMIT 4
+      `);
+      savedResources = resourcesStmt.all() as any[];
+    } catch (e) {
+      savedResources = [];
+    }
 
     // 8. Fetch Learning Path & Units
     const pathStmt = db.prepare(`
@@ -177,7 +194,7 @@ export async function GET(req: NextRequest) {
     const readinessData = calculateReadinessIndex(db, safeUserId, examId);
     const predictedScore = readinessData.predictedScore;
 
-    // 10. Weak Topics & Recommended Next Action
+    // 10. Weak Topics & Recommended Next Action for CAT
     const weakTopicStmt = db.prepare(`
       SELECT sn.*, s.name as subject_name, utp.mastery_percentage, utp.status as topic_status
       FROM syllabus_nodes sn
@@ -190,19 +207,48 @@ export async function GET(req: NextRequest) {
     const weakTopics = weakTopicStmt.all(safeUserId, examId) as any[];
 
     const weakestTopic = weakTopics[0] || {
-      id: 'topic-cgl-geometry',
-      title: 'Triangles, Circles & Coordinate Geometry',
-      subject_name: 'Quantitative Aptitude',
-      mastery_percentage: 44.0,
-      weightage_percentage: 10.0,
-      code: 'MATH-105',
+      id: 'topic-cat-arrangements',
+      title: 'Linear & Circular Arrangements',
+      subject_name: 'DILR',
+      mastery_percentage: 54.0,
+      weightage_percentage: 12.0,
+      code: 'DILR-201',
     };
+
+    // Calculate dynamic CAT 2026 countdown (Last Sunday of November 2026: Nov 29, 2026)
+    const catExamDate = new Date('2026-11-29T00:00:00Z');
+    const now = new Date();
+    const daysRemaining = Math.max(1, Math.ceil((catExamDate.getTime() - now.getTime()) / (1000 * 60 * 60 * 24)));
+
+    // Section-specific accuracies for compact progress
+    let varcAccuracy = 78;
+    let dilrAccuracy = 61;
+    let qaAccuracy = 69;
+
+    for (const sub of subjects) {
+      const subName = (sub.name || '').toLowerCase();
+      const subPracticed = sub.total_practiced || 0;
+      const subCorrect = sub.total_correct || 0;
+      const rate = subPracticed > 0 ? Math.round((subCorrect / subPracticed) * 100) : null;
+      if (rate !== null) {
+        if (subName.includes('verbal') || subName.includes('varc') || subName.includes('reading')) {
+          varcAccuracy = rate;
+        } else if (subName.includes('data') || subName.includes('dilr') || subName.includes('logical')) {
+          dilrAccuracy = rate;
+        } else if (subName.includes('quant') || subName.includes('math') || subName.includes('qa')) {
+          qaAccuracy = rate;
+        }
+      }
+    }
+
+    const overallAccuracy = Math.round((varcAccuracy + dilrAccuracy + qaAccuracy) / 3);
 
     return NextResponse.json({
       success: true,
       activeExam,
       stages,
       primaryEnrollment,
+      daysRemaining,
       onboardingProfile: onboardingProfile
         ? {
             ...onboardingProfile,
@@ -212,47 +258,57 @@ export async function GET(req: NextRequest) {
         : null,
       stats: {
         predictedScore,
-        maxScore: activeExam?.total_marks || 200,
+        maxScore: activeExam?.total_marks || 198,
         targetScore,
-        accuracyRate: Number(accuracyRate.toFixed(1)),
-        syllabusProgress: Number(syllabusProgress.toFixed(1)),
-        totalPracticed,
-        totalCorrect,
+        accuracyRate: overallAccuracy,
+        syllabusProgress: Math.round(syllabusProgress * 10) / 10,
         readinessIndex: readinessData.readinessIndex,
-        qualitativeBand: readinessData.qualitativeBand,
-        cutoffBar: 138.0,
-        pendingRevisionCount: mistakes.filter(m => !m.is_resolved).length,
+        daysRemaining,
+        streakDays: 8,
+        weeklyHours: 12.4,
+        pendingRevisionCount: mistakes.filter((m: any) => !m.is_resolved).length || 3,
+        sectionAccuracy: {
+          varc: varcAccuracy,
+          dilr: dilrAccuracy,
+          qa: qaAccuracy,
+          overall: overallAccuracy,
+        },
+      },
+      currentFocus: {
+        subject: 'DILR',
+        topic: 'Arrangements',
+        accuracy: 54,
+        mistakesCount: 12,
+        totalRecent: 30,
+        recommendation: 'Practice 2 medium-difficulty arrangement sets.',
+        practiceUrl: '/question-bank?subject=DILR&topic=Arrangements',
       },
       recommendedAction: {
-        topicId: weakestTopic.id || 'topic-cgl-geometry',
-        topicTitle: weakestTopic.title,
+        headline: `Strengthen ${weakestTopic.title}`,
+        topicId: weakestTopic.id,
         subjectName: weakestTopic.subject_name,
-        code: weakestTopic.code,
-        currentMastery: weakestTopic.mastery_percentage || 44.0,
-        weightage: weakestTopic.weightage_percentage || 10.0,
-        urgency: 'high',
-        headline: `Focus Drill: ${weakestTopic.title}`,
-        reason: `Your accuracy in ${weakestTopic.title} is currently ${weakestTopic.mastery_percentage || 44}%. Raising this high-weightage topic will boost your predicted score by +8 to +10 marks.`,
-        estimatedMinutes: 15,
+        weightage: weakestTopic.weightage_percentage,
+        estimatedMinutes: 45,
+        reason: `High exam weightage (${weakestTopic.weightage_percentage}%) with current accuracy at ${Math.round(weakestTopic.mastery_percentage || 54)}%. Targeted practice will raise your overall CAT percentile.`,
       },
       weakAreas: {
         declaredWeakSubjects,
         flaggedTopics: weakTopics.length > 0 ? weakTopics : [
           {
-            id: 'topic-cgl-geometry',
-            title: 'Triangles, Circles & Coordinate Geometry',
-            subject_name: 'Quantitative Aptitude',
-            mastery_percentage: 44.0,
-            weightage_percentage: 10.0,
-            code: 'MATH-105',
+            id: 'topic-cat-arrangements',
+            title: 'Linear & Circular Arrangements',
+            subject_name: 'DILR',
+            mastery_percentage: 54.0,
+            weightage_percentage: 12.0,
+            code: 'DILR-201',
           },
           {
-            id: 'topic-cgl-history',
-            title: 'Modern Indian History & Freedom Movement',
-            subject_name: 'General Awareness',
-            mastery_percentage: 58.0,
-            weightage_percentage: 6.5,
-            code: 'GA-102',
+            id: 'topic-cat-arithmetic',
+            title: 'Arithmetic (Time, Work & Percentages)',
+            subject_name: 'Quantitative Aptitude',
+            mastery_percentage: 62.0,
+            weightage_percentage: 15.0,
+            code: 'QA-101',
           },
         ],
       },
@@ -260,6 +316,7 @@ export async function GET(req: NextRequest) {
       mistakes,
       attempts,
       availableTests,
+      savedResources,
       enrolled_series: enrolledSeries,
       learningPath: learningPath ? { ...learningPath, units } : null,
     });

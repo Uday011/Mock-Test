@@ -72,14 +72,14 @@ export async function POST(req: NextRequest) {
       `Remedial Revision Sprint${categoryLabel} [${selectedMistakes.length} Qs]`,
       `Targeted remedial drill generated from your forensic mistake notebook to eliminate error patterns and cement problem-solving mechanics.`,
       'Forensic Error Revision',
-      'sec-ssc',
+      'sec-mba',
       durationSeconds,
       'standard',
-      2.0,
-      0.5,
+      3.0,
+      1.0,
       0.0,
-      firstMistake?.exam_id || 'exam-ssc-cgl-2026',
-      firstMistake?.subject_id || 'subj-cgl-quant',
+      firstMistake?.exam_id || 'exam-cat-2026',
+      firstMistake?.subject_id || 'subj-cat-qa',
       now,
       now
     );
@@ -90,7 +90,7 @@ export async function POST(req: NextRequest) {
         id, test_id, question_number, question_text, question_type, options_json,
         correct_answer, correct_marks, negative_marks, unanswered_marks, explanation,
         parsing_confidence, created_at, updated_at
-      ) VALUES (?, ?, ?, ?, 'single', ?, ?, 2.0, 0.5, 0.0, ?, 1.0, ?, ?)
+      ) VALUES (?, ?, ?, ?, 'single', ?, ?, 3.0, 1.0, 0.0, ?, 1.0, ?, ?)
     `);
 
     selectedMistakes.forEach((m, idx) => {

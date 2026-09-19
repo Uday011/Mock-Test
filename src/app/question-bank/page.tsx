@@ -1,62 +1,52 @@
 'use client';
 
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, Suspense } from 'react';
 import Link from 'next/link';
+import { useSearchParams, useRouter } from 'next/navigation';
 import {
   Layers,
   Search,
-  PlusCircle,
-  Filter,
   CheckCircle2,
   AlertCircle,
   Clock,
   Award,
-  Hash,
-  Copy,
-  Archive,
-  RotateCcw,
   Sparkles,
   ArrowRight,
   ChevronDown,
   ChevronUp,
   Tag,
   BookOpen,
-  FileCheck,
-  CheckSquare,
-  Square,
-  HelpCircle,
+  RotateCcw,
+  Bookmark,
+  Check,
   X,
-  ExternalLink,
-  Zap,
-  FolderArchive,
+  Target,
+  Filter,
+  Eye,
+  Play,
+  HelpCircle,
 } from 'lucide-react';
 import { AppShell } from '@/components/layout/AppShell';
-import { PageHeader } from '@/components/ui/PageHeader';
-import { MetricCallout } from '@/components/ui/MetricCallout';
-import { Card } from '@/components/ui/Card';
 import { Badge } from '@/components/ui/Badge';
 import { Button } from '@/components/ui/Button';
-import { Modal } from '@/components/ui/Modal';
-import { PropertyTable, PropertyRow } from '@/components/ui/PropertyTable';
 
 interface QuestionBankItem {
   id: string;
-  creator_id: string;
+  creator_id?: string;
   topic_id?: string | null;
   subject_id?: string | null;
+  subject_name?: string | null;
+  subject_code?: string | null;
+  topic_title?: string | null;
   exam_id?: string | null;
-  subtopic_id?: string | null;
   question_text: string;
   question_type: string;
-  options: string[];
+  options: any[];
   correct_answer: string;
   explanation?: string | null;
   difficulty: 'easy' | 'medium' | 'hard';
   source_reference?: string | null;
   tags: string[];
-  usage_count: number;
-  used_in_tests: string[];
-  status: 'active' | 'archived' | 'draft';
   marks: number;
   negative_marks: number;
   estimated_seconds: number;
@@ -64,12 +54,14 @@ interface QuestionBankItem {
   created_at: string;
 }
 
-function FormattedMathText({ text }: { text: string }) {
+function FormattedMathText({ text }: { text: any }) {
   if (!text) return null;
-  const parts = text.split(/(\$[^$]+\$)/g);
+  const str = typeof text === 'string' ? text : text.text || String(text);
+  if (!str) return null;
+  const parts = str.split(/(\$[^$]+\$)/g);
   return (
     <span>
-      {parts.map((part, i) => {
+      {parts.map((part: string, i: number) => {
         if (part.startsWith('$') && part.endsWith('$')) {
           const formula = part.slice(1, -1);
           return (
@@ -87,74 +79,60 @@ function FormattedMathText({ text }: { text: string }) {
   );
 }
 
-export default function QuestionBankPage() {
+function QuestionBankContent() {
+  const searchParams = useSearchParams();
+  const router = useRouter();
+
+  // Initial params from URL
+  const initialSubject = searchParams.get('subject') || 'all';
+  const initialTopic = searchParams.get('topic') || '';
+  const initialDifficulty = searchParams.get('difficulty') || 'all';
+
   const [questions, setQuestions] = useState<QuestionBankItem[]>([]);
-  const [summary, setSummary] = useState({ total: 0, active: 0, verified: 0, avgUsage: 0 });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   // Filters
   const [searchQuery, setSearchQuery] = useState('');
-  const [selectedSubject, setSelectedSubject] = useState('all');
-  const [selectedDifficulty, setSelectedDifficulty] = useState('all');
-  const [selectedStatus, setSelectedStatus] = useState('all');
-  const [selectedCorrectness, setSelectedCorrectness] = useState('all');
+  const [selectedSubject, setSelectedSubject] = useState(initialSubject);
+  const [selectedTopic, setSelectedTopic] = useState(initialTopic);
+  const [selectedDifficulty, setSelectedDifficulty] = useState(initialDifficulty);
 
-  // Multi-select state
-  const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
+  // Modes: 'practice' (interactive with instant feedback) vs 'browse' (read with solutions visible)
+  const [practiceMode, setPracticeMode] = useState<'practice' | 'browse'>('practice');
 
-  // In-Place Question Authoring / Edit Modal
-  const [isAuthorModalOpen, setIsAuthorModalOpen] = useState(false);
-  const [formMode, setFormMode] = useState<'create' | 'edit' | 'duplicate'>('create');
-  const [editingQuestionId, setEditingQuestionId] = useState<string | null>(null);
+  // Interactive practice state: map questionId -> selectedOptionKey
+  const [userAnswers, setUserAnswers] = useState<Record<string, string>>({});
+  const [revealedSolutions, setRevealedSolutions] = useState<Set<string>>(new Set());
+  const [loggedMistakes, setLoggedMistakes] = useState<Set<string>>(new Set());
+  const [loggingMistakeId, setLoggingMistakeId] = useState<string | null>(null);
 
-  // Form inputs state
-  const [formText, setFormText] = useState('');
-  const [formOptions, setFormOptions] = useState<string[]>(['', '', '', '']);
-  const [formCorrect, setFormCorrect] = useState('A');
-  const [formExplanation, setFormExplanation] = useState('');
-  const [formSubject, setFormSubject] = useState('Quantitative Aptitude');
-  const [formTopic, setFormTopic] = useState('');
-  const [formDifficulty, setFormDifficulty] = useState<'easy' | 'medium' | 'hard'>('medium');
-  const [formMarks, setFormMarks] = useState(4.0);
-  const [formNegativeMarks, setFormNegativeMarks] = useState(1.0);
-  const [formEstimatedSecs, setFormEstimatedSecs] = useState(60);
-  const [formSource, setFormSource] = useState('');
-  const [formTagsStr, setFormTagsStr] = useState('');
-  const [formSaving, setFormSaving] = useState(false);
-  const [formError, setFormError] = useState<string | null>(null);
+  // Sync state if URL searchParams change
+  useEffect(() => {
+    const sub = searchParams.get('subject');
+    const top = searchParams.get('topic');
+    const diff = searchParams.get('difficulty');
+    if (sub) setSelectedSubject(sub);
+    if (top) setSelectedTopic(top);
+    if (diff) setSelectedDifficulty(diff);
+  }, [searchParams]);
 
-  // Assemble Test Modal
-  const [isAssembleModalOpen, setIsAssembleModalOpen] = useState(false);
-  const [assembleTitle, setAssembleTitle] = useState('Custom Assembled Mock Test');
-  const [assembleDescription, setAssembleDescription] = useState('Assembled from verified Question Bank items.');
-  const [assembleSubject, setAssembleSubject] = useState('Quantitative Aptitude');
-  const [assembleDurationMins, setAssembleDurationMins] = useState(30);
-  const [assembleMarkingType, setAssembleMarkingType] = useState('standard');
-  const [assembleStatus, setAssembleStatus] = useState<'published' | 'draft'>('published');
-  const [assembleSubmitting, setAssembleSubmitting] = useState(false);
-  const [assembleResult, setAssembleResult] = useState<{ testId: string; title: string } | null>(null);
-
-  // Expandable question IDs
-  const [expandedIds, setExpandedIds] = useState<Set<string>>(new Set());
-  const [usagePopoverId, setUsagePopoverId] = useState<string | null>(null);
-
+  // Fetch questions
   const loadQuestions = async () => {
     setLoading(true);
+    setError(null);
     try {
       const params = new URLSearchParams();
       if (searchQuery.trim()) params.set('q', searchQuery.trim());
       if (selectedSubject !== 'all') params.set('subject', selectedSubject);
+      if (selectedTopic.trim()) params.set('topic', selectedTopic.trim());
       if (selectedDifficulty !== 'all') params.set('difficulty', selectedDifficulty);
-      if (selectedStatus !== 'all') params.set('status', selectedStatus);
-      if (selectedCorrectness !== 'all') params.set('correctness', selectedCorrectness);
 
       const res = await fetch(`/api/question-bank?${params.toString()}`);
       const data = await res.json();
-      if (!res.ok) throw new Error(data.error || 'Failed to fetch question bank');
+      if (!res.ok) throw new Error(data.error || 'Failed to fetch questions');
 
       setQuestions(data.questions || []);
-      if (data.summary) setSummary(data.summary);
     } catch (err: any) {
       setError(err.message || 'Error loading questions');
     } finally {
@@ -165,297 +143,226 @@ export default function QuestionBankPage() {
   useEffect(() => {
     const timer = setTimeout(() => {
       loadQuestions();
-    }, 250);
+    }, 200);
     return () => clearTimeout(timer);
-  }, [searchQuery, selectedSubject, selectedDifficulty, selectedStatus, selectedCorrectness]);
+  }, [searchQuery, selectedSubject, selectedTopic, selectedDifficulty]);
 
-  const toggleSelect = (id: string) => {
-    const next = new Set(selectedIds);
-    if (next.has(id)) next.delete(id);
-    else next.add(id);
-    setSelectedIds(next);
-  };
+  // Handle Option Select in Practice Mode
+  const handleSelectOption = (q: QuestionBankItem, optKey: string) => {
+    if (practiceMode !== 'practice') return;
+    if (userAnswers[q.id]) return; // Already answered, use reset to try again
 
-  const selectAll = () => {
-    if (selectedIds.size === questions.length) {
-      setSelectedIds(new Set());
-    } else {
-      setSelectedIds(new Set(questions.map((q) => q.id)));
+    setUserAnswers((prev) => ({ ...prev, [q.id]: optKey }));
+
+    // Auto reveal explanation
+    setRevealedSolutions((prev) => new Set(prev).add(q.id));
+
+    // If incorrect, prompt/offer mistake logging
+    if (optKey !== q.correct_answer) {
+      // Auto-log mistake to Mistake Book in background
+      handleLogMistake(q, optKey, false);
     }
   };
 
-  const toggleExpand = (id: string) => {
-    const next = new Set(expandedIds);
-    if (next.has(id)) next.delete(id);
-    else next.add(id);
-    setExpandedIds(next);
+  // Reset a question to re-attempt
+  const handleResetQuestion = (questionId: string) => {
+    setUserAnswers((prev) => {
+      const next = { ...prev };
+      delete next[questionId];
+      return next;
+    });
+    setRevealedSolutions((prev) => {
+      const next = new Set(prev);
+      next.delete(questionId);
+      return next;
+    });
   };
 
-  const handleOpenCreate = () => {
-    setFormMode('create');
-    setEditingQuestionId(null);
-    setFormText('');
-    setFormOptions(['', '', '', '']);
-    setFormCorrect('A');
-    setFormExplanation('');
-    setFormSubject('Quantitative Aptitude');
-    setFormTopic('');
-    setFormDifficulty('medium');
-    setFormMarks(4.0);
-    setFormNegativeMarks(1.0);
-    setFormEstimatedSecs(60);
-    setFormSource('');
-    setFormTagsStr('');
-    setFormError(null);
-    setIsAuthorModalOpen(true);
-  };
-
-  const handleOpenEdit = (q: QuestionBankItem, mode: 'edit' | 'duplicate' = 'edit') => {
-    setFormMode(mode);
-    setEditingQuestionId(mode === 'edit' ? q.id : null);
-    setFormText(q.question_text);
-    setFormOptions(q.options && q.options.length ? [...q.options] : ['', '', '', '']);
-    setFormCorrect(q.correct_answer || 'A');
-    setFormExplanation(q.explanation || '');
-    setFormSubject(q.subject_id || 'Quantitative Aptitude');
-    setFormTopic(q.topic_id || '');
-    setFormDifficulty(q.difficulty || 'medium');
-    setFormMarks(q.marks || 4.0);
-    setFormNegativeMarks(q.negative_marks || 1.0);
-    setFormEstimatedSecs(q.estimated_seconds || 60);
-    setFormSource(q.source_reference || '');
-    setFormTagsStr(Array.isArray(q.tags) ? q.tags.join(', ') : '');
-    setFormError(null);
-    setIsAuthorModalOpen(true);
-  };
-
-  const handleSaveQuestion = async () => {
-    setFormError(null);
-    if (!formText.trim()) {
-      setFormError('Question text cannot be blank.');
-      return;
-    }
-    const cleanOpts = formOptions.map((o) => o.trim()).filter(Boolean);
-    if (cleanOpts.length < 2) {
-      setFormError('Please provide at least 2 valid options.');
-      return;
-    }
-
-    setFormSaving(true);
+  // Log to Mistake Book
+  const handleLogMistake = async (q: QuestionBankItem, selectedOpt: string, manual: boolean = true) => {
     try {
-      const parsedTags = formTagsStr
-        .split(',')
-        .map((t) => t.trim())
-        .filter(Boolean);
-
-      const payload = {
-        id: editingQuestionId,
-        question_text: formText.trim(),
-        options: formOptions,
-        correct_answer: formCorrect,
-        explanation: formExplanation.trim(),
-        subject_id: formSubject,
-        topic_id: formTopic.trim(),
-        difficulty: formDifficulty,
-        marks: formMarks,
-        negative_marks: formNegativeMarks,
-        estimated_seconds: formEstimatedSecs,
-        source_reference: formSource.trim(),
-        tags: parsedTags,
-        status: 'active',
-      };
-
-      const method = formMode === 'edit' ? 'PATCH' : 'POST';
-      const res = await fetch('/api/question-bank', {
-        method,
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload),
-      });
-
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error || 'Failed to save question');
-
-      setIsAuthorModalOpen(false);
-      loadQuestions();
-    } catch (err: any) {
-      setFormError(err.message || 'Failed to save question.');
-    } finally {
-      setFormSaving(false);
-    }
-  };
-
-  const handleBatchArchive = async () => {
-    if (selectedIds.size === 0) return;
-    try {
-      await fetch('/api/question-bank', {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          ids: Array.from(selectedIds),
-          status: 'archived',
-        }),
-      });
-      setSelectedIds(new Set());
-      loadQuestions();
-    } catch (err) {
-      console.error('Batch archive failed:', err);
-    }
-  };
-
-  const handleOpenAssemble = () => {
-    if (selectedIds.size === 0) return;
-    setAssembleTitle(`Custom Test Drill (${selectedIds.size} Questions)`);
-    setAssembleDescription('Synthesized from verified items in the Nalanda Question Bank.');
-    setAssembleResult(null);
-    setIsAssembleModalOpen(true);
-  };
-
-  const handleSubmitAssemble = async () => {
-    setAssembleSubmitting(true);
-    try {
-      const res = await fetch('/api/question-bank/create-test', {
+      setLoggingMistakeId(q.id);
+      const res = await fetch('/api/mistakes', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          title: assembleTitle.trim(),
-          description: assembleDescription.trim(),
-          subject: assembleSubject,
-          question_ids: Array.from(selectedIds),
-          duration_seconds: assembleDurationMins * 60,
-          marking_scheme_type: assembleMarkingType,
-          status: assembleStatus,
+          question_id: q.id,
+          test_id: 'practice_mode',
+          exam_id: q.exam_id || 'exam-cat-2026',
+          subject_id: q.subject_id,
+          topic_id: q.topic_id,
+          question_text: q.question_text,
+          options: q.options,
+          selected_answer: selectedOpt,
+          correct_answer: q.correct_answer,
+          explanation: q.explanation || '',
+          error_category: 'conceptual_gap',
+          user_notes: `Logged during CAT Practice Engine session on topic ${q.topic_title || q.topic_id || 'General'}.`,
         }),
       });
-
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error || 'Failed to assemble test');
-
-      setAssembleResult({ testId: data.testId, title: data.title });
-      setSelectedIds(new Set());
-      loadQuestions();
-    } catch (err: any) {
-      alert(err.message || 'Failed to assemble test');
+      if (res.ok) {
+        setLoggedMistakes((prev) => new Set(prev).add(q.id));
+      }
+    } catch (err) {
+      console.error('Error logging mistake:', err);
     } finally {
-      setAssembleSubmitting(false);
+      setLoggingMistakeId(null);
     }
   };
 
-  const subjectsList = [
-    'Quantitative Aptitude',
-    'General Intelligence & Reasoning',
-    'English Comprehension',
-    'General Awareness',
-    'Science & General',
-  ];
+  // Compute Practice Session Stats
+  const sessionStats = useMemo(() => {
+    const answeredIds = Object.keys(userAnswers);
+    const totalAttempted = answeredIds.length;
+    let correctCount = 0;
+    for (const qId of answeredIds) {
+      const q = questions.find((item) => item.id === qId);
+      if (q && userAnswers[qId] === q.correct_answer) {
+        correctCount++;
+      }
+    }
+    const accuracy = totalAttempted > 0 ? Math.round((correctCount / totalAttempted) * 100) : 0;
+    return { totalAttempted, correctCount, accuracy };
+  }, [userAnswers, questions]);
+
+  const clearTopicFilter = () => {
+    setSelectedTopic('');
+    router.replace(`/question-bank?subject=${selectedSubject}`);
+  };
+
+  const clearAllFilters = () => {
+    setSelectedSubject('all');
+    setSelectedTopic('');
+    setSelectedDifficulty('all');
+    setSearchQuery('');
+    router.replace('/question-bank');
+  };
 
   return (
     <AppShell
       breadcrumbs={[
-        { label: 'Studio & Repository', href: '/tests/create' },
-        { label: 'Question Bank Repository', href: '/question-bank' },
+        { label: 'Home', href: '/dashboard' },
+        { label: 'Practice', href: '/question-bank' },
+        ...(selectedTopic ? [{ label: selectedTopic }] : []),
       ]}
     >
-      <div className="max-w-5xl mx-auto space-y-6 pb-16">
-        <PageHeader
-          icon={FolderArchive}
-          title="Question Bank Repository"
-          description="Search, filter, tag, and assemble reusable questions across all examination syllabi with verified answer keys, mathematical LaTeX derivations, and usage tracking."
-          badge={<Badge variant="amber" size="sm">Vetted Repository</Badge>}
-          actions={
-            <div className="flex items-center gap-2">
-              <Button
-                variant="secondary"
-                size="sm"
-                onClick={handleOpenAssemble}
-                disabled={selectedIds.size === 0}
-              >
-                <Sparkles className="w-3.5 h-3.5 mr-1" />
-                Assemble Test ({selectedIds.size})
-              </Button>
-              <Button
-                variant="primary"
-                size="sm"
-                onClick={handleOpenCreate}
-              >
-                <PlusCircle className="w-3.5 h-3.5 mr-1" />
-                Author Question
-              </Button>
+      <div className="max-w-4xl mx-auto space-y-6 pb-20">
+        {/* Header with Mode Switcher */}
+        <div className="border-b border-[#E6E6E3] pb-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div>
+            <div className="flex items-center gap-2 text-xs text-[#787774] mb-1">
+              <span>CAT 2026 Engine</span>
+              <span>•</span>
+              <span>High-Yield Question Repository</span>
             </div>
-          }
-        />
+            <h1 className="text-2xl font-semibold text-[#202124] tracking-tight">
+              Practice Mode & Question Bank
+            </h1>
+          </div>
 
-        {/* Summary Properties */}
-        <div className="bg-white border border-[#E6E6E3] rounded-lg p-3.5">
-          <PropertyTable>
-            <PropertyRow icon={Hash} label="Total Questions">
-              <span className="font-mono text-xs font-semibold text-[#202124]">
-                {summary.total} repository items
-              </span>
-            </PropertyRow>
-
-            <PropertyRow icon={CheckCircle2} label="Verified Proofs">
-              <div className="flex items-center gap-2">
-                <span className="font-mono text-xs font-semibold text-emerald-700">
-                  {summary.verified} verified
-                </span>
-                <span className="text-xs text-[#787774]">LaTeX derivations audited</span>
-              </div>
-            </PropertyRow>
-
-            <PropertyRow icon={FileCheck} label="Active Circulation">
-              <span className="font-mono text-xs text-[#202124]">
-                {summary.active} live questions ready to assemble
-              </span>
-            </PropertyRow>
-
-            <PropertyRow icon={Award} label="Avg Reusability">
-              <span className="font-mono text-xs text-[#787774]">
-                {summary.avgUsage}x average appearances per test
-              </span>
-            </PropertyRow>
-          </PropertyTable>
+          {/* Mode Switcher */}
+          <div className="flex items-center bg-[#EAEAE7] p-1 rounded-xl text-xs shrink-0 self-start sm:self-auto">
+            <button
+              onClick={() => setPracticeMode('practice')}
+              className={`flex items-center gap-1.5 py-2 px-3.5 rounded-lg font-semibold transition-all min-h-[38px] ${
+                practiceMode === 'practice'
+                  ? 'bg-white text-[#202124] shadow-xs'
+                  : 'text-[#787774] hover:text-[#202124]'
+              }`}
+            >
+              <Play className="w-3.5 h-3.5 text-emerald-600 fill-emerald-600" />
+              <span>Practice Mode</span>
+            </button>
+            <button
+              onClick={() => setPracticeMode('browse')}
+              className={`flex items-center gap-1.5 py-2 px-3.5 rounded-lg font-semibold transition-all min-h-[38px] ${
+                practiceMode === 'browse'
+                  ? 'bg-white text-[#202124] shadow-xs'
+                  : 'text-[#787774] hover:text-[#202124]'
+              }`}
+            >
+              <Eye className="w-3.5 h-3.5 text-[#787774]" />
+              <span>Browse & Solutions</span>
+            </button>
+          </div>
         </div>
 
-        {/* Search & Multifaceted Filtering Bar */}
-        <div className="bg-white rounded-lg border border-[#E6E6E3] p-3 space-y-2.5">
-          <div className="flex flex-col md:flex-row items-center gap-2.5">
-            <div className="relative flex-1 w-full">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-[#787774]" />
-              <input
-                type="text"
-                placeholder="Search by keywords, formulas, concepts, or tags..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full pl-8 pr-8 py-1.5 rounded-md bg-[#F7F7F5] border border-[#E6E6E3] text-xs text-[#202124] placeholder-[#9b9a97] focus:outline-none focus:border-[#202124]"
-              />
-              {searchQuery && (
-                <button
-                  onClick={() => setSearchQuery('')}
-                  className="absolute right-2.5 top-1/2 -translate-y-1/2 text-[#787774] hover:text-[#202124]"
-                >
-                  <X className="w-3.5 h-3.5" />
-                </button>
-              )}
+        {/* Practice Session Scorecard Bar */}
+        {sessionStats.totalAttempted > 0 && (
+          <div className="bg-[#F7F7F5] border border-[#E6E6E3] rounded-xl p-3.5 flex flex-wrap items-center justify-between gap-3 text-xs">
+            <div className="flex items-center gap-2">
+              <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+              <span className="font-medium text-[#202124]">Current Session Performance:</span>
+              <span className="text-[#787774]">
+                {sessionStats.totalAttempted} answered
+              </span>
             </div>
 
-            <div className="flex flex-wrap items-center gap-2 w-full md:w-auto">
-              <select
-                value={selectedSubject}
-                onChange={(e) => setSelectedSubject(e.target.value)}
-                className="px-2.5 py-1.5 rounded-md bg-[#F7F7F5] border border-[#E6E6E3] text-xs text-[#202124] focus:outline-none"
-              >
-                <option value="all">All Subjects</option>
-                {subjectsList.map((s) => (
-                  <option key={s} value={s}>
-                    {s}
-                  </option>
-                ))}
-              </select>
+            <div className="flex items-center gap-4 font-mono">
+              <div className="text-emerald-700 font-semibold">
+                ✓ {sessionStats.correctCount} Correct
+              </div>
+              <div className="text-rose-700 font-semibold">
+                ✗ {sessionStats.totalAttempted - sessionStats.correctCount} Mistakes
+              </div>
+              <div className="bg-white border border-[#E6E6E3] px-2 py-0.5 rounded text-[#202124] font-medium">
+                Accuracy: {sessionStats.accuracy}%
+              </div>
+            </div>
+          </div>
+        )}
 
+        {/* Active Focus / Topic Filter Banner */}
+        {selectedTopic && (
+          <div className="bg-[#EEF2FF] border border-[#C7D2FE] rounded-xl p-3.5 flex items-center justify-between gap-3 text-xs">
+            <div className="flex items-center gap-2">
+              <Target className="w-4 h-4 text-[#4338CA] shrink-0" />
+              <div>
+                <span className="text-[#4338CA] font-medium">Practicing Focused Topic: </span>
+                <span className="font-semibold text-[#1E1B4B]">{selectedTopic}</span>
+              </div>
+            </div>
+            <button
+              onClick={clearTopicFilter}
+              className="text-[#4338CA] hover:text-[#1E1B4B] font-medium underline underline-offset-2 shrink-0 cursor-pointer"
+            >
+              Show all topics
+            </button>
+          </div>
+        )}
+
+        {/* Quick Filter Bar */}
+        <div className="bg-white border border-[#E6E6E3] rounded-xl p-4 shadow-2xs space-y-3">
+          <div className="flex flex-col md:flex-row gap-3 items-stretch md:items-center justify-between">
+            {/* Subject Filters */}
+            <div className="flex items-center gap-1.5 overflow-x-auto pb-1 md:pb-0 no-scrollbar">
+              {[
+                { id: 'all', label: 'All Sections' },
+                { id: 'varc', label: 'VARC' },
+                { id: 'dilr', label: 'DILR' },
+                { id: 'qa', label: 'QA' },
+              ].map((sub) => (
+                <button
+                  key={sub.id}
+                  onClick={() => setSelectedSubject(sub.id)}
+                  className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all shrink-0 min-h-[34px] cursor-pointer ${
+                    selectedSubject.toLowerCase() === sub.id
+                      ? 'bg-[#202124] text-white shadow-2xs'
+                      : 'bg-[#F7F7F5] text-[#787774] hover:text-[#202124] hover:bg-[#EAEAE7]'
+                  }`}
+                >
+                  {sub.label}
+                </button>
+              ))}
+            </div>
+
+            {/* Difficulty & Search */}
+            <div className="flex items-center gap-2">
+              {/* Difficulty Dropdown */}
               <select
                 value={selectedDifficulty}
                 onChange={(e) => setSelectedDifficulty(e.target.value)}
-                className="px-2.5 py-1.5 rounded-md bg-[#F7F7F5] border border-[#E6E6E3] text-xs text-[#202124] focus:outline-none"
+                className="bg-[#F7F7F5] border border-[#E6E6E3] rounded-lg px-2.5 py-1.5 text-xs text-[#202124] focus:outline-none focus:ring-1 focus:ring-[#202124] min-h-[34px]"
               >
                 <option value="all">All Difficulties</option>
                 <option value="easy">Easy</option>
@@ -463,683 +370,322 @@ export default function QuestionBankPage() {
                 <option value="hard">Hard</option>
               </select>
 
-              <select
-                value={selectedStatus}
-                onChange={(e) => setSelectedStatus(e.target.value)}
-                className="px-2.5 py-1.5 rounded-md bg-[#F7F7F5] border border-[#E6E6E3] text-xs text-[#202124] focus:outline-none"
-              >
-                <option value="all">All Statuses</option>
-                <option value="active">Active</option>
-                <option value="archived">Archived</option>
-              </select>
-
-              <select
-                value={selectedCorrectness}
-                onChange={(e) => setSelectedCorrectness(e.target.value)}
-                className="px-2.5 py-1.5 rounded-md bg-[#F7F7F5] border border-[#E6E6E3] text-xs text-[#202124] focus:outline-none"
-              >
-                <option value="all">All Quality Levels</option>
-                <option value="verified">Verified Proof</option>
-                <option value="review_needed">Review Needed</option>
-              </select>
+              {/* Search Input */}
+              <div className="relative flex-1 sm:w-56">
+                <Search className="w-3.5 h-3.5 text-[#9b9a97] absolute left-2.5 top-1/2 -translate-y-1/2" />
+                <input
+                  type="text"
+                  placeholder="Search questions..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="w-full pl-8 pr-3 py-1.5 bg-[#F7F7F5] border border-[#E6E6E3] rounded-lg text-xs text-[#202124] placeholder:text-[#9b9a97] focus:outline-none focus:ring-1 focus:ring-[#202124] min-h-[34px]"
+                />
+              </div>
             </div>
           </div>
 
-          <div className="pt-2 border-t border-[#E6E6E3] flex items-center justify-between text-xs text-[#787774]">
-            <div className="flex items-center gap-2">
-              <button
-                onClick={selectAll}
-                className="flex items-center gap-1.5 text-[#202124] hover:underline"
-              >
-                {selectedIds.size === questions.length && questions.length > 0 ? (
-                  <CheckSquare className="w-3.5 h-3.5 text-[#202124]" />
-                ) : (
-                  <Square className="w-3.5 h-3.5 text-[#787774]" />
-                )}
-                <span>Select All ({questions.length})</span>
-              </button>
-              {selectedIds.size > 0 && (
-                <Badge variant="amber" size="sm">
-                  {selectedIds.size} Selected
-                </Badge>
-              )}
-            </div>
-
-            <div className="font-mono text-[11px]">
+          <div className="flex items-center justify-between text-[11px] text-[#787774] pt-1 border-t border-[#F1F1EF]">
+            <div>
               Showing <span className="font-semibold text-[#202124]">{questions.length}</span> questions
+              {selectedTopic && <span> in topic &quot;{selectedTopic}&quot;</span>}
             </div>
+            {(selectedSubject !== 'all' || selectedTopic || selectedDifficulty !== 'all' || searchQuery) && (
+              <button
+                onClick={clearAllFilters}
+                className="text-[#787774] hover:text-[#202124] underline cursor-pointer"
+              >
+                Reset all filters
+              </button>
+            )}
           </div>
         </div>
 
         {/* Questions Listing */}
         {loading ? (
-          <div className="py-20 text-center text-xs text-[#787774] font-mono">
-            Loading repository items...
+          <div className="py-24 text-center text-xs text-[#787774] font-mono">
+            Loading CAT practice questions...
           </div>
         ) : error ? (
-          <div className="p-8 text-center bg-white rounded-lg border border-[#f5c2c2] text-[#e03e3e]">
+          <div className="p-8 text-center bg-white rounded-xl border border-[#f5c2c2] text-[#e03e3e]">
             <AlertCircle className="w-8 h-8 mx-auto mb-2 text-[#e03e3e]" />
             <p className="text-sm font-semibold">Failed to load question bank</p>
             <p className="text-xs text-[#787774] mt-1">{error}</p>
           </div>
         ) : questions.length === 0 ? (
-          <div className="p-12 text-center bg-white rounded-lg border border-[#E6E6E3] space-y-3">
+          <div className="p-12 text-center bg-white rounded-xl border border-[#E6E6E3] space-y-3">
             <Layers className="w-8 h-8 text-[#9b9a97] mx-auto" />
-            <h3 className="text-sm font-semibold text-[#202124]">No questions match your filter</h3>
+            <h3 className="text-sm font-semibold text-[#202124]">No questions match current criteria</h3>
             <p className="text-xs text-[#787774] max-w-sm mx-auto">
-              Try adjusting search keywords or clearing filter constraints to see more questions.
+              Try adjusting your section, topic, or difficulty filters to see more CAT questions.
             </p>
-            <Button variant="outline" size="sm" onClick={handleOpenCreate}>
-              Author First Question
+            <Button variant="outline" size="sm" onClick={clearAllFilters}>
+              Clear All Filters
             </Button>
           </div>
         ) : (
-          <div className="space-y-2.5">
-            {questions.map((q) => {
-              const isSelected = selectedIds.has(q.id);
-              const isExpanded = expandedIds.has(q.id);
-              const isUsagePopoverOpen = usagePopoverId === q.id;
+          <div className="space-y-4">
+            {questions.map((q, idx) => {
+              const selectedAnswer = userAnswers[q.id];
+              const isAnswered = !!selectedAnswer;
+              const isCorrect = selectedAnswer === q.correct_answer;
+              const isSolutionOpen = practiceMode === 'browse' || revealedSolutions.has(q.id);
+              const isLogged = loggedMistakes.has(q.id);
 
               return (
                 <div
                   key={q.id}
-                  className={`p-4 rounded-lg border transition-colors space-y-2.5 ${
-                    isSelected
-                      ? 'border-[#202124] bg-[#F7F7F5]'
-                      : 'border-[#E6E6E3] bg-white hover:border-[#d4d4d4]'
-                  }`}
+                  className="bg-white rounded-xl border border-[#E6E6E3] shadow-2xs overflow-hidden transition-all hover:border-[#d4d4d4]"
                 >
-                  {/* Card Header Row */}
-                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-2 border-b border-[#E6E6E3]">
+                  {/* Card Header */}
+                  <div className="p-4 pb-3 border-b border-[#F1F1EF] flex flex-wrap items-center justify-between gap-2">
                     <div className="flex items-center gap-2 flex-wrap">
-                      <button
-                        onClick={() => toggleSelect(q.id)}
-                        className="text-[#787774] hover:text-[#202124]"
-                        title={isSelected ? 'Deselect' : 'Select'}
-                      >
-                        {isSelected ? (
-                          <CheckSquare className="w-3.5 h-3.5 text-[#202124]" />
-                        ) : (
-                          <Square className="w-3.5 h-3.5 text-[#787774]" />
-                        )}
-                      </button>
-
-                      <span className="font-mono text-[10px] text-[#787774] bg-[#F1F1EF] px-1.5 py-0.5 rounded border border-[#E6E6E3]">
-                        {q.id.slice(0, 8)}
+                      <span className="font-mono text-[10px] text-[#787774] bg-[#F1F1EF] px-2 py-0.5 rounded font-medium">
+                        Q{idx + 1} • {q.id.slice(0, 8)}
                       </span>
 
-                      <span className="text-xs font-medium text-[#202124]">
-                        {q.subject_id || 'General Subject'}
+                      <span className="text-xs font-semibold text-[#202124]">
+                        {q.subject_code || (q.subject_id?.includes('varc') ? 'VARC' : q.subject_id?.includes('dilr') ? 'DILR' : 'QA')}
                       </span>
 
-                      {q.topic_id && (
-                        <span className="text-xs text-[#787774] truncate max-w-[180px]">
-                          • {q.topic_id}
+                      {(q.topic_title || q.topic_id) && (
+                        <span className="text-xs text-[#787774] truncate max-w-[200px]">
+                          • {q.topic_title || q.topic_id?.replace('topic-cat-', '').replace(/-/g, ' ')}
                         </span>
                       )}
 
                       {q.correctness_status === 'verified' && (
-                        <Badge variant="emerald" size="sm" dot>
+                        <Badge variant="emerald" size="sm">
                           Verified Proof
                         </Badge>
                       )}
                     </div>
 
-                    <div className="flex items-center gap-2.5 text-xs text-[#787774] font-mono">
+                    <div className="flex items-center gap-2 text-xs font-mono">
                       <Badge
-                        variant={q.difficulty === 'hard' ? 'rose' : q.difficulty === 'medium' ? 'amber' : 'emerald'}
+                        variant={
+                          q.difficulty === 'hard'
+                            ? 'rose'
+                            : q.difficulty === 'medium'
+                            ? 'amber'
+                            : 'emerald'
+                        }
                         size="sm"
                       >
                         {q.difficulty}
                       </Badge>
-
-                      <span className="font-medium text-[#202124]">
-                        +{q.marks} / -{q.negative_marks}
+                      <span className="text-[#787774] text-[11px]">
+                        +3 / -1
                       </span>
+                      {q.estimated_seconds && (
+                        <span className="text-[#9b9a97] text-[11px] flex items-center gap-1">
+                          <Clock className="w-3 h-3" />
+                          {q.estimated_seconds}s
+                        </span>
+                      )}
+                    </div>
+                  </div>
 
-                      <span className="flex items-center gap-1">
-                        <Clock className="w-3 h-3 text-[#9b9a97]" />
-                        {q.estimated_seconds}s
-                      </span>
+                  {/* Question Body */}
+                  <div className="p-4 sm:p-5 space-y-4">
+                    <div className="text-sm sm:text-base text-[#202124] leading-relaxed font-normal">
+                      <FormattedMathText text={q.question_text} />
+                    </div>
 
-                      {/* Usage Button */}
-                      <div className="relative">
-                        <button
-                          onClick={() => setUsagePopoverId(isUsagePopoverOpen ? null : q.id)}
-                          className="px-1.5 py-0.5 rounded bg-[#F1F1EF] hover:bg-[#F1F1EF] text-[#202124] text-[11px] border border-[#E6E6E3]"
-                          title="View tests using this question"
-                        >
-                          {q.usage_count} tests
-                        </button>
+                    {/* Options Grid */}
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                      {(q.options || []).map((opt, i) => {
+                        const optKey = typeof opt === 'object' && opt?.label ? opt.label : String.fromCharCode(65 + i);
+                        const optText = typeof opt === 'object' && opt?.text ? opt.text : (typeof opt === 'string' ? opt : String(opt));
 
-                        {isUsagePopoverOpen && (
-                          <div className="absolute right-0 top-6 z-20 w-56 p-2.5 bg-white border border-[#E6E6E3] rounded-lg shadow-lg text-xs space-y-1.5">
-                            <div className="flex items-center justify-between pb-1 border-b border-[#E6E6E3]">
-                              <span className="font-medium text-[#202124]">Used in Tests</span>
-                              <button onClick={() => setUsagePopoverId(null)} className="text-[#787774]">
-                                <X className="w-3 h-3" />
-                              </button>
+                        let optionStyle = 'bg-[#FAFAFA] border-[#E6E6E3] text-[#202124] hover:bg-[#F1F1EF] hover:border-[#c8c8c5] cursor-pointer';
+
+                        if (practiceMode === 'practice') {
+                          if (isAnswered) {
+                            if (optKey === q.correct_answer) {
+                              optionStyle = 'bg-emerald-50 border-emerald-500 text-emerald-950 font-medium shadow-xs';
+                            } else if (optKey === selectedAnswer) {
+                              optionStyle = 'bg-rose-50 border-rose-500 text-rose-950 font-medium shadow-xs';
+                            } else {
+                              optionStyle = 'bg-[#FAFAFA] border-[#E6E6E3] opacity-60 cursor-default';
+                            }
+                          }
+                        } else {
+                          // Browse Mode: Always highlight correct answer
+                          if (optKey === q.correct_answer) {
+                            optionStyle = 'bg-emerald-50 border-emerald-500 text-emerald-950 font-medium';
+                          }
+                        }
+
+                        return (
+                          <div
+                            key={i}
+                            onClick={() => handleSelectOption(q, optKey)}
+                            className={`p-3 rounded-xl border text-xs sm:text-sm flex items-start gap-3 transition-all min-h-[46px] select-none ${optionStyle}`}
+                          >
+                            <span
+                              className={`w-6 h-6 rounded-lg flex items-center justify-center text-xs font-mono shrink-0 ${
+                                (practiceMode === 'practice' && isAnswered && optKey === q.correct_answer) ||
+                                (practiceMode === 'browse' && optKey === q.correct_answer)
+                                  ? 'bg-emerald-700 text-white font-bold'
+                                  : practiceMode === 'practice' && isAnswered && optKey === selectedAnswer
+                                  ? 'bg-rose-700 text-white font-bold'
+                                  : 'bg-[#EAEAE7] text-[#787774] font-medium'
+                              }`}
+                            >
+                              {optKey}
+                            </span>
+                            <div className="flex-1 pt-0.5 leading-snug">
+                              <FormattedMathText text={optText} />
                             </div>
-                            {q.used_in_tests && q.used_in_tests.length > 0 ? (
-                              <ul className="space-y-1 max-h-28 overflow-y-auto">
-                                {q.used_in_tests.map((testTitle, i) => (
-                                  <li key={i} className="text-[#787774] truncate text-[11px]">
-                                    • {testTitle}
-                                  </li>
-                                ))}
-                              </ul>
-                            ) : (
-                              <p className="text-[#9b9a97] text-[11px] italic">Not added to any tests yet.</p>
+                            {practiceMode === 'practice' && isAnswered && optKey === q.correct_answer && (
+                              <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0 mt-0.5" />
                             )}
+                            {practiceMode === 'practice' && isAnswered && optKey === selectedAnswer && !isCorrect && (
+                              <X className="w-4 h-4 text-rose-600 shrink-0 mt-0.5" />
+                            )}
+                          </div>
+                        );
+                      })}
+                    </div>
+
+                    {/* Instant Feedback Banner in Practice Mode */}
+                    {practiceMode === 'practice' && isAnswered && (
+                      <div
+                        className={`p-3 rounded-xl border flex items-center justify-between gap-3 text-xs ${
+                          isCorrect
+                            ? 'bg-emerald-50 border-emerald-200 text-emerald-900'
+                            : 'bg-rose-50 border-rose-200 text-rose-900'
+                        }`}
+                      >
+                        <div className="flex items-center gap-2">
+                          {isCorrect ? (
+                            <>
+                              <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
+                              <span className="font-semibold">Correct Answer! (+3 CAT Marks)</span>
+                            </>
+                          ) : (
+                            <>
+                              <AlertCircle className="w-4 h-4 text-rose-600 shrink-0" />
+                              <div>
+                                <span className="font-semibold">Incorrect Answer (-1 Mark). </span>
+                                <span>Correct option is <strong>{q.correct_answer}</strong>.</span>
+                              </div>
+                            </>
+                          )}
+                        </div>
+
+                        <div className="flex items-center gap-2 shrink-0">
+                          {!isCorrect && (
+                            <button
+                              onClick={() => handleLogMistake(q, selectedAnswer, true)}
+                              disabled={isLogged || loggingMistakeId === q.id}
+                              className={`px-2.5 py-1 rounded-lg border text-xs font-medium transition-all ${
+                                isLogged
+                                  ? 'bg-emerald-100 text-emerald-800 border-emerald-300'
+                                  : 'bg-white text-[#202124] border-[#E6E6E3] hover:bg-[#F7F7F5]'
+                              }`}
+                            >
+                              {isLogged ? '✓ In Mistake Book' : '⚑ Log Mistake'}
+                            </button>
+                          )}
+                          <button
+                            onClick={() => handleResetQuestion(q.id)}
+                            className="text-[#787774] hover:text-[#202124] flex items-center gap-1 font-medium underline underline-offset-2 ml-1"
+                          >
+                            <RotateCcw className="w-3 h-3" />
+                            <span>Retry</span>
+                          </button>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Solution & Derivation Drawer */}
+                  {isSolutionOpen && (
+                    <div className="bg-[#F7F7F5] border-t border-[#E6E6E3] p-4 sm:p-5 space-y-3 text-xs sm:text-sm">
+                      <div className="flex items-center justify-between pb-1 border-b border-[#E6E6E3]">
+                        <div className="font-semibold text-[#202124] flex items-center gap-1.5">
+                          <BookOpen className="w-4 h-4 text-[#787774]" />
+                          <span>Pedagogical Derivation & CAT Approach</span>
+                        </div>
+                        <span className="text-xs font-mono text-emerald-700 bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded font-medium">
+                          Correct: Option {q.correct_answer}
+                        </span>
+                      </div>
+
+                      {q.explanation ? (
+                        <div className="text-[#37352f] leading-relaxed pl-2.5 border-l-2 border-[#202124]">
+                          <FormattedMathText text={q.explanation} />
+                        </div>
+                      ) : (
+                        <p className="text-[#9b9a97] italic text-xs">
+                          Step-by-step mathematical proof is being verified for this item.
+                        </p>
+                      )}
+
+                      {/* Source & Tags */}
+                      <div className="flex flex-wrap items-center justify-between gap-2 pt-2 border-t border-[#E6E6E3] text-[11px] text-[#787774]">
+                        {q.source_reference ? (
+                          <div>
+                            <span className="font-medium text-[#202124]">Benchmark Source: </span>
+                            <span>{q.source_reference}</span>
+                          </div>
+                        ) : (
+                          <div>CAT Benchmark Series</div>
+                        )}
+
+                        {q.tags && q.tags.length > 0 && (
+                          <div className="flex flex-wrap items-center gap-1">
+                            {q.tags.map((tag, tIdx) => (
+                              <span
+                                key={tIdx}
+                                className="bg-white text-[#787774] text-[10px] px-1.5 py-0.5 rounded border border-[#E6E6E3]"
+                              >
+                                {tag}
+                              </span>
+                            ))}
                           </div>
                         )}
                       </div>
                     </div>
-                  </div>
-
-                  {/* Question Statement */}
-                  <div className="text-xs sm:text-sm text-[#202124] leading-relaxed">
-                    <FormattedMathText text={q.question_text} />
-                  </div>
-
-                  {/* Question Options Grid */}
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-0.5">
-                    {(q.options || []).map((opt, i) => {
-                      const optKey = String.fromCharCode(65 + i);
-                      const isCorrect = q.correct_answer === optKey;
-
-                      return (
-                        <div
-                          key={i}
-                          className={`p-2 rounded-md text-xs border flex items-start gap-2 ${
-                            isCorrect
-                              ? 'bg-[#ebf5e8] border-[#c4e2b8] text-[#2b593f] font-medium'
-                              : 'bg-[#F7F7F5] border-[#E6E6E3] text-[#202124]'
-                          }`}
-                        >
-                          <span
-                            className={`w-4 h-4 rounded flex items-center justify-center text-[10px] font-mono shrink-0 ${
-                              isCorrect ? 'bg-emerald-700 text-white' : 'bg-[#F1F1EF] text-[#787774] border border-[#E6E6E3]'
-                            }`}
-                          >
-                            {optKey}
-                          </span>
-                          <div className="flex-1">
-                            <FormattedMathText text={opt} />
-                          </div>
-                          {isCorrect && (
-                            <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 ml-auto shrink-0" />
-                          )}
-                        </div>
-                      );
-                    })}
-                  </div>
-
-                  {/* Expanded Details */}
-                  {isExpanded && (
-                    <div className="mt-2.5 pt-2.5 border-t border-[#E6E6E3] bg-[#F7F7F5] rounded-md p-3 text-xs space-y-2 border">
-                      <div className="font-medium text-[#202124]">
-                        Pedagogical Derivation & Explanation:
-                      </div>
-
-                      {q.explanation ? (
-                        <div className="text-[#787774] leading-relaxed pl-2 border-l-2 border-[#E6E6E3]">
-                          <FormattedMathText text={q.explanation} />
-                        </div>
-                      ) : (
-                        <p className="text-[#9b9a97] italic">No explanation authored yet.</p>
-                      )}
-
-                      {q.source_reference && (
-                        <div className="pt-1 text-[11px] text-[#787774]">
-                          <span className="font-medium text-[#202124]">Source: </span>
-                          <span>{q.source_reference}</span>
-                        </div>
-                      )}
-
-                      {q.tags && q.tags.length > 0 && (
-                        <div className="flex flex-wrap items-center gap-1 pt-1">
-                          {q.tags.map((tag, tIdx) => (
-                            <span
-                              key={tIdx}
-                              className="bg-white text-[#787774] text-[10px] px-1.5 py-0.5 rounded border border-[#E6E6E3]"
-                            >
-                              {tag}
-                            </span>
-                          ))}
-                        </div>
-                      )}
-                    </div>
                   )}
 
-                  {/* Card Bottom Toolbar */}
-                  <div className="pt-2 border-t border-[#E6E6E3] flex items-center justify-between text-xs">
-                    <button
-                      onClick={() => toggleExpand(q.id)}
-                      className="flex items-center gap-1 text-[#787774] hover:text-[#202124] text-[11px]"
-                    >
-                      <span>{isExpanded ? 'Hide Solution' : 'View Solution'}</span>
-                      {isExpanded ? <ChevronUp className="w-3 h-3" /> : <ChevronDown className="w-3 h-3" />}
-                    </button>
-
-                    <div className="flex items-center gap-1.5">
+                  {/* Card Bottom Bar for Browse Mode */}
+                  {practiceMode === 'browse' && !revealedSolutions.has(q.id) && (
+                    <div className="px-4 py-2 border-t border-[#F1F1EF] bg-white flex justify-end">
                       <button
-                        onClick={() => handleOpenEdit(q, 'edit')}
-                        className="px-2 py-0.5 rounded bg-white hover:bg-[#F1F1EF] text-[#787774] border border-[#E6E6E3] text-[11px]"
+                        onClick={() =>
+                          setRevealedSolutions((prev) => new Set(prev).add(q.id))
+                        }
+                        className="text-xs text-[#787774] hover:text-[#202124] flex items-center gap-1 font-medium"
                       >
-                        Edit
-                      </button>
-                      <button
-                        onClick={() => handleOpenEdit(q, 'duplicate')}
-                        className="px-2 py-0.5 rounded bg-white hover:bg-[#F1F1EF] text-[#787774] border border-[#E6E6E3] flex items-center gap-1 text-[11px]"
-                        title="Duplicate"
-                      >
-                        <Copy className="w-2.5 h-2.5" />
-                        Duplicate
-                      </button>
-                      <button
-                        onClick={() => toggleSelect(q.id)}
-                        className="px-2 py-0.5 rounded bg-white hover:bg-[#F1F1EF] text-[#787774] border border-[#E6E6E3] text-[11px]"
-                      >
-                        {isSelected ? 'Deselect' : 'Select'}
+                        <span>Show Detailed Explanation</span>
+                        <ChevronDown className="w-3.5 h-3.5" />
                       </button>
                     </div>
-                  </div>
+                  )}
                 </div>
               );
             })}
           </div>
         )}
-
-        {/* Floating Batch Action Bar */}
-        {selectedIds.size > 0 && (
-          <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 bg-[#202124] text-white rounded-lg px-4 py-2.5 shadow-xl flex items-center gap-3 animate-in fade-in">
-            <div className="flex items-center gap-1.5 pr-2 border-r border-[#787774] text-xs font-mono">
-              <span className="w-2 h-2 rounded-full bg-emerald-400" />
-              <span>{selectedIds.size} Selected</span>
-            </div>
-
-            <Button
-              variant="primary"
-              size="sm"
-              onClick={handleOpenAssemble}
-              className="bg-white text-[#202124] hover:bg-[#F1F1EF]"
-            >
-              Assemble Test
-            </Button>
-
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={handleBatchArchive}
-              className="text-white border-[#787774] hover:bg-[#4f4d47]"
-            >
-              Archive
-            </Button>
-
-            <button
-              onClick={() => setSelectedIds(new Set())}
-              className="text-xs text-[#9b9a97] hover:text-white px-1"
-            >
-              Clear
-            </button>
-          </div>
-        )}
-
-        {/* Authoring Modal */}
-        <Modal
-          isOpen={isAuthorModalOpen}
-          onClose={() => setIsAuthorModalOpen(false)}
-          title={
-            formMode === 'edit'
-              ? 'Edit Question'
-              : formMode === 'duplicate'
-              ? 'Duplicate Question'
-              : 'Author New Question'
-          }
-          description="Craft or refine questions with immediate preview, LaTeX math support, and grading tags."
-          size="xl"
-          footer={
-            <div className="flex items-center justify-between w-full">
-              <div className="text-xs text-[#787774]">
-                {formError ? (
-                  <span className="text-rose-600 font-medium">{formError}</span>
-                ) : (
-                  <span>Formulas inside $...$ are automatically rendered.</span>
-                )}
-              </div>
-              <div className="flex items-center gap-2">
-                <Button variant="outline" onClick={() => setIsAuthorModalOpen(false)}>
-                  Cancel
-                </Button>
-                <Button variant="primary" onClick={handleSaveQuestion} disabled={formSaving}>
-                  {formSaving ? 'Saving...' : 'Save to Bank'}
-                </Button>
-              </div>
-            </div>
-          }
-        >
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-5 max-h-[65vh] overflow-y-auto pr-1">
-            <div className="space-y-3">
-              <div className="grid grid-cols-2 gap-2.5">
-                <div>
-                  <label className="block text-xs font-medium text-[#202124] mb-1">Subject</label>
-                  <select
-                    value={formSubject}
-                    onChange={(e) => setFormSubject(e.target.value)}
-                    className="w-full px-2.5 py-1.5 rounded-md bg-white border border-[#E6E6E3] text-xs text-[#202124]"
-                  >
-                    {subjectsList.map((s) => (
-                      <option key={s} value={s}>
-                        {s}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-                <div>
-                  <label className="block text-xs font-medium text-[#202124] mb-1">Difficulty</label>
-                  <select
-                    value={formDifficulty}
-                    onChange={(e) => setFormDifficulty(e.target.value as any)}
-                    className="w-full px-2.5 py-1.5 rounded-md bg-white border border-[#E6E6E3] text-xs text-[#202124]"
-                  >
-                    <option value="easy">Easy</option>
-                    <option value="medium">Medium</option>
-                    <option value="hard">Hard</option>
-                  </select>
-                </div>
-              </div>
-
-              <div className="grid grid-cols-3 gap-2 text-xs">
-                <div>
-                  <label className="block text-[#787774] mb-1">Marks (+)</label>
-                  <input
-                    type="number"
-                    step="0.5"
-                    value={formMarks}
-                    onChange={(e) => setFormMarks(Number(e.target.value))}
-                    className="w-full px-2 py-1 rounded-md bg-white border border-[#E6E6E3] text-[#202124]"
-                  />
-                </div>
-                <div>
-                  <label className="block text-[#787774] mb-1">Penalty (-)</label>
-                  <input
-                    type="number"
-                    step="0.25"
-                    value={formNegativeMarks}
-                    onChange={(e) => setFormNegativeMarks(Number(e.target.value))}
-                    className="w-full px-2 py-1 rounded-md bg-white border border-[#E6E6E3] text-[#202124]"
-                  />
-                </div>
-                <div>
-                  <label className="block text-[#787774] mb-1">Est. Secs</label>
-                  <input
-                    type="number"
-                    value={formEstimatedSecs}
-                    onChange={(e) => setFormEstimatedSecs(Number(e.target.value))}
-                    className="w-full px-2 py-1 rounded-md bg-white border border-[#E6E6E3] text-[#202124]"
-                  />
-                </div>
-              </div>
-
-              <div>
-                <label className="block text-xs font-medium text-[#202124] mb-1">
-                  Question Statement (use $...$ for formulas)
-                </label>
-                <textarea
-                  rows={3}
-                  value={formText}
-                  onChange={(e) => setFormText(e.target.value)}
-                  placeholder="e.g. A cylinder has height $h = 14$ cm and radius $r = 7$ cm..."
-                  className="w-full px-2.5 py-1.5 rounded-md bg-white border border-[#E6E6E3] text-xs text-[#202124] focus:outline-none focus:border-[#202124]"
-                />
-              </div>
-
-              <div>
-                <label className="block text-xs font-medium text-[#202124] mb-1">
-                  Options & Correct Answer:
-                </label>
-                <div className="space-y-1.5">
-                  {formOptions.map((opt, i) => {
-                    const optKey = String.fromCharCode(65 + i);
-                    const isChecked = formCorrect === optKey;
-                    return (
-                      <div key={i} className="flex items-center gap-1.5">
-                        <button
-                          type="button"
-                          onClick={() => setFormCorrect(optKey)}
-                          className={`w-6 h-6 rounded flex items-center justify-center text-xs font-mono transition-colors ${
-                            isChecked
-                              ? 'bg-[#202124] text-white'
-                              : 'bg-[#F1F1EF] text-[#787774] border border-[#E6E6E3]'
-                          }`}
-                        >
-                          {optKey}
-                        </button>
-                        <input
-                          type="text"
-                          value={opt}
-                          onChange={(e) => {
-                            const next = [...formOptions];
-                            next[i] = e.target.value;
-                            setFormOptions(next);
-                          }}
-                          placeholder={`Option ${optKey}`}
-                          className={`flex-1 px-2.5 py-1 rounded-md border text-xs text-[#202124] focus:outline-none ${
-                            isChecked ? 'border-[#202124] bg-[#F7F7F5]' : 'border-[#E6E6E3] bg-white'
-                          }`}
-                        />
-                      </div>
-                    );
-                  })}
-                </div>
-              </div>
-
-              <div>
-                <label className="block text-xs font-medium text-[#202124] mb-1">
-                  Explanation / Solution Proof
-                </label>
-                <textarea
-                  rows={2}
-                  value={formExplanation}
-                  onChange={(e) => setFormExplanation(e.target.value)}
-                  placeholder="Step-by-step reasoning or formula derivation..."
-                  className="w-full px-2.5 py-1.5 rounded-md bg-white border border-[#E6E6E3] text-xs text-[#202124] focus:outline-none focus:border-[#202124]"
-                />
-              </div>
-
-              <div className="grid grid-cols-2 gap-2.5">
-                <div>
-                  <label className="block text-xs font-medium text-[#202124] mb-1">Topic / Subtopic</label>
-                  <input
-                    type="text"
-                    value={formTopic}
-                    onChange={(e) => setFormTopic(e.target.value)}
-                    placeholder="e.g. Geometry"
-                    className="w-full px-2.5 py-1 rounded-md bg-white border border-[#E6E6E3] text-xs text-[#202124]"
-                  />
-                </div>
-                <div>
-                  <label className="block text-xs font-medium text-[#202124] mb-1">Source Reference</label>
-                  <input
-                    type="text"
-                    value={formSource}
-                    onChange={(e) => setFormSource(e.target.value)}
-                    placeholder="e.g. SSC CGL 2024"
-                    className="w-full px-2.5 py-1 rounded-md bg-white border border-[#E6E6E3] text-xs text-[#202124]"
-                  />
-                </div>
-              </div>
-            </div>
-
-            {/* Live Preview */}
-            <div className="bg-[#F7F7F5] rounded-lg p-4 border border-[#E6E6E3] flex flex-col justify-between space-y-3">
-              <div>
-                <div className="flex items-center justify-between pb-2 border-b border-[#E6E6E3] text-xs text-[#787774]">
-                  <span className="font-medium text-[#202124] flex items-center gap-1">
-                    <Sparkles className="w-3.5 h-3.5 text-amber-600" />
-                    Preview
-                  </span>
-                  <Badge variant="gray">{formDifficulty.toUpperCase()}</Badge>
-                </div>
-
-                <div className="mt-2.5 text-xs text-[#787774] flex items-center gap-2">
-                  <Badge variant="gray">{formSubject}</Badge>
-                  <span>{formTopic}</span>
-                  <span className="ml-auto font-mono text-[#202124]">
-                    +{formMarks} / -{formNegativeMarks}
-                  </span>
-                </div>
-
-                <div className="mt-2.5 text-xs text-[#202124] leading-relaxed min-h-[40px]">
-                  {formText ? (
-                    <FormattedMathText text={formText} />
-                  ) : (
-                    <span className="text-[#9b9a97] italic">Enter statement to preview...</span>
-                  )}
-                </div>
-
-                <div className="mt-3 space-y-1.5">
-                  {formOptions.map((opt, i) => {
-                    const optKey = String.fromCharCode(65 + i);
-                    const isCorrect = formCorrect === optKey;
-                    return (
-                      <div
-                        key={i}
-                        className={`p-2 rounded-md text-xs border flex items-start gap-2 ${
-                          isCorrect
-                            ? 'bg-[#ebf5e8] border-[#c4e2b8] text-[#2b593f] font-medium'
-                            : 'bg-white border-[#E6E6E3] text-[#202124]'
-                        }`}
-                      >
-                        <span className="font-mono text-[10px]">{optKey}.</span>
-                        <div className="flex-1">
-                          {opt ? <FormattedMathText text={opt} /> : <span className="text-[#9b9a97] italic">Empty</span>}
-                        </div>
-                      </div>
-                    );
-                  })}
-                </div>
-
-                {formExplanation && (
-                  <div className="mt-3 p-2.5 rounded-md bg-white border border-[#E6E6E3] text-xs space-y-1">
-                    <div className="font-medium text-[#202124]">Explanation:</div>
-                    <div className="text-[#787774]">
-                      <FormattedMathText text={formExplanation} />
-                    </div>
-                  </div>
-                )}
-              </div>
-
-              <div className="pt-2 border-t border-[#E6E6E3] text-[11px] text-[#787774] font-mono flex items-center justify-between">
-                <span>Time: {formEstimatedSecs}s</span>
-                <span>Source: {formSource || 'Custom'}</span>
-              </div>
-            </div>
-          </div>
-        </Modal>
-
-        {/* Assemble Test Modal */}
-        <Modal
-          isOpen={isAssembleModalOpen}
-          onClose={() => setIsAssembleModalOpen(false)}
-          title="Assemble Custom Test"
-          description={`Combine ${selectedIds.size} questions into a Computer-Based Test.`}
-          size="md"
-          footer={
-            assembleResult ? (
-              <div className="flex items-center justify-between w-full">
-                <span className="text-xs text-emerald-700 font-medium">
-                  Test successfully created!
-                </span>
-                <div className="flex items-center gap-2">
-                  <Button variant="outline" onClick={() => setIsAssembleModalOpen(false)}>
-                    Close
-                  </Button>
-                  <Link href={`/tests/${assembleResult.testId}/start`}>
-                    <Button variant="primary">
-                      Start Test
-                    </Button>
-                  </Link>
-                </div>
-              </div>
-            ) : (
-              <div className="flex items-center justify-end gap-2 w-full">
-                <Button variant="outline" onClick={() => setIsAssembleModalOpen(false)}>
-                  Cancel
-                </Button>
-                <Button
-                  variant="primary"
-                  onClick={handleSubmitAssemble}
-                  disabled={assembleSubmitting}
-                >
-                  {assembleSubmitting ? 'Assembling...' : `Create Test (${selectedIds.size} Qs)`}
-                </Button>
-              </div>
-            )
-          }
-        >
-          {assembleResult ? (
-            <div className="p-4 bg-[#ebf5e8] border border-[#c4e2b8] rounded-md text-center space-y-2">
-              <CheckCircle2 className="w-8 h-8 text-emerald-600 mx-auto" />
-              <h4 className="font-semibold text-[#2b593f] text-sm">{assembleResult.title}</h4>
-              <p className="text-xs text-[#2b593f]">
-                The test has been published and linked to your selected questions.
-              </p>
-            </div>
-          ) : (
-            <div className="space-y-3 text-xs">
-              <div>
-                <label className="block font-medium text-[#202124] mb-1">Test Title</label>
-                <input
-                  type="text"
-                  value={assembleTitle}
-                  onChange={(e) => setAssembleTitle(e.target.value)}
-                  placeholder="e.g. Quantitative Speed Drill #1"
-                  className="w-full px-2.5 py-1.5 rounded-md bg-white border border-[#E6E6E3] text-[#202124] focus:outline-none"
-                />
-              </div>
-
-              <div>
-                <label className="block font-medium text-[#202124] mb-1">Description</label>
-                <textarea
-                  rows={2}
-                  value={assembleDescription}
-                  onChange={(e) => setAssembleDescription(e.target.value)}
-                  className="w-full px-2.5 py-1.5 rounded-md bg-white border border-[#E6E6E3] text-[#202124] focus:outline-none"
-                />
-              </div>
-
-              <div className="grid grid-cols-2 gap-2.5">
-                <div>
-                  <label className="block font-medium text-[#202124] mb-1">Subject</label>
-                  <select
-                    value={assembleSubject}
-                    onChange={(e) => setAssembleSubject(e.target.value)}
-                    className="w-full px-2.5 py-1.5 rounded-md bg-white border border-[#E6E6E3] text-[#202124]"
-                  >
-                    {subjectsList.map((s) => (
-                      <option key={s} value={s}>
-                        {s}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-
-                <div>
-                  <label className="block font-medium text-[#202124] mb-1">Duration (Minutes)</label>
-                  <input
-                    type="number"
-                    value={assembleDurationMins}
-                    onChange={(e) => setAssembleDurationMins(Number(e.target.value))}
-                    className="w-full px-2.5 py-1.5 rounded-md bg-white border border-[#E6E6E3] text-[#202124]"
-                  />
-                </div>
-              </div>
-            </div>
-          )}
-        </Modal>
       </div>
     </AppShell>
+  );
+}
+
+export default function QuestionBankPage() {
+  return (
+    <Suspense
+      fallback={
+        <AppShell>
+          <div className="py-24 text-center text-xs text-[#787774] font-mono">
+            Loading Practice Engine...
+          </div>
+        </AppShell>
+      }
+    >
+      <QuestionBankContent />
+    </Suspense>
   );
 }

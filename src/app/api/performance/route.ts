@@ -31,12 +31,12 @@ export async function GET(req: NextRequest) {
       LIMIT 1
     `);
     const enrollment = enrollmentStmt.get(safeUserId) as any;
-    const examId = enrollment?.exam_id || 'exam-ssc-cgl-2026';
-
+    const examId = enrollment?.exam_id || 'exam-cat-2026';
+ 
     const exam = db.prepare('SELECT * FROM exams WHERE id = ?').get(examId) as any || {
-      title: 'SSC CGL 2026',
-      total_marks: 200,
-      total_duration_minutes: 60,
+      title: 'CAT 2026',
+      total_marks: 198,
+      total_duration_minutes: 120,
     };
 
     // 2. Test Attempts History & Trends

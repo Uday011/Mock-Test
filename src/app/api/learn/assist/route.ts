@@ -47,7 +47,7 @@ export async function POST(req: NextRequest) {
         return NextResponse.json({
           success: true,
           title: "Examiner's Cognitive Trap: Base Shift Confusion",
-          content: `**The Classic SSC CGL Trap**:
+          content: `**The Classic CAT Trap**:
 "A's income is 40% higher than B. By what percentage is B's income lower than A?"
 
 **The 5-second mistake**: Aspirants reflexively answer 40%.
@@ -85,7 +85,7 @@ Whenever lines pass through a point $P$ and cut a circle, the product of segment
 - If chords cross inside: \`AP × PB = CP × PD\`.
 - If secants meet outside: \`PA × PB = PC × PD\`.
 - If one line is a tangent touching at $T$: \`PT² = PA × PB\`.
-You only need this single unified relationship to solve 80% of SSC circle questions.`
+You only need this single unified relationship to solve 80% of CAT and XAT circle questions.`
         });
       }
 
@@ -120,7 +120,7 @@ You only need this single unified relationship to solve 80% of SSC circle questi
       },
       examiner_trap: {
         title: `Examiner Traps to Avoid: ${topicTitle}`,
-        content: `In **${topicTitle}**, TCS and SSC examination boards frequently include:
+        content: `In **${topicTitle}**, IIM convening panels and premier MBA examiners frequently include:
 1. **Misdirection by Irrelevant Numbers**: Extra statistics given to distract from core formula.
 2. **Unit Mismatches**: e.g., mixing km/h with meters, or years with months.
 3. **Double Negation**: Questions asking 'Which of the following is NOT true?'`

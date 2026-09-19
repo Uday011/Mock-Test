@@ -74,24 +74,21 @@ export default function ExamsCatalogPage() {
     : exams.filter((e) => e.category === categoryFilter);
 
   const categories = [
-    { id: 'all', label: 'All Frameworks' },
-    { id: 'government_job', label: 'Staff Selection (SSC)' },
-    { id: 'medical', label: 'Medical (NEET UG)' },
-    { id: 'civil_services', label: 'Civil Services (UPSC)' },
-    { id: 'engineering', label: 'Engineering (JEE)' },
+    { id: 'all', label: 'All MBA Exams' },
+    { id: 'management', label: 'Management Entrance' },
   ];
 
   return (
     <AppShell
       breadcrumbs={[{ label: 'Target Exams', href: '/exams' }]}
-      activeExamTitle={primaryEnrollment?.exam_title || 'SSC CGL 2026'}
+      activeExamTitle={primaryEnrollment?.exam_title || 'CAT 2026'}
     >
       <div className="max-w-5xl mx-auto space-y-6 pb-16">
         <PageHeader
           icon={Compass}
-          title="Examination Blueprints & Frameworks"
-          description="Standardized national examination frameworks featuring conducting bodies, curricular stages, and difficulty benchmarks."
-          badge={<Badge variant="saffron" size="sm">National Frameworks</Badge>}
+          title="MBA Examination Blueprints & Frameworks"
+          description="Standardized MBA and management entrance frameworks (CAT, XAT, NMAT, SNAP) featuring conducting bodies, stages, and scoring benchmarks."
+          badge={<Badge variant="saffron" size="sm">MBA Entrance</Badge>}
           actions={
             <Link href="/onboarding">
               <Button variant="secondary" size="sm">

@@ -401,8 +401,8 @@ export default function ExamWorkspacePage() {
         <div className="space-y-4">
           <div className="p-4 bg-white border border-[#E6E6E3] rounded-lg flex items-center justify-between flex-wrap gap-3">
             <div>
-              <h3 className="text-sm font-semibold text-[#202124]">SSC CGL 60-Day Strategic Master Plan</h3>
-              <p className="text-xs text-[#787774] mt-0.5">Sequenced units balancing high-yield arithmetic, reasoning, and constitutional governance.</p>
+              <h3 className="text-sm font-semibold text-[#202124]">{exam?.title || 'CAT 2026'} 90-Day Strategic Master Plan</h3>
+              <p className="text-xs text-[#787774] mt-0.5">Sequenced units balancing high-yield Quantitative Aptitude, DILR caselets, and Verbal Ability.</p>
             </div>
             <Link href="/learn">
               <Button variant="primary" size="sm">Open Sprint Workspace →</Button>
@@ -468,17 +468,17 @@ export default function ExamWorkspacePage() {
             <div className="flex items-center justify-between flex-wrap gap-2">
               <div>
                 <span className="font-mono text-[10px] font-medium px-1.5 py-0.5 rounded bg-[#FFFBEB] text-[#8f6b10]">
-                  Official CBE Diagnostic Mock
+                  Official CBT Diagnostic Mock
                 </span>
                 <h3 className="text-sm sm:text-base font-semibold text-[#202124] mt-1">
-                  SSC CGL 2026 Tier-I All India Diagnostic Mock 01
+                  {exam?.title || 'CAT 2026'} All India Diagnostic Mock 01
                 </h3>
               </div>
-              <Badge variant="emerald" size="sm">Standard TCS Pattern</Badge>
+              <Badge variant="emerald" size="sm">Authentic CAT CBT Pattern</Badge>
             </div>
 
             <p className="text-xs text-[#787774]">
-              Full-length 100 questions screening exam across Quant, Reasoning, English, and General Awareness (+2.0 / -0.50 marks, 60 minutes).
+              Full-length 66 questions diagnostic exam across VARC, DILR, and QA (+3.0 / -1.0 marks, 120 minutes).
             </p>
 
             <div className="flex items-center justify-between pt-3 border-t border-[#E6E6E3] flex-wrap gap-3">

@@ -66,7 +66,7 @@ export default function EducatorDashboardPage() {
   const [showCreateSeriesModal, setShowCreateSeriesModal] = useState(false);
   const [newSeriesTitle, setNewSeriesTitle] = useState('');
   const [newSeriesDesc, setNewSeriesDesc] = useState('');
-  const [newSeriesExam, setNewSeriesExam] = useState('exam-ssc-cgl-2026');
+  const [newSeriesExam, setNewSeriesExam] = useState('exam-cat-2026');
   const [newSeriesPaid, setNewSeriesPaid] = useState(false);
   const [newSeriesPrice, setNewSeriesPrice] = useState(299);
   const [creatingSeries, setCreatingSeries] = useState(false);
@@ -1009,7 +1009,7 @@ export default function EducatorDashboardPage() {
                   required
                   value={newSeriesTitle}
                   onChange={(e) => setNewSeriesTitle(e.target.value)}
-                  placeholder="e.g. SSC CGL 2026 Tier-I 10-Mock Master Series"
+                  placeholder="e.g. CAT 2026 10-Mock Master Series"
                   className="w-full px-3 py-2 rounded-xl border border-stone-300 bg-white text-stone-900 focus:ring-2 focus:ring-amber-500 focus:outline-hidden"
                 />
               </div>
@@ -1033,10 +1033,10 @@ export default function EducatorDashboardPage() {
                     onChange={(e) => setNewSeriesExam(e.target.value)}
                     className="w-full px-3 py-2 rounded-xl border border-stone-300 bg-white text-stone-900 focus:ring-2 focus:ring-amber-500 focus:outline-hidden"
                   >
-                    <option value="exam-ssc-cgl-2026">SSC CGL 2026</option>
-                    <option value="exam-neet-ug-2026">NEET UG 2026</option>
-                    <option value="exam-jee-adv-2026">JEE Advanced 2026</option>
-                    <option value="exam-upsc-cse-2026">UPSC CSE 2026</option>
+                    <option value="exam-cat-2026">CAT 2026 (Common Admission Test)</option>
+                    <option value="exam-xat-2026">XAT 2026 (Xavier Aptitude Test)</option>
+                    <option value="exam-nmat-2026">NMAT 2026 by GMAC</option>
+                    <option value="exam-snap-2026">SNAP 2026 (Symbiosis)</option>
                   </select>
                 </div>
 

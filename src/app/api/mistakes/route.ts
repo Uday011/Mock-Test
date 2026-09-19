@@ -172,3 +172,96 @@ export async function PATCH(req: NextRequest) {
     );
   }
 }
+
+export async function POST(req: NextRequest) {
+  try {
+    const db = getDb();
+    seedInitialData();
+
+    const user = await getCurrentUser();
+    let userId = user?.id;
+    if (!userId) {
+      const demoStudent = db.prepare("SELECT id FROM users WHERE role = 'student' LIMIT 1").get() as any;
+      if (demoStudent) userId = demoStudent.id;
+    }
+    const safeUserId = userId || 'usr-student-demo';
+
+    const body = await req.json();
+    const {
+      question_id,
+      test_id = 'practice_session',
+      exam_id = 'exam-cat-2026',
+      subject_id = null,
+      topic_id = null,
+      question_text,
+      options = [],
+      selected_answer,
+      correct_answer,
+      explanation = '',
+      error_category = 'conceptual_gap',
+      user_notes = '',
+    } = body;
+
+    if (!question_id || !question_text || !selected_answer || !correct_answer) {
+      return NextResponse.json(
+        { error: 'Missing required mistake log parameters' },
+        { status: 400 }
+      );
+    }
+
+    const now = new Date().toISOString();
+    const existing = db
+      .prepare('SELECT id, attempt_count FROM mistake_records WHERE user_id = ? AND question_id = ? LIMIT 1')
+      .get(safeUserId, question_id) as any;
+
+    if (existing) {
+      db.prepare(`
+        UPDATE mistake_records
+        SET selected_answer = ?,
+            attempt_count = attempt_count + 1,
+            is_resolved = 0,
+            last_attempted_at = ?,
+            error_category = COALESCE(?, error_category)
+        WHERE id = ?
+      `).run(selected_answer, now, error_category, existing.id);
+
+      return NextResponse.json({ success: true, id: existing.id, updated: true });
+    } else {
+      const newId = `mistake-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
+      db.prepare(`
+        INSERT INTO mistake_records (
+          id, user_id, test_id, question_id, exam_id, subject_id, topic_id,
+          question_text, options_json, selected_answer, correct_answer, explanation,
+          error_category, user_notes, is_resolved, attempt_count, is_bookmarked,
+          last_attempted_at, created_at
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 0, 1, 0, ?, ?)
+      `).run(
+        newId,
+        safeUserId,
+        test_id,
+        question_id,
+        exam_id,
+        subject_id,
+        topic_id,
+        question_text,
+        JSON.stringify(options),
+        selected_answer,
+        correct_answer,
+        explanation,
+        error_category,
+        user_notes,
+        now,
+        now
+      );
+
+      return NextResponse.json({ success: true, id: newId, created: true });
+    }
+  } catch (error: any) {
+    console.error('Error recording mistake:', error);
+    return NextResponse.json(
+      { error: 'Failed to record mistake', details: error.message },
+      { status: 500 }
+    );
+  }
+}
+

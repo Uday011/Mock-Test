@@ -176,7 +176,7 @@ export default function TestSeriesDetailPage() {
             <div className="space-y-3 flex-1">
               <div className="flex items-center gap-2 flex-wrap">
                 <span className="text-[11px] font-mono px-2 py-0.5 rounded-[3px] bg-[#FFFBEB] text-[#4d3800] border border-[#f1e0b5]">
-                  {series.exam_title || 'SSC CGL 2026'}
+                  {series.exam_title || 'CAT 2026'}
                 </span>
                 <span className="text-[11px] px-2 py-0.5 rounded-[3px] bg-[#F1F1EF] text-[#787774] border border-[#E6E6E3]">
                   {items.length} Mock Examinations

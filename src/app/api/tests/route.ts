@@ -95,10 +95,28 @@ export async function GET(req: NextRequest) {
       tests = tests.filter(t => t.exam_id === filterExamId || !t.exam_id);
     }
     if (filterSubjectId && filterSubjectId !== 'all') {
-      tests = tests.filter(t => t.subject_id === filterSubjectId);
+      const sLower = filterSubjectId.toLowerCase();
+      tests = tests.filter(t => {
+        if (t.subject_id === filterSubjectId) return true;
+        if (t.subject && t.subject.toLowerCase().includes(sLower)) return true;
+        if (sLower === 'varc') return t.subject_id?.includes('varc') || t.title.toLowerCase().includes('verbal') || t.title.toLowerCase().includes('rc');
+        if (sLower === 'dilr') return t.subject_id?.includes('dilr') || t.title.toLowerCase().includes('reasoning') || t.title.toLowerCase().includes('dilr');
+        if (sLower === 'qa') return t.subject_id?.includes('qa') || t.title.toLowerCase().includes('quant') || t.title.toLowerCase().includes('arithmetic') || t.title.toLowerCase().includes('geometry');
+        return false;
+      });
     }
     if (filterTestType && filterTestType !== 'all') {
-      tests = tests.filter(t => t.test_type === filterTestType);
+      if (filterTestType === 'sectional') {
+        tests = tests.filter(t => t.test_type === 'sectional_test' || t.test_type === 'subject_test' || t.test_type === 'mixed_revision_test');
+      } else if (filterTestType === 'pyq') {
+        tests = tests.filter(t => t.test_type === 'previous_year_paper');
+      } else if (filterTestType === 'full_mock') {
+        tests = tests.filter(t => t.test_type === 'full_mock' || t.test_type === 'community_test');
+      } else if (filterTestType === 'topic') {
+        tests = tests.filter(t => t.test_type === 'topic_test');
+      } else {
+        tests = tests.filter(t => t.test_type === filterTestType);
+      }
     }
     if (filterDifficulty && filterDifficulty !== 'all') {
       tests = tests.filter(t => (t.difficulty || 'medium') === filterDifficulty);

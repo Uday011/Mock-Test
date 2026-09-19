@@ -3,24 +3,27 @@ import React from 'react';
 export interface CardProps extends React.HTMLAttributes<HTMLDivElement> {
   interactive?: boolean;
   padded?: boolean;
+  hero?: boolean;
 }
 
 export function Card({
   children,
   interactive = false,
   padded = true,
+  hero = false,
   className = '',
   ...props
 }: CardProps) {
   const interactiveStyles = interactive
-    ? 'hover:border-[#CBD5E1] hover:bg-[#F1F1EF]/60 transition-colors duration-150 cursor-pointer'
+    ? 'hover:border-accent/40 hover:bg-secondary/40 transition-all duration-150 cursor-pointer'
     : '';
 
-  const paddingStyle = padded ? 'p-4 sm:p-5' : '';
+  const paddingStyle = padded ? 'p-4 sm:p-6' : '';
+  const roundedStyle = hero ? 'rounded-hero' : 'rounded-card';
 
   return (
     <div
-      className={`bg-white rounded-md border border-[#E6E6E3] text-[#202124] overflow-hidden ${interactiveStyles} ${paddingStyle} ${className}`}
+      className={`bg-surface ${roundedStyle} border border-line text-ink overflow-hidden transition-colors ${interactiveStyles} ${paddingStyle} ${className}`}
       {...props}
     >
       {children}
@@ -47,7 +50,7 @@ export function CardTitle({
 }: React.HTMLAttributes<HTMLHeadingElement>) {
   return (
     <h3
-      className={`text-sm sm:text-base font-semibold text-[#202124] tracking-tight leading-snug ${className}`}
+      className={`text-sm sm:text-base font-semibold text-ink tracking-tight leading-snug ${className}`}
       {...props}
     >
       {children}
@@ -61,7 +64,7 @@ export function CardDescription({
   ...props
 }: React.HTMLAttributes<HTMLParagraphElement>) {
   return (
-    <p className={`text-xs text-[#787774] mt-0.5 leading-relaxed ${className}`} {...props}>
+    <p className={`text-xs sm:text-sm text-ink-muted mt-0.5 leading-relaxed ${className}`} {...props}>
       {children}
     </p>
   );
@@ -86,7 +89,7 @@ export function CardFooter({
 }: React.HTMLAttributes<HTMLDivElement>) {
   return (
     <div
-      className={`mt-4 pt-3 border-t border-[#E6E6E3] flex items-center justify-between gap-3 text-xs text-[#787774] ${className}`}
+      className={`mt-4 pt-3 border-t border-line flex items-center justify-between gap-3 text-xs text-ink-muted ${className}`}
       {...props}
     >
       {children}

@@ -29,11 +29,11 @@ export function calculateReadinessIndex(
 ): ReadinessResult {
   // 1. Fetch Exam
   const exam = db.prepare('SELECT * FROM exams WHERE id = ?').get(examId) as any || {
-    title: 'SSC CGL 2026',
-    total_marks: 200,
-    total_duration_minutes: 60,
+    title: 'CAT 2026',
+    total_marks: 198,
+    total_duration_minutes: 120,
   };
-  const maxScore = exam.total_marks || 200;
+  const maxScore = exam.total_marks || 198;
 
   // 2. Fetch User Attempts
   const attemptsStmt = db.prepare(`

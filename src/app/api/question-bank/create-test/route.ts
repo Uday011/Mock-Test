@@ -27,7 +27,7 @@ export async function POST(req: NextRequest) {
       duration_seconds = 1800,
       visibility = 'public',
       status = 'published',
-      exam_id = 'exam-ssc-cgl-2026',
+      exam_id = 'exam-cat-2026',
       subject_id = null,
     } = body;
 
@@ -52,7 +52,7 @@ export async function POST(req: NextRequest) {
         marking_scheme_type, default_correct_marks, default_negative_marks, default_unanswered_marks,
         shuffle_questions, shuffle_options, allow_navigation, show_palette, allow_review_marking, show_immediate_results,
         test_type, exam_id, subject_id, visibility, status, is_paid, price_inr, created_at, updated_at
-      ) VALUES (?, ?, ?, ?, ?, 'sec-ssc', ?, 'standard', 2.0, 0.5, 0.0, 1, 1, 1, 1, 1, 1, ?, ?, ?, ?, ?, 0, 0.0, ?, ?)
+      ) VALUES (?, ?, ?, ?, ?, 'sec-mba', ?, 'standard', 3.0, 1.0, 0.0, 1, 1, 1, 1, 1, 1, ?, ?, ?, ?, ?, 0, 0.0, ?, ?)
     `).run(
       newTestId,
       userId,

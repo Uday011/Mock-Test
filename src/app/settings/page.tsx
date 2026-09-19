@@ -19,8 +19,8 @@ import { Badge } from '@/components/ui/Badge';
 import { Button } from '@/components/ui/Button';
 
 export default function SettingsPage() {
-  const [activeExam, setActiveExam] = useState('SSC CGL 2026');
-  const [targetScore, setTargetScore] = useState('165');
+  const [activeExam, setActiveExam] = useState('CAT 2026');
+  const [targetScore, setTargetScore] = useState('105');
   const [geminiKey, setGeminiKey] = useState('');
   const [savedSuccess, setSavedSuccess] = useState(false);
   const [currentUser, setCurrentUser] = useState<any>(null);
@@ -116,25 +116,25 @@ export default function SettingsPage() {
                 onChange={(e) => setActiveExam(e.target.value)}
                 className="w-full px-2.5 py-1.5 text-xs border border-[#E6E6E3] rounded-[4px] focus:outline-none focus:border-[#202124] bg-[#fcfbf9] text-[#202124]"
               >
-                <option value="SSC CGL 2026">SSC CGL 2026 (Staff Selection Group B/C)</option>
-                <option value="NEET UG 2026">NEET UG 2026 (Pre-Medical Entrance)</option>
-                <option value="UPSC CSE 2026">UPSC Civil Services Prelims 2026</option>
-                <option value="JEE Advanced 2026">JEE Advanced 2026 (Engineering)</option>
+                <option value="CAT 2026">CAT 2026 (Common Admission Test - IIMs)</option>
+                <option value="XAT 2026">XAT 2026 (Xavier Aptitude Test - XLRI)</option>
+                <option value="NMAT 2026">NMAT by GMAC 2026 (NMIMS & Leading B-Schools)</option>
+                <option value="SNAP 2026">SNAP 2026 (Symbiosis National Aptitude)</option>
               </select>
             </div>
 
             <div>
               <label className="block text-xs font-medium text-[#202124] mb-1">
-                Target Score Benchmark (Tier-I)
+                Target Score Benchmark (CAT)
               </label>
               <input
                 type="number"
                 value={targetScore}
                 onChange={(e) => setTargetScore(e.target.value)}
                 className="w-full px-2.5 py-1.5 text-xs border border-[#E6E6E3] rounded-[4px] focus:outline-none focus:border-[#202124] bg-[#fcfbf9] text-[#202124]"
-                placeholder="e.g. 165"
+                placeholder="e.g. 105"
               />
-              <span className="text-[10px] text-[#787774] mt-1 block">General category qualifying cutoff: ~138 / 200</span>
+              <span className="text-[10px] text-[#787774] mt-1 block">IIM 99th percentile cutoff benchmark: ~90-105 / 198</span>
             </div>
           </div>
         </div>
@@ -170,7 +170,7 @@ export default function SettingsPage() {
           </div>
         </div>
 
-        {/* Persona Role Switcher */}
+        {/* Active Candidate Profile */}
         <div className="p-5 bg-white rounded-md border border-[#E6E6E3] space-y-4">
           <div className="flex items-center gap-2 pb-3 border-b border-[#E6E6E3]">
             <div className="w-6 h-6 rounded-[3px] bg-[#F1F1EF] text-[#202124] flex items-center justify-center border border-[#E6E6E3]">
@@ -178,48 +178,30 @@ export default function SettingsPage() {
             </div>
             <div>
               <h3 className="text-sm font-semibold text-[#202124]">
-                Persona Role Simulator
+                Candidate Preparation Profile
               </h3>
-              <p className="text-[11px] text-[#787774]">Quickly toggle between testing personas to preview platform dimensions</p>
+              <p className="text-[11px] text-[#787774]">Your active preparation tier and diagnostic engine privileges</p>
             </div>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-            <button
-              onClick={() => handleSwitchRole('student')}
-              className={`p-3.5 rounded-md border text-left transition-colors ${
-                currentUser?.role === 'student'
-                  ? 'border-[#202124] bg-[#F1F1EF] ring-1 ring-[#202124]'
-                  : 'border-[#E6E6E3] hover:bg-[#fcfbf9]'
-              }`}
+          <div className="p-3.5 rounded-md border border-[#E6E6E3] bg-[#FCFBF9] flex items-center justify-between">
+            <div>
+              <div className="flex items-center gap-2">
+                <span className="text-xs font-semibold text-[#202124]">{currentUser?.name || 'CAT Aspirant'}</span>
+                <span className="px-1.5 py-0.5 text-[10px] font-medium bg-[#E8F5E9] text-[#1B5E20] border border-[#C8E6C9] rounded">
+                  Active Candidate
+                </span>
+              </div>
+              <p className="text-[11px] text-[#787774] mt-0.5">
+                Target: {activeExam} • Full CBT Mocks, Mistake Notebook & AI Analytics Activated
+              </p>
+            </div>
+            <Link
+              href="/dashboard"
+              className="text-xs font-medium text-[#202124] hover:underline"
             >
-              <div className="text-xs font-semibold text-[#202124]">Aspirant / Learner</div>
-              <p className="text-[11px] text-[#787774] mt-0.5">Full CBT testing, mistake notebook, syllabus progression</p>
-            </button>
-
-            <button
-              onClick={() => handleSwitchRole('admin')}
-              className={`p-3.5 rounded-md border text-left transition-colors ${
-                currentUser?.role === 'admin'
-                  ? 'border-[#202124] bg-[#F1F1EF] ring-1 ring-[#202124]'
-                  : 'border-[#E6E6E3] hover:bg-[#fcfbf9]'
-              }`}
-            >
-              <div className="text-xs font-semibold text-[#202124]">Educator / Faculty</div>
-              <p className="text-[11px] text-[#787774] mt-0.5">Test studio authoring, parser, student cohort analytics</p>
-            </button>
-
-            <button
-              onClick={() => handleSwitchRole('superadmin')}
-              className={`p-3.5 rounded-md border text-left transition-colors ${
-                currentUser?.role === 'superadmin'
-                  ? 'border-[#202124] bg-[#F1F1EF] ring-1 ring-[#202124]'
-                  : 'border-[#E6E6E3] hover:bg-[#fcfbf9]'
-              }`}
-            >
-              <div className="text-xs font-semibold text-[#202124]">Super Administrator</div>
-              <p className="text-[11px] text-[#787774] mt-0.5">System governance, institution directory, global exams</p>
-            </button>
+              Go to Dashboard &rarr;
+            </Link>
           </div>
         </div>
       </div>

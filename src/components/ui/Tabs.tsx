@@ -29,7 +29,7 @@ export function Tabs({
     return (
       <div
         role="tablist"
-        className={`inline-flex items-center p-1 bg-[#F1F1EF] rounded-md border border-[#E6E6E3] ${className}`}
+        className={`inline-flex items-center p-1 bg-secondary rounded-control border border-line ${className}`}
       >
         {tabs.map((tab) => {
           const isActive = tab.id === activeTab;
@@ -40,20 +40,20 @@ export function Tabs({
               role="tab"
               aria-selected={isActive}
               onClick={() => onChange(tab.id)}
-              className={`flex items-center gap-2 px-3 py-1.5 text-xs font-medium rounded transition-all ${
+              className={`flex items-center gap-2 px-3 py-1.5 text-xs font-medium rounded-[8px] transition-all ${
                 isActive
-                  ? 'bg-white text-[#202124] shadow-xs font-semibold'
-                  : 'text-[#787774] hover:text-[#202124]'
+                  ? 'bg-surface text-ink shadow-xs font-semibold'
+                  : 'text-ink-muted hover:text-ink'
               }`}
             >
               {Icon && <Icon className="w-3.5 h-3.5 flex-shrink-0" />}
               <span>{tab.label}</span>
               {typeof tab.count === 'number' && (
                 <span
-                  className={`text-[10px] font-mono px-1.5 py-0.2 rounded-full ${
+                  className={`text-[10px] font-mono px-1.5 py-0.5 rounded-full ${
                     isActive
-                      ? 'bg-[#EEF0FB] text-[#4F46A5] font-medium'
-                      : 'bg-[#E6E6E3] text-[#787774]'
+                      ? 'bg-accent/10 text-accent font-medium'
+                      : 'bg-line text-ink-muted'
                   }`}
                 >
                   {tab.count}
@@ -67,7 +67,7 @@ export function Tabs({
   }
 
   return (
-    <div className={`border-b border-[#E6E6E3] ${className}`}>
+    <div className={`border-b border-line ${className}`}>
       <nav role="tablist" className="flex space-x-6 overflow-x-auto no-scrollbar">
         {tabs.map((tab) => {
           const isActive = tab.id === activeTab;
@@ -80,14 +80,14 @@ export function Tabs({
               onClick={() => onChange(tab.id)}
               className={`group inline-flex items-center gap-2 py-2.5 px-1 border-b-2 text-xs sm:text-sm font-medium transition-colors whitespace-nowrap ${
                 isActive
-                  ? 'border-[#4F46A5] text-[#202124] font-semibold'
-                  : 'border-transparent text-[#787774] hover:text-[#202124] hover:border-[#E6E6E3]'
+                  ? 'border-accent text-ink font-semibold'
+                  : 'border-transparent text-ink-muted hover:text-ink hover:border-line'
               }`}
             >
               {Icon && (
                 <Icon
                   className={`w-4 h-4 flex-shrink-0 ${
-                    isActive ? 'text-[#4F46A5]' : 'text-[#787774] group-hover:text-[#202124]'
+                    isActive ? 'text-accent' : 'text-ink-muted group-hover:text-ink'
                   }`}
                 />
               )}
@@ -96,8 +96,8 @@ export function Tabs({
                 <span
                   className={`text-[11px] font-mono ml-1 px-1.5 py-0.5 rounded-full ${
                     isActive
-                      ? 'bg-[#EEF0FB] text-[#4F46A5] font-medium'
-                      : 'bg-[#F1F1EF] text-[#787774] group-hover:bg-[#E6E6E3]'
+                      ? 'bg-accent/10 text-accent font-medium'
+                      : 'bg-secondary text-ink-muted group-hover:bg-line'
                   }`}
                 >
                   {tab.count}

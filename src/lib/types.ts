@@ -233,7 +233,7 @@ export type ExamCategory =
 
 export interface Exam {
   id: string;
-  code: string; // e.g. 'NEET_UG', 'UPSC_CSE', 'JEE_ADV', 'SSC_CGL_2026'
+  code: string; // e.g. 'CAT_2026', 'XAT_2026', 'NMAT_2026', 'SNAP_2026'
   title: string;
   category: ExamCategory | string;
   description: string;
@@ -733,3 +733,20 @@ export interface ReviewQueueItem {
   status: 'under_review' | 'revisions_requested' | 'approved' | 'rejected';
   admin_notes?: string | null;
 }
+
+export interface LearnerResource {
+  id: string;
+  user_id?: string | null;
+  title: string;
+  type: 'youtube' | 'pdf' | 'article' | 'website' | 'notes';
+  subject_id?: string | null;
+  subject_name?: string | null;
+  topic_id?: string | null;
+  topic_name?: string | null;
+  source?: string | null;
+  url?: string | null;
+  notes?: string | null;
+  is_saved: boolean | number;
+  created_at: string;
+}
+

@@ -3,8 +3,37 @@
 @tailwind utilities;
 
 :root {
-  --foreground-rgb: 32, 33, 36;
-  --background-rgb: 247, 247, 245;
+  --bg-canvas: #F7F7F5;
+  --bg-surface: #FFFFFF;
+  --bg-secondary: #F3F3F1;
+  --bg-elevated: #FFFFFF;
+  --text-primary: #161616;
+  --text-secondary: #6B6B6B;
+  --border-subtle: #E5E5E2;
+  --accent-primary: #5865D8;
+  --accent-subtle: rgba(88, 101, 216, 0.08);
+  --accent-border: rgba(88, 101, 216, 0.22);
+  --color-lavender: #9185C7;
+  --color-green: #72A88F;
+  --color-gold: #C5A05A;
+  --color-coral: #D8897D;
+}
+
+html.dark {
+  --bg-canvas: #0E0F10;
+  --bg-surface: #151617;
+  --bg-secondary: #1B1C1E;
+  --bg-elevated: #202124;
+  --text-primary: #F5F5F3;
+  --text-secondary: #A4A5A7;
+  --border-subtle: #292B2E;
+  --accent-primary: #5865D8;
+  --accent-subtle: rgba(88, 101, 216, 0.16);
+  --accent-border: rgba(88, 101, 216, 0.35);
+  --color-lavender: #9185C7;
+  --color-green: #72A88F;
+  --color-gold: #C5A05A;
+  --color-coral: #D8897D;
 }
 
 html {
@@ -13,33 +42,34 @@ html {
 }
 
 body {
-  color: #202124;
-  background-color: #f7f7f5;
+  color: var(--text-primary);
+  background-color: var(--bg-canvas);
   min-height: 100vh;
   min-height: 100dvh;
-  font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
   overflow-x: hidden;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 /* Custom subtle professional scrollbar */
 ::-webkit-scrollbar {
-  width: 5px;
-  height: 5px;
+  width: 6px;
+  height: 6px;
 }
 ::-webkit-scrollbar-track {
   background: transparent;
 }
 ::-webkit-scrollbar-thumb {
-  background: #e6e6e3;
+  background: var(--border-subtle);
   border-radius: 9999px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: #cbd5e1;
+  background: var(--text-secondary);
 }
 
-/* Mobile sheet and modal keyframe animations */
+/* Animations */
 @keyframes slide-up {
   from {
     transform: translateY(100%);
@@ -64,7 +94,7 @@ body {
   animation: fade-in 0.2s ease-out forwards;
 }
 
-/* Safe area padding for mobile notches and bottom bars */
+/* Safe area padding */
 .pb-safe {
   padding-bottom: env(safe-area-inset-bottom, 1rem);
 }
@@ -73,7 +103,6 @@ body {
   padding-top: env(safe-area-inset-top, 0.75rem);
 }
 
-/* Touch action optimization for fast responsive buttons on mobile */
-button, a, input, select {
+button, a, input, select, textarea {
   touch-action: manipulation;
 }

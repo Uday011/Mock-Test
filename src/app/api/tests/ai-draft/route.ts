@@ -7,7 +7,7 @@ export async function POST(req: NextRequest) {
     const {
       topic = 'Triangles, Circles & Coordinate Geometry',
       subject = 'Quantitative Aptitude',
-      exam = 'SSC CGL 2026 Tier-I',
+      exam = 'CAT 2026',
       difficulty = 'medium',
       count = 5,
     } = body;

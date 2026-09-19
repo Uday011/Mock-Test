@@ -1,6 +1,7 @@
 import type { Config } from "tailwindcss";
 
 const config: Config = {
+  darkMode: "class",
   content: [
     "./src/pages/**/*.{js,ts,jsx,tsx,mdx}",
     "./src/components/**/*.{js,ts,jsx,tsx,mdx}",
@@ -9,51 +10,79 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
+        canvas: "var(--bg-canvas)",
+        surface: "var(--bg-surface)",
+        secondary: "var(--bg-secondary)",
+        elevated: "var(--bg-elevated)",
+        ink: {
+          DEFAULT: "var(--text-primary)",
+          muted: "var(--text-secondary)",
+        },
+        line: "var(--border-subtle)",
+        accent: {
+          DEFAULT: "#5865D8",
+          hover: "#4956C7",
+          subtle: "var(--accent-subtle)",
+          border: "var(--accent-border)",
+        },
+        lavender: {
+          DEFAULT: "#9185C7",
+          subtle: "rgba(145, 133, 199, 0.12)",
+        },
+        green: {
+          DEFAULT: "#72A88F",
+          subtle: "rgba(114, 168, 143, 0.12)",
+        },
+        gold: {
+          DEFAULT: "#C5A05A",
+          subtle: "rgba(197, 160, 90, 0.12)",
+        },
+        coral: {
+          DEFAULT: "#D8897D",
+          subtle: "rgba(216, 137, 125, 0.12)",
+        },
+        // Backwards compatibility mappings for smooth migration
         nalanda: {
-          // Nalanda Core Visual Identity Tokens
-          canvas: '#F7F7F5',       // Primary background (Warm ivory)
-          surface: '#FFFFFF',      // Surface (White)
-          subtle: '#F1F1EF',       // Secondary surface (Soft gray)
-          ink: '#202124',          // Primary text (Charcoal)
-          muted: '#787774',        // Secondary text (Muted gray)
-          border: '#E6E6E3',       // Border (Light gray)
+          canvas: "var(--bg-canvas)",
+          surface: "var(--bg-surface)",
+          subtle: "var(--bg-secondary)",
+          ink: "var(--text-primary)",
+          muted: "var(--text-secondary)",
+          border: "var(--border-subtle)",
           indigo: {
-            DEFAULT: '#4F46A5',    // Primary accent (Deep indigo)
-            hover: '#433B91',
-            subtle: '#EEF0FB',
-            border: '#DCDDF7',
+            DEFAULT: "#5865D8",
+            hover: "#4956C7",
+            subtle: "var(--accent-subtle)",
+            border: "var(--accent-border)",
           },
           saffron: {
-            DEFAULT: '#B7791F',    // Secondary accent (Muted saffron)
-            hover: '#9E6719',
-            subtle: '#FDF6EC',
-            border: '#F6E3C7',
+            DEFAULT: "#C5A05A",
+            hover: "#B38E4A",
+            subtle: "rgba(197, 160, 90, 0.12)",
+            border: "rgba(197, 160, 90, 0.25)",
           },
           success: {
-            DEFAULT: '#1B5E20',    // Soft green
-            subtle: '#EDF7ED',
-            border: '#C8E6C9',
+            DEFAULT: "#72A88F",
+            subtle: "rgba(114, 168, 143, 0.12)",
+            border: "rgba(114, 168, 143, 0.25)",
           },
           warning: {
-            DEFAULT: '#B7791F',    // Muted amber
-            subtle: '#FFFBEB',
-            border: '#FEF3C7',
+            DEFAULT: "#C5A05A",
+            subtle: "rgba(197, 160, 90, 0.12)",
+            border: "rgba(197, 160, 90, 0.25)",
           },
           error: {
-            DEFAULT: '#C53030',    // Restrained red
-            subtle: '#FEF2F2',
-            border: '#FEE2E2',
+            DEFAULT: "#D8897D",
+            subtle: "rgba(216, 137, 125, 0.12)",
+            border: "rgba(216, 137, 125, 0.25)",
           },
         },
-        notion: {
-          canvas: '#FFFFFF',
-          page: '#F7F7F5',
-          sidebar: '#F1F1EF',
-          hover: '#EAEAE7',
-          border: '#E6E6E3',
-          ink: '#202124',
-          muted: '#787774',
-        },
+      },
+      borderRadius: {
+        'control': '10px',
+        'btn': '12px',
+        'card': '16px',
+        'hero': '20px',
       },
     },
   },

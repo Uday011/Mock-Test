@@ -59,17 +59,17 @@ export default function Logo({
           <span
             className={`tracking-tight text-[#202124] ${titleSizes[size]}`}
           >
-            Nalanda
+            ExamCraft
           </span>
-          <span className="px-1 py-0.2 rounded-[3px] text-[9px] font-medium bg-[#F1F1EF] text-[#787774] border border-[#E6E6E3]">
-            Workspace
+          <span className="px-1.5 py-0.5 rounded text-[9px] font-semibold bg-[#EEF2FF] text-[#4338CA] border border-[#C7D2FE]">
+            CAT 2026
           </span>
         </div>
         {showSubtitle && (
           <span
             className={`text-[#787774] font-normal tracking-normal mt-0.5 ${subtitleSizes[size]}`}
           >
-            Learning & Practice Platform
+            CAT Preparation Engine
           </span>
         )}
       </div>

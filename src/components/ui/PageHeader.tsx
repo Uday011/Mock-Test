@@ -28,7 +28,7 @@ export function PageHeader({
     if (typeof icon === 'string' || typeof icon === 'number') return <span>{icon}</span>;
     if (typeof icon === 'function' || (typeof icon === 'object' && ('render' in icon || '$$typeof' in icon))) {
       const IconComponent = icon as React.ComponentType<{ className?: string }>;
-      return <IconComponent className="w-3.5 h-3.5" />;
+      return <IconComponent className="w-4 h-4" />;
     }
     return null;
   };
@@ -36,28 +36,28 @@ export function PageHeader({
   const renderedIcon = renderIcon();
 
   return (
-    <header className={`pb-4 border-b border-[#E6E6E3] mb-6 ${className}`}>
+    <header className={`pb-5 border-b border-line mb-6 ${className}`}>
       {breadcrumbs && breadcrumbs.length > 0 && (
         <div className="mb-2">
           <Breadcrumbs items={breadcrumbs} />
         </div>
       )}
 
-      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
-        <div className="space-y-1">
-          <div className="flex items-center gap-2 flex-wrap">
+      <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-4">
+        <div className="space-y-1.5">
+          <div className="flex items-center gap-2.5 flex-wrap">
             {renderedIcon && (
-              <div className="w-6 h-6 rounded-[4px] bg-[#F1F1EF] flex items-center justify-center text-[#202124] shrink-0 border border-[#E6E6E3]">
+              <div className="w-8 h-8 rounded-control bg-accent/10 flex items-center justify-center text-accent shrink-0 border border-accent/20">
                 {renderedIcon}
               </div>
             )}
-            <h1 className="text-xl sm:text-2xl font-semibold text-[#202124] tracking-tight font-sans">
+            <h1 className="text-2xl sm:text-3xl font-semibold text-ink tracking-tight">
               {title}
             </h1>
             {badge && <div>{badge}</div>}
           </div>
           {description && (
-            <p className="text-xs sm:text-sm text-[#787774] max-w-3xl leading-relaxed">
+            <p className="text-sm text-ink-muted max-w-2xl leading-relaxed">
               {description}
             </p>
           )}
@@ -71,7 +71,7 @@ export function PageHeader({
       </div>
 
       {children && (
-        <div className="mt-4 pt-3 border-t border-[#E6E6E3]">
+        <div className="mt-4 pt-4 border-t border-line">
           {children}
         </div>
       )}

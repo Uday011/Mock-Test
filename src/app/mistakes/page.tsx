@@ -56,6 +56,7 @@ export default function MistakeNotebookPage() {
   const [loading, setLoading] = useState(true);
   const [activeCategory, setActiveCategory] = useState<string>('all');
   const [activeStatus, setActiveStatus] = useState<string>('all');
+  const [selectedSubject, setSelectedSubject] = useState<string>('all');
   const [searchQuery, setSearchQuery] = useState<string>('');
 
   // Retry Modal State
@@ -231,18 +232,18 @@ export default function MistakeNotebookPage() {
   return (
     <AppShell
       breadcrumbs={[
-        { label: 'Learner Workspace', href: '/dashboard' },
-        { label: 'Mistake Notebook' },
+        { label: 'Review', href: '/mistakes' },
+        { label: 'Mistakes' },
       ]}
     >
       <div className="max-w-5xl mx-auto space-y-6 pb-16">
         <PageHeader
           icon={AlertTriangle}
-          title="Forensic Mistake Notebook"
-          description="Cognitive error management separating mechanical calculation slips from deep conceptual gaps, misread constraints, and time pressure."
+          title="Mistakes"
+          description="Review questions you answered incorrectly, study the correct solutions, and practice again to master each topic."
           badge={
             <Badge variant="rose" size="sm">
-              {counts.total || 0} Logged ({counts.repeated_count || 0} Repeated)
+              {counts.total || 0} Mistakes ({counts.repeated_count || 0} Repeated)
             </Badge>
           }
           actions={
@@ -252,15 +253,15 @@ export default function MistakeNotebookPage() {
               onClick={() => setShowTestModal(true)}
             >
               <Zap className="w-3.5 h-3.5 mr-1.5" />
-              Remedial Mini-Test
+              Practice Mistakes
             </Button>
           }
         />
 
-        {/* Forensic Properties Table */}
+        {/* Overview Properties Table */}
         <div className="bg-white border border-[#E6E6E3] rounded-lg p-3.5">
           <PropertyTable>
-            <PropertyRow icon={AlertCircle} label="Unresolved Errors">
+            <PropertyRow icon={AlertCircle} label="Unresolved Mistakes">
               <div className="flex items-center gap-2">
                 <span className="font-mono text-xs font-semibold text-[#e03e3e]">
                   {counts.unresolved_count || 0}
@@ -276,7 +277,7 @@ export default function MistakeNotebookPage() {
                 <span className="font-mono text-xs font-semibold text-[#202124]">
                   {counts.repeated_count || 0}
                 </span>
-                <span className="text-xs text-[#787774]">Missed across multiple attempts</span>
+                <span className="text-xs text-[#787774]">Missed in more than one test</span>
               </div>
             </PropertyRow>
 
@@ -285,7 +286,7 @@ export default function MistakeNotebookPage() {
                 <span className="font-mono text-xs font-semibold text-[#202124]">
                   {counts.concept_count || 0}
                 </span>
-                <span className="text-xs text-[#787774]">Requires theoretical re-derivation</span>
+                <span className="text-xs text-[#787774]">Topics requiring syllabus study</span>
               </div>
             </PropertyRow>
 
@@ -294,7 +295,7 @@ export default function MistakeNotebookPage() {
                 <span className="font-mono text-xs font-semibold text-[#202124]">
                   {counts.calc_count || 0}
                 </span>
-                <span className="text-xs text-[#787774]">Arithmetic & precision slips</span>
+                <span className="text-xs text-[#787774]">Arithmetic and precision errors</span>
               </div>
             </PropertyRow>
           </PropertyTable>
@@ -303,10 +304,10 @@ export default function MistakeNotebookPage() {
         {/* Status Tabs */}
         <div className="flex border-b border-[#E6E6E3] overflow-x-auto no-scrollbar gap-1">
           {[
-            { id: 'all', label: `All (${counts.total || 0})` },
+            { id: 'all', label: `All Mistakes (${counts.total || 0})` },
             { id: 'unresolved', label: `Unresolved (${counts.unresolved_count || 0})` },
             { id: 'repeated', label: `Repeated (${counts.repeated_count || 0})` },
-            { id: 'bookmarked', label: `Saved (${counts.bookmarked_count || 0})` },
+            { id: 'bookmarked', label: `Saved Mistakes (${counts.bookmarked_count || 0})` },
             { id: 'resolved', label: `Resolved (${counts.resolved_count || 0})` },
           ].map((tab) => (
             <button
@@ -323,9 +324,38 @@ export default function MistakeNotebookPage() {
           ))}
         </div>
 
-        {/* Categories Filter Pills & Search */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-          <div className="flex items-center gap-1.5 overflow-x-auto pb-1 no-scrollbar">
+        {/* Filter Bar: Subject, Category, Search */}
+        <div className="flex flex-col gap-3">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+            <div className="flex items-center gap-2 w-full sm:w-auto">
+              {/* Subject Filter */}
+              <select
+                value={selectedSubject}
+                onChange={(e) => setSelectedSubject(e.target.value)}
+                className="py-2 px-3 text-xs rounded-lg border border-[#E6E6E3] bg-white text-[#202124] focus:outline-none focus:border-[#202124] min-h-[40px] w-full sm:w-auto"
+              >
+                <option value="all">All Subjects</option>
+                <option value="Quantitative Aptitude">Quantitative Aptitude</option>
+                <option value="General Intelligence & Reasoning">Reasoning</option>
+                <option value="English Comprehension">English</option>
+                <option value="General Awareness">General Awareness</option>
+              </select>
+            </div>
+
+            <form onSubmit={handleSearchSubmit} className="relative w-full sm:w-64 flex-shrink-0">
+              <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-[#787774]" />
+              <input
+                type="text"
+                placeholder="Search mistakes or notes..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="w-full pl-9 pr-3 py-2 text-xs rounded-lg border border-[#E6E6E3] focus:outline-none focus:border-[#202124] bg-white text-[#202124] placeholder:text-[#9b9a97] min-h-[40px]"
+              />
+            </form>
+          </div>
+
+          {/* Horizontal Swipeable Category Pills */}
+          <div className="flex items-center gap-1.5 overflow-x-auto pb-1.5 pt-0.5 -mx-4 px-4 sm:mx-0 sm:px-0 no-scrollbar select-none">
             {MISTAKE_CATEGORIES.map((cat) => {
               const countKey =
                 cat.id === 'all' ? 'total' :
@@ -345,127 +375,129 @@ export default function MistakeNotebookPage() {
                 <button
                   key={cat.id}
                   onClick={() => setActiveCategory(cat.id)}
-                  className={`px-2.5 py-1 text-xs rounded-md whitespace-nowrap transition-colors flex items-center gap-1.5 ${
+                  className={`px-3 py-1.5 text-xs rounded-full whitespace-nowrap transition-all flex items-center gap-1.5 min-h-[36px] shrink-0 active:scale-95 ${
                     isSelected
-                      ? 'bg-[#202124] text-white font-medium'
+                      ? 'bg-[#202124] text-white font-medium shadow-2xs'
                       : 'bg-white border border-[#E6E6E3] text-[#787774] hover:bg-[#F1F1EF]'
                   }`}
                 >
                   <span>{cat.label}</span>
-                  <span className={`text-[10px] font-mono px-1 rounded ${isSelected ? 'bg-[#4f4d47] text-white' : 'bg-[#F1F1EF] text-[#787774]'}`}>
+                  <span className={`text-[10px] font-mono px-1.5 py-0.5 rounded-full ${isSelected ? 'bg-white/20 text-white' : 'bg-[#F1F1EF] text-[#787774]'}`}>
                     {catCount}
                   </span>
                 </button>
               );
             })}
           </div>
-
-          <form onSubmit={handleSearchSubmit} className="relative sm:w-60">
-            <Search className="w-3.5 h-3.5 absolute left-2.5 top-2.5 text-[#787774]" />
-            <input
-              type="text"
-              placeholder="Search errors or notes..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-8 pr-3 py-1.5 text-xs rounded-md border border-[#E6E6E3] focus:outline-none focus:border-[#202124] bg-white text-[#202124] placeholder:text-[#9b9a97]"
-            />
-          </form>
         </div>
 
         {/* Mistakes Database */}
         {loading ? (
           <div className="py-20 text-center text-xs text-[#787774] font-mono">
-            Loading error records...
+            Loading mistakes...
           </div>
         ) : mistakes.length === 0 ? (
-          <div className="p-12 text-center bg-white border border-[#E6E6E3] rounded-lg space-y-3">
+          <div className="p-12 text-center bg-white border border-[#E6E6E3] rounded-xl space-y-3 shadow-2xs">
             <CheckCircle2 className="w-8 h-8 text-emerald-600 mx-auto" />
-            <h3 className="font-semibold text-sm text-[#202124]">No Mistakes In This Filter</h3>
+            <h3 className="font-semibold text-sm text-[#202124]">No Mistakes Found</h3>
             <p className="text-xs text-[#787774] max-w-sm mx-auto">
               You have zero logged errors matching your current filter criteria.
             </p>
             <Link href="/tests" className="inline-block">
-              <Button variant="primary" size="sm">Attempt a Mock Test</Button>
+              <Button variant="primary" size="sm">Take a Practice Test</Button>
             </Link>
           </div>
         ) : (
-          <div className="space-y-3">
-            {mistakes.map((m) => {
-              const options = m.options_json ? JSON.parse(m.options_json) : [];
-              const isEditingNotes = editingNotesId === m.id;
+          <div className="space-y-3.5">
+            {mistakes
+              .filter((m) => selectedSubject === 'all' || m.subject_name === selectedSubject)
+              .map((m) => {
+                const options = m.options_json ? JSON.parse(m.options_json) : [];
+                const isEditingNotes = editingNotesId === m.id;
 
-              return (
-                <div
-                  key={m.id}
-                  className={`p-4 rounded-lg border transition-colors space-y-3 ${
-                    m.is_resolved
-                      ? 'border-[#E6E6E3] bg-[#F7F7F5] opacity-80'
-                      : 'border-[#E6E6E3] bg-white hover:border-[#d4d4d4]'
-                  }`}
-                >
-                  {/* Card Header */}
-                  <div className="flex items-center justify-between flex-wrap gap-2">
-                    <div className="flex items-center gap-2">
-                      {getCategoryBadge(m.error_category)}
-                      <span className="text-xs font-medium text-[#202124]">
-                        {m.subject_name}
-                      </span>
-                      {m.topic_title && (
-                        <>
-                          <span className="text-[#E6E6E3]">•</span>
-                          <span className="text-xs text-[#787774]">{m.topic_title}</span>
-                        </>
-                      )}
-                      {m.attempt_count > 1 && (
-                        <Badge variant="rose" size="sm">
-                          {m.attempt_count}x Repeated
-                        </Badge>
-                      )}
-                    </div>
-
-                    <div className="flex items-center gap-1.5">
-                      {/* Bookmark Toggle */}
-                      <button
-                        onClick={() => handleToggleBookmark(m.id, m.is_bookmarked)}
-                        title={m.is_bookmarked ? 'Remove Bookmark' : 'Save for Revision'}
-                        className={`p-1 rounded-md border text-xs transition-colors ${
-                          m.is_bookmarked
-                            ? 'bg-[#fdf5e8] border-[#fae2be] text-[#8f4f00]'
-                            : 'bg-white border-[#E6E6E3] text-[#787774] hover:bg-[#F1F1EF]'
-                        }`}
-                      >
-                        {m.is_bookmarked ? <BookmarkCheck className="w-3.5 h-3.5 text-amber-600" /> : <Bookmark className="w-3.5 h-3.5" />}
-                      </button>
-
-                      {/* Retry Action */}
-                      <button
-                        onClick={() => openRetryModal(m)}
-                        className="px-2 py-1 text-xs font-medium rounded-md bg-[#202124] hover:bg-[#22211e] text-white transition-colors flex items-center gap-1"
-                      >
-                        <RotateCcw className="w-3 h-3" />
-                        <span>Retry</span>
-                      </button>
-
-                      {/* Mark Resolved */}
-                      <button
-                        onClick={() => handleToggleResolved(m.id, m.is_resolved)}
-                        className={`text-xs px-2 py-1 rounded-md font-medium transition-colors flex items-center gap-1 border ${
-                          m.is_resolved
-                            ? 'bg-[#ebf5e8] text-[#2b593f] border-[#c4e2b8]'
-                            : 'bg-white hover:bg-[#F1F1EF] text-[#787774] border-[#E6E6E3]'
-                        }`}
-                      >
-                        {m.is_resolved ? (
+                return (
+                  <div
+                    key={m.id}
+                    className={`p-4 rounded-xl border transition-colors space-y-3.5 shadow-2xs ${
+                      m.is_resolved
+                        ? 'border-[#E6E6E3] bg-[#F7F7F5] opacity-85'
+                        : 'border-[#E6E6E3] bg-white hover:border-[#d4d4d4]'
+                    }`}
+                  >
+                    {/* Card Header & Mobile Responsive Action Buttons */}
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5">
+                      <div className="flex items-center gap-2 flex-wrap">
+                        {getCategoryBadge(m.error_category)}
+                        <span className="text-xs font-semibold text-[#202124]">
+                          {m.subject_name}
+                        </span>
+                        {m.topic_title && (
                           <>
-                            <Check className="w-3 h-3 text-emerald-700" />
-                            Resolved
+                            <span className="text-[#E6E6E3]">•</span>
+                            {m.topic_id ? (
+                              <Link
+                                href={`/learn/${m.topic_id}`}
+                                className="text-xs text-indigo-700 hover:text-indigo-900 hover:underline font-medium flex items-center gap-1"
+                              >
+                                <span>{m.topic_title}</span>
+                                <ArrowRight className="w-3 h-3" />
+                              </Link>
+                            ) : (
+                              <span className="text-xs text-[#787774]">{m.topic_title}</span>
+                            )}
                           </>
-                        ) : (
-                          'Resolve'
                         )}
-                      </button>
+                        {m.attempt_count > 1 && (
+                          <Badge variant="rose" size="sm">
+                            {m.attempt_count}x Repeated
+                          </Badge>
+                        )}
+                      </div>
+
+                      <div className="flex items-center gap-2 pt-2 sm:pt-0 border-t sm:border-t-0 border-[#F1F1EF] w-full sm:w-auto justify-between sm:justify-end">
+                        {/* Bookmark Toggle */}
+                        <button
+                          onClick={() => handleToggleBookmark(m.id, m.is_bookmarked)}
+                          title={m.is_bookmarked ? 'Remove from Saved' : 'Save for Revision'}
+                          className={`min-w-[40px] min-h-[40px] flex items-center justify-center rounded-lg border text-xs transition-all active:scale-95 ${
+                            m.is_bookmarked
+                              ? 'bg-[#fdf5e8] border-[#fae2be] text-[#8f4f00]'
+                              : 'bg-white border-[#E6E6E3] text-[#787774] hover:bg-[#F1F1EF]'
+                          }`}
+                          aria-label="Bookmark mistake"
+                        >
+                          {m.is_bookmarked ? <BookmarkCheck className="w-4 h-4 text-amber-600" /> : <Bookmark className="w-4 h-4" />}
+                        </button>
+
+                        {/* Practice Again Action */}
+                        <button
+                          onClick={() => openRetryModal(m)}
+                          className="flex-1 sm:flex-none px-3.5 py-2 min-h-[40px] text-xs font-semibold rounded-lg bg-[#202124] hover:bg-[#333] active:scale-95 text-white transition-all flex items-center justify-center gap-1.5"
+                        >
+                          <RotateCcw className="w-3.5 h-3.5" />
+                          <span>Practice Again</span>
+                        </button>
+
+                        {/* Mark Resolved */}
+                        <button
+                          onClick={() => handleToggleResolved(m.id, m.is_resolved)}
+                          className={`text-xs px-3 py-2 min-h-[40px] rounded-lg font-semibold transition-all active:scale-95 flex items-center justify-center gap-1 border ${
+                            m.is_resolved
+                              ? 'bg-[#ebf5e8] text-[#2b593f] border-[#c4e2b8]'
+                              : 'bg-white hover:bg-[#F1F1EF] text-[#787774] border-[#E6E6E3]'
+                          }`}
+                        >
+                          {m.is_resolved ? (
+                            <>
+                              <Check className="w-3.5 h-3.5 text-emerald-700" />
+                              Resolved
+                            </>
+                          ) : (
+                            'Resolve'
+                          )}
+                        </button>
+                      </div>
                     </div>
-                  </div>
 
                   {/* Question Stem */}
                   <p className="text-xs sm:text-sm font-medium text-[#202124] leading-relaxed">
@@ -496,13 +528,13 @@ export default function MistakeNotebookPage() {
                               <span>{opt.text}</span>
                             </div>
                             {isSelected && !isCorrect && (
-                              <span className="text-[10px] uppercase font-mono text-rose-600">
-                                Your Pick
+                              <span className="text-[10px] uppercase font-mono text-rose-600 font-semibold">
+                                Your Answer
                               </span>
                             )}
                             {isCorrect && (
-                              <span className="text-[10px] uppercase font-mono text-emerald-700">
-                                Correct Key
+                              <span className="text-[10px] uppercase font-mono text-emerald-700 font-semibold">
+                                Correct Answer
                               </span>
                             )}
                           </div>
@@ -514,7 +546,7 @@ export default function MistakeNotebookPage() {
                   {/* Explanation */}
                   {m.explanation && (
                     <div className="text-xs text-[#202124] bg-[#F7F7F5] p-3 rounded-md border border-[#E6E6E3] leading-relaxed">
-                      <strong className="text-[#787774] block mb-0.5">Pedagogical Solution:</strong>
+                      <strong className="text-[#787774] block mb-0.5">Solution & Explanation:</strong>
                       {m.explanation}
                     </div>
                   )}
@@ -593,7 +625,7 @@ export default function MistakeNotebookPage() {
                 <div className="flex items-center gap-2">
                   <RotateCcw className="w-4 h-4 text-[#202124]" />
                   <span className="font-semibold text-sm text-[#202124]">
-                    Blind Retry Mode
+                    Practice Question Again
                   </span>
                 </div>
                 <button
@@ -605,7 +637,7 @@ export default function MistakeNotebookPage() {
               </div>
 
               <div className="text-xs text-[#787774]">
-                Options randomized, previous answers hidden.
+                Select the correct answer to resolve this mistake.
               </div>
 
               <div className="p-3 bg-[#F7F7F5] rounded-md border border-[#E6E6E3] text-xs text-[#202124] leading-relaxed">
@@ -687,7 +719,7 @@ export default function MistakeNotebookPage() {
           </div>
         )}
 
-        {/* Remedial Mini-Test Generator Modal */}
+        {/* Practice Set Generator Modal */}
         {showTestModal && (
           <div className="fixed inset-0 z-50 bg-black/40 backdrop-blur-xs flex items-center justify-center p-4">
             <div className="bg-white rounded-lg max-w-sm w-full p-5 shadow-xl border border-[#E6E6E3] space-y-3.5">
@@ -695,7 +727,7 @@ export default function MistakeNotebookPage() {
                 <div className="flex items-center gap-1.5">
                   <Zap className="w-4 h-4 text-[#202124]" />
                   <span className="font-semibold text-sm text-[#202124]">
-                    Remedial Mini-Test
+                    Practice Set from Mistakes
                   </span>
                 </div>
                 <button onClick={() => setShowTestModal(false)} className="text-[#787774] hover:text-[#202124]">
@@ -704,7 +736,7 @@ export default function MistakeNotebookPage() {
               </div>
 
               <p className="text-xs text-[#787774] leading-relaxed">
-                Assemble a custom, timed revision test generated from your error notebook to eliminate recurring slips.
+                Assemble a custom practice set generated from your past mistakes to reinforce weak areas and prevent repeated slips.
               </p>
 
               <div className="space-y-2">

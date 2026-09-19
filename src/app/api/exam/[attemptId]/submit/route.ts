@@ -228,7 +228,7 @@ export async function POST(
               userId,
               attempt.test_id,
               ans.question_id,
-              attempt.exam_id || 'exam-ssc-cgl',
+              attempt.exam_id || 'exam-cat-2026',
               q?.subject_id || attempt.subject_id,
               topicId,
               q?.question_text || '',

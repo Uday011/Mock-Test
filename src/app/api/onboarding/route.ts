@@ -70,9 +70,9 @@ export async function POST(req: NextRequest) {
 
     const body = await req.json();
     const {
-      preferred_exam_id = 'exam-ssc-cgl-2026',
+      preferred_exam_id = 'exam-cat-2026',
       preparation_stage = 'beginner',
-      target_timeline = '2026_tier1',
+      target_timeline = '2026_cat',
       daily_study_hours = 3.0,
       strong_subjects = [],
       weak_subjects = [],

@@ -72,7 +72,7 @@ export async function POST(req: NextRequest) {
     const {
       title,
       description,
-      exam_id = 'exam-ssc-cgl-2026',
+      exam_id = 'exam-cat-2026',
       target_year = 2026,
       is_paid = false,
       price_inr = 0,

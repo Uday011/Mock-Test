@@ -4,15 +4,13 @@ import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import {
-  User,
+  Mail,
   Lock,
   ArrowRight,
   AlertCircle,
   GraduationCap,
-  Building2,
-  Crown,
+  Sparkles,
 } from 'lucide-react';
-import { UserRole } from '@/lib/types';
 import Logo from '@/components/ui/Logo';
 import { Button } from '@/components/ui/Button';
 
@@ -22,31 +20,11 @@ export default function LoginPage() {
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
-  const [demoRoleLoading, setDemoRoleLoading] = useState<UserRole | null>(null);
-  const [redirectUrl, setRedirectUrl] = useState<string | null>(null);
+  const [demoLoading, setDemoLoading] = useState(false);
 
-  useEffect(() => {
-    if (typeof window !== 'undefined') {
-      const params = new URLSearchParams(window.location.search);
-      const redir = params.get('redirect');
-      if (redir && redir.startsWith('/')) {
-        setRedirectUrl(redir);
-      }
-    }
-  }, []);
-
-  const navigateAfterAuth = (userRole?: string) => {
-    if (redirectUrl) {
-      router.push(redirectUrl);
-      return;
-    }
-    if (userRole === 'superadmin') {
-      router.push('/dashboard/superadmin');
-    } else if (userRole === 'admin') {
-      router.push('/dashboard/admin');
-    } else {
-      router.push('/dashboard');
-    }
+  const navigateToDashboard = () => {
+    localStorage.setItem('nalanda_active_exam', 'CAT 2026');
+    router.push('/dashboard');
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -58,7 +36,7 @@ export default function LoginPage() {
       const res = await fetch('/api/auth/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, password }),
+        body: JSON.stringify({ email: email.trim(), password }),
       });
 
       const resText = await res.text();
@@ -70,10 +48,10 @@ export default function LoginPage() {
       }
 
       if (!res.ok) {
-        throw new Error(data.error || 'Failed to sign in');
+        throw new Error(data.error || 'Invalid credentials. Please check your email and password.');
       }
 
-      navigateAfterAuth(data.user?.role);
+      navigateToDashboard();
     } catch (err: any) {
       setError(err.message);
     } finally {
@@ -81,11 +59,11 @@ export default function LoginPage() {
     }
   };
 
-  const handleDemoLogin = async (role: UserRole) => {
-    setDemoRoleLoading(role);
+  const handleDemoAspirantLogin = async () => {
+    setDemoLoading(true);
     setError('');
     try {
-      const res = await fetch(`/api/auth/demo?role=${role}`, { method: 'POST' });
+      const res = await fetch('/api/auth/demo?role=student', { method: 'POST' });
       const resText = await res.text();
       let data: any = {};
       try {
@@ -95,129 +73,110 @@ export default function LoginPage() {
       }
       if (!res.ok) throw new Error(data.error || 'Demo login failed');
 
-      navigateAfterAuth(role);
+      navigateToDashboard();
     } catch (err: any) {
       setError(err.message);
     } finally {
-      setDemoRoleLoading(null);
+      setDemoLoading(false);
     }
   };
 
   return (
-    <div className="min-h-[85vh] flex items-center justify-center px-4 py-12 bg-[#F7F7F5]">
-      <div className="max-w-md w-full space-y-5 bg-white p-6 sm:p-8 rounded-md border border-[#E6E6E3] shadow-xs">
-        <div className="text-center space-y-1.5">
-          <div className="flex justify-center mb-2">
+    <div className="min-h-[85vh] flex items-center justify-center px-4 py-8 sm:py-12 bg-[#F7F7F5]">
+      <div className="max-w-md w-full space-y-5 bg-white p-6 sm:p-8 rounded-xl border border-[#E6E6E3] shadow-xs">
+        
+        {/* Engine Header & Identity */}
+        <div className="text-center space-y-2">
+          <div className="flex justify-center mb-1">
             <Logo size="md" href="/" />
           </div>
-          <h2 className="text-xl font-bold text-[#202124]">
-            Sign in to Nalanda
-          </h2>
-          <p className="text-xs text-[#787774] max-w-sm mx-auto">
-            Access your syllabus roadmap, computer-based mock diagnostics, and cognitive mistake forensics.
+          <h1 className="text-xl sm:text-2xl font-bold text-[#202124] tracking-tight">
+            CAT Preparation Engine
+          </h1>
+          <p className="text-xs text-[#787774] max-w-sm mx-auto leading-relaxed">
+            Sign in to continue your syllabus progression, attempt timed CBT mock papers, and analyze mistake forensics.
           </p>
         </div>
 
         {error && (
-          <div className="p-2.5 rounded-[4px] bg-[#fdf3f2] border border-[#f5c6cb] text-[#eb5757] text-xs flex items-center gap-2">
-            <AlertCircle className="w-3.5 h-3.5 shrink-0" />
+          <div className="p-3 rounded-lg bg-[#FDF2F2] border border-[#F8D7DA] text-[#C53030] text-xs flex items-center gap-2">
+            <AlertCircle className="w-4 h-4 shrink-0" />
             <span>{error}</span>
           </div>
         )}
 
-        {/* 1-Click Role Personas */}
-        <div className="space-y-2 pt-1">
-          <p className="text-[10px] uppercase font-semibold text-[#787774] text-center tracking-wider">
-            1-Click Instant Persona Sign-In
-          </p>
-          <div className="grid grid-cols-3 gap-2">
-            <button
-              type="button"
-              onClick={() => handleDemoLogin('student')}
-              disabled={Boolean(demoRoleLoading)}
-              className="p-2 rounded-[4px] border border-[#E6E6E3] bg-[#fcfbf9] hover:bg-[#F1F1EF] text-[#202124] transition-colors flex flex-col items-center text-center"
-            >
-              <div className="w-6 h-6 rounded-[3px] bg-[#edf6f9] text-[#1e6074] flex items-center justify-center mb-1">
-                <GraduationCap className="w-3.5 h-3.5" />
-              </div>
-              <span className="text-xs font-medium leading-tight">Aspirant</span>
-              <span className="text-[9px] text-[#787774] mt-0.5">SSC CGL</span>
-            </button>
-
-            <button
-              type="button"
-              onClick={() => handleDemoLogin('admin')}
-              disabled={Boolean(demoRoleLoading)}
-              className="p-2 rounded-[4px] border border-[#E6E6E3] bg-[#fcfbf9] hover:bg-[#F1F1EF] text-[#202124] transition-colors flex flex-col items-center text-center"
-            >
-              <div className="w-6 h-6 rounded-[3px] bg-[#FFFBEB] text-[#4d3800] flex items-center justify-center mb-1">
-                <Building2 className="w-3.5 h-3.5" />
-              </div>
-              <span className="text-xs font-medium leading-tight">Educator</span>
-              <span className="text-[9px] text-[#787774] mt-0.5">Test Studio</span>
-            </button>
-
-            <button
-              type="button"
-              onClick={() => handleDemoLogin('superadmin')}
-              disabled={Boolean(demoRoleLoading)}
-              className="p-2 rounded-[4px] border border-[#E6E6E3] bg-[#fcfbf9] hover:bg-[#F1F1EF] text-[#202124] transition-colors flex flex-col items-center text-center"
-            >
-              <div className="w-6 h-6 rounded-[3px] bg-[#F1F1EF] text-[#202124] flex items-center justify-center mb-1 border border-[#E6E6E3]">
-                <Crown className="w-3.5 h-3.5" />
-              </div>
-              <span className="text-xs font-medium leading-tight">Superadmin</span>
-              <span className="text-[9px] text-[#787774] mt-0.5">Master Gov</span>
-            </button>
-          </div>
+        {/* Instant Aspirant Demo Entry */}
+        <div className="pt-1">
+          <button
+            type="button"
+            onClick={handleDemoAspirantLogin}
+            disabled={loading || demoLoading}
+            className="w-full py-2.5 px-3 min-h-[44px] rounded-lg border border-[#DCDDF7] bg-[#EEF0FB]/80 hover:bg-[#EEF0FB] text-[#4F46A5] text-xs font-semibold flex items-center justify-center gap-2 transition-all active:scale-[0.99] shadow-2xs"
+          >
+            {demoLoading ? (
+              <>
+                <div className="w-4 h-4 border-2 border-[#4F46A5] border-t-transparent rounded-full animate-spin" />
+                <span>Loading Preparation Demo...</span>
+              </>
+            ) : (
+              <>
+                <GraduationCap className="w-4 h-4 text-[#4F46A5]" />
+                <span>Try 1-Click Aspirant Demo (CAT 2026)</span>
+                <Sparkles className="w-3.5 h-3.5 text-[#B7791F]" />
+              </>
+            )}
+          </button>
         </div>
 
-        <div className="relative flex items-center justify-center">
+        <div className="relative flex items-center justify-center my-2">
           <div className="border-t border-[#E6E6E3] w-full" />
-          <span className="bg-white px-2.5 text-[10px] uppercase font-medium text-[#787774] absolute">
-            Or Credentials
+          <span className="bg-white px-2.5 text-[10px] uppercase font-semibold text-[#787774] tracking-wider absolute">
+            Or sign in with email
           </span>
         </div>
 
-        <form onSubmit={handleSubmit} className="space-y-3.5">
+        {/* Credentials Form */}
+        <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label className="block text-xs font-medium text-[#202124] mb-1">
-              Email Address
+            <label className="block text-xs font-medium text-[#202124] mb-1.5">
+              Candidate Email
             </label>
             <div className="relative">
-              <User className="w-3.5 h-3.5 absolute left-2.5 top-2.5 text-[#787774]" />
+              <Mail className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-[#787774] pointer-events-none" />
               <input
                 type="email"
                 required
+                autoComplete="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                placeholder="student@example.com"
-                className="w-full pl-8 pr-3 py-1.5 text-xs rounded-[4px] border border-[#E6E6E3] focus:outline-none focus:border-[#202124] bg-[#fcfbf9] focus:bg-white text-[#202124]"
+                placeholder="aspirant@example.com"
+                className="w-full pl-9 pr-3 py-2.5 sm:py-2 text-base sm:text-xs min-h-[44px] sm:min-h-[36px] rounded-[6px] border border-[#E6E6E3] focus:outline-none focus:border-[#4F46A5] bg-[#fcfbf9] focus:bg-white text-[#202124] transition-colors"
               />
             </div>
           </div>
 
           <div>
-            <div className="flex items-center justify-between mb-1">
+            <div className="flex items-center justify-between mb-1.5">
               <label className="block text-xs font-medium text-[#202124]">
                 Password
               </label>
               <Link
                 href="/forgot-password"
-                className="text-[11px] text-[#787774] hover:text-[#202124] hover:underline"
+                className="text-[11px] text-[#787774] hover:text-[#4F46A5] hover:underline"
               >
                 Forgot Password?
               </Link>
             </div>
             <div className="relative">
-              <Lock className="w-3.5 h-3.5 absolute left-2.5 top-2.5 text-[#787774]" />
+              <Lock className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-[#787774] pointer-events-none" />
               <input
                 type="password"
                 required
+                autoComplete="current-password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="••••••••"
-                className="w-full pl-8 pr-3 py-1.5 text-xs rounded-[4px] border border-[#E6E6E3] focus:outline-none focus:border-[#202124] bg-[#fcfbf9] focus:bg-white text-[#202124]"
+                className="w-full pl-9 pr-3 py-2.5 sm:py-2 text-base sm:text-xs min-h-[44px] sm:min-h-[36px] rounded-[6px] border border-[#E6E6E3] focus:outline-none focus:border-[#4F46A5] bg-[#fcfbf9] focus:bg-white text-[#202124] transition-colors"
               />
             </div>
           </div>
@@ -226,18 +185,19 @@ export default function LoginPage() {
             type="submit"
             variant="primary"
             size="md"
-            className="w-full"
-            disabled={loading}
+            className="w-full min-h-[44px] text-sm font-semibold rounded-[6px] shadow-xs active:scale-[0.99] transition-transform"
+            disabled={loading || demoLoading}
           >
-            {loading ? 'Authenticating...' : 'Sign In'}
-            <ArrowRight className="w-3.5 h-3.5 ml-1.5" />
+            {loading ? 'Authenticating...' : 'Sign In to Preparation Engine'}
+            <ArrowRight className="w-4 h-4 ml-1.5" />
           </Button>
         </form>
 
-        <div className="text-center text-xs text-[#787774] pt-2 border-t border-[#E6E6E3]">
-          New to Nalanda?{' '}
-          <Link href="/signup" className="text-[#202124] font-medium hover:underline">
-            Create an Aspirant Account
+        {/* Switch to Signup */}
+        <div className="text-center text-xs text-[#787774] pt-3 border-t border-[#E6E6E3]">
+          New candidate?{' '}
+          <Link href="/signup" className="text-[#4F46A5] font-semibold hover:underline">
+            Create Candidate Account
           </Link>
         </div>
       </div>

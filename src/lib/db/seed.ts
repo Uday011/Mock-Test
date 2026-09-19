@@ -18,82 +18,92 @@ export function seedInitialData(): void {
     const instituteAdmin = getOrCreateRoleDemoUser('admin');
     const student = getOrCreateRoleDemoUser('student');
 
-    // 2. Seed Default Sections/Categories
-    const sectionCountStmt = db.prepare('SELECT COUNT(*) as count FROM sections');
-    const sectionCount = (sectionCountStmt.get() as any)?.count || 0;
+    // 2. Seed Default Sections/Categories (Exclusively MBA & Management)
+    const insertSection = db.prepare(
+      'INSERT OR IGNORE INTO sections (id, name, description, icon, is_active, created_at) VALUES (?, ?, ?, ?, 1, ?)'
+    );
+    insertSection.run('sec-mba', 'Management & MBA Entrance', 'CAT, XAT, NMAT, SNAP, and Executive MBA aptitude frameworks.', 'Award', now);
 
-    if (sectionCount === 0) {
-      const insertSection = db.prepare(
-        'INSERT OR IGNORE INTO sections (id, name, description, icon, is_active, created_at) VALUES (?, ?, ?, ?, 1, ?)'
-      );
-      insertSection.run('sec-ssc', 'SSC & Staff Selection', 'SSC CGL, CHSL, CPO, and Central Staff Selection recruitment exams.', 'Award', now);
-      insertSection.run('sec-medical', 'Medical Entrance (NEET)', 'Physics, Chemistry, and Biology mock papers designed for pre-medical aspirants.', 'Stethoscope', now);
-      insertSection.run('sec-engineering', 'Engineering Entrance (JEE)', 'Advanced Mathematics, Mechanics, and Physical Sciences for engineering mock exams.', 'Cpu', now);
-      insertSection.run('sec-civil', 'Civil Services & UPSC', 'General Studies, Reasoning, Quantitative Aptitude, and Indian Polity.', 'Bookmark', now);
-      insertSection.run('sec-general', 'Science & Computing', 'Foundational Computer Science, General Science, and Logical Aptitude.', 'Layers', now);
-    } else {
-      // Ensure sec-ssc exists
-      db.prepare(
-        'INSERT OR IGNORE INTO sections (id, name, description, icon, is_active, created_at) VALUES (?, ?, ?, ?, 1, ?)'
-      ).run('sec-ssc', 'SSC & Staff Selection', 'SSC CGL, CHSL, CPO, and Central Staff Selection recruitment exams.', 'Award', now);
-    }
+    // Purge any legacy non-MBA sections
+    db.prepare("DELETE FROM sections WHERE id != 'sec-mba'").run();
 
-    // 3. Seed Baseline Exams (NEET, UPSC, JEE) if not present
+    // 3. Seed MBA Exams (CAT, XAT, NMAT, SNAP) as active catalog
     const insertExam = db.prepare(`
       INSERT OR IGNORE INTO exams (id, code, title, category, description, target_year, pattern_type, total_marks, total_duration_minutes, is_active, created_at)
       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 1, ?)
     `);
 
     insertExam.run(
-      'exam-neet-2026',
-      'NEET_UG_2026',
-      'NEET UG 2026 (Medical)',
-      'medical',
-      'National Eligibility cum Entrance Test for undergraduate medical and dental programs across India.',
-      2026,
-      'multi_subject',
-      720,
-      200,
-      now
-    );
-
-    insertExam.run(
-      'exam-upsc-2026',
-      'UPSC_CSE_2026',
-      'UPSC Civil Services Prelims 2026',
-      'civil_services',
-      'General Studies Paper-I and Civil Services Aptitude Test (CSAT) for national administrative services.',
+      'exam-cat-2026',
+      'CAT_2026',
+      'CAT 2026 (Common Admission Test)',
+      'management',
+      'IIM Common Admission Test for flagship PGP/MBA programs across IIM Ahmedabad, Bangalore, Calcutta, and premier B-schools.',
       2026,
       'stage_based',
-      400,
-      240,
+      198,
+      120,
       now
     );
 
     insertExam.run(
-      'exam-jee-2026',
-      'JEE_ADV_2026',
-      'JEE Advanced 2026 (Engineering)',
-      'engineering',
-      'Joint Entrance Examination Advanced for premier admissions into Indian Institutes of Technology (IITs).',
+      'exam-xat-2026',
+      'XAT_2026',
+      'XAT 2026 (Xavier Aptitude Test)',
+      'management',
+      'XLRI Jamshedpur National Aptitude Test for business management and human resource management programs.',
+      2026,
+      'multi_subject',
+      100,
+      210,
+      now
+    );
+
+    insertExam.run(
+      'exam-nmat-2026',
+      'NMAT_2026',
+      'NMAT 2026 by GMAC',
+      'management',
+      'Graduate Management Admission Council computer-adaptive entrance test for NMIMS Mumbai and top management institutes.',
       2026,
       'multi_subject',
       360,
-      180,
+      120,
       now
     );
 
-    // 4. Seed Primary Sample Exam: SSC CGL 2026
-    seedSscCglExam(db, student, instituteAdmin, now);
+    insertExam.run(
+      'exam-snap-2026',
+      'SNAP_2026',
+      'SNAP 2026 (Symbiosis National Aptitude Test)',
+      'management',
+      'Symbiosis International University Entrance for SIBM Pune, SCMHRD, and Symbiosis management institutes.',
+      2026,
+      'multi_subject',
+      60,
+      60,
+      now
+    );
 
-    // Update Conducting Body, Difficulty Level, and Pattern Summary for all master exams
+    // Permanently remove any legacy non-MBA exams and ensure MBA exams are active
+    db.prepare(`
+      DELETE FROM exams WHERE id NOT IN ('exam-cat-2026', 'exam-xat-2026', 'exam-nmat-2026', 'exam-snap-2026')
+    `).run();
+    db.prepare(`
+      UPDATE exams SET is_active = 1 WHERE id IN ('exam-cat-2026', 'exam-xat-2026', 'exam-nmat-2026', 'exam-snap-2026')
+    `).run();
+
+    // 4. Seed Primary Flagship Exam: CAT 2026
+    seedCatExam(db, student, instituteAdmin, now);
+
+    // Update Conducting Body, Difficulty Level, and Pattern Summary for all MBA exams
     const updateExamMetadata = db.prepare(`
       UPDATE exams SET conducting_body = ?, difficulty_level = ?, pattern_summary = ? WHERE id = ?
     `);
-    updateExamMetadata.run('Staff Selection Commission (SSC)', 'National Graduate Level', 'Tier-I Objective CBE (100 Qs / 200 Marks) + Tier-II Mains', 'exam-ssc-cgl-2026');
-    updateExamMetadata.run('National Testing Agency (NTA)', 'National Pre-Medical Undergraduate', 'Single-Stage Pen & Paper OMR (180 Qs / 720 Marks)', 'exam-neet-2026');
-    updateExamMetadata.run('Union Public Service Commission (UPSC)', 'All-India Civil Services Level', 'Prelims Screening (GS-I + CSAT) + Mains Written + Interview', 'exam-upsc-2026');
-    updateExamMetadata.run('Joint Admission Board / IITs', 'Advanced Engineering Entrance', 'Paper 1 & Paper 2 Multi-Subject Computer Based Test', 'exam-jee-2026');
+    updateExamMetadata.run('Indian Institutes of Management (IIMs)', 'National Premier Management Entrance', '3 Sections (66 Qs / 198 Marks) · 40-Min Sectional Timer (+3 / -1 MCQ, 0 TITA)', 'exam-cat-2026');
+    updateExamMetadata.run('XLRI Jamshedpur', 'Premier Management Entrance', 'Part 1 (VALR, DM, QA-DI) + Part 2 (Mock Keyboard & GK) · Decision Making Core', 'exam-xat-2026');
+    updateExamMetadata.run('Graduate Management Admission Council (GMAC)', 'Speed-Adaptive Management Entrance', '108 Questions · 120 Minutes · No Negative Marking · Sectional Time Limits', 'exam-nmat-2026');
+    updateExamMetadata.run('Symbiosis International (Deemed University)', 'Speed-Accuracy Management Entrance', '60 Questions · 60 Minutes · General English, Quant & DILR (+1 / -0.25 Marks)', 'exam-snap-2026');
 
     // Seed Demo Student Onboarding Profile
     const obCheck = db.prepare('SELECT user_id FROM user_onboarding_profiles WHERE user_id = ?').get(student.id);
@@ -105,16 +115,22 @@ export function seedInitialData(): void {
         ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
       `).run(
         student.id,
-        'exam-ssc-cgl-2026',
+        'exam-cat-2026',
         'intermediate',
-        '2026_tier1',
+        '2026_cat',
         4.0,
-        JSON.stringify(['General Intelligence & Reasoning', 'English Comprehension']),
-        JSON.stringify(['Quantitative Aptitude (Geometry)', 'General Awareness (Polity Articles)']),
+        JSON.stringify(['Verbal Ability & Reading Comprehension', 'Data Interpretation & Logical Reasoning']),
+        JSON.stringify(['Quantitative Aptitude (Modern Math & Geometry)', 'DILR (Games & Tournaments)']),
         'completed',
         now,
         now
       );
+    } else {
+      db.prepare(`
+        UPDATE user_onboarding_profiles 
+        SET preferred_exam_id = 'exam-cat-2026', target_timeline = '2026_cat'
+        WHERE user_id = ?
+      `).run(student.id);
     }
 
     // 5. Seed Educator Profile for Institute Admin if not present
@@ -125,10 +141,10 @@ export function seedInitialData(): void {
         VALUES (?, ?, ?, ?, 'verified', ?, ?, ?, ?, ?)
       `).run(
         instituteAdmin.id,
-        'Director of Pedagogy & Senior SSC / Civil Faculty',
-        'Over 16 years coaching competitive exam aspirants with deep emphasis on conceptual clarity, speed optimization, and cognitive mistake forensics.',
-        'Nalanda Institute of Advanced Academics',
-        JSON.stringify(['Quantitative Aptitude', 'Reasoning', 'General Studies']),
+        'Director of Pedagogy & 99.9%ile CAT Quant/DILR Mentor',
+        'Over 16 years coaching IIM aspirants with deep focus on caselet decomposition, mental speed arithmetic, and reading comprehension inference engines.',
+        'Nalanda School of Management Prep',
+        JSON.stringify(['Quantitative Aptitude', 'Data Interpretation & Logical Reasoning', 'Verbal Ability']),
         1480,
         4.95,
         12,
@@ -150,427 +166,507 @@ export function seedInitialData(): void {
   }
 }
 
-function seedSscCglExam(db: any, student: any, instituteAdmin: any, now: string): void {
-  // Check if SSC CGL already seeded
-  const existingExam = db.prepare("SELECT id FROM exams WHERE id = 'exam-ssc-cgl-2026'").get();
-  if (existingExam) {
+function seedCatExam(db: any, student: any, instituteAdmin: any, now: string): void {
+  // Check if CAT 2026 stages already seeded
+  const existingStage = db.prepare("SELECT id FROM exam_stages WHERE id = 'stage-cat-cbt'").get();
+  if (existingStage) {
     return; // Already populated
   }
 
-  // 1. Insert Exam Master
+  // 1. Ensure Exam Master exists
   db.prepare(`
-    INSERT INTO exams (id, code, title, category, description, target_year, pattern_type, total_marks, total_duration_minutes, is_active, created_at)
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 1, ?)
+    INSERT OR REPLACE INTO exams (id, code, title, category, description, target_year, pattern_type, total_marks, total_duration_minutes, is_active, conducting_body, difficulty_level, pattern_summary, created_at)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 1, ?, ?, ?, ?)
   `).run(
-    'exam-ssc-cgl-2026',
-    'SSC_CGL_2026',
-    'SSC CGL 2026 (Combined Graduate Level)',
-    'government_job',
-    'Staff Selection Commission Combined Graduate Level Examination for Group B & C posts across Central Ministries, Departments, and Attached Offices.',
+    'exam-cat-2026',
+    'CAT_2026',
+    'CAT 2026 (Common Admission Test)',
+    'management',
+    'IIM Common Admission Test for flagship PGP/MBA programs across IIM Ahmedabad, Bangalore, Calcutta, and premier B-schools.',
     2026,
     'stage_based',
-    200.0,
-    60,
+    198.0,
+    120,
+    'Indian Institutes of Management (IIMs)',
+    'National Premier Management Entrance',
+    '3 Sections (66 Qs / 198 Marks) · 40-Min Sectional Timer (+3 / -1 MCQ, 0 TITA)',
     now
   );
 
   // 2. Insert Stages
   const insertStage = db.prepare(`
-    INSERT INTO exam_stages (id, exam_id, name, stage_number, total_marks, total_questions, duration_minutes, is_computer_based, description, created_at)
+    INSERT OR REPLACE INTO exam_stages (id, exam_id, name, stage_number, total_marks, total_questions, duration_minutes, is_computer_based, description, created_at)
     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
   `);
 
   insertStage.run(
-    'stage-cgl-tier1',
-    'exam-ssc-cgl-2026',
-    'Tier-I Computer Based Examination',
+    'stage-cat-cbt',
+    'exam-cat-2026',
+    'CAT Computer-Based Test (CBT)',
     1,
-    200.0,
-    100,
-    60,
+    198.0,
+    66,
+    120,
     1,
-    'Objective multiple-choice screening test covering 4 sections (25 Qs each, +2 / -0.50 marks). Qualifying for Tier-II.',
+    '3 timed sections (40 mins each): VARC (24 Qs), DILR (20 Qs), QA (22 Qs). Calculator allowed on screen. +3 for correct, -1 for incorrect MCQ, 0 for TITA.',
     now
   );
 
   insertStage.run(
-    'stage-cgl-tier2',
-    'exam-ssc-cgl-2026',
-    'Tier-II Mains Examination',
+    'stage-cat-watpi',
+    'exam-cat-2026',
+    'Written Ability Test & Personal Interview (WAT-PI)',
     2,
-    390.0,
-    130,
-    135,
+    100.0,
     1,
-    'Paper-I compulsory objective mains exam: Mathematical Abilities, Reasoning, English Language, General Awareness, and Computer Knowledge Module.',
+    45,
+    0,
+    'IIM Second Stage: Analytical writing assessment on socio-economic caselets and rigorous panel interview.',
     now
   );
 
-  // 3. Insert Subjects
+  // 3. Insert Subjects (VARC, DILR, QA)
   const insertSubject = db.prepare(`
-    INSERT INTO subjects (id, exam_id, name, code, order_index, description, color_accent, created_at)
+    INSERT OR REPLACE INTO subjects (id, exam_id, name, code, order_index, description, color_accent, created_at)
     VALUES (?, ?, ?, ?, ?, ?, ?, ?)
   `);
 
   insertSubject.run(
-    'subj-cgl-quant',
-    'exam-ssc-cgl-2026',
-    'Quantitative Aptitude',
-    'MATH',
+    'subj-cat-varc',
+    'exam-cat-2026',
+    'Verbal Ability & Reading Comprehension (VARC)',
+    'VARC',
     1,
-    'Arithmetic, Advanced Algebra, Geometry, Mensuration & Trigonometric ratios',
-    'amber',
-    now
-  );
-
-  insertSubject.run(
-    'subj-cgl-reasoning',
-    'exam-ssc-cgl-2026',
-    'General Intelligence & Reasoning',
-    'REAS',
-    2,
-    'Verbal & Non-Verbal logic, Syllogisms, Analogies, Direction tests, Blood Relations, Series',
-    'indigo',
-    now
-  );
-
-  insertSubject.run(
-    'subj-cgl-english',
-    'exam-ssc-cgl-2026',
-    'English Comprehension',
-    'ENG',
-    3,
-    'Grammar, Error Spotting, Reading Comprehension, Cloze Tests, Idioms & Vocabulary',
+    'Philosophical & analytical RC passages, Para Jumbles, Para Summary, and Sentence Exclusion.',
     'emerald',
     now
   );
 
   insertSubject.run(
-    'subj-cgl-ga',
-    'exam-ssc-cgl-2026',
-    'General Awareness',
-    'GA',
-    4,
-    'Indian Polity, Modern Freedom Struggle, Geography, Macroeconomics & General Science',
-    'rose',
+    'subj-cat-dilr',
+    'exam-cat-2026',
+    'Data Interpretation & Logical Reasoning (DILR)',
+    'DILR',
+    2,
+    'Matrix & grouping arrangements, Games & Tournaments, Set Theory Venn diagrams, Charts & Tables.',
+    'indigo',
     now
   );
 
-  // 4. Insert Syllabus Nodes (Topics with weightages, prerequisites, estimated hours)
+  insertSubject.run(
+    'subj-cat-qa',
+    'exam-cat-2026',
+    'Quantitative Aptitude (QA)',
+    'QA',
+    3,
+    'Arithmetic, Advanced Algebra, Geometry & Mensuration, Modern Math & Number Systems.',
+    'amber',
+    now
+  );
+
+  // 4. Insert Syllabus Nodes (12 CAT Topics)
   const insertSyllabus = db.prepare(`
-    INSERT INTO syllabus_nodes (id, subject_id, parent_id, level, title, code, order_index, estimated_study_hours, weightage_percentage, prerequisite_ids_json, description, created_at)
+    INSERT OR REPLACE INTO syllabus_nodes (id, subject_id, parent_id, level, title, code, order_index, estimated_study_hours, weightage_percentage, prerequisite_ids_json, description, created_at)
     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
   `);
 
-  // Quant Topics
+  // Quantitative Aptitude Topics
   insertSyllabus.run(
-    'topic-cgl-number-systems',
-    'subj-cgl-quant',
+    'topic-cat-arithmetic',
+    'subj-cat-qa',
     null,
     'topic',
-    'Number Systems & Divisibility',
-    'MATH-101',
+    'Arithmetic & Commercial Mathematics',
+    'QA-101',
     1,
+    28.0,
     12.0,
-    6.0,
     '[]',
-    'Divisibility rules, LCM/HCF, unit digit calculation, power cycles, and Euler remainder theorem.',
+    'Percentages, Profit & Loss, Simple & Compound Interest, Ratio & Proportion, Time & Work, Time Speed Distance.',
     now
   );
 
   insertSyllabus.run(
-    'topic-cgl-percentages',
-    'subj-cgl-quant',
+    'topic-cat-algebra',
+    'subj-cat-qa',
     null,
     'topic',
-    'Percentages, Profit, Loss & Discount',
-    'MATH-102',
+    'Advanced Algebra & Functions',
+    'QA-102',
     2,
-    18.0,
-    9.0,
-    JSON.stringify(['topic-cgl-number-systems']),
-    'Successive percentage shifts, marked price formulas, dishonet dealer problems, and discount margins.',
+    30.0,
+    11.0,
+    JSON.stringify(['topic-cat-arithmetic']),
+    'Quadratic & Higher Order Equations, Inequalities, Modulus, Logarithms, Functions & Graphs, Sequences & Series.',
     now
   );
 
   insertSyllabus.run(
-    'topic-cgl-ratio-proportions',
-    'subj-cgl-quant',
+    'topic-cat-geometry',
+    'subj-cat-qa',
     null,
     'topic',
-    'Ratio, Proportion & Mixture Alligation',
-    'MATH-103',
+    'Geometry, Coordinate Geometry & Mensuration',
+    'QA-103',
     3,
-    14.0,
-    7.5,
-    JSON.stringify(['topic-cgl-percentages']),
-    'Direct/inverse proportionality, mean proportional, mixture replacement cycles, and partnership distributions.',
-    now
-  );
-
-  insertSyllabus.run(
-    'topic-cgl-algebra',
-    'subj-cgl-quant',
-    null,
-    'topic',
-    'Elementary Algebra & Identities',
-    'MATH-104',
-    4,
-    20.0,
-    8.5,
-    JSON.stringify(['topic-cgl-number-systems']),
-    'Standard polynomial identities, symmetric algebraic expressions, factorization, and quadratic root analysis.',
-    now
-  );
-
-  insertSyllabus.run(
-    'topic-cgl-geometry',
-    'subj-cgl-quant',
-    null,
-    'topic',
-    'Triangles, Circles & Coordinate Geometry',
-    'MATH-105',
-    5,
     24.0,
-    10.0,
-    JSON.stringify(['topic-cgl-algebra']),
-    'Centroid/orthocenter properties, intersecting chord theorems, cyclic quadrilaterals, and tangent secant equations.',
+    9.0,
+    JSON.stringify(['topic-cat-algebra']),
+    'Triangles (Similarity & Congruence), Circles (Chords & Tangents), Polygons, Coordinate Geometry, and 3D Mensuration Solids.',
     now
   );
 
-  // Reasoning Topics
   insertSyllabus.run(
-    'topic-cgl-analogies',
-    'subj-cgl-reasoning',
+    'topic-cat-numbers',
+    'subj-cat-qa',
     null,
     'topic',
-    'Analogies & Classification',
-    'REAS-101',
-    1,
-    10.0,
+    'Number Systems & Properties of Integers',
+    'QA-104',
+    4,
+    16.0,
     6.0,
     '[]',
-    'Semantic pairs, numerical cube/square relations, and symbolic matrix classification.',
+    'Divisibility rules, Prime Factorization, Highest Power of a Prime, Euler Totient & Remainder Theorems, Base Systems.',
     now
   );
 
   insertSyllabus.run(
-    'topic-cgl-syllogisms',
-    'subj-cgl-reasoning',
+    'topic-cat-modern-math',
+    'subj-cat-qa',
     null,
     'topic',
-    'Syllogisms & Logical Deductions',
-    'REAS-102',
-    2,
-    14.0,
+    'Modern Math (Permutations, Combinations & Probability)',
+    'QA-105',
+    5,
+    18.0,
     7.0,
     '[]',
-    'Universal affirmative/negative statements, Venn diagram overlap models, and "only a few" possibility rules.',
+    'Fundamental Counting Principle, Circular Permutations, Partitioning & Grouping, Classical Probability, Set Theory.',
     now
   );
 
+  // Data Interpretation & Logical Reasoning Topics
   insertSyllabus.run(
-    'topic-cgl-coding',
-    'subj-cgl-reasoning',
+    'topic-cat-arrangements',
+    'subj-cat-dilr',
     null,
     'topic',
-    'Coding-Decoding & Alphanumeric Series',
-    'REAS-103',
-    3,
-    12.0,
-    6.5,
-    '[]',
-    'Alphabet position shifts, reverse index coding, pattern step jumps, and symbol substitution matrices.',
-    now
-  );
-
-  // English Topics
-  insertSyllabus.run(
-    'topic-cgl-grammar-errors',
-    'subj-cgl-english',
-    null,
-    'topic',
-    'Error Spotting & Sentence Improvement',
-    'ENG-101',
+    'Linear & Circular Arrangements and Matrix Puzzles',
+    'DILR-101',
     1,
-    16.0,
-    8.0,
+    24.0,
+    12.0,
     '[]',
-    'Subject-verb concord, correlative conjunction proximity, prepositional collocations, and tense coherence.',
+    'Single & Multi-row linear arrangements, Circular seating facing inward/outward, Attribute-matching matrix grids.',
     now
   );
 
   insertSyllabus.run(
-    'topic-cgl-comprehension',
-    'subj-cgl-english',
+    'topic-cat-charts',
+    'subj-cat-dilr',
     null,
     'topic',
-    'Reading Comprehension & Cloze Tests',
-    'ENG-102',
+    'Data Interpretation: Tables, Bar Graphs & Caselets',
+    'DILR-102',
     2,
-    18.0,
-    9.0,
+    26.0,
+    12.0,
     '[]',
-    'Passage central idea extraction, contextual inference, tone classification, and thematic cloze blanks.',
+    'Complex tabular data, Cumulative line charts, 100% stacked bar graphs, Spider charts, Missing data caselets.',
     now
   );
 
   insertSyllabus.run(
-    'topic-cgl-vocab',
-    'subj-cgl-english',
+    'topic-cat-games',
+    'subj-cat-dilr',
     null,
     'topic',
-    'One-Word Substitutions, Idioms & Phrases',
-    'ENG-103',
+    'Games & Tournaments, Knockout Brackets & Scoring Matrices',
+    'DILR-103',
     3,
     20.0,
-    8.0,
+    10.0,
     '[]',
-    'High-frequency SSC past 15-year vocabulary root analysis, classical idioms, and phrasal verb distinctions.',
-    now
-  );
-
-  // General Awareness Topics
-  insertSyllabus.run(
-    'topic-cgl-polity',
-    'subj-cgl-ga',
-    null,
-    'topic',
-    'Indian Constitution & Governance',
-    'GA-101',
-    1,
-    22.0,
-    8.0,
-    '[]',
-    'Constitutional assembly, Fundamental Rights (Articles 12-35), Directive Principles, and Supreme Court jurisdiction.',
+    'Round-robin league stages, Knockout tournament seeds & upsets, Points tables with tie-breakers, Tennis/chess match deduction.',
     now
   );
 
   insertSyllabus.run(
-    'topic-cgl-history',
-    'subj-cgl-ga',
+    'topic-cat-sets',
+    'subj-cat-dilr',
     null,
     'topic',
-    'Modern Indian History & National Movement',
-    'GA-102',
-    2,
-    18.0,
-    6.5,
-    '[]',
-    '1857 revolt, Indian National Congress sessions, Non-Cooperation, Civil Disobedience, and 1935 Government of India Act.',
-    now
-  );
-
-  insertSyllabus.run(
-    'topic-cgl-science',
-    'subj-cgl-ga',
-    null,
-    'topic',
-    'General Science & Environmental Ecology',
-    'GA-103',
-    3,
+    'Set Theory & 3-4 Set Overlapping Venn Diagrams',
+    'DILR-104',
+    4,
     16.0,
-    6.0,
+    8.0,
     '[]',
-    'Newtonian laws, optical instruments, periodic table trends, human organ systems, vitamins, and ecosystems.',
+    'Max-min optimization in Venn sets, 3-circle overlap regions, 4-set rectangle Venn diagrams, Survey categorical analysis.',
+    now
+  );
+
+  // Verbal Ability & Reading Comprehension Topics
+  insertSyllabus.run(
+    'topic-cat-rc',
+    'subj-cat-varc',
+    null,
+    'topic',
+    'Reading Comprehension (Philosophy, Economics, Science & Art Passages)',
+    'VARC-101',
+    1,
+    35.0,
+    22.0,
+    '[]',
+    'Deep inference extraction, Author tone & perspective, Central theme identification, Strengthen/weaken argument analysis.',
+    now
+  );
+
+  insertSyllabus.run(
+    'topic-cat-parajumbles',
+    'subj-cat-varc',
+    null,
+    'topic',
+    'Para Jumbles & Sentence Sequence Reconstruction (MCQ & TITA)',
+    'VARC-102',
+    2,
+    15.0,
+    7.0,
+    '[]',
+    'Mandatory pair identification, Pronoun & transition word linkage, Chronological & logical flow reconstruction without options.',
+    now
+  );
+
+  insertSyllabus.run(
+    'topic-cat-parasummary',
+    'subj-cat-varc',
+    null,
+    'topic',
+    'Para Summary, Inferences & Odd Sentence Out',
+    'VARC-103',
+    3,
+    15.0,
+    7.0,
+    '[]',
+    'Distilling paragraph core thesis, Eliminating distortion & out-of-scope traps, Spotting contextually disjointed sentences.',
     now
   );
 
   // 5. Topic Resources
   const insertResource = db.prepare(`
-    INSERT INTO topic_resources (id, topic_id, title, resource_type, content_summary, external_url, estimated_read_minutes, created_at)
+    INSERT OR REPLACE INTO topic_resources (id, topic_id, title, resource_type, content_summary, external_url, estimated_read_minutes, created_at)
     VALUES (?, ?, ?, ?, ?, ?, ?, ?)
   `);
 
   insertResource.run(
-    'res-cgl-num-1',
-    'topic-cgl-number-systems',
-    'Divisibility Rules & Remainder Theorems Master Handbook',
-    'formula_digest',
-    'Shortcuts for 7, 11, 13, 72, 88 divisibility, Wilson theorem, and binomial remainder expressions.',
+    'res-cat-arith-1',
+    'topic-cat-arithmetic',
+    'CAT Arithmetic Multipliers & Percentage-Fraction Digest',
+    'cheat_sheet',
+    'Instant mental multipliers (1/1 through 1/25), profit margin ratios, and compound interest rule of 72.',
     null,
     15,
     now
   );
 
   insertResource.run(
-    'res-cgl-perc-1',
-    'topic-cgl-percentages',
-    'Percentage-Fraction Multipliers & Profit-Loss Matrix',
-    'cheat_sheet',
-    'Instant conversion fractions (1/1 through 1/20), markup formulas, and dishonest seller multiplier tables.',
+    'res-cat-alg-1',
+    'topic-cat-algebra',
+    'CAT Advanced Algebra, Logarithms & Quadratic Roots Handbook',
+    'formula_digest',
+    'Descartes rule of signs, AM-GM inequalities, logarithmic base change theorems, and maxima-minima quadratics.',
     null,
-    12,
+    20,
     now
   );
 
   insertResource.run(
-    'res-cgl-geom-1',
-    'topic-cgl-geometry',
-    'Circle Theorems & Triangle Medians Blueprint',
+    'res-cat-rc-1',
+    'topic-cat-rc',
+    'Reading Comprehension: Inference Trap Forensics & Elimination Matrix',
     'notes',
-    'Comprehensive reference with visual proofs for chord intersections, cyclic quad angles, and Apollonius theorem.',
+    'Taxonomy of CAT RC trap options: Scope Shift, Extreme Words, True but Irrelevant, Opposite Tone.',
     null,
     25,
     now
   );
 
   insertResource.run(
-    'res-cgl-polity-1',
-    'topic-cgl-polity',
-    'Important Constitutional Articles & Amendments Ready-Reckoner',
+    'res-cat-dilr-1',
+    'topic-cat-arrangements',
+    'DILR Matrix Decomposition & Elimination Frameworks',
     'notes',
-    'Articles 14 to 32, Emergency provisions (352, 356, 360), and 42nd/44th/73rd/103rd amendments digest.',
+    'Systematic grid methods for 4-variable attribute matching without recursive backtracking.',
     null,
-    20,
+    22,
+    now
+  );
+
+  // 5b. Curated Learner Resources (Free Library & Saved)
+  const insertLearnerResource = db.prepare(`
+    INSERT OR REPLACE INTO learner_resources (
+      id, user_id, title, type, subject_id, subject_name, topic_id, topic_name, source, url, notes, is_saved, created_at
+    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+  `);
+
+  insertLearnerResource.run(
+    'lres-cat-arith-yt',
+    null,
+    'CAT Arithmetic Masterclass: Ratio, Mixtures & Time-Speed-Distance',
+    'youtube',
+    'subj-cat-qa',
+    'Quantitative Aptitude (QA)',
+    'topic-cat-arithmetic',
+    'Arithmetic & Commercial Mathematics',
+    'YouTube • Takshzila / Rodha',
+    'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
+    'Comprehensive walkthrough of relative speed, circular tracks, and multi-container mixture replacements.',
+    1,
+    now
+  );
+
+  insertLearnerResource.run(
+    'lres-cat-arith-pdf',
+    student.id,
+    'CAT Quantitative Aptitude 500 Formula Compendium (2026 Edition)',
+    'pdf',
+    'subj-cat-qa',
+    'Quantitative Aptitude (QA)',
+    'topic-cat-arithmetic',
+    'Arithmetic & Commercial Mathematics',
+    'Nalanda Academic Press',
+    'https://nalanda.edu/resources/cat-quant-formula-compendium.pdf',
+    'Saved formula handbook containing arithmetic shortcuts, geometric proofs, and logarithm identity sheets.',
+    1,
+    now
+  );
+
+  insertLearnerResource.run(
+    'lres-cat-rc-guide',
+    student.id,
+    'Cracking 99th Percentile RC: Elimination Strategy & Tone Forensics',
+    'article',
+    'subj-cat-varc',
+    'Verbal Ability & Reading Comprehension (VARC)',
+    'topic-cat-rc',
+    'Reading Comprehension',
+    'Nalanda Verbal Review',
+    'https://nalanda.edu/guides/cat-rc-elimination-strategy',
+    'Framework for distinguishing subtle author tone nuances (laudatory vs guarded optimism vs skeptical disdain).',
+    1,
+    now
+  );
+
+  insertLearnerResource.run(
+    'lres-cat-dilr-yt',
+    null,
+    'DILR Caselet Decomposition & Games Tournaments Masterclass',
+    'youtube',
+    'subj-cat-dilr',
+    'Data Interpretation & Logical Reasoning (DILR)',
+    'topic-cat-games',
+    'Games & Tournaments',
+    'YouTube • Anastasis Shankar',
+    'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
+    'Round-robin scoring matrices, knockout tournament upsets, and minimum/maximum win scenarios.',
+    1,
+    now
+  );
+
+  insertLearnerResource.run(
+    'lres-cat-dilr-pdf',
+    null,
+    '100 Iconic DILR Sets from CAT Past 10 Years (Forensic Solutions)',
+    'pdf',
+    'subj-cat-dilr',
+    'Data Interpretation & Logical Reasoning (DILR)',
+    'topic-cat-arrangements',
+    'Linear & Circular Arrangements',
+    'IIM Alumni Research Collective',
+    'https://nalanda.edu/resources/100-iconic-dilr-sets.pdf',
+    'Step-by-step table drafting for high-complexity matrix caselets with zero guessing.',
+    1,
+    now
+  );
+
+  insertLearnerResource.run(
+    'lres-cat-alg-notes',
+    student.id,
+    'Algebra, Inequalities & Logarithmic Boundary Cases Summary',
+    'notes',
+    'subj-cat-qa',
+    'Quantitative Aptitude (QA)',
+    'topic-cat-algebra',
+    'Advanced Algebra & Functions',
+    'Personal Study Note',
+    null,
+    'Notes on modulus inequalities, domain restrictions in log equations, and cyclic polynomial factorization.',
+    1,
+    now
+  );
+
+  insertLearnerResource.run(
+    'lres-cat-rc-aeon',
+    null,
+    'Aeon & Guardian Long-Form Critical Reading Syllabus for CAT',
+    'article',
+    'subj-cat-varc',
+    'Verbal Ability & Reading Comprehension (VARC)',
+    'topic-cat-rc',
+    'Reading Comprehension',
+    'Nalanda Reading Hub',
+    'https://nalanda.edu/guides/aeon-critical-reading-syllabus',
+    'Curated 60-article list spanning evolutionary biology, cognitive science, philosophy of mind, and modern geopolitics.',
+    1,
     now
   );
 
   // 6. Learning Path & Units
   db.prepare(`
-    INSERT INTO learning_paths (id, exam_id, title, description, target_days, recommended_hours_per_week, total_units, created_at)
+    INSERT OR REPLACE INTO learning_paths (id, exam_id, title, description, target_days, recommended_hours_per_week, total_units, created_at)
     VALUES (?, ?, ?, ?, ?, ?, ?, ?)
   `).run(
-    'path-cgl-60d',
-    'exam-ssc-cgl-2026',
-    'SSC CGL 60-Day Strategic Master Plan',
-    'Curated curriculum balancing high-weightage arithmetic, reasoning speed drills, constitutional polity, and full-length CBE mocks.',
-    60,
-    18.0,
+    'path-cat-90d',
+    'exam-cat-2026',
+    'CAT 2026 90-Day Percentile Booster Blueprint',
+    'Rigorous curriculum balancing high-weightage QA arithmetic, DILR matrix caselets, philosophical RC inference drills, and full 120-min computer-based mocks.',
+    90,
+    20.0,
     8,
     now
   );
 
   const insertUnit = db.prepare(`
-    INSERT INTO learning_units (id, path_id, topic_id, order_index, is_core, estimated_minutes)
+    INSERT OR REPLACE INTO learning_units (id, path_id, topic_id, order_index, is_core, estimated_minutes)
     VALUES (?, ?, ?, ?, ?, ?)
   `);
 
-  insertUnit.run('unit-1', 'path-cgl-60d', 'topic-cgl-number-systems', 1, 1, 90);
-  insertUnit.run('unit-2', 'path-cgl-60d', 'topic-cgl-percentages', 2, 1, 120);
-  insertUnit.run('unit-3', 'path-cgl-60d', 'topic-cgl-analogies', 3, 1, 60);
-  insertUnit.run('unit-4', 'path-cgl-60d', 'topic-cgl-grammar-errors', 4, 1, 75);
-  insertUnit.run('unit-5', 'path-cgl-60d', 'topic-cgl-polity', 5, 1, 90);
-  insertUnit.run('unit-6', 'path-cgl-60d', 'topic-cgl-ratio-proportions', 6, 1, 90);
-  insertUnit.run('unit-7', 'path-cgl-60d', 'topic-cgl-syllogisms', 7, 1, 75);
-  insertUnit.run('unit-8', 'path-cgl-60d', 'topic-cgl-geometry', 8, 1, 150);
+  insertUnit.run('unit-cat-1', 'path-cat-90d', 'topic-cat-arithmetic', 1, 1, 120);
+  insertUnit.run('unit-cat-2', 'path-cat-90d', 'topic-cat-rc', 2, 1, 120);
+  insertUnit.run('unit-cat-3', 'path-cat-90d', 'topic-cat-arrangements', 3, 1, 90);
+  insertUnit.run('unit-cat-4', 'path-cat-90d', 'topic-cat-algebra', 4, 1, 120);
+  insertUnit.run('unit-cat-5', 'path-cat-90d', 'topic-cat-charts', 5, 1, 90);
+  insertUnit.run('unit-cat-6', 'path-cat-90d', 'topic-cat-parajumbles', 6, 1, 60);
+  insertUnit.run('unit-cat-7', 'path-cat-90d', 'topic-cat-games', 7, 1, 90);
+  insertUnit.run('unit-cat-8', 'path-cat-90d', 'topic-cat-geometry', 8, 1, 120);
 
-  // 7. Student Primary Enrollment: Set SSC CGL as Primary
+  // 7. Student Primary Enrollment: Set CAT 2026 as Primary
   db.prepare('UPDATE user_exam_enrollments SET is_primary = 0 WHERE user_id = ?').run(student.id);
 
   db.prepare(`
-    INSERT INTO user_exam_enrollments (id, user_id, exam_id, target_year, target_score, is_primary, enrolled_at)
+    INSERT OR REPLACE INTO user_exam_enrollments (id, user_id, exam_id, target_year, target_score, is_primary, enrolled_at)
     VALUES (?, ?, ?, ?, ?, 1, ?)
   `).run(
-    'enr-student-ssc-cgl',
+    'enr-student-cat-2026',
     student.id,
-    'exam-ssc-cgl-2026',
+    'exam-cat-2026',
     2026,
-    165.0,
+    105.0, // 99th percentile target score on 198
     now
   );
 
-  // 8. Student Topic Progress: Realistic Diagnostic Profile (42% progress, 78.5% accuracy, 142/200 predicted score)
+  // 8. Student Topic Progress: Realistic Diagnostic Profile (CAT 99th percentile aspirant)
   const insertProgress = db.prepare(`
     INSERT OR REPLACE INTO user_topic_progress (
       id, user_id, topic_id, status, mastery_percentage, questions_practiced, questions_correct,
@@ -578,20 +674,19 @@ function seedSscCglExam(db: any, student: any, instituteAdmin: any, now: string)
     ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
   `);
 
-  insertProgress.run('prog-cgl-1', student.id, 'topic-cgl-number-systems', 'proficient', 92.0, 65, 60, 4, new Date(Date.now() + 86400000 * 5).toISOString(), 7, 3, new Date(Date.now() - 86400000).toISOString(), 'Strong accuracy on remainder theorems and unit digits.', now);
-  insertProgress.run('prog-cgl-2', student.id, 'topic-cgl-percentages', 'developing', 74.0, 55, 41, 3, new Date(Date.now() + 86400000 * 2).toISOString(), 3, 2, new Date(Date.now() - 172800000).toISOString(), 'Check discount calculations on marked price.', now);
-  insertProgress.run('prog-cgl-3', student.id, 'topic-cgl-ratio-proportions', 'developing', 68.5, 40, 27, 2, new Date(Date.now() + 86400000 * 3).toISOString(), 3, 2, new Date(Date.now() - 259200000).toISOString(), 'Practice alligation method for multi-container replacements.', now);
-  insertProgress.run('prog-cgl-4', student.id, 'topic-cgl-geometry', 'needs_revision', 44.0, 35, 15, 2, new Date(Date.now() - 86400000 * 2).toISOString(), 1, 1, new Date(Date.now() - 345600000).toISOString(), 'Circles and intersecting chord theorems need urgent review.', now);
-  insertProgress.run('prog-cgl-5', student.id, 'topic-cgl-analogies', 'proficient', 95.0, 40, 38, 3, new Date(Date.now() + 86400000 * 6).toISOString(), 7, 3, new Date(Date.now() - 432000000).toISOString(), 'High speed on semantic analogies.', now);
-  insertProgress.run('prog-cgl-6', student.id, 'topic-cgl-syllogisms', 'proficient', 86.0, 30, 26, 2, new Date(Date.now() + 86400000 * 4).toISOString(), 7, 2, new Date(Date.now() - 518400000).toISOString(), 'Few vs A Few rules clear.', now);
-  insertProgress.run('prog-cgl-7', student.id, 'topic-cgl-grammar-errors', 'practiced', 76.0, 45, 34, 3, new Date(Date.now() + 86400000 * 1).toISOString(), 3, 2, new Date(Date.now() - 604800000).toISOString(), 'Subject-verb concord with correlatives needs careful inspection.', now);
-  insertProgress.run('prog-cgl-8', student.id, 'topic-cgl-polity', 'needs_revision', 70.0, 50, 35, 3, new Date(Date.now() - 86400000 * 1).toISOString(), 1, 1, new Date(Date.now() - 691200000).toISOString(), 'Revision due for Articles 19 through 22.', now);
-  insertProgress.run('prog-cgl-9', student.id, 'topic-cgl-history', 'studying', 58.0, 30, 17, 2, new Date(Date.now() + 86400000 * 1).toISOString(), 2, 1, new Date(Date.now() - 777600000).toISOString(), 'Chronology of Viceroys and Acts from 1909 to 1947.', now);
+  insertProgress.run('prog-cat-1', student.id, 'topic-cat-arithmetic', 'proficient', 88.0, 70, 62, 4, new Date(Date.now() + 86400000 * 5).toISOString(), 7, 3, new Date(Date.now() - 86400000).toISOString(), 'High confidence in percentage multipliers and time-speed-distance.', now);
+  insertProgress.run('prog-cat-2', student.id, 'topic-cat-rc', 'developing', 76.0, 50, 38, 3, new Date(Date.now() + 86400000 * 2).toISOString(), 3, 2, new Date(Date.now() - 172800000).toISOString(), 'Work on eliminating subtle scope shift traps in philosophy passages.', now);
+  insertProgress.run('prog-cat-3', student.id, 'topic-cat-arrangements', 'proficient', 90.0, 40, 36, 3, new Date(Date.now() + 86400000 * 4).toISOString(), 7, 3, new Date(Date.now() - 259200000).toISOString(), 'Excellent speed on 2D table grid deductions.', now);
+  insertProgress.run('prog-cat-4', student.id, 'topic-cat-algebra', 'developing', 68.0, 45, 31, 2, new Date(Date.now() + 86400000 * 1).toISOString(), 3, 2, new Date(Date.now() - 345600000).toISOString(), 'Logarithmic inequalities require strict domain verification.', now);
+  insertProgress.run('prog-cat-5', student.id, 'topic-cat-charts', 'developing', 72.0, 35, 25, 2, new Date(Date.now() + 86400000 * 3).toISOString(), 3, 2, new Date(Date.now() - 432000000).toISOString(), 'Practice cumulative percentage growth charts.', now);
+  insertProgress.run('prog-cat-6', student.id, 'topic-cat-games', 'needs_revision', 45.0, 30, 14, 2, new Date(Date.now() - 86400000 * 1).toISOString(), 1, 1, new Date(Date.now() - 518400000).toISOString(), 'Knockout tournament seed upset deductions need review.', now);
+  insertProgress.run('prog-cat-7', student.id, 'topic-cat-parajumbles', 'practiced', 80.0, 35, 28, 2, new Date(Date.now() + 86400000 * 3).toISOString(), 3, 2, new Date(Date.now() - 604800000).toISOString(), 'Look for pronoun-antecedent mandatory pairs.', now);
+  insertProgress.run('prog-cat-8', student.id, 'topic-cat-geometry', 'needs_revision', 52.0, 40, 21, 2, new Date(Date.now() - 86400000 * 2).toISOString(), 1, 1, new Date(Date.now() - 691200000).toISOString(), 'Circles and tangent segment properties need revision.', now);
 
-  // 9. Seed Official SSC CGL Tier-I Mock Test 01
-  const testId = 'test-ssc-cgl-tier1-mock1';
+  // 9. Seed Official CAT Diagnostic Mock Test 01
+  const testId = 'test-cat-mock-01';
   db.prepare(`
-    INSERT INTO tests (
+    INSERT OR REPLACE INTO tests (
       id, user_id, title, description, subject, section_id, duration_seconds,
       marking_scheme_type, default_correct_marks, default_negative_marks, default_unanswered_marks,
       shuffle_questions, shuffle_options, allow_navigation, show_palette, allow_review_marking, show_immediate_results,
@@ -601,14 +696,14 @@ function seedSscCglExam(db: any, student: any, instituteAdmin: any, now: string)
   `).run(
     testId,
     instituteAdmin.id,
-    'SSC CGL 2026 Tier-I All India Diagnostic Mock 01',
-    'Official high-fidelity Tier-I diagnostic mock conforming strictly to latest TCS pattern (Quant, Reasoning, English, General Awareness).',
-    'Combined Tier-I',
-    'sec-ssc',
-    3600, // 60 minutes
+    'CAT 2026 All India National Diagnostic Mock 01',
+    'Official high-fidelity 120-minute IIM diagnostic mock conforming strictly to latest CAT pattern (VARC, DILR, QA). +3 correct, -1 negative for MCQs, 0 for TITA.',
+    'Management Entrance (CAT)',
+    'sec-mba',
+    7200, // 120 minutes (2 hours)
     'standard',
-    2.0,  // +2 marks per question in SSC CGL Tier-I
-    0.50, // -0.50 negative marks
+    3.0,  // +3 marks per question in CAT
+    1.0,  // -1.0 negative marks for MCQs
     0.0,
     0,
     0,
@@ -617,9 +712,9 @@ function seedSscCglExam(db: any, student: any, instituteAdmin: any, now: string)
     1,
     1,
     'full_mock',
-    'exam-ssc-cgl-2026',
-    'subj-cgl-quant',
-    'topic-cgl-percentages',
+    'exam-cat-2026',
+    'subj-cat-qa',
+    'topic-cat-arithmetic',
     'public',
     0,
     0.0,
@@ -627,155 +722,155 @@ function seedSscCglExam(db: any, student: any, instituteAdmin: any, now: string)
     now
   );
 
-  // Realistic Questions for Mock Test
-  const cglQuestions = [
+  // Realistic CAT Questions for Mock Test
+  const catQuestions = [
     {
-      id: 'q-cgl-1',
+      id: 'q-cat-1',
       num: 1,
-      subjectId: 'subj-cgl-quant',
-      topicId: 'topic-cgl-percentages',
-      text: 'A dealer marks an article 40% above its cost price and offers a discount of 25% on the marked price. If his net profit is Rs. 140, what was the original cost price of the article?',
+      subjectId: 'subj-cat-varc',
+      topicId: 'topic-cat-rc',
+      text: 'According to Karl Popper, a theory is scientific if and only if it is falsifiable. In the context of economic forecasting models that incorporate subjective human expectations, which of the following statements, if true, represents the strongest Popperian critique?',
       options: [
-        { label: 'A', text: 'Rs. 2,400' },
-        { label: 'B', text: 'Rs. 2,800' },
-        { label: 'C', text: 'Rs. 3,000' },
-        { label: 'D', text: 'Rs. 3,500' }
+        { label: 'A', text: 'Economic models frequently succeed in predicting historical trends but fail to account for unprecedented external supply shocks.' },
+        { label: 'B', text: 'Whenever an economic prediction fails, practitioners modify assumptions about consumer psychology ad-hoc rather than rejecting the core model.' },
+        { label: 'C', text: 'Human behavioral patterns are inherently non-deterministic and therefore incapable of being formulated into mathematical equations.' },
+        { label: 'D', text: 'Macroeconomic variables cannot be tested in double-blind laboratory experiments, invalidating inductive generalization.' }
       ],
       correct: 'B',
-      correct_marks: 2.0,
-      negative_marks: 0.5,
-      explanation: 'Let Cost Price (CP) = 100x. Marked Price (MP) = 140x. Selling Price (SP) = 140x × (1 - 0.25) = 140x × 0.75 = 105x. Net Profit = 105x - 100x = 5x. Given 5x = 140 => x = 28. Therefore, CP = 100 × 28 = Rs. 2,800.'
+      correct_marks: 3.0,
+      negative_marks: 1.0,
+      explanation: 'Popper defined falsifiability as the demarcation between empirical science and pseudo-science. If practitioners continually introduce ad-hoc immunizing stratagems (modifying auxiliary psychological hypotheses post-facto to protect the core model from contradiction), the theory becomes unfalsifiable.'
     },
     {
-      id: 'q-cgl-2',
+      id: 'q-cat-2',
       num: 2,
-      subjectId: 'subj-cgl-quant',
-      topicId: 'topic-cgl-geometry',
-      text: 'In a circle with centre O, chords AB and CD intersect perpendicularly at an interior point P. If AP = 6 cm, PB = 4 cm, and CP = 3 cm, what is the length of PD?',
+      subjectId: 'subj-cat-varc',
+      topicId: 'topic-cat-rc',
+      text: 'Which of the following best describes the primary rhetorical function of comparing financial market volatility to hydrodynamic turbulence in complex systems literature?',
       options: [
-        { label: 'A', text: '7 cm' },
-        { label: 'B', text: '8 cm' },
-        { label: 'C', text: '9 cm' },
-        { label: 'D', text: '10 cm' }
+        { label: 'A', text: 'To dismiss quantitative econometric models as mathematically rudimentary and obsolete.' },
+        { label: 'B', text: 'To illustrate that deterministic equations can generate unpredictable macroscopic behavior via non-linear feedback loops.' },
+        { label: 'C', text: 'To prove that financial crashes are strictly natural phenomena immune to institutional regulatory intervention.' },
+        { label: 'D', text: 'To argue that liquidity cascades in equity markets can be calculated with laminar flow fluid dynamics equations.' }
       ],
       correct: 'B',
-      correct_marks: 2.0,
-      negative_marks: 0.5,
-      explanation: 'By the Intersecting Chords Theorem: AP × PB = CP × PD. Substituting the values: 6 × 4 = 3 × PD => 24 = 3 × PD => PD = 8 cm.'
+      correct_marks: 3.0,
+      negative_marks: 1.0,
+      explanation: 'In complexity theory, turbulence is the canonical archetype of non-linear deterministic chaos—where simple recursive rules produce bounded yet unpredictable emergent states, precisely analogous to feedback-driven market selloffs.'
     },
     {
-      id: 'q-cgl-3',
+      id: 'q-cat-3',
       num: 3,
-      subjectId: 'subj-cgl-reasoning',
-      topicId: 'topic-cgl-analogies',
-      text: 'Select the option that is related to the third term in the same way as the second term is related to the first term: ARCHITECT : BUILDING :: SCULPTOR : ?',
+      subjectId: 'subj-cat-dilr',
+      topicId: 'topic-cat-arrangements',
+      text: 'Six venture partners—A, B, C, D, E, and F—evaluate four AI startups (P, Q, R, S). Exactly two partners evaluate each startup, and each partner evaluates at least one startup. (1) Neither A nor F evaluates startup P. (2) B evaluates Q if and only if D evaluates R. (3) Exactly one of C or E evaluates S. If C evaluates both P and R, which startup must partner A evaluate?',
       options: [
-        { label: 'A', text: 'Chisel' },
-        { label: 'B', text: 'Statue' },
-        { label: 'C', text: 'Museum' },
-        { label: 'D', text: 'Canvas' }
+        { label: 'A', text: 'Startup Q' },
+        { label: 'B', text: 'Startup R' },
+        { label: 'C', text: 'Startup S' },
+        { label: 'D', text: 'Cannot be uniquely determined' }
       ],
-      correct: 'B',
-      correct_marks: 2.0,
-      negative_marks: 0.5,
-      explanation: 'An architect designs and produces a building; similarly, a sculptor carves and produces a statue.'
+      correct: 'A',
+      correct_marks: 3.0,
+      negative_marks: 1.0,
+      explanation: 'Since C evaluates P and R, and neither A nor F evaluates P, the two partners evaluating P must be chosen from {B, D, E}. If C and D evaluate R, by condition (2) B evaluates Q. Deductive matrix elimination shows that A must evaluate Q.'
     },
     {
-      id: 'q-cgl-4',
+      id: 'q-cat-4',
       num: 4,
-      subjectId: 'subj-cgl-reasoning',
-      topicId: 'topic-cgl-syllogisms',
-      text: 'Statements: (1) All books are papers. (2) Some papers are journals. Conclusions: I. Some books are journals. II. Some papers are books.',
+      subjectId: 'subj-cat-dilr',
+      topicId: 'topic-cat-games',
+      text: 'In a single round-robin tournament of 6 teams, each team plays every other team once. A win awards 3 points, a draw 1 point, and a loss 0 points. If the tournament finishes with no draws, and every team scores a distinct number of points, what is the maximum possible score of the team that finished in 4th place?',
       options: [
-        { label: 'A', text: 'Only conclusion I follows' },
-        { label: 'B', text: 'Only conclusion II follows' },
-        { label: 'C', text: 'Both I and II follow' },
-        { label: 'D', text: 'Neither follows' }
+        { label: 'A', text: '6 points' },
+        { label: 'B', text: '9 points' },
+        { label: 'C', text: '12 points' },
+        { label: 'D', text: '3 points' }
       ],
-      correct: 'B',
-      correct_marks: 2.0,
-      negative_marks: 0.5,
-      explanation: 'Since "All books are papers", the converse "Some papers are books" is directly true (Conclusion II). Conclusion I cannot be established with certainty.'
+      correct: 'A',
+      correct_marks: 3.0,
+      negative_marks: 1.0,
+      explanation: 'Total matches = 6 × 5 / 2 = 15 matches. With no draws, total points awarded = 15 × 3 = 45 points. Each win is 3 points, so points are multiples of 3: {15, 12, 9, 6, 3, 0}. Since all scores are distinct multiples of 3, the unique score sequence is 15, 12, 9, 6, 3, 0. Thus the 4th place team must score 6 points (2 wins, 3 losses).'
     },
     {
-      id: 'q-cgl-5',
+      id: 'q-cat-5',
       num: 5,
-      subjectId: 'subj-cgl-english',
-      topicId: 'topic-cgl-grammar-errors',
-      text: 'Identify the segment in the sentence that contains a grammatical error: "Neither the principal nor the senior professors (A) / was present at the symposium (B) / when the chief guest arrived (C) / No error (D)"',
+      subjectId: 'subj-cat-qa',
+      topicId: 'topic-cat-arithmetic',
+      text: 'An executive travels from City X to City Y at an average speed of 60 km/h, and returns along the same route at 40 km/h. If the total round-trip journey took 5 hours, what is the one-way distance between City X and City Y?',
       options: [
-        { label: 'A', text: 'Segment A' },
-        { label: 'B', text: 'Segment B' },
-        { label: 'C', text: 'Segment C' },
-        { label: 'D', text: 'Segment D' }
+        { label: 'A', text: '100 km' },
+        { label: 'B', text: '120 km' },
+        { label: 'C', text: '125 km' },
+        { label: 'D', text: '140 km' }
       ],
       correct: 'B',
-      correct_marks: 2.0,
-      negative_marks: 0.5,
-      explanation: 'Under correlative conjunctions (Neither... nor...), the finite verb agrees with the proximate subject. Since "senior professors" is plural, the verb must be "were present" instead of "was present".'
+      correct_marks: 3.0,
+      negative_marks: 1.0,
+      explanation: 'Harmonic mean average speed = 2 × 60 × 40 / (60 + 40) = 4800 / 100 = 48 km/h. Total round trip distance = 48 km/h × 5 h = 240 km. Hence one-way distance = 240 / 2 = 120 km. Alternatively: d/60 + d/40 = 5 => (2d + 3d)/120 = 5 => 5d/120 = 5 => d = 120 km.'
     },
     {
-      id: 'q-cgl-6',
+      id: 'q-cat-6',
       num: 6,
-      subjectId: 'subj-cgl-english',
-      topicId: 'topic-cgl-vocab',
-      text: 'Choose the word that means the opposite of the given word: "EPHEMERAL"',
+      subjectId: 'subj-cat-qa',
+      topicId: 'topic-cat-arithmetic',
+      text: 'A container contains 80 litres of pure ethanol. 20 litres are drawn out and replaced with water. This process of drawing out 20 litres of the mixture and replacing with water is repeated two more times (total 3 operations). What is the final volume of ethanol remaining in the container?',
       options: [
-        { label: 'A', text: 'Transient' },
-        { label: 'B', text: 'Eternal' },
-        { label: 'C', text: 'Frail' },
-        { label: 'D', text: 'Fleeting' }
+        { label: 'A', text: '33.75 litres' },
+        { label: 'B', text: '35.50 litres' },
+        { label: 'C', text: '42.25 litres' },
+        { label: 'D', text: '28.125 litres' }
       ],
-      correct: 'B',
-      correct_marks: 2.0,
-      negative_marks: 0.5,
-      explanation: 'Ephemeral denotes short-lived, momentary or temporary. Its exact antonym is eternal or everlasting.'
+      correct: 'A',
+      correct_marks: 3.0,
+      negative_marks: 1.0,
+      explanation: 'Fraction of liquid remaining after each withdrawal = 1 - 20/80 = 1 - 1/4 = 3/4. After 3 identical cycles, remaining ethanol = Initial × (1 - x/V)^n = 80 × (3/4)^3 = 80 × 27/64 = 5 × 27 / 4 = 135 / 4 = 33.75 litres.'
     },
     {
-      id: 'q-cgl-7',
+      id: 'q-cat-7',
       num: 7,
-      subjectId: 'subj-cgl-ga',
-      topicId: 'topic-cgl-polity',
-      text: 'Under Article 32 of the Constitution of India, which writ is issued by the Supreme Court to command an authority to perform a statutory duty that it has refused or failed to perform?',
+      subjectId: 'subj-cat-qa',
+      topicId: 'topic-cat-algebra',
+      text: 'Find the number of integral values of x that satisfy the inequality: log_2(x^2 - 5x + 6) < 1.',
       options: [
-        { label: 'A', text: 'Habeas Corpus' },
-        { label: 'B', text: 'Mandamus' },
-        { label: 'C', text: 'Quo-Warranto' },
-        { label: 'D', text: 'Certiorari' }
+        { label: 'A', text: '0' },
+        { label: 'B', text: '1' },
+        { label: 'C', text: '2' },
+        { label: 'D', text: '3' }
       ],
-      correct: 'B',
-      correct_marks: 2.0,
-      negative_marks: 0.5,
-      explanation: 'Mandamus (meaning "We Command") is issued to a public body, officer, or tribunal compelling the performance of a public or statutory duty.'
+      correct: 'A',
+      correct_marks: 3.0,
+      negative_marks: 1.0,
+      explanation: 'Domain condition: x^2 - 5x + 6 > 0 => (x - 2)(x - 3) > 0 => x < 2 or x > 3. Inequality condition: x^2 - 5x + 6 < 2^1 = 2 => x^2 - 5x + 4 < 0 => (x - 1)(x - 4) < 0 => 1 < x < 4. Intersecting with domain: x in (1, 2) U (3, 4). The set of integers in (1, 2) U (3, 4) is completely empty! Thus exactly 0 integers satisfy the condition.'
     },
     {
-      id: 'q-cgl-8',
+      id: 'q-cat-8',
       num: 8,
-      subjectId: 'subj-cgl-ga',
-      topicId: 'topic-cgl-history',
-      text: 'In which historic session was the resolution of "Purna Swaraj" (Complete Independence) formally adopted by the Indian National Congress?',
+      subjectId: 'subj-cat-qa',
+      topicId: 'topic-cat-geometry',
+      text: 'A right-angled triangle has legs of length 15 cm and 20 cm. What is the radius of the circle inscribed inside this triangle?',
       options: [
-        { label: 'A', text: '1920 Nagpur Session' },
-        { label: 'B', text: '1929 Lahore Session' },
-        { label: 'C', text: '1931 Karachi Session' },
-        { label: 'D', text: '1938 Haripura Session' }
+        { label: 'A', text: '4 cm' },
+        { label: 'B', text: '5 cm' },
+        { label: 'C', text: '6 cm' },
+        { label: 'D', text: '7.5 cm' }
       ],
       correct: 'B',
-      correct_marks: 2.0,
-      negative_marks: 0.5,
-      explanation: 'The Purna Swaraj resolution was passed at the 1929 Lahore session presided over by Jawaharlal Nehru on the banks of the Ravi River.'
+      correct_marks: 3.0,
+      negative_marks: 1.0,
+      explanation: 'Hypotenuse c = sqrt(15^2 + 20^2) = sqrt(225 + 400) = sqrt(625) = 25 cm. For a right-angled triangle, inradius r = (a + b - c) / 2 = (15 + 20 - 25) / 2 = 10 / 2 = 5 cm. (Or Area = r × s => 150 = r × 30 => r = 5 cm).'
     }
   ];
 
   const insertQ = db.prepare(`
-    INSERT INTO questions (
+    INSERT OR REPLACE INTO questions (
       id, test_id, question_number, question_text, question_type,
       options_json, correct_answer, correct_marks, negative_marks, unanswered_marks,
       explanation, parsing_confidence, created_at, updated_at
     ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
   `);
 
-  for (const q of cglQuestions) {
+  for (const q of catQuestions) {
     insertQ.run(
       q.id,
       testId,
@@ -795,9 +890,9 @@ function seedSscCglExam(db: any, student: any, instituteAdmin: any, now: string)
   }
 
   // 10. Seed Student Mock Attempt
-  const attemptId = 'attempt-student-cgl-mock1';
+  const attemptId = 'attempt-student-cat-mock1';
   db.prepare(`
-    INSERT INTO test_attempts (
+    INSERT OR REPLACE INTO test_attempts (
       id, test_id, user_id, test_title_snapshot, duration_seconds, started_at, submitted_at,
       time_taken_seconds, status, total_questions, attempted_questions,
       correct_answers, incorrect_answers, unanswered_questions,
@@ -808,24 +903,24 @@ function seedSscCglExam(db: any, student: any, instituteAdmin: any, now: string)
     attemptId,
     testId,
     student.id,
-    'SSC CGL 2026 Tier-I All India Diagnostic Mock 01',
-    3600,
+    'CAT 2026 All India National Diagnostic Mock 01',
+    7200,
     new Date(Date.now() - 3600000 * 24).toISOString(),
-    new Date(Date.now() - 3600000 * 23).toISOString(),
-    3120, // 52 minutes
+    new Date(Date.now() - 3600000 * 22).toISOString(),
+    6840, // 114 minutes
     'completed',
     8,
     8,
-    5,
-    3,
+    6,
+    2,
     0,
-    10.0, // 5 * 2.0
-    1.5,  // 3 * 0.5
-    8.5,  // 8.5 on this 8-question diagnostic (Scaled to 142/200 on 100 Qs)
-    16.0,
-    53.12,
-    62.5,
-    new Date(Date.now() - 3600000 * 23).toISOString()
+    18.0, // 6 * 3.0
+    2.0,  // 2 * 1.0
+    16.0, // 16.0 on 24 marks (Scaled to 107.0/198 on full 66 Qs, ~99.1 percentile)
+    24.0,
+    66.67,
+    75.0,
+    new Date(Date.now() - 3600000 * 22).toISOString()
   );
 
   // 11. Seed High-Fidelity Mistake Records for Student across Multiple Categories
@@ -838,20 +933,20 @@ function seedSscCglExam(db: any, student: any, instituteAdmin: any, now: string)
   `);
 
   insertMistake.run(
-    'mistake-1',
+    'mistake-cat-1',
     student.id,
     testId,
-    'q-cgl-1',
-    'exam-ssc-cgl-2026',
-    'subj-cgl-quant',
-    'topic-cgl-percentages',
-    cglQuestions[0].text,
-    JSON.stringify(cglQuestions[0].options),
-    'A', // selected A (Rs. 2,400)
-    'B', // correct B (Rs. 2,800)
-    cglQuestions[0].explanation,
-    'calculation_error',
-    'Multiplied 140x by 0.80 instead of 0.75 for 25% discount during mental arithmetic under time pressure.',
+    'q-cat-1',
+    'exam-cat-2026',
+    'subj-cat-varc',
+    'topic-cat-rc',
+    catQuestions[0].text,
+    JSON.stringify(catQuestions[0].options),
+    'A', // selected A
+    'B', // correct B
+    catQuestions[0].explanation,
+    'conceptual_gap',
+    'Selected Option A focusing on predictive failure rather than the methodological immunizing maneuvers (ad-hoc modifications) central to Popperian falsification.',
     0,
     1,
     1, // bookmarked for revision
@@ -861,92 +956,69 @@ function seedSscCglExam(db: any, student: any, instituteAdmin: any, now: string)
   );
 
   insertMistake.run(
-    'mistake-2',
+    'mistake-cat-2',
     student.id,
     testId,
-    'q-cgl-2',
-    'exam-ssc-cgl-2026',
-    'subj-cgl-quant',
-    'topic-cgl-geometry',
-    cglQuestions[1].text,
-    JSON.stringify(cglQuestions[1].options),
-    'A', // selected A (7 cm)
-    'B', // correct B (8 cm)
-    cglQuestions[1].explanation,
-    'conceptual_gap',
-    'Confused internal intersecting chord theorem (AP × PB = CP × PD) with tangent-secant segment square theorem.',
+    'q-cat-4',
+    'exam-cat-2026',
+    'subj-cat-dilr',
+    'topic-cat-games',
+    catQuestions[3].text,
+    JSON.stringify(catQuestions[3].options),
+    'B', // selected B (9 points)
+    'A', // correct A (6 points)
+    catQuestions[3].explanation,
+    'trap_option',
+    'Assumed 4th place could achieve 9 points without verifying if {15, 12, 10, 9...} was possible under strict 3-point no-draw constraints where every score must be a distinct multiple of 3.',
     0,
     2, // repeated mistake!
     1, // bookmarked
     new Date(Date.now() - 3600000 * 12).toISOString(),
-    JSON.stringify([{ attempt: 1, selected: 'A', timestamp: new Date(Date.now() - 3600000 * 24).toISOString() }]),
+    JSON.stringify([{ attempt: 1, selected: 'B', timestamp: new Date(Date.now() - 3600000 * 24).toISOString() }]),
     new Date(Date.now() - 3600000 * 24).toISOString()
   );
 
   insertMistake.run(
-    'mistake-3',
+    'mistake-cat-3',
     student.id,
     testId,
-    'q-cgl-5',
-    'exam-ssc-cgl-2026',
-    'subj-cgl-english',
-    'topic-cgl-grammar-errors',
-    cglQuestions[4].text,
-    JSON.stringify(cglQuestions[4].options),
-    'D', // selected D (No error)
-    'B', // correct B (Segment B)
-    cglQuestions[4].explanation,
-    'time_rush',
-    'Glanced over "was present" quickly and assumed subject was "the principal" without checking the plural proximity rule.',
-    0,
-    1,
-    0,
-    new Date(Date.now() - 3600000 * 24).toISOString(),
-    '[]',
-    new Date(Date.now() - 3600000 * 24).toISOString()
-  );
-
-  insertMistake.run(
-    'mistake-4',
-    student.id,
-    testId,
-    'q-cgl-7',
-    'exam-ssc-cgl-2026',
-    'subj-cgl-ga',
-    'topic-cgl-polity',
-    cglQuestions[6].text,
-    JSON.stringify(cglQuestions[6].options),
-    'D', // Certiorari
-    'B', // Mandamus
-    cglQuestions[6].explanation,
-    'formula_recall',
-    'Confused prerogative writ definitions between Mandamus (command to act) and Certiorari (quash order).',
-    1, // already resolved by student
+    'q-cat-5',
+    'exam-cat-2026',
+    'subj-cat-qa',
+    'topic-cat-arithmetic',
+    catQuestions[4].text,
+    JSON.stringify(catQuestions[4].options),
+    'A', // selected A (100 km)
+    'B', // correct B (120 km)
+    catQuestions[4].explanation,
+    'calculation_error',
+    'Used arithmetic mean (50 km/h) instead of harmonic mean (48 km/h) for round trip average speed when distances are equal.',
+    1, // resolved
     2,
     0,
     new Date(Date.now() - 3600000 * 4).toISOString(),
     JSON.stringify([
-      { attempt: 1, selected: 'D', timestamp: new Date(Date.now() - 3600000 * 24).toISOString() },
+      { attempt: 1, selected: 'A', timestamp: new Date(Date.now() - 3600000 * 24).toISOString() },
       { attempt: 2, selected: 'B', timestamp: new Date(Date.now() - 3600000 * 4).toISOString() }
     ]),
     new Date(Date.now() - 3600000 * 24).toISOString()
   );
 
   insertMistake.run(
-    'mistake-5',
+    'mistake-cat-4',
     student.id,
     testId,
-    'q-cgl-8',
-    'exam-ssc-cgl-2026',
-    'subj-cgl-ga',
-    'topic-cgl-history',
-    cglQuestions[7].text,
-    JSON.stringify(cglQuestions[7].options),
-    'A', // 1920 Nagpur
-    'B', // 1929 Lahore
-    cglQuestions[7].explanation,
-    'knowledge_gap',
-    'Historical chronology confusion between Non-Cooperation resolution (Nagpur 1920) and Complete Independence (Lahore 1929).',
+    'q-cat-7',
+    'exam-cat-2026',
+    'subj-cat-qa',
+    'topic-cat-algebra',
+    catQuestions[6].text,
+    JSON.stringify(catQuestions[6].options),
+    'C', // selected C (2)
+    'A', // correct A (0)
+    catQuestions[6].explanation,
+    'time_rush',
+    'Found interval (1, 4) and hurriedly counted integers 2 and 3 without checking the initial logarithmic domain requirement x^2 - 5x + 6 > 0.',
     0,
     1,
     0,
@@ -972,9 +1044,9 @@ function seedQuestionBank(db: any, instituteAdmin: any, now: string): void {
 
   const qbItems = [
     {
-      id: 'qb-1',
-      topicId: 'topic-cgl-percentages',
-      subjectId: 'subj-cgl-quant',
+      id: 'qb-cat-1',
+      topicId: 'topic-cat-arithmetic',
+      subjectId: 'subj-cat-qa',
       text: 'A merchant marks his merchandise 40% above the cost price and allows a cash discount of 25% on the marked price. If his net profit is Rs. 140, what was the original cost price?',
       options: [
         { label: 'A', text: 'Rs. 2,400' },
@@ -985,53 +1057,53 @@ function seedQuestionBank(db: any, instituteAdmin: any, now: string): void {
       correct: 'B',
       explanation: 'Let CP = 100x. MP = 140x. SP = 140x × 0.75 = 105x. Net Profit = 5x = 140 => x = 28. Hence CP = Rs. 2,800.',
       difficulty: 'medium',
-      source: 'SSC CGL 2023 Tier-I Official',
-      tags: ['Percentages', 'Profit-Loss', 'Discount', 'TCS Pattern'],
+      source: 'CAT Arithmetic Benchmark Series',
+      tags: ['Percentages', 'Profit-Loss', 'Discount', 'IIM Standard'],
       usage_count: 2,
-      used_in: ['SSC CGL 2026 Tier-I All India Diagnostic Mock 01'],
+      used_in: ['CAT 2026 All India National Diagnostic Mock 01'],
     },
     {
-      id: 'qb-2',
-      topicId: 'topic-cgl-geometry',
-      subjectId: 'subj-cgl-quant',
-      text: 'In a circle with centre O, chords AB and CD intersect perpendicularly at an interior point P. If AP = 6 cm, PB = 4 cm, and CP = 3 cm, calculate the exact length of segment PD.',
+      id: 'qb-cat-2',
+      topicId: 'topic-cat-geometry',
+      subjectId: 'subj-cat-qa',
+      text: 'A right-angled triangle has legs of length 15 cm and 20 cm. What is the radius of the circle inscribed inside this triangle?',
       options: [
-        { label: 'A', text: '7 cm' },
-        { label: 'B', text: '8 cm' },
-        { label: 'C', text: '9 cm' },
-        { label: 'D', text: '10 cm' }
+        { label: 'A', text: '4 cm' },
+        { label: 'B', text: '5 cm' },
+        { label: 'C', text: '6 cm' },
+        { label: 'D', text: '7.5 cm' }
       ],
       correct: 'B',
-      explanation: 'By the Intersecting Chords Theorem: AP × PB = CP × PD => 6 × 4 = 3 × PD => 24 = 3 × PD => PD = 8 cm.',
+      explanation: 'Hypotenuse c = sqrt(15^2 + 20^2) = 25 cm. Inradius r = (a + b - c) / 2 = (15 + 20 - 25) / 2 = 5 cm.',
       difficulty: 'hard',
       source: 'Nalanda Geometry Question Series',
-      tags: ['Geometry', 'Circles', 'Chords', 'Theorem Proof'],
+      tags: ['Geometry', 'Circles', 'Inradius', 'Triangles'],
       usage_count: 2,
-      used_in: ['SSC CGL 2026 Tier-I All India Diagnostic Mock 01'],
+      used_in: ['CAT 2026 All India National Diagnostic Mock 01'],
     },
     {
-      id: 'qb-3',
-      topicId: 'topic-cgl-algebra',
-      subjectId: 'subj-cgl-quant',
-      text: 'If x + 1/x = 3, determine the exact value of the algebraic expression: x^3 + 1/x^3.',
+      id: 'qb-cat-3',
+      topicId: 'topic-cat-algebra',
+      subjectId: 'subj-cat-qa',
+      text: 'Find the number of integral values of x that satisfy the inequality: log_2(x^2 - 5x + 6) < 1.',
       options: [
-        { label: 'A', text: '18' },
-        { label: 'B', text: '24' },
-        { label: 'C', text: '27' },
-        { label: 'D', text: '36' }
+        { label: 'A', text: '0' },
+        { label: 'B', text: '1' },
+        { label: 'C', text: '2' },
+        { label: 'D', text: '3' }
       ],
       correct: 'A',
-      explanation: 'Identity: x^3 + 1/x^3 = (x + 1/x)^3 - 3(x + 1/x) = 3^3 - 3(3) = 27 - 9 = 18.',
-      difficulty: 'easy',
-      source: 'SSC Tier-I High-Frequency Standard',
-      tags: ['Algebra', 'Identities', 'Cubic Polynomials'],
+      explanation: 'Domain: x^2 - 5x + 6 > 0 => x < 2 or x > 3. Inequality: x^2 - 5x + 6 < 2 => 1 < x < 4. Intersecting with domain gives (1, 2) U (3, 4), which contains 0 integers.',
+      difficulty: 'medium',
+      source: 'CAT Advanced Algebra Archive',
+      tags: ['Algebra', 'Logarithms', 'Inequalities', 'Domain'],
       usage_count: 1,
-      used_in: ['Quantitative Aptitude Tier-I Speed Drill'],
+      used_in: ['CAT 2026 All India National Diagnostic Mock 01'],
     },
     {
-      id: 'qb-4',
-      topicId: 'topic-cgl-number-systems',
-      subjectId: 'subj-cgl-quant',
+      id: 'qb-cat-4',
+      topicId: 'topic-cat-numbers',
+      subjectId: 'subj-cat-qa',
       text: 'Find the remainder when 3^102 is divided by the prime modulus 17.',
       options: [
         { label: 'A', text: '1' },
@@ -1039,127 +1111,89 @@ function seedQuestionBank(db: any, instituteAdmin: any, now: string): void {
         { label: 'C', text: '13' },
         { label: 'D', text: '15' }
       ],
-      correct: 'B',
-      explanation: 'By Fermat\'s Little Theorem: 3^16 ≡ 1 (mod 17). 102 = 16 × 6 + 6. Hence 3^102 ≡ (3^16)^6 × 3^6 ≡ 1^6 × 729 (mod 17). 729 ÷ 17 gives quotient 42 and remainder 15? Wait: 17 × 40 = 680; 729 - 680 = 49; 17 × 2 = 34; 49 - 34 = 15? Wait: 3^6 = 729. 729 mod 17: 17 * 42 = 714, 729 - 714 = 15! Wait: 3^3 = 27 ≡ 10; 10^2 = 100 ≡ 15 mod 17. Option D is 15!',
+      correct: 'D',
+      explanation: 'By Fermat\'s Little Theorem: 3^16 ≡ 1 (mod 17). 102 = 16 × 6 + 6 => 3^102 ≡ 3^6 ≡ 729 ≡ 15 (mod 17).',
       difficulty: 'hard',
       source: 'Number Theory Specialist Drill',
       tags: ['Number Systems', 'Fermat Theorem', 'Modular Arithmetic'],
-      usage_count: 0,
+      usage_count: 1,
       used_in: [],
     },
     {
-      id: 'qb-5',
-      topicId: 'topic-cgl-syllogisms',
-      subjectId: 'subj-cgl-reasoning',
-      text: 'Statements: (1) All books are papers. (2) Some papers are journals. Conclusions: I. Some books are journals. II. Some papers are books.',
+      id: 'qb-cat-5',
+      topicId: 'topic-cat-arrangements',
+      subjectId: 'subj-cat-dilr',
+      text: 'Six venture partners—A, B, C, D, E, and F—evaluate four AI startups (P, Q, R, S). Exactly two partners evaluate each startup, and each partner evaluates at least one startup. (1) Neither A nor F evaluates startup P. (2) B evaluates Q if and only if D evaluates R. (3) Exactly one of C or E evaluates S. If C evaluates both P and R, which startup must partner A evaluate?',
       options: [
-        { label: 'A', text: 'Only conclusion I follows' },
-        { label: 'B', text: 'Only conclusion II follows' },
-        { label: 'C', text: 'Both I and II follow' },
-        { label: 'D', text: 'Neither follows' }
+        { label: 'A', text: 'Startup Q' },
+        { label: 'B', text: 'Startup R' },
+        { label: 'C', text: 'Startup S' },
+        { label: 'D', text: 'Cannot be uniquely determined' }
       ],
-      correct: 'B',
-      explanation: 'Since "All books are papers", the converse "Some papers are books" is definitely true (Conclusion II). Conclusion I cannot be established with certainty.',
-      difficulty: 'easy',
-      source: 'TCS Reasoning Bank',
-      tags: ['Syllogisms', 'Logical Deduction', 'Venn Models'],
+      correct: 'A',
+      explanation: 'Using deductive matrix constraints, partner A evaluates Startup Q.',
+      difficulty: 'hard',
+      source: 'CAT DILR Matrix Vault',
+      tags: ['DILR', 'Matrix Deduction', 'Arrangements'],
       usage_count: 2,
-      used_in: ['SSC CGL 2026 Tier-I All India Diagnostic Mock 01'],
+      used_in: ['CAT 2026 All India National Diagnostic Mock 01'],
     },
     {
-      id: 'qb-6',
-      topicId: 'topic-cgl-coding',
-      subjectId: 'subj-cgl-reasoning',
-      text: 'In a certain code language, if "FLOWER" is written as "UOLDVI", how will "TERMINAL" be encoded in that identical system?',
+      id: 'qb-cat-6',
+      topicId: 'topic-cat-games',
+      subjectId: 'subj-cat-dilr',
+      text: 'In a single round-robin tournament of 6 teams, each team plays every other team once. A win awards 3 points, a draw 1 point, and a loss 0 points. If the tournament finishes with no draws, and every team scores a distinct number of points, what is the maximum possible score of the team that finished in 4th place?',
       options: [
-        { label: 'A', text: 'GVIINRZO' },
-        { label: 'B', text: 'GVINRMZO' },
-        { label: 'C', text: 'GVINRZO' },
-        { label: 'D', text: 'GVIOMZRO' }
+        { label: 'A', text: '6 points' },
+        { label: 'B', text: '9 points' },
+        { label: 'C', text: '12 points' },
+        { label: 'D', text: '3 points' }
+      ],
+      correct: 'A',
+      explanation: 'Total matches = 15 => 45 points. Scores must be {15, 12, 9, 6, 3, 0}. The 4th team scores 6 points.',
+      difficulty: 'hard',
+      source: 'CAT Games & Tournaments Compendium',
+      tags: ['Games & Tournaments', 'DILR', 'Round Robin'],
+      usage_count: 2,
+      used_in: ['CAT 2026 All India National Diagnostic Mock 01'],
+    },
+    {
+      id: 'qb-cat-7',
+      topicId: 'topic-cat-rc',
+      subjectId: 'subj-cat-varc',
+      text: 'According to Karl Popper, a theory is scientific if and only if it is falsifiable. In the context of economic forecasting models that incorporate subjective human expectations, which of the following statements, if true, represents the strongest Popperian critique?',
+      options: [
+        { label: 'A', text: 'Economic models frequently succeed in predicting historical trends but fail to account for unprecedented external supply shocks.' },
+        { label: 'B', text: 'Whenever an economic prediction fails, practitioners modify assumptions about consumer psychology ad-hoc rather than rejecting the core model.' },
+        { label: 'C', text: 'Human behavioral patterns are inherently non-deterministic and therefore incapable of being formulated into mathematical equations.' },
+        { label: 'D', text: 'Macroeconomic variables cannot be tested in double-blind laboratory experiments, invalidating inductive generalization.' }
       ],
       correct: 'B',
-      explanation: 'Each letter is replaced by its reverse alphabetical counterpart (A <-> Z, B <-> Y, ...): T->G, E->V, R->I, M->N, I->R, N->M, A->Z, L->O => GVINRMZO.',
+      explanation: 'Popper defined falsifiability as the demarcation between empirical science and pseudo-science. Post-hoc ad-hoc modifications shield theories from falsification.',
       difficulty: 'medium',
-      source: 'Reasoning Master Set',
-      tags: ['Coding-Decoding', 'Reverse Alphabet', 'Alphabet Shift'],
-      usage_count: 1,
-      used_in: ['General Intelligence & Reasoning Speed Marathon'],
+      source: 'CAT VARC Philosophy Inferences',
+      tags: ['RC', 'Philosophy', 'Falsifiability', 'Critical Reasoning'],
+      usage_count: 2,
+      used_in: ['CAT 2026 All India National Diagnostic Mock 01'],
     },
     {
-      id: 'qb-7',
-      topicId: 'topic-cgl-grammar-errors',
-      subjectId: 'subj-cgl-english',
-      text: 'Identify the segment in the sentence that contains a grammatical error: "Neither the principal nor the senior professors (A) / was present at the symposium (B) / when the chief guest arrived (C) / No error (D)"',
+      id: 'qb-cat-8',
+      topicId: 'topic-cat-rc',
+      subjectId: 'subj-cat-varc',
+      text: 'Which of the following best describes the primary rhetorical function of comparing financial market volatility to hydrodynamic turbulence in complex systems literature?',
       options: [
-        { label: 'A', text: 'Segment A' },
-        { label: 'B', text: 'Segment B' },
-        { label: 'C', text: 'Segment C' },
-        { label: 'D', text: 'Segment D' }
+        { label: 'A', text: 'To dismiss quantitative econometric models as mathematically rudimentary and obsolete.' },
+        { label: 'B', text: 'To illustrate that deterministic equations can generate unpredictable macroscopic behavior via non-linear feedback loops.' },
+        { label: 'C', text: 'To prove that financial crashes are strictly natural phenomena immune to institutional regulatory intervention.' },
+        { label: 'D', text: 'To argue that liquidity cascades in equity markets can be calculated with laminar flow fluid dynamics equations.' }
       ],
       correct: 'B',
-      explanation: 'Under correlative conjunctions (Neither... nor...), the finite verb agrees with the proximate subject (senior professors, plural). Verb must be "were present".',
+      explanation: 'In complexity theory, turbulence is the canonical archetype of non-linear deterministic chaos where simple rules create unpredictable macroscopic states.',
       difficulty: 'medium',
-      source: 'English Grammar Master Rulebook',
-      tags: ['Subject-Verb Concord', 'Correlatives', 'Grammar Errors'],
+      source: 'CAT VARC Science & Economics Series',
+      tags: ['RC', 'Rhetorical Function', 'Tone Analysis'],
       usage_count: 2,
-      used_in: ['SSC CGL 2026 Tier-I All India Diagnostic Mock 01'],
-    },
-    {
-      id: 'qb-8',
-      topicId: 'topic-cgl-vocab',
-      subjectId: 'subj-cgl-english',
-      text: 'Select the option that denotes the exact antonym of the given word: "EPHEMERAL"',
-      options: [
-        { label: 'A', text: 'Transient' },
-        { label: 'B', text: 'Eternal' },
-        { label: 'C', text: 'Frail' },
-        { label: 'D', text: 'Fleeting' }
-      ],
-      correct: 'B',
-      explanation: 'Ephemeral signifies temporary or fleeting. Its direct opposite is eternal or permanent.',
-      difficulty: 'easy',
-      source: 'SSC English Vocabulary 15-Year Archive',
-      tags: ['Vocabulary', 'Antonyms', 'High-Yield Roots'],
-      usage_count: 2,
-      used_in: ['SSC CGL 2026 Tier-I All India Diagnostic Mock 01'],
-    },
-    {
-      id: 'qb-9',
-      topicId: 'topic-cgl-polity',
-      subjectId: 'subj-cgl-ga',
-      text: 'Under Article 32 of the Constitution of India, which writ is issued by the Supreme Court to command a public or statutory authority to perform an obligatory duty that it has neglected or refused to perform?',
-      options: [
-        { label: 'A', text: 'Habeas Corpus' },
-        { label: 'B', text: 'Mandamus' },
-        { label: 'C', text: 'Quo-Warranto' },
-        { label: 'D', text: 'Certiorari' }
-      ],
-      correct: 'B',
-      explanation: 'Mandamus (meaning "We Command") compels the execution of a public, statutory duty.',
-      difficulty: 'easy',
-      source: 'Indian Polity Benchmark',
-      tags: ['Article 32', 'Writs', 'Fundamental Rights'],
-      usage_count: 2,
-      used_in: ['SSC CGL 2026 Tier-I All India Diagnostic Mock 01'],
-    },
-    {
-      id: 'qb-10',
-      topicId: 'topic-cgl-history',
-      subjectId: 'subj-cgl-ga',
-      text: 'In which historic session was the landmark resolution of "Purna Swaraj" (Complete Independence) formally adopted by the Indian National Congress?',
-      options: [
-        { label: 'A', text: '1920 Nagpur Session' },
-        { label: 'B', text: '1929 Lahore Session' },
-        { label: 'C', text: '1931 Karachi Session' },
-        { label: 'D', text: '1938 Haripura Session' }
-      ],
-      correct: 'B',
-      explanation: 'The Purna Swaraj declaration was adopted at the 1929 Lahore Session presided over by Jawaharlal Nehru.',
-      difficulty: 'medium',
-      source: 'Modern Indian History Archive',
-      tags: ['Freedom Movement', 'Congress Sessions', 'Chronology'],
-      usage_count: 2,
-      used_in: ['SSC CGL 2026 Tier-I All India Diagnostic Mock 01'],
+      used_in: ['CAT 2026 All India National Diagnostic Mock 01'],
     }
   ];
 
@@ -1169,7 +1203,7 @@ function seedQuestionBank(db: any, instituteAdmin: any, now: string): void {
       instituteAdmin.id,
       item.topicId,
       item.subjectId,
-      'exam-ssc-cgl-2026',
+      'exam-cat-2026',
       item.text,
       'single',
       JSON.stringify(item.options),
@@ -1180,9 +1214,9 @@ function seedQuestionBank(db: any, instituteAdmin: any, now: string): void {
       JSON.stringify(item.tags),
       item.usage_count,
       'active',
-      2.0,
-      0.5,
-      60,
+      3.0,
+      1.0,
+      120,
       null,
       JSON.stringify(item.used_in),
       'verified',
@@ -1220,48 +1254,48 @@ function seedTestSeriesAndTrustLabels(db: any, instituteAdmin: any, now: string)
     {
       id: 'ts-1',
       creator_id: instituteAdmin.id,
-      exam_id: 'exam-ssc-cgl-2026',
-      title: 'SSC CGL 2026 Tier-I All India Master Mock Series',
-      description: 'Ten full-length computer-based diagnostic mock exams adhering strictly to current TCS testing cadence, section balance, and negative marking constraints.',
+      exam_id: 'exam-cat-2026',
+      title: 'CAT 2026 All India Master Mock Series',
+      description: 'Ten full-length computer-based diagnostic mock exams adhering strictly to official IIM CAT 120-minute pattern with sectional timers (VARC, DILR, QA).',
       target_year: 2026,
       total_tests: 10,
       is_paid: 0,
       price_inr: 0.0,
-      rating: 4.95,
-      enrolled_count: 1480,
+      rating: 4.96,
+      enrolled_count: 3480,
     },
     {
       id: 'ts-2',
       creator_id: instituteAdmin.id,
-      exam_id: 'exam-ssc-cgl-2026',
-      title: 'SSC CGL Advanced Mathematics & Geometry Sprint Pack',
-      description: 'Topic-specific high-density speed drills targeting Intersecting Chords, Apollonius Theorem, Symmetric Polynomials, and Mensuration 3D.',
+      exam_id: 'exam-cat-2026',
+      title: 'CAT 2026 Quantitative Aptitude & Algebra Sprint Pack',
+      description: 'Topic-specific high-density speed drills targeting Advanced Algebra, Logarithmic Inequalities, Cyclic Polynomials, and Modern Math.',
       target_year: 2026,
       total_tests: 6,
       is_paid: 0,
       price_inr: 0.0,
-      rating: 4.92,
-      enrolled_count: 820,
+      rating: 4.93,
+      enrolled_count: 1820,
     },
     {
       id: 'ts-3',
       creator_id: instituteAdmin.id,
-      exam_id: 'exam-neet-2026',
-      title: 'NEET UG 2026 Complete Biology High-Yield Diagnostics',
-      description: 'Systematic NCERT line-by-line statement and diagram questions covering Human Physiology, Genetics, and Ecology.',
+      exam_id: 'exam-xat-2026',
+      title: 'XAT 2026 Decision Making & VALR Intensive Series',
+      description: 'Systematic analytical caselets and managerial dilemma questions covering XLRI Decision Making and Verbal & Logical Ability.',
       target_year: 2026,
-      total_tests: 12,
+      total_tests: 8,
       is_paid: 0,
       price_inr: 0.0,
-      rating: 4.97,
-      enrolled_count: 2350,
+      rating: 4.91,
+      enrolled_count: 1450,
     },
     {
       id: 'ts-4',
       creator_id: instituteAdmin.id,
-      exam_id: 'exam-upsc-prelims',
-      title: 'UPSC CSE Prelims 2026 GS Paper-I Comprehensive Series',
-      description: 'Multi-statement analytical mock papers covering Indian Polity, Modern History, Environmental Conventions, and Economic Surveys.',
+      exam_id: 'exam-snap-2026',
+      title: 'SNAP 2026 Speed & Accuracy 60-Minute Mocks',
+      description: 'High-speed 60-question mock drills balancing English, Quantitative Aptitude, and Analytical Reasoning for Symbiosis institutes.',
       target_year: 2026,
       total_tests: 8,
       is_paid: 0,
@@ -1300,9 +1334,9 @@ function seedTestSeriesAndTrustLabels(db: any, instituteAdmin: any, now: string)
   `).run(
     educator.id,
     'Senior Faculty & Quantitative Aptitude Chair',
-    'Former Staff Selection Advisory Board member specializing in high-speed geometric proofs, number systems, and algorithmic time-management for tier-1 competitive examinations.',
-    'Nalanda Faculty of Advanced Studies',
-    JSON.stringify(['Quantitative Aptitude', 'Advanced Mathematics', 'Data Interpretation']),
+    'Former IIM Selection Panelist specializing in high-speed algebra proofs, DILR caselet decomposition, and percentile optimization models.',
+    'Nalanda School of Management Prep',
+    JSON.stringify(['Quantitative Aptitude', 'Data Interpretation & Logical Reasoning', 'Verbal Ability']),
     2840,
     4.96,
     8,
@@ -1321,15 +1355,15 @@ function seedTestSeriesAndTrustLabels(db: any, instituteAdmin: any, now: string)
   insertPaidSeries.run(
     'ts-paid-1',
     educator.id,
-    'exam-ssc-cgl-2026',
-    'SSC CGL 2026 Tier-I 15 Full Mocks Super Pack',
-    'Curated 15-mock intensive curriculum with forensic video explanations, step-by-step TCS marking algorithms, and All-India live percentile analytics.',
+    'exam-cat-2026',
+    'CAT 2026 99th Percentile Advanced Caselet & Quant Super Pack',
+    'Curated 15-mock intensive curriculum with forensic video explanations, step-by-step IIM scoring algorithms, and All-India live percentile analytics.',
     2026,
     15,
     1,
-    299.0,
-    4.96,
-    540,
+    499.0,
+    4.98,
+    1250,
     'published',
     now
   );
@@ -1337,15 +1371,15 @@ function seedTestSeriesAndTrustLabels(db: any, instituteAdmin: any, now: string)
   insertPaidSeries.run(
     'ts-paid-2',
     educator.id,
-    'exam-neet-2026',
-    'NEET UG 2026 Pre-Medical Grand Mastery Pack',
-    'High-yield NCERT diagram-focused full-length drills with strict NTA negative marking calibration and expert biology mnemonics.',
+    'exam-nmat-2026',
+    'NMAT 2026 Adaptive Strategy & Speed Mastery Pack',
+    'High-yield computer-adaptive drills with section-wise time-pacing strategies and GMAC score forecasting.',
     2026,
     10,
     1,
-    499.0,
+    399.0,
     4.94,
-    380,
+    780,
     'published',
     now
   );
@@ -1357,14 +1391,14 @@ function seedTestSeriesAndTrustLabels(db: any, instituteAdmin: any, now: string)
   `);
 
   // Items for ts-1 (Free All India Series)
-  insertSeriesItem.run('tsi-1', 'ts-1', 'test-cgl-tier1-mock1', 1, 1, 'immediate', now);
-  insertSeriesItem.run('tsi-2', 'ts-1', 'test-cgl-quant-speed', 2, 1, 'immediate', now);
-  insertSeriesItem.run('tsi-3', 'ts-1', 'test-cgl-geom-marathon', 3, 0, 'immediate', now);
+  insertSeriesItem.run('tsi-1', 'ts-1', 'test-cat-mock-01', 1, 1, 'immediate', now);
+  insertSeriesItem.run('tsi-2', 'ts-1', 'test-topic-cat-arithmetic', 2, 1, 'immediate', now);
+  insertSeriesItem.run('tsi-3', 'ts-1', 'test-topic-cat-rc', 3, 0, 'immediate', now);
 
   // Items for ts-paid-1 (Paid Super Pack: test 1 free preview, test 2 & 3 locked)
-  insertSeriesItem.run('tsi-p1', 'ts-paid-1', 'test-cgl-tier1-mock1', 1, 1, 'immediate', now);
-  insertSeriesItem.run('tsi-p2', 'ts-paid-1', 'test-cgl-quant-speed', 2, 0, 'immediate', now);
-  insertSeriesItem.run('tsi-p3', 'ts-paid-1', 'test-cgl-geom-marathon', 3, 0, 'immediate', now);
+  insertSeriesItem.run('tsi-p1', 'ts-paid-1', 'test-cat-mock-01', 1, 1, 'immediate', now);
+  insertSeriesItem.run('tsi-p2', 'ts-paid-1', 'test-topic-cat-arithmetic', 2, 0, 'immediate', now);
+  insertSeriesItem.run('tsi-p3', 'ts-paid-1', 'test-topic-cat-rc', 3, 0, 'immediate', now);
 
   // 6. Seed Learner Series Enrollment for Demo Student
   const student = getOrCreateRoleDemoUser('student');
@@ -1385,20 +1419,20 @@ function seedTestSeriesAndTrustLabels(db: any, instituteAdmin: any, now: string)
   `).run(
     'test-under-review-1',
     educator.id,
-    'SSC CGL 2026 Tier-I Mathematical Logic & Advanced Algebra Drill',
-    'Faculty authored specialized drill targeting cyclic expressions, symmetric roots, and logarithmic constraints for high percentile candidates.',
+    'CAT 2026 Advanced Quantitative Aptitude & Inequality Sprint',
+    'Faculty authored specialized drill targeting cyclic expressions, symmetric roots, and logarithmic constraints for 99th percentile candidates.',
     'Quantitative Aptitude',
-    'sec-ssc',
-    1800,
+    'sec-mba',
+    2400, // 40 mins
     'standard',
-    2.0,
-    0.5,
+    3.0,
+    1.0,
     'public',
     1,
-    49.0,
+    99.0,
     'under_review',
     'sectional_test',
-    'exam-ssc-cgl-2026',
+    'exam-cat-2026',
     'hard',
     'Prof. Vikramaditya Sen Faculty Team',
     'Educator Published',
@@ -1429,8 +1463,8 @@ function seedTestSeriesAndTrustLabels(db: any, instituteAdmin: any, now: string)
       { label: 'D', text: '$16\\sqrt{7}$' },
     ]),
     'A',
-    2.0,
-    0.5,
+    3.0,
+    1.0,
     'Using formula: $(x^2 + 1/x^2)(x^3 + 1/x^3) - (x + 1/x)$. Here $x^2 + 1/x^2 = 7 - 2 = 5$. And $x^3 + 1/x^3 = (\\sqrt{7})^3 - 3\\sqrt{7} = 4\\sqrt{7}$. Multiplying: $5 \\times 4\\sqrt{7} - \\sqrt{7} = 19\\sqrt{7}$... yielding $11\\sqrt{7}$.',
     'Quantitative Aptitude',
     'hard',
@@ -1449,10 +1483,10 @@ function seedTestSeriesAndTrustLabels(db: any, instituteAdmin: any, now: string)
     student.id,
     'test_series',
     'ts-paid-1',
-    299.0,
-    44.85,
-    254.15,
-    45.61,
+    499.0,
+    74.85,
+    424.15,
+    76.11,
     'NAL-REC-2026-0489',
     now,
     now

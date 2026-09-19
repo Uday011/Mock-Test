@@ -134,7 +134,7 @@ export async function POST(req: NextRequest) {
       drillTitle,
       `Personalized adaptive revision test compiled from your mistake notebook and recent test performance.`,
       targetQuestions[0]?.subject || 'Mixed Revision',
-      examId || 'exam-ssc-cgl',
+      examId || 'exam-cat-2026',
       durationSeconds,
       now,
       now

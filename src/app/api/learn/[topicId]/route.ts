@@ -78,9 +78,9 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ topi
         pyq_references: [
           {
             id: 'pyq-gen-1',
-            exam: 'SSC CGL',
+            exam: 'CAT',
             year: 2023,
-            tier_or_stage: 'Tier-I',
+            tier_or_stage: 'Slot 1',
             frequency_rating: 'high',
             question_summary: `Direct application question on ${topicNode.title}.`
           }
@@ -131,7 +131,61 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ topi
       });
     }
 
-    // 6. Fetch Next Recommended Topic in Subject
+    // 6. Fetch Related Resources for this Topic
+    let relatedResources: any[] = [];
+    try {
+      const learnerRes = db.prepare(`
+        SELECT * FROM learner_resources 
+        WHERE topic_id = ? OR (subject_id = ? AND topic_id IS NULL)
+        ORDER BY is_saved DESC, created_at DESC
+      `).all(topicId, topicNode.subject_id) as any[];
+
+      const topicRes = db.prepare(`
+        SELECT id, title, resource_type as type, content_summary as notes, external_url as url, 
+               'Curated Guide' as source, 1 as is_saved, created_at
+        FROM topic_resources
+        WHERE topic_id = ?
+      `).all(topicId) as any[];
+
+      relatedResources = [...learnerRes, ...topicRes];
+    } catch {}
+
+    // 7. Fetch Practice Questions Count in Question Bank
+    let practiceQuestionCount = 0;
+    try {
+      const qbCount = db.prepare(`
+        SELECT COUNT(*) as count FROM question_bank 
+        WHERE topic_id = ? OR subject_id = ?
+      `).get(topicId, topicNode.subject_id) as any;
+      practiceQuestionCount = qbCount?.count || 0;
+    } catch {}
+
+    // 8. Fetch Related Tests for this Topic / Subject
+    let relatedTests: any[] = [];
+    try {
+      relatedTests = db.prepare(`
+        SELECT id, title, description, test_type, duration_seconds, default_correct_marks, default_negative_marks
+        FROM tests
+        WHERE (topic_id = ? OR subject_id = ?) AND (status = 'published' OR status IS NULL)
+        LIMIT 4
+      `).all(topicId, topicNode.subject_id) as any[];
+    } catch {}
+
+    // 9. Fetch Mistakes from this Topic
+    let mistakes: any[] = [];
+    if (userId) {
+      try {
+        mistakes = db.prepare(`
+          SELECT id, question_text, selected_answer, correct_answer, explanation, error_category, attempt_count
+          FROM mistake_records
+          WHERE user_id = ? AND (topic_id = ? OR subject_id = ?) AND is_resolved = 0
+          ORDER BY created_at DESC
+          LIMIT 5
+        `).all(userId, topicId, topicNode.subject_id) as any[];
+      } catch {}
+    }
+
+    // 10. Fetch Next Recommended Topic in Subject
     const nextTopic = db.prepare(`
       SELECT id, title, code FROM syllabus_nodes
       WHERE subject_id = ? AND level = 'topic' AND order_index > ?
@@ -156,6 +210,10 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ topi
       },
       content,
       subtopics,
+      related_resources: relatedResources,
+      practice_question_count: practiceQuestionCount,
+      related_tests: relatedTests,
+      mistakes,
       progress: {
         status: progress?.status || 'not_started',
         mastery_percentage: progress?.mastery_percentage || 0,

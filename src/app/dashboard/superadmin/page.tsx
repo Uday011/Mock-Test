@@ -890,7 +890,7 @@ export default function SuperadminDashboardPage() {
                   <label className="block text-[11px] font-medium uppercase tracking-wider text-[#787774] mb-1">Section / Category Name</label>
                   <input
                     type="text"
-                    placeholder="e.g. UPSC Civil Services, Banking PO, NEET"
+                    placeholder="e.g. Executive Management, CAT Prep, B-School Aptitude"
                     value={newSectionName}
                     onChange={(e) => setNewSectionName(e.target.value)}
                     className="w-full px-3 py-2 min-h-[36px] border border-[#E6E6E3] rounded-md text-xs bg-white text-[#202124] placeholder-[#9b9a97] focus:outline-none focus:border-[#2383e2] focus:ring-1 focus:ring-[#2383e2]"

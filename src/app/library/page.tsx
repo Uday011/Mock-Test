@@ -1,765 +1,513 @@
 'use client';
 
-import React, { useState, useEffect, useTransition } from 'react';
+import React, { useState, useEffect, Suspense } from 'react';
 import Link from 'next/link';
+import { useSearchParams, useRouter } from 'next/navigation';
 import {
+  Library,
+  BookMarked,
+  PlusCircle,
   Search,
   Filter,
-  Bookmark,
-  Share2,
-  Play,
-  RotateCcw,
-  Sparkles,
-  Users,
-  Star,
-  Layers,
-  Clock,
-  Award,
-  ChevronRight,
-  ExternalLink,
-  ShieldCheck,
-  GraduationCap,
+  Youtube,
+  FileText,
   BookOpen,
+  ExternalLink,
+  Bookmark,
   Check,
-  Flame,
-  ArrowRight,
-  SlidersHorizontal,
-  X,
-  FileCheck2,
-  Library,
+  Globe,
+  StickyNote,
 } from 'lucide-react';
 import { AppShell } from '@/components/layout/AppShell';
-import { PageHeader } from '@/components/ui/PageHeader';
-import { MetricCallout } from '@/components/ui/MetricCallout';
-import { Card } from '@/components/ui/Card';
 import { Badge } from '@/components/ui/Badge';
 import { Button } from '@/components/ui/Button';
-import { TrustLabel, TrustLabelType } from '@/components/ui/TrustLabel';
+import { Modal } from '@/components/ui/Modal';
 
-const TEST_TYPES = [
-  { value: 'all', label: 'All Test Types' },
-  { value: 'full_length_mock', label: 'Full-length Mock' },
-  { value: 'sectional_test', label: 'Sectional Test' },
-  { value: 'subject_test', label: 'Subject Test' },
-  { value: 'chapter_test', label: 'Chapter Test' },
-  { value: 'topic_test', label: 'Topic Test' },
-  { value: 'subtopic_test', label: 'Subtopic Test' },
-  { value: 'previous_year_paper', label: 'Previous Year Paper' },
-  { value: 'mixed_revision_test', label: 'Mixed Revision Test' },
-  { value: 'custom_practice', label: 'Custom Test' },
-  { value: 'community_test', label: 'Community Test' },
-  { value: 'educator_test', label: 'Educator Test' },
-];
+function ResourcesContent() {
+  const searchParams = useSearchParams();
+  const router = useRouter();
+  const tabParam = searchParams.get('tab');
+  const actionParam = searchParams.get('action');
 
-const TRUST_LABELS: { value: string; label: string }[] = [
-  { value: 'all', label: 'All Trust Labels' },
-  { value: 'Nalanda Official', label: 'Nalanda Official' },
-  { value: 'Educator Published', label: 'Educator Published' },
-  { value: 'Reviewed', label: 'Peer Reviewed' },
-  { value: 'Source Linked', label: 'Source Linked' },
-  { value: 'Community Created', label: 'Community Created' },
-  { value: 'AI Assisted', label: 'AI Assisted' },
-];
+  const [activeTab, setActiveTab] = useState<'library' | 'my'>(
+    tabParam === 'my' ? 'my' : 'library'
+  );
 
-const EXAMS = [
-  { value: 'all', label: 'All Target Exams' },
-  { value: 'exam-ssc-cgl-2026', label: 'SSC CGL 2026' },
-  { value: 'exam-neet-ug-2026', label: 'NEET UG 2026' },
-  { value: 'exam-upsc-cse-2026', label: 'UPSC CSE 2026' },
-];
+  const [resources, setResources] = useState<any[]>([]);
+  const [subjects, setSubjects] = useState<string[]>([]);
+  const [loading, setLoading] = useState(true);
 
-const SUBJECTS = [
-  { value: 'all', label: 'All Subjects' },
-  { value: 'Quantitative Aptitude', label: 'Quantitative Aptitude' },
-  { value: 'General Intelligence', label: 'General Intelligence & Reasoning' },
-  { value: 'General Awareness', label: 'General Awareness' },
-  { value: 'English Comprehension', label: 'English Comprehension' },
-  { value: 'Biology', label: 'Biology' },
-  { value: 'Physics', label: 'Physics' },
-  { value: 'Chemistry', label: 'Chemistry' },
-  { value: 'Indian Polity', label: 'Indian Polity' },
-];
-
-export default function PublicLibraryPage() {
-  const [activeTab, setActiveTab] = useState<'tests' | 'series' | 'saved'>('tests');
-
-  useEffect(() => {
-    if (typeof window !== 'undefined') {
-      const urlParams = new URLSearchParams(window.location.search);
-      const tabParam = urlParams.get('tab');
-      if (tabParam === 'saved') setActiveTab('saved');
-      else if (tabParam === 'series') setActiveTab('series');
-      else if (tabParam === 'tests') setActiveTab('tests');
-    }
-  }, []);
-
+  // Filters
   const [searchQuery, setSearchQuery] = useState('');
-  const [selectedExam, setSelectedExam] = useState('all');
   const [selectedSubject, setSelectedSubject] = useState('all');
   const [selectedType, setSelectedType] = useState('all');
-  const [selectedDifficulty, setSelectedDifficulty] = useState('all');
-  const [selectedDuration, setSelectedDuration] = useState('all');
-  const [selectedTrust, setSelectedTrust] = useState('all');
-  const [selectedAccess, setSelectedAccess] = useState('all');
-  const [selectedSort, setSelectedSort] = useState('recently_published');
 
-  const [tests, setTests] = useState<any[]>([]);
-  const [testSeries, setTestSeries] = useState<any[]>([]);
-  const [creators, setCreators] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [shareToast, setShareToast] = useState<string | null>(null);
+  // Add Resource Modal
+  const [isAddModalOpen, setIsAddModalOpen] = useState(actionParam === 'add' || tabParam === 'add');
+  const [title, setTitle] = useState('');
+  const [type, setType] = useState<'youtube' | 'pdf' | 'article' | 'website' | 'notes'>('youtube');
+  const [subjectName, setSubjectName] = useState('Quantitative Aptitude');
+  const [topicName, setTopicName] = useState('');
+  const [source, setSource] = useState('');
+  const [url, setUrl] = useState('');
+  const [notes, setNotes] = useState('');
+  const [submitting, setSubmitting] = useState(false);
 
-  const loadLibraryData = () => {
+  useEffect(() => {
+    if (tabParam === 'my') {
+      setActiveTab('my');
+    } else {
+      setActiveTab('library');
+    }
+  }, [tabParam]);
+
+  useEffect(() => {
+    if (actionParam === 'add' || tabParam === 'add') {
+      setIsAddModalOpen(true);
+    }
+  }, [actionParam, tabParam]);
+
+  const fetchResources = () => {
     setLoading(true);
     const params = new URLSearchParams();
+    if (activeTab === 'my') params.set('tab', 'my');
     if (searchQuery.trim()) params.set('q', searchQuery.trim());
-    if (selectedExam !== 'all') params.set('exam_id', selectedExam);
-    if (selectedSubject !== 'all') params.set('subject_id', selectedSubject);
-    if (selectedType !== 'all') params.set('test_type', selectedType);
-    if (selectedDifficulty !== 'all') params.set('difficulty', selectedDifficulty);
-    if (selectedDuration !== 'all') params.set('duration', selectedDuration);
-    if (selectedTrust !== 'all') params.set('trust_label', selectedTrust);
-    if (selectedAccess === 'free') params.set('is_paid', '0');
-    if (selectedAccess === 'paid') params.set('is_paid', '1');
-    params.set('sort', selectedSort);
+    if (selectedSubject !== 'all') params.set('subject', selectedSubject);
+    if (selectedType !== 'all') params.set('type', selectedType);
 
-    fetch(`/api/library?${params.toString()}`)
+    fetch(`/api/resources?${params.toString()}`)
       .then((res) => res.json())
       .then((data) => {
         if (data.success) {
-          setTests(data.tests || []);
-          setTestSeries(data.test_series || []);
-          setCreators(data.creators || []);
+          setResources(data.resources || []);
+          if (data.subjects) setSubjects(data.subjects);
         }
       })
-      .catch((err) => console.error('Failed to load library:', err))
+      .catch((err) => console.error('Failed to load resources:', err))
       .finally(() => setLoading(false));
   };
 
   useEffect(() => {
     const timer = setTimeout(() => {
-      loadLibraryData();
-    }, 200);
+      fetchResources();
+    }, 150);
     return () => clearTimeout(timer);
-  }, [
-    searchQuery,
-    selectedExam,
-    selectedSubject,
-    selectedType,
-    selectedDifficulty,
-    selectedDuration,
-    selectedTrust,
-    selectedAccess,
-    selectedSort,
-  ]);
+  }, [activeTab, searchQuery, selectedSubject, selectedType]);
 
-  const handleBookmarkToggle = async (testId: string) => {
+  const handleToggleSave = async (id: string) => {
     try {
-      const res = await fetch(`/api/tests/${testId}/bookmark`, { method: 'POST' });
+      const res = await fetch('/api/resources', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'toggle_save', resource_id: id }),
+      });
       const data = await res.json();
       if (data.success) {
-        setTests((prev) =>
-          prev.map((t) => (t.id === testId ? { ...t, is_bookmarked: data.bookmarked } : t))
+        setResources((prev) =>
+          prev.map((r) => (r.id === id ? { ...r, is_saved: data.is_saved } : r))
         );
-        showToast(data.message);
       }
     } catch (err) {
-      console.error('Failed to bookmark test:', err);
+      console.error('Failed to toggle save status:', err);
     }
   };
 
-  const handleFollowToggle = async (creatorId: string) => {
+  const handleAddSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!title.trim()) return;
+    setSubmitting(true);
     try {
-      const res = await fetch(`/api/creators/${creatorId}/follow`, { method: 'POST' });
+      const res = await fetch('/api/resources', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          title: title.trim(),
+          type,
+          subject_name: subjectName,
+          topic_name: topicName.trim() || null,
+          source: source.trim() || (type === 'youtube' ? 'YouTube' : 'Personal Note'),
+          url: url.trim() || null,
+          notes: notes.trim() || null,
+        }),
+      });
       const data = await res.json();
       if (data.success) {
-        setCreators((prev) =>
-          prev.map((c) =>
-            c.id === creatorId
-              ? { ...c, is_following: data.following, followers_count: data.followers_count }
-              : c
-          )
-        );
-        showToast(data.message);
+        setIsAddModalOpen(false);
+        setTitle('');
+        setTopicName('');
+        setSource('');
+        setUrl('');
+        setNotes('');
+        setActiveTab('my');
+        fetchResources();
       }
     } catch (err) {
-      console.error('Failed to follow creator:', err);
+      console.error('Failed to add resource:', err);
+    } finally {
+      setSubmitting(false);
     }
   };
 
-  const handleShare = (testId: string, title: string) => {
-    const url = `${window.location.origin}/tests/${testId}`;
-    if (navigator.clipboard) {
-      navigator.clipboard.writeText(url);
-      showToast(`Link copied for "${title}"`);
-    } else {
-      showToast(`Test URL: ${url}`);
+  const getTypeIcon = (resType: string) => {
+    switch (resType) {
+      case 'youtube':
+        return <Youtube className="w-4 h-4 text-red-600 shrink-0" />;
+      case 'pdf':
+        return <FileText className="w-4 h-4 text-amber-600 shrink-0" />;
+      case 'article':
+        return <BookOpen className="w-4 h-4 text-blue-600 shrink-0" />;
+      case 'website':
+        return <Globe className="w-4 h-4 text-emerald-600 shrink-0" />;
+      case 'notes':
+      default:
+        return <StickyNote className="w-4 h-4 text-[#4F46A5] shrink-0" />;
     }
   };
 
-  const showToast = (msg: string) => {
-    setShareToast(msg);
-    setTimeout(() => setShareToast(null), 3000);
+  const getTypeLabel = (resType: string) => {
+    switch (resType) {
+      case 'youtube': return 'YouTube Video';
+      case 'pdf': return 'PDF Handout';
+      case 'article': return 'Article';
+      case 'website': return 'Website';
+      case 'notes': return 'Personal Note';
+      default: return resType;
+    }
   };
-
-  const formatDuration = (seconds: number) => {
-    if (!seconds || seconds <= 0) return 'Untimed';
-    const hrs = Math.floor(seconds / 3600);
-    const mins = Math.floor((seconds % 3600) / 60);
-    if (hrs > 0 && mins > 0) return `${hrs}h ${mins}m`;
-    if (hrs > 0) return `${hrs}h`;
-    return `${mins}m`;
-  };
-
-  const formatTestType = (type: string) => {
-    if (!type) return 'Practice Test';
-    return type
-      .split('_')
-      .map((w) => w.charAt(0).toUpperCase() + w.slice(1))
-      .join(' ');
-  };
-
-  const resetFilters = () => {
-    setSearchQuery('');
-    setSelectedExam('all');
-    setSelectedSubject('all');
-    setSelectedType('all');
-    setSelectedDifficulty('all');
-    setSelectedDuration('all');
-    setSelectedTrust('all');
-    setSelectedAccess('all');
-    setSelectedSort('recently_published');
-  };
-
-  const hasActiveFilters =
-    searchQuery !== '' ||
-    selectedExam !== 'all' ||
-    selectedSubject !== 'all' ||
-    selectedType !== 'all' ||
-    selectedDifficulty !== 'all' ||
-    selectedDuration !== 'all' ||
-    selectedTrust !== 'all' ||
-    selectedAccess !== 'all';
 
   return (
     <AppShell
       breadcrumbs={[
-        { label: 'Public Library', href: '/library' },
+        { label: 'Home', href: '/dashboard' },
+        { label: 'Resources' },
+        { label: activeTab === 'my' ? 'My Resources' : 'Resource Library' },
       ]}
     >
-      {/* Toast Notification */}
-      {shareToast && (
-        <div className="fixed bottom-6 right-6 z-50 bg-[#202124] text-white text-xs px-3.5 py-2.5 rounded-md shadow-lg flex items-center gap-2 animate-in fade-in">
-          <Check className="w-3.5 h-3.5 text-emerald-400" />
-          <span>{shareToast}</span>
-        </div>
-      )}
-
-      <div className="max-w-5xl mx-auto space-y-6 pb-16">
-        <PageHeader
-          icon={Library}
-          title="Public Assessment Library"
-          description="Curated CBE mocks, sectional drills, and master series published by verified faculty and academic chairs."
-          badge={<Badge variant="emerald" size="sm">Open Resource</Badge>}
-          actions={
-            <Link href="/tests/create">
-              <Button variant="primary" size="sm">
-                <Layers className="w-3.5 h-3.5 mr-1.5" />
-                Publish Test
-              </Button>
-            </Link>
-          }
-        />
-
-        {/* Tab Switcher */}
-        <div className="flex items-center justify-between border-b border-[#E6E6E3] pb-2">
-          <div className="flex items-center gap-1.5">
-            <button
-              onClick={() => setActiveTab('tests')}
-              className={`px-3 py-1.5 rounded-md text-xs font-medium flex items-center gap-1.5 transition-colors ${
-                activeTab === 'tests'
-                  ? 'bg-[#202124] text-white'
-                  : 'bg-white border border-[#E6E6E3] text-[#787774] hover:bg-[#F1F1EF]'
-              }`}
-            >
-              <Layers className="w-3.5 h-3.5" />
-              <span>All Assessments</span>
-              <span className={`text-[10px] font-mono px-1 rounded ${activeTab === 'tests' ? 'bg-[#4f4d47]' : 'bg-[#F1F1EF]'}`}>
-                {tests.length}
-              </span>
-            </button>
-
-            <button
-              onClick={() => setActiveTab('series')}
-              className={`px-3 py-1.5 rounded-md text-xs font-medium flex items-center gap-1.5 transition-colors ${
-                activeTab === 'series'
-                  ? 'bg-[#202124] text-white'
-                  : 'bg-white border border-[#E6E6E3] text-[#787774] hover:bg-[#F1F1EF]'
-              }`}
-            >
-              <BookOpen className="w-3.5 h-3.5" />
-              <span>Curriculum Tracks</span>
-              <span className={`text-[10px] font-mono px-1 rounded ${activeTab === 'series' ? 'bg-[#4f4d47]' : 'bg-[#F1F1EF]'}`}>
-                {testSeries.length}
-              </span>
-            </button>
-
-            <button
-              onClick={() => setActiveTab('saved')}
-              className={`px-3 py-1.5 rounded-md text-xs font-medium flex items-center gap-1.5 transition-colors ${
-                activeTab === 'saved'
-                  ? 'bg-[#202124] text-white'
-                  : 'bg-white border border-[#E6E6E3] text-[#787774] hover:bg-[#F1F1EF]'
-              }`}
-            >
-              <Bookmark className="w-3.5 h-3.5" />
-              <span>Saved Resources</span>
-              <span className={`text-[10px] font-mono px-1 rounded ${activeTab === 'saved' ? 'bg-[#4f4d47]' : 'bg-[#F1F1EF]'}`}>
-                {tests.filter((t) => t.is_bookmarked).length}
-              </span>
-            </button>
+      <div className="max-w-4xl mx-auto space-y-6 pb-16">
+        {/* Page Header */}
+        <div className="border-b border-[#E6E6E3] pb-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div>
+            <div className="flex items-center gap-2 text-xs text-[#787774] mb-1">
+              <span>Study Materials</span>
+              <span>•</span>
+              <span>Free & Saved Content</span>
+            </div>
+            <h1 className="text-2xl font-semibold text-[#202124] tracking-tight">
+              {activeTab === 'my' ? 'My Resources' : 'Resource Library'}
+            </h1>
           </div>
 
-          {activeTab === 'tests' && hasActiveFilters && (
-            <button
-              onClick={resetFilters}
-              className="text-xs text-[#787774] hover:text-[#e03e3e] flex items-center gap-1"
-            >
-              <X className="w-3.5 h-3.5" /> Clear Filters
-            </button>
-          )}
-        </div>
-
-        {/* TAB 1: INDIVIDUAL TESTS */}
-        {activeTab === 'tests' && (
-          <div className="space-y-4">
-            {/* Search & Filter Bar */}
-            <div className="bg-white border border-[#E6E6E3] rounded-lg p-3 space-y-3">
-              <div className="flex flex-col sm:flex-row items-center gap-2.5">
-                <div className="relative flex-1 w-full">
-                  <Search className="w-3.5 h-3.5 text-[#787774] absolute left-3 top-1/2 -translate-y-1/2" />
-                  <input
-                    type="text"
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                    placeholder="Search tests by title, subject, formula, or creator..."
-                    aria-label="Search tests by title, subject, formula, or creator"
-                    className="w-full pl-8 pr-8 py-1.5 text-xs bg-[#F7F7F5] border border-[#E6E6E3] rounded-md focus:bg-white focus:outline-none focus:border-[#202124] text-[#202124] placeholder-[#9b9a97]"
-                  />
-                  {searchQuery && (
-                    <button
-                      onClick={() => setSearchQuery('')}
-                      className="absolute right-2.5 top-1/2 -translate-y-1/2 text-[#787774] hover:text-[#202124]"
-                    >
-                      <X className="w-3.5 h-3.5" />
-                    </button>
-                  )}
-                </div>
-
-                <div className="flex items-center gap-2 w-full sm:w-auto shrink-0">
-                  <span className="text-xs text-[#787774] whitespace-nowrap">Sort:</span>
-                  <select
-                    value={selectedSort}
-                    onChange={(e) => setSelectedSort(e.target.value)}
-                    className="px-2.5 py-1.5 text-xs bg-[#F7F7F5] border border-[#E6E6E3] rounded-md text-[#202124] focus:outline-none"
-                  >
-                    <option value="recently_published">Recently Published</option>
-                    <option value="most_attempted">Most Attempted</option>
-                    <option value="highest_rated">Highest Rated</option>
-                  </select>
-                </div>
-              </div>
-
-              {/* Faceted Filter Selectors */}
-              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2 pt-2 border-t border-[#E6E6E3]">
-                <div>
-                  <label className="block text-[10px] text-[#787774] uppercase tracking-wider mb-0.5">
-                    Exam
-                  </label>
-                  <select
-                    value={selectedExam}
-                    onChange={(e) => setSelectedExam(e.target.value)}
-                    className="w-full px-2 py-1 text-xs bg-[#F7F7F5] border border-[#E6E6E3] rounded text-[#202124] focus:outline-none"
-                  >
-                    {EXAMS.map((e) => (
-                      <option key={e.value} value={e.value}>
-                        {e.label}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-
-                <div>
-                  <label className="block text-[10px] text-[#787774] uppercase tracking-wider mb-0.5">
-                    Subject
-                  </label>
-                  <select
-                    value={selectedSubject}
-                    onChange={(e) => setSelectedSubject(e.target.value)}
-                    className="w-full px-2 py-1 text-xs bg-[#F7F7F5] border border-[#E6E6E3] rounded text-[#202124] focus:outline-none"
-                  >
-                    {SUBJECTS.map((s) => (
-                      <option key={s.value} value={s.value}>
-                        {s.label}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-
-                <div>
-                  <label className="block text-[10px] text-[#787774] uppercase tracking-wider mb-0.5">
-                    Type
-                  </label>
-                  <select
-                    value={selectedType}
-                    onChange={(e) => setSelectedType(e.target.value)}
-                    className="w-full px-2 py-1 text-xs bg-[#F7F7F5] border border-[#E6E6E3] rounded text-[#202124] focus:outline-none"
-                  >
-                    {TEST_TYPES.map((t) => (
-                      <option key={t.value} value={t.value}>
-                        {t.label}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-
-                <div>
-                  <label className="block text-[10px] text-[#787774] uppercase tracking-wider mb-0.5">
-                    Difficulty
-                  </label>
-                  <select
-                    value={selectedDifficulty}
-                    onChange={(e) => setSelectedDifficulty(e.target.value)}
-                    className="w-full px-2 py-1 text-xs bg-[#F7F7F5] border border-[#E6E6E3] rounded text-[#202124] focus:outline-none"
-                  >
-                    <option value="all">All Difficulties</option>
-                    <option value="easy">Easy</option>
-                    <option value="medium">Medium</option>
-                    <option value="hard">Hard</option>
-                  </select>
-                </div>
-
-                <div>
-                  <label className="block text-[10px] text-[#787774] uppercase tracking-wider mb-0.5">
-                    Duration
-                  </label>
-                  <select
-                    value={selectedDuration}
-                    onChange={(e) => setSelectedDuration(e.target.value)}
-                    className="w-full px-2 py-1 text-xs bg-[#F7F7F5] border border-[#E6E6E3] rounded text-[#202124] focus:outline-none"
-                  >
-                    <option value="all">Any Duration</option>
-                    <option value="short">≤ 30 mins</option>
-                    <option value="medium">30 - 60 mins</option>
-                    <option value="long">&gt; 60 mins</option>
-                  </select>
-                </div>
-
-                <div>
-                  <label className="block text-[10px] text-[#787774] uppercase tracking-wider mb-0.5">
-                    Trust
-                  </label>
-                  <select
-                    value={selectedTrust}
-                    onChange={(e) => setSelectedTrust(e.target.value)}
-                    className="w-full px-2 py-1 text-xs bg-[#F7F7F5] border border-[#E6E6E3] rounded text-[#202124] focus:outline-none"
-                  >
-                    {TRUST_LABELS.map((tl) => (
-                      <option key={tl.value} value={tl.value}>
-                        {tl.label}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-              </div>
+          {/* Top Actions: View Switcher + Add Resource */}
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2.5 w-full sm:w-auto">
+            <div className="grid grid-cols-2 sm:flex items-center bg-[#EAEAE7] p-1 rounded-xl text-xs w-full sm:w-auto">
+              <button
+                onClick={() => setActiveTab('library')}
+                className={`py-2 px-3 rounded-lg font-semibold transition-all min-h-[38px] text-center ${
+                  activeTab === 'library'
+                    ? 'bg-white text-[#202124] shadow-xs'
+                    : 'text-[#787774] hover:text-[#202124]'
+                }`}
+              >
+                Resource Library
+              </button>
+              <button
+                onClick={() => setActiveTab('my')}
+                className={`py-2 px-3 rounded-lg font-semibold transition-all min-h-[38px] text-center ${
+                  activeTab === 'my'
+                    ? 'bg-white text-[#202124] shadow-xs'
+                    : 'text-[#787774] hover:text-[#202124]'
+                }`}
+              >
+                My Resources
+              </button>
             </div>
 
-            {/* Test Cards Grid */}
-            {loading ? (
-              <div className="py-20 flex flex-col items-center justify-center space-y-2">
-                <div className="w-5 h-5 border-2 border-[#202124] border-t-transparent rounded-full animate-spin" />
-                <p className="text-xs text-[#787774] font-mono">Filtering repositories...</p>
-              </div>
-            ) : tests.length === 0 ? (
-              <div className="bg-white border border-[#E6E6E3] rounded-lg p-10 text-center space-y-3">
-                <Search className="w-8 h-8 text-[#9b9a97] mx-auto" />
-                <h3 className="font-semibold text-sm text-[#202124]">No Tests Found</h3>
-                <p className="text-xs text-[#787774] max-w-sm mx-auto">
-                  Try clearing some filter constraints or searching for broader subject keywords.
-                </p>
-                <Button variant="outline" size="sm" onClick={resetFilters}>
-                  Reset All Filters
-                </Button>
-              </div>
-            ) : (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3.5">
-                {tests.map((test) => (
-                  <div
-                    key={test.id}
-                    className="bg-white rounded-lg border border-[#E6E6E3] hover:border-[#d4d4d4] transition-colors flex flex-col justify-between p-4 space-y-3"
-                  >
-                    <div className="space-y-2">
-                      <div className="flex items-center justify-between gap-2">
-                        <TrustLabel label={test.trust_label} size="sm" showTooltip />
-                        <div className="flex items-center gap-1">
-                          <button
-                            onClick={() => handleBookmarkToggle(test.id)}
-                            title={test.is_bookmarked ? 'Remove bookmark' : 'Save test'}
-                            className={`p-1 rounded border text-xs transition-colors ${
-                              test.is_bookmarked
-                                ? 'bg-[#fdf5e8] border-[#fae2be] text-[#8f4f00]'
-                                : 'bg-[#F7F7F5] border-[#E6E6E3] text-[#787774] hover:bg-[#F1F1EF]'
-                            }`}
-                          >
-                            <Bookmark className={`w-3 h-3 ${test.is_bookmarked ? 'fill-amber-600' : ''}`} />
-                          </button>
-                          <button
-                            onClick={() => handleShare(test.id, test.title)}
-                            title="Share test link"
-                            className="p-1 rounded border border-[#E6E6E3] bg-[#F7F7F5] text-[#787774] hover:bg-[#F1F1EF] transition-colors"
-                          >
-                            <Share2 className="w-3 h-3" />
-                          </button>
-                        </div>
-                      </div>
+            <button
+              onClick={() => setIsAddModalOpen(true)}
+              className="flex items-center justify-center gap-2 px-4 py-2.5 min-h-[42px] bg-[#4F46A5] text-white rounded-xl text-xs font-semibold shadow-2xs hover:bg-[#4338CA] active:scale-[0.98] transition-all"
+            >
+              <PlusCircle className="w-4 h-4" />
+              <span>Add Resource</span>
+            </button>
+          </div>
+        </div>
 
-                      <div className="flex items-center gap-1.5 flex-wrap">
-                        <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-[#F1F1EF] text-[#787774] border border-[#E6E6E3]">
-                          {test.subject || 'General Studies'}
+        {/* Filter Toolbar */}
+        <div className="bg-white border border-[#E6E6E3] rounded-xl p-3.5 space-y-3 shadow-2xs">
+          <div className="flex flex-col sm:flex-row items-center gap-2.5">
+            <div className="relative flex-1 w-full">
+              <Search className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-[#787774]" />
+              <input
+                type="text"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                placeholder="Search resources by title, topic, or keyword..."
+                className="w-full pl-9 pr-3 py-2.5 text-xs sm:text-xs rounded-lg border border-[#E6E6E3] focus:border-[#202124] focus:outline-none placeholder:text-[#787774] min-h-[42px]"
+              />
+            </div>
+
+            <div className="grid grid-cols-2 sm:flex items-center gap-2 w-full sm:w-auto">
+              <select
+                value={selectedSubject}
+                onChange={(e) => setSelectedSubject(e.target.value)}
+                className="p-2.5 text-xs rounded-lg border border-[#E6E6E3] bg-white text-[#202124] focus:outline-none focus:border-[#202124] w-full sm:w-auto min-h-[42px]"
+              >
+                <option value="all">All Subjects</option>
+                {subjects.map((sub) => (
+                  <option key={sub} value={sub}>{sub}</option>
+                ))}
+              </select>
+
+              <select
+                value={selectedType}
+                onChange={(e) => setSelectedType(e.target.value)}
+                className="p-2.5 text-xs rounded-lg border border-[#E6E6E3] bg-white text-[#202124] focus:outline-none focus:border-[#202124] w-full sm:w-auto min-h-[42px]"
+              >
+                <option value="all">All Types</option>
+                <option value="youtube">YouTube Videos</option>
+                <option value="pdf">PDF Handouts</option>
+                <option value="article">Articles & Guides</option>
+                <option value="notes">Personal Notes</option>
+                <option value="website">Websites</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        {/* Resources Grid */}
+        {loading ? (
+          <div className="py-20 text-center text-xs text-[#787774] font-mono">
+            Loading resources...
+          </div>
+        ) : resources.length > 0 ? (
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+            {resources.map((r) => {
+              const isSaved = Boolean(r.is_saved);
+
+              return (
+                <div
+                  key={r.id}
+                  className="p-4 bg-white border border-[#E6E6E3] rounded-xl hover:border-[#D4D4D1] shadow-2xs transition-colors flex flex-col justify-between space-y-3 text-xs"
+                >
+                  <div className="space-y-2">
+                    {/* Header Row: Type + Subject + Bookmark */}
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        {getTypeIcon(r.type)}
+                        <span className="font-mono text-[10px] uppercase font-semibold text-[#787774]">
+                          {getTypeLabel(r.type)}
                         </span>
-                        <Badge variant="blue" size="sm">
-                          {formatTestType(test.test_type)}
-                        </Badge>
-                        <Badge
-                          variant={test.difficulty === 'hard' ? 'rose' : test.difficulty === 'medium' ? 'amber' : 'emerald'}
-                          size="sm"
-                        >
-                          {test.difficulty || 'medium'}
-                        </Badge>
-                        <Badge variant="emerald" size="sm">
-                          Free
-                        </Badge>
-                      </div>
-
-                      <div>
-                        <Link
-                          href={`/tests/${test.id}`}
-                          className="font-medium text-xs sm:text-sm text-[#202124] hover:underline line-clamp-1 leading-snug"
-                        >
-                          {test.title}
-                        </Link>
-                        {test.description && (
-                          <p className="text-xs text-[#787774] line-clamp-2 mt-1 leading-relaxed">
-                            {test.description}
-                          </p>
+                        {r.subject_name && (
+                          <span className="text-[11px] text-[#787774] truncate">
+                            • {r.subject_name}
+                          </span>
                         )}
                       </div>
 
-                      <div className="pt-2 border-t border-[#F1F1EF] flex items-center justify-between text-xs">
-                        <div className="flex items-center gap-1.5 text-[#787774]">
-                          <div className="w-4 h-4 rounded bg-[#F1F1EF] text-[#787774] border border-[#E6E6E3] flex items-center justify-center font-bold text-[9px]">
-                            {test.created_by_name?.charAt(0) || 'N'}
-                          </div>
-                          <span className="truncate max-w-[120px] text-[11px]">
-                            {test.created_by_name || 'Nalanda Faculty'}
-                          </span>
-                        </div>
-
-                        <div className="flex items-center gap-1 text-[11px] font-mono font-medium text-[#202124]">
-                          <Star className="w-3 h-3 fill-amber-500 text-amber-500" />
-                          <span>{Number(test.rating || 4.8).toFixed(1)}</span>
-                        </div>
-                      </div>
+                      <button
+                        type="button"
+                        onClick={() => handleToggleSave(r.id)}
+                        className={`min-w-[40px] min-h-[40px] flex items-center justify-center rounded-lg text-[#787774] hover:text-[#202124] active:scale-95 transition-all ${
+                          isSaved ? 'text-amber-600 bg-amber-50' : 'hover:bg-[#F1F1EF]'
+                        }`}
+                        title={isSaved ? 'Saved to My Resources' : 'Save to My Resources'}
+                        aria-label="Toggle bookmark"
+                      >
+                        <Bookmark className={`w-4 h-4 ${isSaved ? 'fill-amber-600 text-amber-600' : ''}`} />
+                      </button>
                     </div>
 
-                    <div className="pt-2.5 border-t border-[#E6E6E3] space-y-2">
-                      <div className="grid grid-cols-3 gap-1.5 text-center text-[#787774] text-[11px] font-mono">
-                        <div className="bg-[#F7F7F5] p-1 rounded border border-[#E6E6E3]">
-                          <span className="block text-[#9b9a97] text-[9px] uppercase font-sans">Qs</span>
-                          <span className="font-medium text-[#202124]">{test.question_count || 25}</span>
-                        </div>
-                        <div className="bg-[#F7F7F5] p-1 rounded border border-[#E6E6E3]">
-                          <span className="block text-[#9b9a97] text-[9px] uppercase font-sans">Time</span>
-                          <span className="font-medium text-[#202124]">{formatDuration(test.duration_seconds)}</span>
-                        </div>
-                        <div className="bg-[#F7F7F5] p-1 rounded border border-[#E6E6E3]">
-                          <span className="block text-[#9b9a97] text-[9px] uppercase font-sans">Tries</span>
-                          <span className="font-medium text-[#202124]">{test.attempts_count || 0}</span>
-                        </div>
-                      </div>
+                    {/* Title */}
+                    <h3 className="font-semibold text-sm text-[#202124] leading-snug">
+                      {r.title}
+                    </h3>
 
-                      <div className="flex items-center gap-2 pt-0.5">
-                        <Link href={`/tests/${test.id}`} className="flex-1">
-                          <Button variant="outline" size="sm" className="w-full text-xs">
-                            Blueprint
-                          </Button>
-                        </Link>
-                        <Link href={`/tests/${test.id}/start`} className="flex-1">
-                          <Button variant="primary" size="sm" className="w-full text-xs">
-                            <Play className="w-3 h-3 mr-1 fill-current" />
-                            Take Exam
-                          </Button>
-                        </Link>
+                    {/* Topic tag */}
+                    {r.topic_name && (
+                      <div className="flex items-center gap-1.5">
+                        <span className="text-[11px] text-[#787774]">Topic:</span>
+                        <Badge variant="gray" size="sm">{r.topic_name}</Badge>
                       </div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            )}
-          </div>
-        )}
+                    )}
 
-        {/* TAB 2: TEST SERIES */}
-        {activeTab === 'series' && (
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {testSeries.map((s) => (
-              <div
-                key={s.id}
-                className="p-4 bg-white rounded-lg border border-[#E6E6E3] hover:border-[#d4d4d4] transition-colors flex flex-col justify-between space-y-3"
-              >
-                <div className="space-y-2">
-                  <div className="flex items-start justify-between gap-2">
-                    <div>
-                      <div className="flex items-center gap-1.5 mb-1 flex-wrap">
-                        <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-[#F1F1EF] text-[#787774] border border-[#E6E6E3]">
-                          {s.exam_title || 'SSC CGL 2026'}
-                        </span>
-                        <Badge variant="emerald" size="sm">
-                          Free Track
-                        </Badge>
-                        <span className="text-[11px] text-[#787774] font-mono">
-                          {s.total_tests || 10} Mock Exams
-                        </span>
-                      </div>
-                      <h3 className="text-xs sm:text-sm font-semibold text-[#202124]">
-                        {s.title}
-                      </h3>
-                    </div>
-
-                    <div className="flex items-center gap-1 text-[11px] font-mono font-medium text-[#202124] shrink-0 bg-[#F7F7F5] px-1.5 py-0.5 rounded border border-[#E6E6E3]">
-                      <Star className="w-3 h-3 fill-amber-500 text-amber-500" />
-                      <span>{Number(s.rating || 4.9).toFixed(1)}</span>
-                    </div>
+                    {/* Notes / Summary */}
+                    {r.notes && (
+                      <p className="text-[11px] text-[#787774] leading-relaxed line-clamp-3 pt-1">
+                        {r.notes}
+                      </p>
+                    )}
                   </div>
 
-                  <div className="text-xs text-[#787774]">
-                    <span>Curriculum Pathway</span>
-                    {s.creator_institute && <span> • {s.creator_institute}</span>}
-                  </div>
+                  {/* Footer Row: Source + Link Button */}
+                  <div className="pt-3 border-t border-[#F1F1EF] flex items-center justify-between gap-2">
+                    <span className="text-[10px] text-[#787774] truncate max-w-[150px]">
+                      Source: {r.source || 'Curated'}
+                    </span>
 
-                  <p className="text-xs text-[#787774] leading-relaxed">
-                    {s.description}
-                  </p>
+                    {r.url ? (
+                      <a
+                        href={r.url}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="inline-flex items-center justify-center gap-1 px-3 py-1.5 min-h-[36px] bg-[#EEF0FB] text-[#4F46A5] rounded-lg text-xs font-semibold hover:bg-[#E0E3F8] active:scale-95 transition-all"
+                      >
+                        <span>Open</span>
+                        <ExternalLink className="w-3 h-3" />
+                      </a>
+                    ) : (
+                      <span className="text-[11px] text-[#787774] italic">
+                        In-app notes
+                      </span>
+                    )}
+                  </div>
                 </div>
-
-                <div className="pt-3 border-t border-[#E6E6E3] flex items-center justify-between gap-3">
-                  <div className="text-xs text-[#787774] flex items-center gap-1 font-mono">
-                    <Users className="w-3.5 h-3.5 text-[#9b9a97]" />
-                    <span>{(s.enrolled_count || 1200).toLocaleString()} learners</span>
-                  </div>
-
-                  <Link href={`/series/${s.id}`}>
-                    <Button variant="primary" size="sm">
-                      Access Series <ArrowRight className="w-3.5 h-3.5 ml-1" />
-                    </Button>
-                  </Link>
-                </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
-        )}
-
-        {/* TAB 3: SAVED RESOURCES */}
-        {activeTab === 'saved' && (
-          <div>
-            {tests.filter((t) => t.is_bookmarked).length === 0 ? (
-              <div className="bg-white border border-[#E6E6E3] rounded-lg p-10 text-center space-y-3">
-                <Bookmark className="w-8 h-8 text-[#9b9a97] mx-auto" />
-                <h3 className="font-semibold text-sm text-[#202124]">No Saved Resources Yet</h3>
-                <p className="text-xs text-[#787774] max-w-sm mx-auto">
-                  Click the bookmark icon on any assessment paper or curriculum track in the library to save it for quick access.
-                </p>
-                <Button variant="outline" size="sm" onClick={() => setActiveTab('tests')}>
-                  Explore Assessments
-                </Button>
-              </div>
-            ) : (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3.5">
-                {tests
-                  .filter((t) => t.is_bookmarked)
-                  .map((test) => (
-                    <div
-                      key={test.id}
-                      className="bg-white rounded-lg border border-[#E6E6E3] hover:border-[#d4d4d4] transition-colors flex flex-col justify-between p-4 space-y-3"
-                    >
-                      <div className="space-y-2">
-                        <div className="flex items-center justify-between gap-2">
-                          <TrustLabel label={test.trust_label} size="sm" showTooltip />
-                          <div className="flex items-center gap-1">
-                            <button
-                              onClick={() => handleBookmarkToggle(test.id)}
-                              title="Remove bookmark"
-                              className="p-1 rounded border text-xs bg-[#fdf5e8] border-[#fae2be] text-[#8f4f00] transition-colors"
-                            >
-                              <Bookmark className="w-3 h-3 fill-amber-600" />
-                            </button>
-                            <button
-                              onClick={() => handleShare(test.id, test.title)}
-                              title="Share test link"
-                              className="p-1 rounded border border-[#E6E6E3] bg-[#F7F7F5] text-[#787774] hover:bg-[#F1F1EF] transition-colors"
-                            >
-                              <Share2 className="w-3 h-3" />
-                            </button>
-                          </div>
-                        </div>
-
-                        <div className="flex items-center gap-1.5 flex-wrap">
-                          <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-[#F1F1EF] text-[#787774] border border-[#E6E6E3]">
-                            {test.subject || 'General Studies'}
-                          </span>
-                          <Badge variant="blue" size="sm">
-                            {formatTestType(test.test_type)}
-                          </Badge>
-                          <Badge variant="emerald" size="sm">
-                            Free
-                          </Badge>
-                        </div>
-
-                        <div>
-                          <Link
-                            href={`/tests/${test.id}`}
-                            className="font-medium text-xs sm:text-sm text-[#202124] hover:underline line-clamp-1 leading-snug"
-                          >
-                            {test.title}
-                          </Link>
-                          {test.description && (
-                            <p className="text-xs text-[#787774] line-clamp-2 mt-1 leading-relaxed">
-                              {test.description}
-                            </p>
-                          )}
-                        </div>
-                      </div>
-
-                      <div className="pt-2.5 border-t border-[#E6E6E3] flex items-center gap-2">
-                        <Link href={`/tests/${test.id}`} className="flex-1">
-                          <Button variant="outline" size="sm" className="w-full text-xs">
-                            Blueprint
-                          </Button>
-                        </Link>
-                        <Link href={`/tests/${test.id}/start`} className="flex-1">
-                          <Button variant="primary" size="sm" className="w-full text-xs">
-                            <Play className="w-3 h-3 mr-1 fill-current" />
-                            Take Exam
-                          </Button>
-                        </Link>
-                      </div>
-                    </div>
-                  ))}
-              </div>
-            )}
+        ) : (
+          <div className="p-12 bg-white border border-[#E6E6E3] rounded-lg text-center space-y-3">
+            <Library className="w-8 h-8 mx-auto text-[#787774]" />
+            <div className="space-y-1">
+              <h3 className="text-sm font-semibold text-[#202124]">No Resources Found</h3>
+              <p className="text-xs text-[#787774] max-w-sm mx-auto">
+                {activeTab === 'my'
+                  ? 'You have not saved or added any resources yet. Bookmark resources from the library or add your own.'
+                  : 'No resources match your current filter criteria.'}
+              </p>
+            </div>
+            <Button variant="primary" size="sm" onClick={() => setIsAddModalOpen(true)}>
+              <PlusCircle className="w-3.5 h-3.5 mr-1.5" />
+              Add First Resource
+            </Button>
           </div>
         )}
       </div>
+
+      {/* Add Resource Modal */}
+      {isAddModalOpen && (
+        <Modal
+          isOpen={isAddModalOpen}
+          onClose={() => setIsAddModalOpen(false)}
+          title="Add Learning Resource"
+          description="Save a YouTube lecture, reference PDF, web article, or personal study note to your workspace."
+        >
+          <form onSubmit={handleAddSubmit} className="space-y-4 text-xs pt-2">
+            <div>
+              <label className="block font-medium text-[#202124] mb-1">Resource Title *</label>
+              <input
+                type="text"
+                required
+                value={title}
+                onChange={(e) => setTitle(e.target.value)}
+                placeholder="e.g. Complete Percentage Concept & Short Tricks Marathon"
+                className="w-full p-2 rounded-md border border-[#E6E6E3] text-xs focus:border-[#202124] focus:outline-none"
+              />
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div>
+                <label className="block font-medium text-[#202124] mb-1">Resource Type</label>
+                <select
+                  value={type}
+                  onChange={(e: any) => setType(e.target.value)}
+                  className="w-full p-2 rounded-md border border-[#E6E6E3] text-xs focus:border-[#202124] focus:outline-none bg-white"
+                >
+                  <option value="youtube">YouTube Video</option>
+                  <option value="pdf">PDF Handout</option>
+                  <option value="article">Article / Guide</option>
+                  <option value="website">Website Link</option>
+                  <option value="notes">Personal Note</option>
+                </select>
+              </div>
+
+              <div>
+                <label className="block font-medium text-[#202124] mb-1">Subject</label>
+                <select
+                  value={subjectName}
+                  onChange={(e) => setSubjectName(e.target.value)}
+                  className="w-full p-2 rounded-md border border-[#E6E6E3] text-xs focus:border-[#202124] focus:outline-none bg-white"
+                >
+                  <option value="Quantitative Aptitude">Quantitative Aptitude</option>
+                  <option value="General Intelligence & Reasoning">General Intelligence & Reasoning</option>
+                  <option value="General Awareness">General Awareness</option>
+                  <option value="English Comprehension">English Comprehension</option>
+                </select>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div>
+                <label className="block font-medium text-[#202124] mb-1">Topic Name (Optional)</label>
+                <input
+                  type="text"
+                  value={topicName}
+                  onChange={(e) => setTopicName(e.target.value)}
+                  placeholder="e.g. Percentages, Profit & Loss"
+                  className="w-full p-2 rounded-md border border-[#E6E6E3] text-xs focus:border-[#202124] focus:outline-none"
+                />
+              </div>
+
+              <div>
+                <label className="block font-medium text-[#202124] mb-1">Source / Channel Name</label>
+                <input
+                  type="text"
+                  value={source}
+                  onChange={(e) => setSource(e.target.value)}
+                  placeholder="e.g. YouTube • Abhinay Maths or NCERT"
+                  className="w-full p-2 rounded-md border border-[#E6E6E3] text-xs focus:border-[#202124] focus:outline-none"
+                />
+              </div>
+            </div>
+
+            <div>
+              <label className="block font-medium text-[#202124] mb-1">URL / Link</label>
+              <input
+                type="url"
+                value={url}
+                onChange={(e) => setUrl(e.target.value)}
+                placeholder="https://youtube.com/watch?v=... or https://..."
+                className="w-full p-2 rounded-md border border-[#E6E6E3] text-xs focus:border-[#202124] focus:outline-none font-mono"
+              />
+            </div>
+
+            <div>
+              <label className="block font-medium text-[#202124] mb-1">Notes & Key Takeaways</label>
+              <textarea
+                rows={3}
+                value={notes}
+                onChange={(e) => setNotes(e.target.value)}
+                placeholder="Summarize key formulas, timestamps, or reasons to review this..."
+                className="w-full p-2 rounded-md border border-[#E6E6E3] text-xs focus:border-[#202124] focus:outline-none resize-none"
+              />
+            </div>
+
+            <div className="flex items-center justify-end gap-2 pt-2">
+              <Button variant="outline" size="sm" type="button" onClick={() => setIsAddModalOpen(false)}>
+                Cancel
+              </Button>
+              <Button variant="primary" size="sm" type="submit" disabled={submitting}>
+                {submitting ? 'Saving...' : 'Save Resource'}
+              </Button>
+            </div>
+          </form>
+        </Modal>
+      )}
     </AppShell>
+  );
+}
+
+export default function ResourcesPage() {
+  return (
+    <Suspense
+      fallback={
+        <AppShell>
+          <div className="py-24 text-center text-xs text-[#787774] font-mono">
+            Loading resources...
+          </div>
+        </AppShell>
+      }
+    >
+      <ResourcesContent />
+    </Suspense>
   );
 }

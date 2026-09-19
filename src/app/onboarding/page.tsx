@@ -31,9 +31,9 @@ export default function OnboardingPage() {
   // Form State
   const [exams, setExams] = useState<any[]>([]);
   const [allSubjects, setAllSubjects] = useState<any[]>([]);
-  const [selectedExamId, setSelectedExamId] = useState('exam-ssc-cgl-2026');
+  const [selectedExamId, setSelectedExamId] = useState('exam-cat-2026');
   const [preparationStage, setPreparationStage] = useState<'beginner' | 'intermediate' | 'revision_mocks'>('intermediate');
-  const [targetTimeline, setTargetTimeline] = useState<'2026_tier1' | '3_months' | '6_months' | '12_months'>('2026_tier1');
+  const [targetTimeline, setTargetTimeline] = useState<'2026_cat' | '3_months' | '6_months' | '12_months'>('2026_cat');
   const [dailyHours, setDailyHours] = useState(4.0);
   const [strongSubjects, setStrongSubjects] = useState<string[]>([]);
   const [weakSubjects, setWeakSubjects] = useState<string[]>([]);

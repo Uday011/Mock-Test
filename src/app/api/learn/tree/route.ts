@@ -25,7 +25,7 @@ export async function GET(req: NextRequest) {
     }
 
     if (!examId) {
-      examId = 'exam-ssc-cgl-2026';
+      examId = 'exam-cat-2026';
     }
 
     // 1. Fetch Exam Details
@@ -138,6 +138,19 @@ export async function GET(req: NextRequest) {
           };
         });
 
+        let canonicalState: 'Not Started' | 'Learning' | 'Practicing' | 'Strong' | 'Needs Revision' = 'Not Started';
+        if (status === 'mastered' || mastery >= 80) {
+          canonicalState = 'Strong';
+        } else if (revisionStatus === 'due' || status === 'needs_revision') {
+          canonicalState = 'Needs Revision';
+        } else if (status === 'practicing' || (prog?.questions_practiced && prog.questions_practiced > 0)) {
+          canonicalState = 'Practicing';
+        } else if (status === 'studied' || status === 'learning' || prog?.notes_taken) {
+          canonicalState = 'Learning';
+        } else {
+          canonicalState = 'Not Started';
+        }
+
         return {
           id: topic.id,
           subject_id: topic.subject_id,
@@ -152,6 +165,7 @@ export async function GET(req: NextRequest) {
           description: topic.description,
           resources_count: resCountMap.get(topic.id) || 0,
           user_status: status,
+          canonical_state: canonicalState,
           user_mastery: mastery,
           revision_status: revisionStatus,
           next_revision_date: nextRev,

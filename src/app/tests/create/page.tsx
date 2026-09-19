@@ -114,9 +114,9 @@ export default function CreateTestPage() {
 
   // AI-Assisted Draft Modal state
   const [isAiModalOpen, setIsAiModalOpen] = useState(false);
-  const [aiExamId, setAiExamId] = useState('exam-ssc-cgl-2026');
+  const [aiExamId, setAiExamId] = useState('exam-cat-2026');
   const [aiSubject, setAiSubject] = useState('Quantitative Aptitude');
-  const [aiTopic, setAiTopic] = useState('Percentages, Profit & Loss');
+  const [aiTopic, setAiTopic] = useState('Arithmetic & Commercial Mathematics');
   const [aiCount, setAiCount] = useState(5);
   const [aiDifficulty, setAiDifficulty] = useState('medium');
   const [aiGenerating, setAiGenerating] = useState(false);
@@ -157,16 +157,16 @@ export default function CreateTestPage() {
   const [seriesList, setSeriesList] = useState<any[]>([]);
   const [copyrightConfirmed, setCopyrightConfirmed] = useState(true);
   const [resultAvailability, setResultAvailability] = useState('immediate');
-  const [tagsStr, setTagsStr] = useState('Mock Test, Practice, Tier-1');
+  const [tagsStr, setTagsStr] = useState('CAT 2026, Mock Test, Practice, IIM');
   const [saveToQuestionBank, setSaveToQuestionBank] = useState(true);
 
   // Duration
   const [timerMode, setTimerMode] = useState<'preset' | 'custom'>('preset');
-  const [presetDuration, setPresetDuration] = useState<number>(1800); // 30 mins
+  const [presetDuration, setPresetDuration] = useState<number>(2400); // 40 mins (CAT sectional standard)
 
-  // Marking Scheme
-  const [markingSchemeType, setMarkingSchemeType] = useState<'standard' | 'ssc' | 'custom'>('standard');
-  const [defaultCorrectMarks, setDefaultCorrectMarks] = useState<number>(4.0);
+  // Marking Scheme (CAT Standard: +3.0 Correct, -1.0 Negative, 0.0 Unanswered)
+  const [markingSchemeType, setMarkingSchemeType] = useState<'standard' | 'cat' | 'custom'>('standard');
+  const [defaultCorrectMarks, setDefaultCorrectMarks] = useState<number>(3.0);
   const [defaultNegativeMarks, setDefaultNegativeMarks] = useState<number>(1.0);
   const [defaultUnansweredMarks, setDefaultUnansweredMarks] = useState<number>(0.0);
 
@@ -177,6 +177,7 @@ export default function CreateTestPage() {
   const [showPalette, setShowPalette] = useState(true);
   const [allowReviewMarking, setAllowReviewMarking] = useState(true);
   const [showImmediateResults, setShowImmediateResults] = useState(true);
+  const [showMoreSettings, setShowMoreSettings] = useState(false);
 
   // Saving state
   const [savingAction, setSavingAction] = useState<'draft' | 'publish' | 'review' | 'attempt' | null>(null);
@@ -300,7 +301,7 @@ Explanation: Binary search halves the search space at every comparison, giving $
     const sampleKey = `1. B\n2. B\n3. B\n4. C`;
     setPaperText(samplePaper);
     setKeyText(sampleKey);
-    setTitle('SSC CGL Speed Drill - Tier 1 Sample');
+    setTitle('CAT 2026 Speed Drill - QA Sample');
     setSubject('Quantitative Aptitude');
   };
 
@@ -801,8 +802,8 @@ Explanation: Binary search halves the search space at every comparison, giving $
       ]}
     >
       <PageHeader
-        title="Create Test · PDF to Test"
-        description="Turn question papers, PDFs, and notes into interactive CBT mock exams, or author practice questions from scratch."
+        title="Create Test"
+        description="Create an exam test from a question paper PDF, your question bank, or by writing questions manually."
         actions={
           <div className="flex items-center gap-2.5">
             {questions.length > 0 && (
@@ -815,7 +816,7 @@ Explanation: Binary search halves the search space at every comparison, giving $
                 }}
                 icon={<Eye className="w-4 h-4 text-amber-700" />}
               >
-                Preview CBE Experience
+                Preview Test
               </Button>
             )}
             <Link href="/question-bank">
@@ -827,14 +828,35 @@ Explanation: Binary search halves the search space at every comparison, giving $
         }
       />
 
-      {/* Stepper Wizard Bar */}
-      <div className="bg-white border border-notion-border rounded-md p-1.5 mb-6 flex items-center justify-between overflow-x-auto gap-4">
+      {/* Mobile Stepper Bar (< sm) */}
+      <div className="sm:hidden bg-white border border-[#E6E6E3] rounded-xl p-3.5 mb-5 shadow-2xs">
+        <div className="flex items-center justify-between text-xs mb-2">
+          <div className="font-semibold text-[#202124] flex items-center gap-2">
+            <span className="w-5 h-5 rounded-full bg-[#4F46A5] text-white flex items-center justify-center text-[11px] font-bold">
+              {currentStep}
+            </span>
+            <span>
+              {currentStep === 1 ? 'Choose Source' : currentStep === 2 ? `Review Questions (${questions.length})` : 'Configure Test'}
+            </span>
+          </div>
+          <span className="text-[11px] font-mono text-[#787774]">Step {currentStep} of 3</span>
+        </div>
+        <div className="w-full bg-[#F1F1EF] h-1.5 rounded-full overflow-hidden">
+          <div
+            className="bg-[#4F46A5] h-full transition-all duration-300 rounded-full"
+            style={{ width: `${(currentStep / 3) * 100}%` }}
+          />
+        </div>
+      </div>
+
+      {/* Desktop Stepper Wizard Bar (>= sm) */}
+      <div className="hidden sm:flex bg-white border border-notion-border rounded-xl p-1.5 mb-6 items-center justify-between overflow-x-auto gap-4 shadow-2xs">
         <div className="flex items-center gap-1.5">
           <button
             onClick={() => setCurrentStep(1)}
-            className={`flex items-center gap-2 px-3 py-1.5 rounded text-xs font-medium transition-colors ${
+            className={`flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${
               currentStep === 1
-                ? 'bg-notion-text text-white'
+                ? 'bg-[#202124] text-white shadow-2xs'
                 : 'text-notion-muted hover:text-notion-text hover:bg-notion-sidebar'
             }`}
           >
@@ -845,7 +867,7 @@ Explanation: Binary search halves the search space at every comparison, giving $
             >
               1
             </span>
-            <span>Creation Pathway</span>
+            <span>Choose Source</span>
           </button>
 
           <ArrowRight className="w-3.5 h-3.5 text-notion-muted/40" />
@@ -853,9 +875,9 @@ Explanation: Binary search halves the search space at every comparison, giving $
           <button
             onClick={() => questions.length > 0 && setCurrentStep(2)}
             disabled={questions.length === 0}
-            className={`flex items-center gap-2 px-3 py-1.5 rounded text-xs font-medium transition-colors ${
+            className={`flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${
               currentStep === 2
-                ? 'bg-notion-text text-white'
+                ? 'bg-[#202124] text-white shadow-2xs'
                 : questions.length > 0
                 ? 'text-notion-muted hover:text-notion-text hover:bg-notion-sidebar'
                 : 'text-notion-muted/40 cursor-not-allowed'
@@ -868,7 +890,7 @@ Explanation: Binary search halves the search space at every comparison, giving $
             >
               2
             </span>
-            <span>Question Editor ({questions.length})</span>
+            <span>Review Questions ({questions.length})</span>
             {criticalIssuesCount > 0 && (
               <span className="w-1.5 h-1.5 rounded-full bg-rose-500 animate-pulse" />
             )}
@@ -879,9 +901,9 @@ Explanation: Binary search halves the search space at every comparison, giving $
           <button
             onClick={() => questions.length > 0 && setCurrentStep(3)}
             disabled={questions.length === 0}
-            className={`flex items-center gap-2 px-3 py-1.5 rounded text-xs font-medium transition-colors ${
+            className={`flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${
               currentStep === 3
-                ? 'bg-notion-text text-white'
+                ? 'bg-[#202124] text-white shadow-2xs'
                 : questions.length > 0
                 ? 'text-notion-muted hover:text-notion-text hover:bg-notion-sidebar'
                 : 'text-notion-muted/40 cursor-not-allowed'
@@ -894,7 +916,7 @@ Explanation: Binary search halves the search space at every comparison, giving $
             >
               3
             </span>
-            <span>Settings & Publish</span>
+            <span>Configure Test</span>
           </button>
         </div>
 
@@ -911,56 +933,47 @@ Explanation: Binary search halves the search space at every comparison, giving $
             ) : (
               <span className="flex items-center gap-1 text-emerald-700 font-medium bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200">
                 <CheckCircle2 className="w-3 h-3 text-emerald-600" />
-                Linter Passed
+                Valid
               </span>
             )}
           </div>
         )}
       </div>
 
-      {/* STEP 1: 5 CREATION PATHWAYS */}
+      {/* STEP 1: CHOOSE SOURCE */}
       {currentStep === 1 && (
         <div className="space-y-6">
-          <div className="grid grid-cols-1 md:grid-cols-5 gap-3">
-            {/* Pathway 1: PDF to Test */}
+          <div>
+            <h2 className="text-sm font-semibold text-notion-text">Step 1: Choose Source</h2>
+            <p className="text-xs text-notion-muted mt-0.5">Select how you want to build this test.</p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            {/* Pathway 1: Upload PDF */}
             <div
-              className={`p-4 rounded-md border cursor-pointer transition-all ${
+              className={`p-5 rounded-md border cursor-pointer transition-all ${
                 activePathway === 'upload'
                   ? 'border-notion-text bg-notion-sidebar ring-1 ring-notion-text/20'
                   : 'border-notion-border bg-white hover:border-notion-text/40 hover:bg-[#fcfbf9]'
               }`}
               onClick={() => setActivePathway('upload')}
             >
-              <div className="w-8 h-8 rounded bg-notion-sidebar border border-notion-border text-notion-text flex items-center justify-center mb-2.5">
+              <div className="w-9 h-9 rounded bg-notion-sidebar border border-notion-border text-notion-text flex items-center justify-center mb-3">
                 <UploadCloud className="w-4 h-4" />
               </div>
-              <h3 className="text-xs font-semibold text-notion-text">PDF to Test</h3>
-              <p className="text-[11px] text-notion-muted mt-1 leading-relaxed">
-                Import PDF or document question papers and extract questions.
+              <h3 className="text-sm font-semibold text-notion-text">Upload PDF</h3>
+              <p className="text-xs text-notion-muted mt-1 leading-relaxed">
+                Upload question paper PDFs or paste text. Questions and answer keys are automatically extracted.
               </p>
-            </div>
-
-            {/* Pathway 2: Create Test (Manual) */}
-            <div
-              className={`p-4 rounded-md border cursor-pointer transition-all ${
-                activePathway === 'manual'
-                  ? 'border-notion-text bg-notion-sidebar ring-1 ring-notion-text/20'
-                  : 'border-notion-border bg-white hover:border-notion-text/40 hover:bg-[#fcfbf9]'
-              }`}
-              onClick={handleStartManual}
-            >
-              <div className="w-8 h-8 rounded bg-notion-sidebar border border-notion-border text-notion-text flex items-center justify-center mb-2.5">
-                <Plus className="w-4 h-4" />
+              <div className="mt-3 flex items-center gap-1.5 text-xs text-indigo-700 font-medium">
+                <span>Select PDF option</span>
+                <ArrowRight className="w-3.5 h-3.5" />
               </div>
-              <h3 className="text-xs font-semibold text-notion-text">Create Test</h3>
-              <p className="text-[11px] text-notion-muted mt-1 leading-relaxed">
-                Draft practice questions from scratch in the split-screen editor.
-              </p>
             </div>
 
-            {/* Pathway 3: Question Bank Import */}
+            {/* Pathway 2: Use Question Bank */}
             <div
-              className={`p-4 rounded-md border cursor-pointer transition-all ${
+              className={`p-5 rounded-md border cursor-pointer transition-all ${
                 activePathway === 'qb'
                   ? 'border-notion-text bg-notion-sidebar ring-1 ring-notion-text/20'
                   : 'border-notion-border bg-white hover:border-notion-text/40 hover:bg-[#fcfbf9]'
@@ -970,55 +983,71 @@ Explanation: Binary search halves the search space at every comparison, giving $
                 handleOpenQbModal();
               }}
             >
-              <div className="w-8 h-8 rounded bg-notion-sidebar border border-notion-border text-notion-text flex items-center justify-center mb-2.5">
+              <div className="w-9 h-9 rounded bg-notion-sidebar border border-notion-border text-notion-text flex items-center justify-center mb-3">
                 <Database className="w-4 h-4" />
               </div>
-              <h3 className="text-xs font-semibold text-notion-text">Question Bank</h3>
-              <p className="text-[11px] text-notion-muted mt-1 leading-relaxed">
-                Pick from hundreds of peer-reviewed repository questions.
+              <h3 className="text-sm font-semibold text-notion-text">Use Question Bank</h3>
+              <p className="text-xs text-notion-muted mt-1 leading-relaxed">
+                Pick practice questions from your exam syllabus and topics into a custom test.
               </p>
+              <div className="mt-3 flex items-center gap-1.5 text-xs text-indigo-700 font-medium">
+                <span>Browse question bank</span>
+                <ArrowRight className="w-3.5 h-3.5" />
+              </div>
             </div>
 
-            {/* Pathway 4: Duplicate Test */}
+            {/* Pathway 3: Create Manually */}
             <div
-              className={`p-4 rounded-md border cursor-pointer transition-all ${
-                activePathway === 'duplicate'
+              className={`p-5 rounded-md border cursor-pointer transition-all ${
+                activePathway === 'manual'
                   ? 'border-notion-text bg-notion-sidebar ring-1 ring-notion-text/20'
                   : 'border-notion-border bg-white hover:border-notion-text/40 hover:bg-[#fcfbf9]'
               }`}
-              onClick={() => {
-                setActivePathway('duplicate');
-                handleOpenDuplicateModal();
-              }}
+              onClick={handleStartManual}
             >
-              <div className="w-8 h-8 rounded bg-notion-sidebar border border-notion-border text-notion-text flex items-center justify-center mb-2.5">
-                <Copy className="w-4 h-4" />
+              <div className="w-9 h-9 rounded bg-notion-sidebar border border-notion-border text-notion-text flex items-center justify-center mb-3">
+                <Plus className="w-4 h-4" />
               </div>
-              <h3 className="text-xs font-semibold text-notion-text">Duplicate Test</h3>
-              <p className="text-[11px] text-notion-muted mt-1 leading-relaxed">
-                Clone an existing test to customize questions or schemes.
+              <h3 className="text-sm font-semibold text-notion-text">Create Manually</h3>
+              <p className="text-xs text-notion-muted mt-1 leading-relaxed">
+                Write questions, options, and answer explanations from scratch using the editor.
               </p>
+              <div className="mt-3 flex items-center gap-1.5 text-xs text-indigo-700 font-medium">
+                <span>Start with blank question</span>
+                <ArrowRight className="w-3.5 h-3.5" />
+              </div>
             </div>
+          </div>
 
-            {/* Pathway 5: AI-Assisted Draft */}
-            <div
-              className={`p-4 rounded-md border cursor-pointer transition-all ${
-                activePathway === 'ai'
-                  ? 'border-notion-text bg-notion-sidebar ring-1 ring-notion-text/20'
-                  : 'border-notion-border bg-white hover:border-notion-text/40 hover:bg-[#fcfbf9]'
-              }`}
-              onClick={() => {
-                setActivePathway('ai');
-                setIsAiModalOpen(true);
-              }}
-            >
-              <div className="w-8 h-8 rounded bg-notion-sidebar border border-notion-border text-notion-text flex items-center justify-center mb-2.5">
-                <Sparkles className="w-4 h-4" />
-              </div>
-              <h3 className="text-xs font-semibold text-notion-text">AI-Assisted Draft</h3>
-              <p className="text-[11px] text-notion-muted mt-1 leading-relaxed">
-                Generate high-yield questions with proofs on any syllabus topic.
-              </p>
+          {/* Secondary shortcuts: Duplicate & AI */}
+          <div className="flex items-center justify-between p-3 rounded-md bg-notion-sidebar border border-notion-border text-xs">
+            <div className="flex items-center gap-2 text-notion-muted">
+              <span className="font-medium text-notion-text">Other options:</span>
+              <span>Need to clone an existing test or quickly draft sample questions?</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <button
+                type="button"
+                onClick={() => {
+                  setActivePathway('duplicate');
+                  handleOpenDuplicateModal();
+                }}
+                className="px-2.5 py-1 rounded bg-white border border-notion-border text-xs text-notion-text hover:bg-stone-50 transition-colors flex items-center gap-1.5"
+              >
+                <Copy className="w-3.5 h-3.5 text-notion-muted" />
+                <span>Duplicate Existing Test</span>
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  setActivePathway('ai');
+                  setIsAiModalOpen(true);
+                }}
+                className="px-2.5 py-1 rounded bg-white border border-notion-border text-xs text-notion-text hover:bg-stone-50 transition-colors flex items-center gap-1.5"
+              >
+                <Sparkles className="w-3.5 h-3.5 text-indigo-600" />
+                <span>Generate with AI</span>
+              </button>
             </div>
           </div>
 
@@ -1214,10 +1243,51 @@ Explanation: Binary search halves the search space at every comparison, giving $
             </div>
           </div>
 
+          {/* Mobile Swipeable Question Pill Strip (< lg:) */}
+          <div className="lg:hidden bg-white border border-[#E6E6E3] rounded-xl p-3 mb-4 shadow-2xs space-y-2">
+            <div className="flex items-center justify-between text-xs">
+              <span className="font-semibold text-[#202124]">
+                Question {activeQuestionIdx + 1} of {questions.length}
+              </span>
+              <button
+                type="button"
+                onClick={addNewQuestion}
+                className="text-xs text-[#4F46A5] font-semibold flex items-center gap-1 active:scale-95"
+              >
+                <Plus className="w-3.5 h-3.5" />
+                Add Question
+              </button>
+            </div>
+
+            <div className="flex items-center gap-1.5 overflow-x-auto pb-1 no-scrollbar select-none">
+              {questions.map((q, idx) => {
+                const isActive = idx === activeQuestionIdx;
+                const hasCrit = !q.correct_answer || !q.question_text || (q.options || []).length < 2;
+
+                return (
+                  <button
+                    key={idx}
+                    type="button"
+                    onClick={() => setActiveQuestionIdx(idx)}
+                    className={`min-w-[42px] h-10 rounded-xl font-mono text-xs font-semibold flex items-center justify-center transition-all shrink-0 active:scale-95 ${
+                      isActive
+                        ? 'bg-[#4F46A5] text-white shadow-xs'
+                        : hasCrit
+                        ? 'bg-rose-50 text-rose-700 border border-rose-200'
+                        : 'bg-white border border-[#E6E6E3] text-[#202124] hover:bg-[#F7F7F5]'
+                    }`}
+                  >
+                    {idx + 1}
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+
           {/* Split-Screen Main Layout */}
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 items-start">
-            {/* Left Column: Questions Navigator (4 Cols) */}
-            <div className="lg:col-span-4 space-y-2">
+            {/* Left Column: Questions Navigator (4 Cols - Desktop only) */}
+            <div className="hidden lg:block lg:col-span-4 space-y-2">
               <div className="flex items-center justify-between px-1 text-xs text-notion-muted font-medium">
                 <span>Questions ({questions.length})</span>
                 <span>Click to Select</span>
@@ -1558,17 +1628,27 @@ Explanation: Binary search halves the search space at every comparison, giving $
         </div>
       )}
 
-      {/* STEP 3: TEST CONFIGURATION & PUBLICATION */}
+      {/* STEP 3: CONFIGURE TEST */}
       {currentStep === 3 && (
         <div className="bg-white rounded-md border border-notion-border p-5 space-y-5">
-          <div className="pb-3 border-b border-notion-border">
-            <h3 className="text-sm font-semibold text-notion-text flex items-center gap-2">
-              <Settings className="w-4 h-4 text-notion-muted" />
-              Test Configuration & Delivery Settings
-            </h3>
-            <p className="text-xs text-notion-muted mt-0.5">
-              Configure exam type, duration, marking scheme, randomization rules, and release policy.
-            </p>
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between pb-3 border-b border-notion-border gap-2">
+            <div>
+              <h3 className="text-sm font-semibold text-notion-text flex items-center gap-2">
+                <Settings className="w-4 h-4 text-notion-muted" />
+                Step 3: Configure Test
+              </h3>
+              <p className="text-xs text-notion-muted mt-0.5">
+                Review timing, marking rules, and question randomization before starting.
+              </p>
+            </div>
+            <div className="flex items-center gap-2">
+              <span className="px-2 py-0.5 rounded bg-indigo-50 border border-indigo-200 text-indigo-700 text-xs font-semibold">
+                {questions.length} Questions
+              </span>
+              <span className="px-2 py-0.5 rounded bg-stone-100 border border-notion-border text-notion-text text-xs font-medium">
+                {(questions.length * defaultCorrectMarks).toFixed(0)} Max Marks
+              </span>
+            </div>
           </div>
 
           {saveError && (
@@ -1578,308 +1658,262 @@ Explanation: Binary search halves the search space at every comparison, giving $
             </div>
           )}
 
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
-            {/* Left: General Info & Type */}
-            <div className="space-y-3">
-              <div>
-                <label className="block text-xs font-medium text-notion-text mb-1">Test Title</label>
-                <input
-                  type="text"
-                  value={title}
-                  onChange={(e) => setTitle(e.target.value)}
-                  placeholder="e.g. SSC CGL 2026 Tier-I Full Mock Examination 01"
-                  className="w-full px-2.5 py-1.5 rounded-md bg-white border border-notion-border text-xs text-notion-text focus:border-notion-text focus:outline-none"
-                />
-              </div>
-
-              <div>
-                <label className="block text-xs font-medium text-notion-text mb-1">Description</label>
-                <textarea
-                  rows={2}
-                  value={description}
-                  onChange={(e) => setDescription(e.target.value)}
-                  placeholder="Overview of syllabus covered, target candidates, or difficulty notes..."
-                  className="w-full px-2.5 py-1.5 rounded-md bg-white border border-notion-border text-xs text-notion-text focus:border-notion-text focus:outline-none"
-                />
-              </div>
-
-              <div>
-                <label className="block text-xs font-medium text-notion-text mb-1">
-                  Candidate Exam Instructions
-                </label>
-                <textarea
-                  rows={3}
-                  value={instructions}
-                  onChange={(e) => setInstructions(e.target.value)}
-                  placeholder="Standard test conduct guidelines displayed before candidate starts..."
-                  className="w-full px-2.5 py-1.5 rounded-md bg-white border border-notion-border text-xs text-notion-text focus:border-notion-text focus:outline-none font-mono text-[11px]"
-                />
-              </div>
-
-              <div className="grid grid-cols-2 gap-3">
-                <div>
-                  <label className="block text-xs font-medium text-notion-text mb-1">Test Type</label>
-                  <select
-                    value={testType}
-                    onChange={(e) => setTestType(e.target.value)}
-                    className="w-full px-2 py-1.5 rounded-md bg-white border border-notion-border text-xs text-notion-text focus:border-notion-text focus:outline-none"
-                  >
-                    <option value="topic_test">Topic Test</option>
-                    <option value="subtopic_test">Subtopic Test</option>
-                    <option value="chapter_test">Chapter Test</option>
-                    <option value="sectional_test">Sectional Test</option>
-                    <option value="subject_test">Subject Test</option>
-                    <option value="full_mock">Full-Length Mock</option>
-                    <option value="pyq">Previous-Year Paper</option>
-                    <option value="revision_test">Mixed Revision Test</option>
-                    <option value="custom_practice">Custom Test</option>
-                    <option value="community_test">Community Test</option>
-                    <option value="educator_test">Educator Test</option>
-                    <option value="test_series">Test Series</option>
-                  </select>
-                </div>
-
-                <div>
-                  <label className="block text-xs font-medium text-notion-text mb-1">Subject</label>
-                  <select
-                    value={subject}
-                    onChange={(e) => setSubject(e.target.value)}
-                    className="w-full px-2 py-1.5 rounded-md bg-white border border-notion-border text-xs text-notion-text focus:border-notion-text focus:outline-none"
-                  >
-                    <option value="Quantitative Aptitude">Quantitative Aptitude</option>
-                    <option value="General Intelligence & Reasoning">General Intelligence & Reasoning</option>
-                    <option value="English Comprehension">English Comprehension</option>
-                    <option value="General Awareness">General Awareness</option>
-                    <option value="Science & General">Science & General</option>
-                  </select>
-                </div>
-              </div>
+          {/* Core Configuration Fields */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label className="block text-xs font-medium text-notion-text mb-1">Test Title</label>
+              <input
+                type="text"
+                value={title}
+                onChange={(e) => setTitle(e.target.value)}
+                placeholder="e.g. CAT 2026 Quantitative Aptitude Mock Test"
+                className="w-full px-2.5 py-2 rounded-md bg-white border border-notion-border text-xs text-notion-text focus:border-notion-text focus:outline-none"
+              />
             </div>
 
-            {/* Right: Duration, Marking & Delivery */}
-            <div className="space-y-3">
-              <div className="grid grid-cols-2 gap-3">
-                <div>
-                  <label className="block text-xs font-medium text-notion-text mb-1">Duration Preset</label>
-                  <select
-                    value={presetDuration}
-                    onChange={(e) => {
-                      setTimerMode('preset');
-                      setPresetDuration(Number(e.target.value));
-                    }}
-                    className="w-full px-2 py-1.5 rounded-md bg-white border border-notion-border text-xs text-notion-text focus:border-notion-text focus:outline-none"
-                  >
-                    <option value={900}>15 Minutes (Speed Drill)</option>
-                    <option value={1800}>30 Minutes (Sectional)</option>
-                    <option value={3600}>60 Minutes (Tier-I 100Q)</option>
-                    <option value={7200}>120 Minutes (2 Hours)</option>
-                    <option value={10800}>180 Minutes (Full Length)</option>
-                  </select>
+            <div>
+              <label className="block text-xs font-medium text-notion-text mb-1">Subject</label>
+              <select
+                value={subject}
+                onChange={(e) => setSubject(e.target.value)}
+                className="w-full px-2.5 py-2 rounded-md bg-white border border-notion-border text-xs text-notion-text focus:border-notion-text focus:outline-none"
+              >
+                <option value="Quantitative Aptitude">Quantitative Aptitude</option>
+                <option value="General Intelligence & Reasoning">General Intelligence & Reasoning</option>
+                <option value="English Comprehension">English Comprehension</option>
+                <option value="General Awareness">General Awareness</option>
+                <option value="Science & General">Science & General</option>
+              </select>
+            </div>
+          </div>
+
+          {/* Test Rules: Duration, Marks, Negative Marking */}
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 p-4 rounded-md bg-notion-sidebar border border-notion-border">
+            <div>
+              <label className="block text-xs font-medium text-notion-text mb-1">Duration</label>
+              <select
+                value={presetDuration}
+                onChange={(e) => {
+                  setTimerMode('preset');
+                  setPresetDuration(Number(e.target.value));
+                }}
+                className="w-full px-2 py-1.5 rounded-md bg-white border border-notion-border text-xs text-notion-text focus:border-notion-text focus:outline-none"
+              >
+                <option value={900}>15 Minutes (Speed Drill)</option>
+                <option value={1800}>30 Minutes (Practice Set)</option>
+                <option value={3600}>60 Minutes (Standard Exam)</option>
+                <option value={7200}>120 Minutes (Full Length)</option>
+              </select>
+            </div>
+
+            <div>
+              <label className="block text-xs font-medium text-notion-text mb-1">Marks per Question (+)</label>
+              <input
+                type="number"
+                step="0.5"
+                value={defaultCorrectMarks}
+                onChange={(e) => setDefaultCorrectMarks(Number(e.target.value))}
+                className="w-full px-2 py-1.5 rounded-md bg-white border border-notion-border text-xs text-notion-text focus:border-notion-text focus:outline-none"
+              />
+            </div>
+
+            <div>
+              <label className="block text-xs font-medium text-notion-text mb-1">Negative Marking (-)</label>
+              <input
+                type="number"
+                step="0.25"
+                value={defaultNegativeMarks}
+                onChange={(e) => setDefaultNegativeMarks(Number(e.target.value))}
+                className="w-full px-2 py-1.5 rounded-md bg-white border border-notion-border text-xs text-notion-text focus:border-notion-text focus:outline-none"
+              />
+            </div>
+          </div>
+
+          {/* Randomization Toggles */}
+          <div className="space-y-2 text-xs">
+            <label className="flex items-center gap-2 cursor-pointer text-notion-text">
+              <input
+                type="checkbox"
+                checked={shuffleQuestions}
+                onChange={(e) => setShuffleQuestions(e.target.checked)}
+                className="rounded border-notion-border text-notion-text focus:ring-0"
+              />
+              <span className="font-medium">Randomize Questions</span>
+              <span className="text-notion-muted text-[11px]">— Shuffles question order every attempt</span>
+            </label>
+
+            <label className="flex items-center gap-2 cursor-pointer text-notion-text">
+              <input
+                type="checkbox"
+                checked={shuffleOptions}
+                onChange={(e) => setShuffleOptions(e.target.checked)}
+                className="rounded border-notion-border text-notion-text focus:ring-0"
+              />
+              <span>Randomize option order (A, B, C, D)</span>
+            </label>
+          </div>
+
+          {/* More Settings Toggle */}
+          <div className="pt-2">
+            <button
+              type="button"
+              onClick={() => setShowMoreSettings(!showMoreSettings)}
+              className="flex items-center gap-1.5 text-xs font-medium text-notion-muted hover:text-notion-text py-1 transition-colors"
+            >
+              {showMoreSettings ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
+              <span>{showMoreSettings ? 'Hide Advanced Settings' : 'More Settings (Instructions, Series, Visibility)'}</span>
+            </button>
+
+            {showMoreSettings && (
+              <div className="mt-3 p-4 rounded-md border border-notion-border bg-[#FAFAFA] space-y-4 text-xs">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block font-medium text-notion-text mb-1">Test Description</label>
+                    <textarea
+                      rows={2}
+                      value={description}
+                      onChange={(e) => setDescription(e.target.value)}
+                      placeholder="Overview of syllabus or difficulty notes..."
+                      className="w-full px-2 py-1.5 rounded-md bg-white border border-notion-border text-xs text-notion-text focus:border-notion-text focus:outline-none"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block font-medium text-notion-text mb-1">Test Instructions</label>
+                    <textarea
+                      rows={2}
+                      value={instructions}
+                      onChange={(e) => setInstructions(e.target.value)}
+                      placeholder="Candidate instructions..."
+                      className="w-full px-2 py-1.5 rounded-md bg-white border border-notion-border text-xs text-notion-text focus:border-notion-text focus:outline-none font-mono text-[11px]"
+                    />
+                  </div>
                 </div>
 
-                <div>
-                  <label className="block text-xs font-medium text-notion-text mb-1">Marking Scheme</label>
-                  <select
-                    value={markingSchemeType}
-                    onChange={(e) => {
-                      const scheme = e.target.value as any;
-                      setMarkingSchemeType(scheme);
-                      if (scheme === 'ssc') {
-                        setDefaultCorrectMarks(2.0);
-                        setDefaultNegativeMarks(0.5);
-                      } else if (scheme === 'standard') {
-                        setDefaultCorrectMarks(4.0);
-                        setDefaultNegativeMarks(1.0);
-                      }
-                    }}
-                    className="w-full px-2 py-1.5 rounded-md bg-white border border-notion-border text-xs text-notion-text focus:border-notion-text focus:outline-none"
-                  >
-                    <option value="standard">Standard (+4.0 / -1.0)</option>
-                    <option value="ssc">SSC CGL (+2.0 / -0.5)</option>
-                    <option value="custom">Custom (Question-level)</option>
-                  </select>
-                </div>
-              </div>
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                  <div>
+                    <label className="block font-medium text-notion-text mb-1">Test Type</label>
+                    <select
+                      value={testType}
+                      onChange={(e) => setTestType(e.target.value)}
+                      className="w-full px-2 py-1.5 rounded-md bg-white border border-notion-border text-xs text-notion-text focus:border-notion-text focus:outline-none"
+                    >
+                      <option value="topic_test">Topic Test</option>
+                      <option value="sectional_test">Sectional Test</option>
+                      <option value="full_mock">Full-Length Mock</option>
+                      <option value="pyq">Previous-Year Paper</option>
+                      <option value="custom_practice">Custom Practice</option>
+                    </select>
+                  </div>
 
-              <div className="grid grid-cols-3 gap-2">
-                <div>
-                  <label className="block text-[11px] font-medium text-notion-muted mb-1">Correct Marks</label>
-                  <input
-                    type="number"
-                    step="0.5"
-                    value={defaultCorrectMarks}
-                    onChange={(e) => setDefaultCorrectMarks(Number(e.target.value))}
-                    className="w-full px-2 py-1.5 rounded-md bg-white border border-notion-border text-xs text-notion-text focus:border-notion-text focus:outline-none"
-                  />
-                </div>
-                <div>
-                  <label className="block text-[11px] font-medium text-notion-muted mb-1">Negative Penalty</label>
-                  <input
-                    type="number"
-                    step="0.25"
-                    value={defaultNegativeMarks}
-                    onChange={(e) => setDefaultNegativeMarks(Number(e.target.value))}
-                    className="w-full px-2 py-1.5 rounded-md bg-white border border-notion-border text-xs text-notion-text focus:border-notion-text focus:outline-none"
-                  />
-                </div>
-                <div>
-                  <label className="block text-[11px] font-medium text-notion-muted mb-1">Result Release</label>
-                  <select
-                    value={resultAvailability}
-                    onChange={(e) => setResultAvailability(e.target.value)}
-                    className="w-full px-2 py-1.5 rounded-md bg-white border border-notion-border text-xs text-notion-text focus:border-notion-text focus:outline-none"
-                  >
-                    <option value="immediate">Immediate</option>
-                    <option value="after_window">After Window</option>
-                    <option value="manual">Manual Release</option>
-                  </select>
-                </div>
-              </div>
+                  <div>
+                    <label className="block font-medium text-notion-text mb-1">Visibility</label>
+                    <select
+                      value={visibility}
+                      onChange={(e) => setVisibility(e.target.value)}
+                      className="w-full px-2 py-1.5 rounded-md bg-white border border-notion-border text-xs text-notion-text focus:border-notion-text focus:outline-none"
+                    >
+                      <option value="public">Public (In Test Library)</option>
+                      <option value="private">Private (Only Me)</option>
+                      <option value="unlisted">Unlisted (Share Link)</option>
+                    </select>
+                  </div>
 
-              {/* Delivery Security Toggles */}
-              <div className="p-3 bg-notion-sidebar rounded-md border border-notion-border space-y-2 text-xs">
-                <label className="flex items-center gap-2 cursor-pointer font-normal text-notion-text">
-                  <input
-                    type="checkbox"
-                    checked={shuffleQuestions}
-                    onChange={(e) => setShuffleQuestions(e.target.checked)}
-                    className="rounded border-notion-border text-notion-text focus:ring-0"
-                  />
-                  <span>Shuffle questions for candidates</span>
-                </label>
+                  <div>
+                    <label className="block font-medium text-notion-text mb-1">Result Release</label>
+                    <select
+                      value={resultAvailability}
+                      onChange={(e) => setResultAvailability(e.target.value)}
+                      className="w-full px-2 py-1.5 rounded-md bg-white border border-notion-border text-xs text-notion-text focus:border-notion-text focus:outline-none"
+                    >
+                      <option value="immediate">Immediate Scorecard</option>
+                      <option value="manual">Manual</option>
+                    </select>
+                  </div>
+                </div>
 
-                <label className="flex items-center gap-2 cursor-pointer font-normal text-notion-text">
-                  <input
-                    type="checkbox"
-                    checked={shuffleOptions}
-                    onChange={(e) => setShuffleOptions(e.target.checked)}
-                    className="rounded border-notion-border text-notion-text focus:ring-0"
-                  />
-                  <span>Shuffle option orders per question</span>
-                </label>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <div>
+                    <label className="block font-medium text-notion-text mb-1">Test Series (Optional)</label>
+                    <select
+                      value={selectedSeriesId}
+                      onChange={(e) => setSelectedSeriesId(e.target.value)}
+                      className="w-full px-2 py-1.5 rounded-md bg-white border border-notion-border text-xs text-notion-text focus:border-notion-text focus:outline-none"
+                    >
+                      <option value="">Standalone Test (No series)</option>
+                      {seriesList.map((s: any) => (
+                        <option key={s.id} value={s.id}>
+                          {s.title}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
 
-                <label className="flex items-center gap-2 cursor-pointer font-medium text-notion-text">
+                  <div>
+                    <label className="block font-medium text-notion-text mb-1">Tags</label>
+                    <input
+                      type="text"
+                      value={tagsStr}
+                      onChange={(e) => setTagsStr(e.target.value)}
+                      placeholder="e.g. Tier-1, Speed Drill"
+                      className="w-full px-2 py-1.5 rounded-md bg-white border border-notion-border text-xs text-notion-text focus:border-notion-text focus:outline-none"
+                    />
+                  </div>
+                </div>
+
+                <label className="flex items-center gap-2 cursor-pointer pt-1">
                   <input
                     type="checkbox"
                     checked={saveToQuestionBank}
                     onChange={(e) => setSaveToQuestionBank(e.target.checked)}
                     className="rounded border-notion-border text-notion-text focus:ring-0"
                   />
-                  <span>Save all questions to Nalanda Question Bank</span>
+                  <span>Save new questions to my Question Bank for future practice sets</span>
                 </label>
               </div>
-
-              {/* Visibility & Pricing Controls */}
-              <div className="grid grid-cols-2 gap-3 pt-1">
-                <div>
-                  <label className="block text-xs font-medium text-notion-text mb-1">Catalog Visibility</label>
-                  <select
-                    value={visibility}
-                    onChange={(e) => setVisibility(e.target.value)}
-                    className="w-full px-2 py-1.5 rounded-md bg-white border border-notion-border text-xs text-notion-text focus:border-notion-text focus:outline-none"
-                  >
-                    <option value="public">Public (Listed in Library)</option>
-                    <option value="unlisted">Unlisted (Direct Link)</option>
-                    <option value="shared">Shared (Enrolled Institute Only)</option>
-                    <option value="private">Private (Author Only)</option>
-                  </select>
-                </div>
-
-                <div>
-                  <label className="block text-xs font-medium text-notion-text mb-1">Access Model</label>
-                  <div className="w-full px-2.5 py-1.5 rounded-md bg-[#F1F1EF] border border-notion-border text-xs text-notion-text font-medium flex items-center gap-1.5">
-                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-600" />
-                    <span>Free Practice Assessment</span>
-                  </div>
-                </div>
-              </div>
-
-              {/* Test Series Assignment */}
-              <div>
-                <label className="block text-xs font-medium text-notion-text mb-1">Attach to Test Series</label>
-                <select
-                  value={selectedSeriesId}
-                  onChange={(e) => setSelectedSeriesId(e.target.value)}
-                  className="w-full px-2 py-1.5 rounded-md bg-white border border-notion-border text-xs text-notion-text focus:border-notion-text focus:outline-none"
-                >
-                  <option value="">Standalone Test (Not in a Series)</option>
-                  {seriesList.map((s: any) => (
-                    <option key={s.id} value={s.id}>
-                      {s.title} ({s.is_paid ? `Paid ₹${s.price_inr}` : 'Free'})
-                    </option>
-                  ))}
-                </select>
-              </div>
-
-              <div>
-                <label className="block text-xs font-medium text-notion-text mb-1">Tags (comma separated)</label>
-                <input
-                  type="text"
-                  value={tagsStr}
-                  onChange={(e) => setTagsStr(e.target.value)}
-                  placeholder="e.g. Tier-1, TCS Pattern, 2026"
-                  className="w-full px-2.5 py-1.5 rounded-md bg-white border border-notion-border text-xs text-notion-text focus:border-notion-text focus:outline-none"
-                />
-              </div>
-
-              {/* Copyright & Originality Declaration */}
-              <div className="p-3 bg-notion-sidebar rounded-md border border-notion-border">
-                <label className="flex items-start gap-2 cursor-pointer text-xs text-notion-text">
-                  <input
-                    type="checkbox"
-                    checked={copyrightConfirmed}
-                    onChange={(e) => setCopyrightConfirmed(e.target.checked)}
-                    className="mt-0.5 rounded border-notion-border text-notion-text focus:ring-0"
-                  />
-                  <span>
-                    I confirm that this assessment conforms to Nalanda academic guidelines, contains verified answer keys, and respects intellectual property rights.
-                  </span>
-                </label>
-              </div>
-            </div>
+            )}
           </div>
 
-          {/* Action Buttons */}
+          {/* Action Buttons with Primary Start Test */}
           <div className="pt-4 border-t border-notion-border flex flex-col sm:flex-row items-center justify-between gap-3">
-            <Button variant="secondary" onClick={() => setCurrentStep(2)} icon={<ArrowLeft className="w-4 h-4" />}>
-              Back to Editor
+            <Button
+              variant="secondary"
+              onClick={() => setCurrentStep(2)}
+              icon={<ArrowLeft className="w-4 h-4" />}
+              className="w-full sm:w-auto min-h-[42px] justify-center"
+            >
+              Back to Review Questions
             </Button>
 
-            <div className="flex items-center gap-2 w-full sm:w-auto justify-end flex-wrap">
+            <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2.5 w-full sm:w-auto justify-end">
               <Button
                 variant="secondary"
                 onClick={() => handleSaveTest('draft')}
                 disabled={savingAction !== null}
                 icon={<Save className="w-4 h-4" />}
+                className="w-full sm:w-auto min-h-[42px] justify-center"
               >
                 {savingAction === 'draft' ? 'Saving...' : 'Save Draft'}
               </Button>
 
               <Button
                 variant="secondary"
-                onClick={() => handleSaveTest('review')}
+                onClick={() => handleSaveTest('publish')}
                 disabled={savingAction !== null}
-                icon={<ShieldCheck className="w-4 h-4 text-notion-muted" />}
+                icon={<CheckCircle2 className="w-4 h-4" />}
+                className="w-full sm:w-auto min-h-[42px] justify-center"
               >
-                {savingAction === 'review' ? 'Submitting...' : 'Submit for Review'}
+                {savingAction === 'publish' ? 'Saving...' : 'Save Test'}
               </Button>
 
               <Button
                 variant="primary"
-                onClick={() => handleSaveTest('publish')}
-                disabled={savingAction !== null}
-                icon={<CheckCircle2 className="w-4 h-4" />}
-              >
-                {savingAction === 'publish' ? 'Publishing...' : 'Publish Test'}
-              </Button>
-
-              <Button
-                variant="saffron"
                 onClick={() => handleSaveTest('attempt')}
                 disabled={savingAction !== null}
                 icon={<Play className="w-4 h-4 fill-current" />}
+                className="w-full sm:w-auto min-h-[44px] justify-center font-semibold"
               >
-                {savingAction === 'attempt' ? 'Launching...' : 'Publish & Attempt'}
+                {savingAction === 'attempt' ? 'Launching Test...' : 'Start Test Now'}
               </Button>
             </div>
           </div>
@@ -1923,9 +1957,10 @@ Explanation: Binary search halves the search space at every comparison, giving $
               onChange={(e) => setAiExamId(e.target.value)}
               className="w-full px-2.5 py-1.5 rounded-md bg-white border border-notion-border text-xs text-notion-text focus:border-notion-text focus:outline-none"
             >
-              <option value="exam-ssc-cgl-2026">SSC CGL 2026 (Combined Graduate Level)</option>
-              <option value="exam-neet-ug-2026">NEET UG 2026 (Medical Entrance)</option>
-              <option value="exam-upsc-cse-2026">UPSC CSE Prelims 2026</option>
+              <option value="exam-cat-2026">CAT 2026 (Common Admission Test - IIMs)</option>
+              <option value="exam-xat-2026">XAT 2026 (Xavier Aptitude Test)</option>
+              <option value="exam-nmat-2026">NMAT 2026 by GMAC</option>
+              <option value="exam-snap-2026">SNAP 2026 (Symbiosis National Aptitude Test)</option>
             </select>
           </div>
 
@@ -1937,10 +1972,9 @@ Explanation: Binary search halves the search space at every comparison, giving $
                 onChange={(e) => setAiSubject(e.target.value)}
                 className="w-full px-2.5 py-1.5 rounded-md bg-white border border-notion-border text-xs text-notion-text focus:border-notion-text focus:outline-none"
               >
-                <option value="Quantitative Aptitude">Quantitative Aptitude</option>
-                <option value="General Intelligence & Reasoning">Reasoning</option>
-                <option value="English Comprehension">English Comprehension</option>
-                <option value="General Awareness">General Awareness</option>
+                <option value="Quantitative Aptitude">Quantitative Aptitude (QA)</option>
+                <option value="Data Interpretation & Logical Reasoning">Data Interpretation & Logical Reasoning (DILR)</option>
+                <option value="Verbal Ability & Reading Comprehension">Verbal Ability & Reading Comprehension (VARC)</option>
               </select>
             </div>
 

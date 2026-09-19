@@ -11,216 +11,45 @@ export function seedLearningSystem(db: DatabaseSync, student: any, instituteAdmi
       ) VALUES (?, ?, ?, 'subtopic', ?, ?, ?, ?, ?, '[]', ?, ?, ?)
     `);
 
-    // Subtopics for Percentages (topic-cgl-percentages)
-    insertSubtopic.run(
-      'subtopic-cgl-perc-1',
-      'subj-cgl-quant',
-      'topic-cgl-percentages',
-      'Reciprocal Fractions & Multiplication Factors',
-      'MATH-102.1',
-      1,
-      3.0,
-      2.5,
-      'Direct fraction-to-percentage mental conversions (1/1 to 1/20) and multiplier representations.',
-      'easy',
-      now
-    );
-    insertSubtopic.run(
-      'subtopic-cgl-perc-2',
-      'subj-cgl-quant',
-      'topic-cgl-percentages',
-      'Successive Percentage Shifts & Compound Pricing',
-      'MATH-102.2',
-      2,
-      4.0,
-      3.0,
-      'Two-stage and three-stage successive net change formula, area change on geometry, and salary increments.',
-      'medium',
-      now
-    );
-    insertSubtopic.run(
-      'subtopic-cgl-perc-3',
-      'subj-cgl-quant',
-      'topic-cgl-percentages',
-      'Marked Price, Discount & The Golden Ratio (MP/CP)',
-      'MATH-102.3',
-      3,
-      5.0,
-      3.5,
-      'Master formula MP/CP = (100 + P%)/(100 - D%) and multi-tiered discount schemes (Buy X Get Y Free).',
-      'hard',
-      now
-    );
-    insertSubtopic.run(
-      'subtopic-cgl-perc-4',
-      'subj-cgl-quant',
-      'topic-cgl-percentages',
-      'Dishonest Merchants & Faulty Weighing Scales',
-      'MATH-102.4',
-      4,
-      4.0,
-      2.5,
-      'Effective profit percentage under false gram weights, false meter rods, and cost price markups.',
-      'hard',
-      now
-    );
+    // --- CAT 2026 SUBTOPICS ---
+    // CAT QA Subtopics
+    insertSubtopic.run('subtopic-cat-arith-1', 'subj-cat-qa', 'topic-cat-arithmetic', 'Reciprocal Fractions & Multiplication Factors', 'MATH-201.1', 1, 3.0, 3.0, 'Direct fraction-to-percentage mental conversions (1/1 to 1/20) and rapid multiplier representations.', 'easy', now);
+    insertSubtopic.run('subtopic-cat-arith-2', 'subj-cat-qa', 'topic-cat-arithmetic', 'Successive Percentage Shifts & Compound Pricing', 'MATH-201.2', 2, 4.0, 3.5, 'Two-stage and three-stage net compounding, successive discounts, and depreciation.', 'medium', now);
+    insertSubtopic.run('subtopic-cat-arith-3', 'subj-cat-qa', 'topic-cat-arithmetic', 'Cost-Marked Price Multipliers & Profit Margins', 'MATH-201.3', 3, 5.0, 4.0, 'MP/CP ratio techniques, false balance manipulations, and tiered discounting schemes.', 'hard', now);
+    insertSubtopic.run('subtopic-cat-arith-4', 'subj-cat-qa', 'topic-cat-arithmetic', 'Alligation Cross-Methods & Repeated Replacements', 'MATH-201.4', 4, 4.5, 3.5, 'Mixture balances, weighted averages, and replacement volume ratio decay formulas.', 'hard', now);
 
-    // Subtopics for Number Systems (topic-cgl-number-systems)
-    insertSubtopic.run(
-      'subtopic-cgl-num-1',
-      'subj-cgl-quant',
-      'topic-cgl-number-systems',
-      'Composite Divisibility Rules (72, 88, 99)',
-      'MATH-101.1',
-      1,
-      3.5,
-      2.0,
-      'Testing coprime factors (8 and 9, 8 and 11, 9 and 11) for 8-digit and 10-digit number puzzles.',
-      'easy',
-      now
-    );
-    insertSubtopic.run(
-      'subtopic-cgl-num-2',
-      'subj-cgl-quant',
-      'topic-cgl-number-systems',
-      'Power Cyclicity, Unit Digits & Trailing Zeros',
-      'MATH-101.2',
-      2,
-      3.5,
-      2.0,
-      'Cycle of 4 for powers (2, 3, 7, 8), cycle of 2 for (4, 9), and Legendre formula for number of trailing zeros.',
-      'medium',
-      now
-    );
-    insertSubtopic.run(
-      'subtopic-cgl-num-3',
-      'subj-cgl-quant',
-      'topic-cgl-number-systems',
-      'Euler Totient, Fermat & Binomial Remainders',
-      'MATH-101.3',
-      3,
-      5.0,
-      2.0,
-      'Solving complex remainder questions using Wilson theorem, Fermat little theorem, and negative remainders.',
-      'hard',
-      now
-    );
+    insertSubtopic.run('subtopic-cat-alg-1', 'subj-cat-qa', 'topic-cat-algebra', 'Quadratic Roots, Symmetric Functions & Signs', 'MATH-202.1', 1, 4.0, 3.5, 'Sum and product of roots, nature of discriminant, and sign of quadratic expressions.', 'medium', now);
+    insertSubtopic.run('subtopic-cat-alg-2', 'subj-cat-qa', 'topic-cat-algebra', 'Maxima-Minima of Polynomials & Functions', 'MATH-202.2', 2, 5.0, 4.0, 'Vertex coordinate optimization, AM-GM inequality bounds, and domain constraints.', 'hard', now);
+    insertSubtopic.run('subtopic-cat-alg-3', 'subj-cat-qa', 'topic-cat-algebra', 'Logarithmic Base-Change & Inequalities', 'MATH-202.3', 3, 4.0, 3.0, 'Logarithm rules, base conversion, characteristic/mantissa, and logarithmic inequality ranges.', 'hard', now);
 
-    // Subtopics for Geometry (topic-cgl-geometry)
-    insertSubtopic.run(
-      'subtopic-cgl-geom-1',
-      'subj-cgl-quant',
-      'topic-cgl-geometry',
-      'Internal & External Intersecting Chords',
-      'MATH-105.1',
-      1,
-      6.0,
-      3.5,
-      'AP × PB = CP × PD for internal and external chord intersections, and common chord length theorems.',
-      'medium',
-      now
-    );
-    insertSubtopic.run(
-      'subtopic-cgl-geom-2',
-      'subj-cgl-quant',
-      'topic-cgl-geometry',
-      'Tangent-Secant Theorem & Power of Point',
-      'MATH-105.2',
-      2,
-      6.0,
-      3.5,
-      'PT² = PA × PB, direct common tangents (DCT) and transverse common tangents (TCT) distance formulas.',
-      'hard',
-      now
-    );
-    insertSubtopic.run(
-      'subtopic-cgl-geom-3',
-      'subj-cgl-quant',
-      'topic-cgl-geometry',
-      'Cyclic Quadrilaterals & Ptolemy Theorem',
-      'MATH-105.3',
-      3,
-      6.0,
-      3.0,
-      'Opposite angles supplementary, exterior angle equal to interior opposite, and AC × BD = AB × CD + BC × AD.',
-      'hard',
-      now
-    );
+    // CAT DILR Subtopics
+    insertSubtopic.run('subtopic-cat-arr-1', 'subj-cat-dilr', 'topic-cat-arrangements', 'Circular & Linear Complex Seating', 'DILR-101.1', 1, 5.0, 4.0, 'Facing inwards/outwards, alternate direction shifts, and conditional seating constraints.', 'medium', now);
+    insertSubtopic.run('subtopic-cat-arr-2', 'subj-cat-dilr', 'topic-cat-arrangements', 'Multi-Attribute Matrix Matching Grids', 'DILR-101.2', 2, 6.0, 4.5, 'Cross-tabulation elimination, deduction trees, and contradiction elimination.', 'hard', now);
+    insertSubtopic.run('subtopic-cat-ch-1', 'subj-cat-dilr', 'topic-cat-charts', 'Missing Value Tables & Numerical Consistency', 'DILR-102.1', 1, 5.0, 4.0, 'Reconstructing incomplete tables using row/column arithmetic and balance equations.', 'hard', now);
+    insertSubtopic.run('subtopic-cat-gm-1', 'subj-cat-dilr', 'topic-cat-games', 'Round-Robin Tournaments & Knockout Brackets', 'DILR-103.1', 1, 5.0, 4.0, 'Goal difference matrices, minimum points needed for advancement, and upset seeding paths.', 'hard', now);
 
-    // Subtopics for Error Spotting (topic-cgl-grammar-errors)
-    insertSubtopic.run(
-      'subtopic-cgl-eng-1',
-      'subj-cgl-english',
-      'topic-cgl-grammar-errors',
-      'Subject-Verb Concord & Proximity Principles',
-      'ENG-101.1',
-      1,
-      5.0,
-      3.0,
-      'Rules for collective nouns, expressions of quantity, accompanied by, together with, as well as.',
-      'medium',
-      now
-    );
-    insertSubtopic.run(
-      'subtopic-cgl-eng-2',
-      'subj-cgl-english',
-      'topic-cgl-grammar-errors',
-      'Correlative Conjunctions & Parallelism',
-      'ENG-101.2',
-      2,
-      5.0,
-      2.5,
-      'Neither...nor, Either...or, Not only...but also, and grammatical parallel balance rules.',
-      'medium',
-      now
-    );
+    // CAT VARC Subtopics
+    insertSubtopic.run('subtopic-cat-rc-1', 'subj-cat-varc', 'topic-cat-rc', 'Philosophical & Sociological Abstract Passage Analysis', 'VARC-101.1', 1, 6.0, 5.0, 'Dense abstract arguments, tracking epistemic progression, and author perspective.', 'hard', now);
+    insertSubtopic.run('subtopic-cat-rc-2', 'subj-cat-varc', 'topic-cat-rc', 'Inference Deduction & Boundary Conditions', 'VARC-101.2', 2, 6.0, 5.0, 'Differentiating between explicit premises and unjustified extrapolations.', 'hard', now);
+    insertSubtopic.run('subtopic-cat-rc-3', 'subj-cat-varc', 'topic-cat-rc', 'Author Tone, Stance & Rhetorical Devices', 'VARC-101.3', 3, 4.0, 3.0, 'Identifying irony, critical skepticism, cautious optimism, and academic detachment.', 'medium', now);
+    insertSubtopic.run('subtopic-cat-pj-1', 'subj-cat-varc', 'topic-cat-parajumbles', 'Mandatory Pairs & Transition Connectors (TITA)', 'VARC-102.1', 1, 4.0, 3.5, 'Noun-pronoun antecedents, chronological anchors, and contrasting transition markers.', 'medium', now);
 
-    // Subtopics for Indian Polity (topic-cgl-polity)
-    insertSubtopic.run(
-      'subtopic-cgl-pol-1',
-      'subj-cgl-ga',
-      'topic-cgl-polity',
-      'Fundamental Rights (Articles 12-35)',
-      'GA-101.1',
-      1,
-      7.0,
-      3.5,
-      'Right to Equality (14-18), Freedom (19-22), Exploitation (23-24), Religion (25-28), and Constitutional Remedies (32).',
-      'medium',
-      now
-    );
-    insertSubtopic.run(
-      'subtopic-cgl-pol-2',
-      'subj-cgl-ga',
-      'topic-cgl-polity',
-      'Constitutional Prerogative Writs (Article 32 & 226)',
-      'GA-101.2',
-      2,
-      5.0,
-      2.5,
-      'Habeas Corpus, Mandamus, Prohibition, Certiorari, and Quo-Warranto scopes and applicability.',
-      'hard',
-      now
-    );
-
-    // 2. Set Difficulty Levels on Main Topics
+    // 2. Set Difficulty Levels on CAT 2026 Topics
     const updateDifficulty = db.prepare('UPDATE syllabus_nodes SET difficulty = ? WHERE id = ?');
-    updateDifficulty.run('easy', 'topic-cgl-number-systems');
-    updateDifficulty.run('medium', 'topic-cgl-percentages');
-    updateDifficulty.run('medium', 'topic-cgl-ratio-proportions');
-    updateDifficulty.run('hard', 'topic-cgl-algebra');
-    updateDifficulty.run('hard', 'topic-cgl-geometry');
-    updateDifficulty.run('easy', 'topic-cgl-analogies');
-    updateDifficulty.run('medium', 'topic-cgl-syllogisms');
-    updateDifficulty.run('easy', 'topic-cgl-coding');
-    updateDifficulty.run('medium', 'topic-cgl-grammar-errors');
-    updateDifficulty.run('medium', 'topic-cgl-comprehension');
-    updateDifficulty.run('hard', 'topic-cgl-vocab');
-    updateDifficulty.run('medium', 'topic-cgl-polity');
-    updateDifficulty.run('medium', 'topic-cgl-history');
-    updateDifficulty.run('easy', 'topic-cgl-science');
+    updateDifficulty.run('hard', 'topic-cat-rc');
+    updateDifficulty.run('medium', 'topic-cat-parajumbles');
+    updateDifficulty.run('medium', 'topic-cat-parasummary');
+    updateDifficulty.run('hard', 'topic-cat-arrangements');
+    updateDifficulty.run('hard', 'topic-cat-charts');
+    updateDifficulty.run('hard', 'topic-cat-games');
+    updateDifficulty.run('medium', 'topic-cat-sets');
+    updateDifficulty.run('medium', 'topic-cat-arithmetic');
+    updateDifficulty.run('hard', 'topic-cat-algebra');
+    updateDifficulty.run('hard', 'topic-cat-geometry');
+    updateDifficulty.run('medium', 'topic-cat-numbers');
+    updateDifficulty.run('hard', 'topic-cat-modern-math');
 
-    // 3. Spaced Repetition Scheduling on Demo Student Progress
+    // 3. Spaced Repetition Scheduling on Demo Student Progress (CAT Topics)
     const oneDayAgo = new Date(Date.now() - 86400000).toISOString();
     const twoDaysAhead = new Date(Date.now() + 172800000).toISOString();
     const fourDaysAhead = new Date(Date.now() + 345600000).toISOString();
@@ -232,71 +61,70 @@ export function seedLearningSystem(db: DatabaseSync, student: any, instituteAdmi
       WHERE user_id = ? AND topic_id = ?
     `);
 
-    // Polity has revision overdue!
-    updateSpacedRepetition.run(oneDayAgo, 3, 2, 1, student.id, 'topic-cgl-polity');
-    // Geometry has revision due today!
-    updateSpacedRepetition.run(today, 2, 1, 1, student.id, 'topic-cgl-geometry');
-    // Percentages has revision scheduled in 2 days
-    updateSpacedRepetition.run(twoDaysAhead, 3, 3, 0, student.id, 'topic-cgl-percentages');
-    // Number systems has revision scheduled in 4 days (up to date)
-    updateSpacedRepetition.run(fourDaysAhead, 7, 4, 0, student.id, 'topic-cgl-number-systems');
+    // VARC Reading Comprehension has revision overdue!
+    updateSpacedRepetition.run(oneDayAgo, 3, 2, 1, student.id, 'topic-cat-rc');
+    // QA Arithmetic has revision due today!
+    updateSpacedRepetition.run(today, 2, 1, 1, student.id, 'topic-cat-arithmetic');
+    // DILR Arrangements scheduled in 2 days
+    updateSpacedRepetition.run(twoDaysAhead, 3, 3, 0, student.id, 'topic-cat-arrangements');
+    // QA Algebra scheduled in 4 days (up to date)
+    updateSpacedRepetition.run(fourDaysAhead, 7, 4, 0, student.id, 'topic-cat-algebra');
 
-    // 4. Seed Authentic Topic Contents in topic_contents
+    // 4. Seed Authentic Topic Contents in topic_contentstents
     const insertTopicContent = db.prepare(`
       INSERT OR REPLACE INTO topic_contents (topic_id, content_json, updated_at)
       VALUES (?, ?, ?)
     `);
 
-    // Topic Content: Percentages, Profit, Loss & Discount
-    const percentagesContent: TopicContent = {
-      topic_id: 'topic-cgl-percentages',
-      topic_title: 'Percentages, Profit, Loss & Discount',
+    // --- CAT 2026 TOPIC CONTENTS ---
+    // Topic Content: CAT Arithmetic & Commercial Mathematics
+    const catArithmeticContent: TopicContent = {
+      topic_id: 'topic-cat-arithmetic',
+      topic_title: 'Arithmetic & Commercial Mathematics',
       subject_name: 'Quantitative Aptitude',
       estimated_read_minutes: 35,
       learning_objectives: [
-        'Master the 20 fundamental reciprocal fraction multipliers for lightning-fast mental math.',
-        'Compute multi-tier successive percentage shifts using the compound variation formula: x + y + (xy/100).',
-        'Directly solve marked price and profit problems using the golden proportionality equation: MP/CP = (100 + P%)/(100 - D%).',
-        'Deconstruct dishonest trader manipulation traps involving false gram weights and marked up retail prices.'
+        'Master fraction multipliers for mental percentage shifts without paper calculations.',
+        'Deconstruct successive percentage shifts and compounding in profit, loss, and interest.',
+        'Utilize the MP/CP = (100 + P)/(100 - D) golden ratio for complex retail transactions.',
+        'Apply alligation and mixture balance rules to solve multi-stage replacement problems.'
       ],
-      prerequisites: [
-        { id: 'topic-cgl-number-systems', title: 'Number Systems & Divisibility', is_completed: true }
-      ],
-      overview: 'Percentages represent the operational foundation of SSC CGL Quantitative Aptitude. In Tier-I and Tier-II, over 12-15% of all arithmetic questions directly or indirectly utilize percentage multipliers, successive shifts, and cost-marked-price ratios. Developing intuition for fractional multipliers eliminates paper calculations, reducing solving time from 90 seconds to under 25 seconds per question.',
+      prerequisites: [],
+      overview: 'Arithmetic forms the cornerstone of CAT Quantitative Aptitude, accounting for 35-40% of the section (typically 8-9 questions out of 22). CAT questions in arithmetic rarely test direct formula application; instead, they embed simple multiplicative relationships within real-world business scenarios, interest rate shifts, and multi-stage mixture dilutions. Mastering ratio multipliers allows candidates to solve these in under 90 seconds.',
       key_concepts: [
         {
-          id: 'c1',
-          title: 'Reciprocal Fractional Multipliers',
-          definition: 'Every percentage increase or decrease can be expressed as a single fraction multiplier (1 ± x/100). If a quantity increases by 1/n, to return to the original value it must decrease by 1/(n + 1).',
-          formula: 'Original Value × (1 ± r/100) = Final Value; Shift: +1/n ↔ -1/(n + 1)',
+          id: 'cat-c1',
+          title: 'Fractional Multipliers & Net Percentage Shifts',
+          definition: 'Every percentage shift of r% can be modeled as multiplying by (1 ± r/100). If a quantity increases by 1/n, it must decrease by 1/(n + 1) to return to its original value.',
+          formula: 'Final = Initial × (1 ± r/100); Inverse shift: +1/n ↔ -1/(n + 1)',
           importance: 'core'
         },
         {
-          id: 'c2',
-          title: 'Successive Percentage Shift Formula',
-          definition: 'When a value is altered by a% and the resulting value is further altered by b%, the combined effective percentage change is given by the algebraic sum accounting for signs.',
-          formula: 'Net Change % = a + b + (a × b) / 100',
+          id: 'cat-c2',
+          title: 'Successive Variations Formula',
+          definition: 'Two successive percentage changes of a% and b% produce a combined net change equal to their algebraic sum plus their product divided by 100.',
+          formula: 'Net Shift % = a + b + (a × b) / 100',
           importance: 'high_yield'
         },
         {
-          id: 'c3',
-          title: 'Golden Equation of Marked Price and Cost Price',
-          definition: 'When an article is marked up and sold with a discount d% yielding a profit p%, Cost Price (CP) and Marked Price (MP) exist in a fixed structural ratio independent of the selling price.',
-          formula: 'MP / CP = (100 + Profit %) / (100 - Discount %)',
+          id: 'cat-c3',
+          title: 'Marked Price to Cost Price Proportionality',
+          definition: 'When goods marked at discount d% yield profit p%, the ratio of Marked Price (MP) to Cost Price (CP) is strictly independent of the transaction currency.',
+          formula: 'MP / CP = (100 + P%) / (100 - D%)',
           importance: 'core'
         },
         {
-          id: 'c4',
-          title: 'Dishonest Merchant Faulty Weight Formula',
-          definition: 'When a merchant claims to sell at cost price but uses a weight of g grams instead of the promised 1000 grams, the true profit percentage is governed solely by the actual goods dispensed.',
-          formula: 'Profit % = [(True Weight - False Weight) / False Weight] × 100%',
+          id: 'cat-c4',
+          title: 'Repeated Dilution & Replacement Formula',
+          definition: 'If from a vessel of volume V with pure liquid, x units are drawn and replaced with water n times, the remaining pure liquid quantity follows geometric decay.',
+          formula: 'Final Quantity = Initial Quantity × [1 - (x / V)]^n',
           importance: 'high_yield'
         }
       ],
       tables: [
         {
-          title: 'Essential Reciprocal Fraction to Percentage Matrix',
-          headers: ['Fraction', 'Percentage Value', 'Fraction', 'Percentage Value'],
+          title: 'High-Frequency CAT Percentage to Fraction Multiplier Table',
+          headers: ['Fraction', 'Percentage', 'Fraction', 'Percentage'],
           rows: [
             ['1/2', '50.00%', '1/7', '14.28% (14 2/7%)'],
             ['1/3', '33.33% (33 1/3%)', '1/8', '12.50% (12 1/2%)'],
@@ -305,283 +133,249 @@ export function seedLearningSystem(db: DatabaseSync, student: any, instituteAdmi
             ['1/6', '16.66% (16 2/3%)', '1/12', '8.33% (8 1/3%)'],
             ['1/13', '7.69%', '1/16', '6.25% (6 1/4%)']
           ],
-          caption: 'Memorize these values cold: TCS tests frequently use 14 2/7% or 11 1/9% to slow down candidates relying on decimal arithmetic.'
+          caption: 'Essential mental arithmetic constants for CAT QA speed.'
         }
       ],
       worked_examples: [
         {
-          id: 'ex1',
-          title: 'Successive Percentage Increase & Decrease on Area',
-          problem_statement: 'The length of a rectangle is increased by 25% while its breadth is decreased by 20%. What is the net percentage change in its area?',
-          examiner_angle: 'Candidates often attempt to assume values like l = 100, b = 100, which takes 40+ seconds. The expert method uses successive shifts or direct fraction multiplication.',
+          id: 'cat-ex1',
+          title: 'Successive Profit Margin & Discount Optimization',
+          problem_statement: 'A merchant marks goods 40% above cost price. She offers a 20% discount on 60% of the stock, and a 30% discount on the remaining 40% of the stock. Determine her overall profit percentage on the entire inventory.',
+          examiner_angle: 'Avoid assuming arbitrary stock quantities like 100 items at Rs. 100. Use weighted fractional multipliers directly.',
           steps: [
             {
               step_number: 1,
-              explanation: 'Express each dimension as a fractional multiplier:',
-              equation: 'Length Multiplier = 1 + 1/4 = 5/4; Breadth Multiplier = 1 - 1/5 = 4/5'
+              explanation: 'Let CP = 100. Then MP = 140.',
+              equation: 'MP = 1.40 × CP'
             },
             {
               step_number: 2,
-              explanation: 'Multiply the factors to obtain the Area factor:',
-              equation: 'New Area = (5/4) × (4/5) × Original Area = 1 × Original Area'
+              explanation: 'Calculate the average selling price multiplier:',
+              equation: 'SP_1 = 140 × 0.80 = 112 (for 60% stock); SP_2 = 140 × 0.70 = 98 (for 40% stock)'
             },
             {
               step_number: 3,
-              explanation: 'Alternatively apply formula: Net % = 25 - 20 + (25 × (-20))/100 = 5 - 5 = 0%.'
+              explanation: 'Compute weighted average selling price:',
+              equation: 'SP_avg = (0.60 × 112) + (0.40 × 98) = 67.2 + 39.2 = 106.4'
+            },
+            {
+              step_number: 4,
+              explanation: 'Overall profit percentage:',
+              equation: 'Profit % = 106.4 - 100 = 6.4%'
             }
           ],
-          final_answer: 'Net change in area is 0% (Area remains unchanged).',
-          pro_tip: 'Whenever a% increase is followed by b% decrease such that b = a / (100 + a) * 100, the net change is always 0.'
-        },
-        {
-          id: 'ex2',
-          title: 'Marked Price Ratio Application (SSC CGL 2023 Tier-I)',
-          problem_statement: 'A shopkeeper allows a discount of 15% on the marked price of a wrist watch and still makes a profit of 19%. If the cost price is Rs. 1,700, determine the marked price.',
-          examiner_angle: 'Standard textbook approaches calculate SP first, then backtrack to MP. Using the Golden Ratio skips 2 arithmetic operations.',
-          steps: [
-            {
-              step_number: 1,
-              explanation: 'Set up the Golden Ratio between MP and CP:',
-              equation: 'MP / CP = (100 + P%) / (100 - D%) = (100 + 19) / (100 - 15) = 119 / 85'
-            },
-            {
-              step_number: 2,
-              explanation: 'Simplify the fraction by dividing numerator and denominator by 17:',
-              equation: '119 / 85 = 7 / 5'
-            },
-            {
-              step_number: 3,
-              explanation: 'Given CP corresponds to 5 units = Rs. 1,700, compute 1 unit and 7 units:',
-              equation: '1 unit = 1700 / 5 = 340 => MP = 7 × 340 = Rs. 2,380'
-            }
-          ],
-          final_answer: 'Marked Price is Rs. 2,380.',
-          pro_tip: 'Always look for common multiples of 17, 19, or 23 in SSC question papers. Here 119 and 85 immediately signal cancellation by 17.'
-        },
-        {
-          id: 'ex3',
-          title: 'Compound Dishonest Merchant Problem',
-          problem_statement: 'A cloth merchant marks his goods 20% above the cost price and allows a discount of 10%. Furthermore, he uses a false meter scale that measures only 90 cm instead of 100 cm. What is his total percentage profit?',
-          examiner_angle: 'This question tests multi-layer compounding: pricing multiplier combined with measurement deception multiplier.',
-          steps: [
-            {
-              step_number: 1,
-              explanation: 'Calculate the pricing multiplier after markup and discount:',
-              equation: 'Pricing Multiplier = (1 + 0.20) × (1 - 0.10) = 1.20 × 0.90 = 1.08'
-            },
-            {
-              step_number: 2,
-              explanation: 'Calculate the measurement scale multiplier (customer pays for 100 cm, gets 90 cm):',
-              equation: 'Scale Multiplier = 100 / 90 = 10 / 9'
-            },
-            {
-              step_number: 3,
-              explanation: 'Multiply both factors to determine total effective revenue factor:',
-              equation: 'Net Factor = 1.08 × (10 / 9) = (108 / 100) × (10 / 9) = 12 / 10 = 1.20'
-            }
-          ],
-          final_answer: 'Total effective profit is 20%.',
-          pro_tip: 'Multiply all independent transaction ratios: Net Multiplier = (SP/CP) × (True Measure / Dispensed Measure).'
+          final_answer: '6.4% overall profit',
+          pro_tip: 'Candidates mistakenly take the simple average of 20% and 30% discounts (25%) instead of weighting by stock proportion.'
         }
       ],
       common_mistakes: [
         {
-          id: 'm1',
-          mistake_title: 'The Reversible Percentage Fallacy',
-          error_trap: 'Assuming that if salary A is 25% greater than B, salary B must be 25% less than A.',
-          correct_approach: 'The base changes from B to A! If A is 25% (1/4) greater than B, then B is 1/(4 + 1) = 1/5 = 20% less than A.',
-          prevention_rule: 'Always identify the denominator base: "Percentage comparison is always calculated with respect to the word following THAN or OF".'
+          id: 'cm-cat-arith-1',
+          mistake_title: 'Unweighted Averaging in Multi-part Inventories',
+          error_trap: 'Averaging percentage discounts (e.g. (20% + 30%)/2 = 25%) when quantities are unequal.',
+          correct_approach: 'Always multiply individual price multipliers by their fractional weights in the total stock.',
+          prevention_rule: 'Check if stock weights are equal before computing simple averages.'
         },
         {
-          id: 'm2',
-          mistake_title: 'Discount Applied to Cost Price',
-          error_trap: 'Subtracting the discount percentage directly from the cost price or adding profit to marked price.',
-          correct_approach: 'Discount is ALWAYS applied to the Marked Price (MP). Profit or Loss is ALWAYS computed on Cost Price (CP).',
-          prevention_rule: 'Never calculate discount on CP unless the problem explicitly states so.'
-        },
-        {
-          id: 'm3',
-          mistake_title: 'Additive Successive Discounts',
-          error_trap: 'Thinking two successive discounts of 20% and 10% equal a 30% single discount.',
-          correct_approach: 'Net discount = 20 + 10 - (20 × 10)/100 = 30 - 2 = 28%.',
-          prevention_rule: 'Two successive discounts are always strictly LESS than their arithmetic sum.'
+          id: 'cm-cat-arith-2',
+          mistake_title: 'Confusing CP and MP in Retail Discount Problems',
+          error_trap: 'Applying discount directly to Cost Price instead of Marked Price.',
+          correct_approach: 'Discount is strictly computed on Marked Price; Profit or Loss is strictly on Cost Price.',
+          prevention_rule: 'Use the Golden Ratio MP/CP = (100 + P%)/(100 - D%) directly.'
         }
       ],
       pyq_references: [
         {
-          id: 'pyq1',
-          exam: 'SSC CGL',
+          id: 'pyq-cat-arith-1',
+          exam: 'CAT',
           year: 2023,
-          tier_or_stage: 'Tier-I (Shift 2)',
+          tier_or_stage: 'Slot 2',
           frequency_rating: 'very_high',
-          question_summary: 'Successive discount of 15%, 20%, and 25% on an article marked at Rs. 4,800. Net selling price computation.'
+          question_summary: 'Successive price changes with volume dilution in alloy mixture formulation.'
         },
         {
-          id: 'pyq2',
-          exam: 'SSC CGL',
+          id: 'pyq-cat-arith-2',
+          exam: 'CAT',
           year: 2022,
-          tier_or_stage: 'Tier-II Mains',
+          tier_or_stage: 'Slot 1',
           frequency_rating: 'high',
-          question_summary: 'Dishonest milkman mixing water to 20% volume and selling at 10% premium over cost price.'
-        },
-        {
-          id: 'pyq3',
-          exam: 'SSC CGL',
-          year: 2021,
-          tier_or_stage: 'Tier-I',
-          frequency_rating: 'very_high',
-          question_summary: 'Golden ratio MP/CP question with 28% profit and 16% discount.'
+          question_summary: 'Profit-sharing and weighted investment ratios across staggered entry periods.'
         }
       ],
       active_recall_checks: [
         {
-          id: 'ar1',
-          question: 'An item is marked 50% above its cost price. What maximum percentage discount can be offered such that the retailer makes neither a profit nor a loss?',
-          options: ['50%', '33.33%', '25%', '40%'],
-          correct_answer: '33.33%',
-          explanation: 'CP = 100, MP = 150. To sell at break-even (SP = 100), discount needed = 50. Discount % = (50 / 150) × 100 = 1/3 = 33.33%.',
-          recall_hint: 'Recall the +1/n to -1/(n+1) rule: a 50% markup (+1/2) requires a 1/3 discount to return to base.'
+          id: 'ar-cat-arith-1',
+          question: 'What is the MP/CP ratio if a trader marks an item to yield 20% profit after granting a 10% discount?',
+          options: ['4/3', '5/4', '7/5', '11/9'],
+          correct_answer: '4/3',
+          explanation: 'MP/CP = (100 + 20)/(100 - 10) = 120/90 = 4/3. This indicates a 33.33% markup on cost price.',
+          recall_hint: 'Golden formula: MP/CP = (100 + P%)/(100 - D%).'
         },
         {
-          id: 'ar2',
-          question: 'If the radius of a sphere is increased by 10%, by what percentage does its surface area increase?',
-          options: ['10%', '20%', '21%', '33.1%'],
-          correct_answer: '21%',
-          explanation: 'Surface Area of sphere = 4πr². Since Area depends on r², apply successive formula with a = 10, b = 10: 10 + 10 + (10 × 10)/100 = 21%.',
-          recall_hint: 'For two-dimensional area scaling, compound the linear percentage shift twice.'
+          id: 'ar-cat-arith-2',
+          question: 'If a quantity increases by 25%, by what percentage must it decrease to return to its original value?',
+          options: ['20%', '25%', '16.66%', '15%'],
+          correct_answer: '20%',
+          explanation: 'An increase of 1/4 requires an inverse decrease of 1/(4 + 1) = 1/5 = 20%.',
+          recall_hint: '+1/n corresponds to -1/(n + 1).'
         }
       ],
       recap_points: [
-        'Master fractions 1/2 through 1/20 to eliminate decimal calculations.',
-        'Successive changes: Net % = a + b + ab/100 (maintain algebraic signs).',
-        'Golden formula for Marked Price: MP/CP = (100 + P%)/(100 - D%).',
-        'Dishonest seller profit: Profit % = (Error / Disbursed Weight) × 100%.',
-        'Take the Topic Assessment below to calibrate your mastery score.'
+        'Reciprocal multipliers (1/2 through 1/20) eliminate cumbersome decimal steps.',
+        'Compounding variations: Net % = a + b + (ab/100) with sign conventions.',
+        'Golden formula for pricing: MP/CP = (100 + P%)/(100 - D%).',
+        'Repeated dilution decay formula: Final = Initial × (1 - x/V)^n.'
       ],
       recommended_sectional_test: {
-        id: 'test-ssc-cgl-tier1-mock1',
-        title: 'SSC CGL Quantitative Aptitude Tier-I Diagnostic Mock',
-        duration_minutes: 60
+        id: 'test-cat-mock-01',
+        title: 'CAT 2026 Quantitative Aptitude Sectional Diagnostic',
+        duration_minutes: 40
       }
     };
+    insertTopicContent.run('topic-cat-arithmetic', JSON.stringify(catArithmeticContent), now);
 
-    // Topic Content: Circles, Chords & Geometry
-    const geometryContent: TopicContent = {
-      topic_id: 'topic-cgl-geometry',
-      topic_title: 'Triangles, Circles & Coordinate Geometry',
-      subject_name: 'Quantitative Aptitude',
+    // Topic Content: CAT Reading Comprehension
+    const catRcContent: TopicContent = {
+      topic_id: 'topic-cat-rc',
+      topic_title: 'Reading Comprehension (Philosophy, Economy, Science)',
+      subject_name: 'Verbal Ability & Reading Comprehension',
       estimated_read_minutes: 40,
       learning_objectives: [
-        'Apply the Intersecting Chords Theorem for internal and external intersections with zero algebraic ambiguity.',
-        'Compute lengths of Direct Common Tangents (DCT) and Transverse Common Tangents (TCT).',
-        'Master the Tangent-Secant Theorem (PT² = PA × PB) for rapid circle segment solutions.',
-        'Leverage cyclic quadrilateral properties and opposite supplementary angles in Tier-II multi-step problems.'
+        'Deconstruct abstract, multi-disciplinary RC passages into thesis, counter-arguments, and synthesis.',
+        'Accurately isolate author tone across the spectrum from detached inquiry to acerbic critique.',
+        'Distinguish valid critical inferences from deceptive options that extrapolate beyond the text.',
+        'Develop skimming and deep-engagement pacing for 4 passages (16 questions) under 40 minutes.'
       ],
-      prerequisites: [
-        { id: 'topic-cgl-algebra', title: 'Elementary Algebra & Identities', is_completed: true }
-      ],
-      overview: 'Geometry is the highest-weightage advanced mathematics component of SSC CGL, carrying 16-20 marks in Tier-I and Tier-II combined. Circle theorems form the core of geometry questions. The key to cracking circle questions under 45 seconds is identifying power-of-a-point configurations immediately without drawing redundant auxiliary lines.',
+      prerequisites: [],
+      overview: 'Reading Comprehension is the dominant pillar of CAT VARC, consistently comprising 16 out of 24 questions (67% of the entire section). Passages are sourced from international journals, philosophical treatises, cognitive psychology papers, and economic histories (such as Aeon, The Economist, and MIT Technology Review). The challenge lies not in vocabulary, but in following dense, non-linear reasoning and spotting subtle trap options in inference questions.',
       key_concepts: [
         {
-          id: 'g1',
-          title: 'Intersecting Chords Theorem (Internal & External)',
-          definition: 'If two chords AB and CD intersect at a point P (either inside or outside the circle), the products of their segments are always identical.',
-          formula: 'AP × PB = CP × PD',
+          id: 'cat-rc-c1',
+          title: 'Argument Structure & Thesis Tracking',
+          definition: 'Every CAT RC passage contains a central thesis, supportive premises, acknowledged concessions, and refutations. High-scoring candidates track the author\'s intent rather than memorizing individual facts.',
+          formula: 'Thesis + Evidence + Concessions = Passage Core',
           importance: 'core'
         },
         {
-          id: 'g2',
-          title: 'Tangent-Secant Theorem (Power of a Point)',
-          definition: 'If a tangent PT from external point P touches circle at T, and a secant from P intersects circle at A and B, then PT squared equals product of secant segments.',
-          formula: 'PT² = PA × PB',
+          id: 'cat-rc-c2',
+          title: 'The 4 Deadly Option Traps in CAT RC',
+          definition: 'Examiners design wrong options using 4 predictable distortions: 1) Out of Scope (unsupported extrapolation), 2) Opposite / Inverted Causation, 3) Too Extreme (always, never, absolute claims), 4) True in reality but absent from passage.',
+          formula: 'Eliminate: Extreme + Out-of-Scope + Distorted Scope',
+          importance: 'high_yield'
+        },
+        {
+          id: 'cat-rc-c3',
+          title: 'Author Tone Spectrum Analysis',
+          definition: 'Author attitude is calibrated through qualifier adverbs and descriptive adjectives. Distinguish between neutral reporting, cautious endorsement, analytical skepticism, and outright condemnation.',
+          formula: 'Tone = Vocabulary Valence × Argumentative Modifiers',
           importance: 'core'
-        },
+        }
+      ],
+      tables: [
         {
-          id: 'g3',
-          title: 'Direct and Transverse Common Tangent Formulas',
-          definition: 'For two circles with radii R and r separated by center distance d, the lengths of external (direct) and internal (transverse) tangents follow the Pythagorean differences.',
-          formula: 'DCT = √(d² - (R - r)²); TCT = √(d² - (R + r)²)',
-          importance: 'high_yield'
-        },
-        {
-          id: 'g4',
-          title: 'Angle in an Alternate Segment Theorem',
-          definition: 'The angle between a tangent and a chord through the point of contact equals the angle inscribed by that chord in the alternate circular segment.',
-          formula: '∠BAT = ∠BCA (where AT is tangent at A and C is in alternate segment)',
-          importance: 'high_yield'
+          title: 'CAT RC Question Types and Strike Rates',
+          headers: ['Question Type', 'Description', 'Solving Strategy'],
+          rows: [
+            ['Main Idea / Primary Purpose', 'Why did the author write this passage?', 'Synthesize opening and concluding paragraphs; eliminate options focusing on single paragraphs.'],
+            ['Inference', 'What must be logically true based on the text?', 'Anchor strictly in explicit statements; eliminate options using strong unproven words.'],
+            ['Tone & Attitude', 'What is author\'s demeanor towards the subject?', 'Examine adjectives and qualifiers in concluding evaluation sections.'],
+            ['Except / Negative Fact', 'Which of the following is NOT mentioned?', 'Scan passage keywords; look for altered numerical claims or inverted relationships.']
+          ],
+          caption: 'Standard taxonomy of CAT VARC questions.'
         }
       ],
       worked_examples: [
         {
-          id: 'gex1',
-          title: 'Internal Intersecting Chords (SSC CGL 2022 Tier-II)',
-          problem_statement: 'Two chords AB and CD of a circle intersect internally at P. If AP = 12 cm, AB = 16 cm, and CP = 8 cm, calculate the length of CD.',
-          examiner_angle: 'The trap here is confusing PB with AB. The theorem requires the segment PB, not the full chord length AB.',
+          id: 'cat-rc-ex1',
+          title: 'Inference Traps: Distinguishing Fact vs Extrapolation',
+          problem_statement: 'Passage excerpt: "While automated translation algorithms have reached parity with bilingual adults on factual prose, they consistently falter on idioms and subtle sarcasm, suggesting that machine learning models lack genuine semantic models of human social reality." Question: Which of the following can be properly inferred?',
+          examiner_angle: 'The author qualifies translation as lacking social models, but does NOT say machines will never achieve this.',
           steps: [
             {
               step_number: 1,
-              explanation: 'Calculate segment PB from chord AB:',
-              equation: 'PB = AB - AP = 16 - 12 = 4 cm'
+              explanation: 'Option A: "Machine learning algorithms will never be able to comprehend sarcasm." -> Traps with "never" (too extreme).',
+              equation: 'Eliminate: Extreme absolute quantifier'
             },
             {
               step_number: 2,
-              explanation: 'Apply the intersecting chords theorem:',
-              equation: 'AP × PB = CP × PD => 12 × 4 = 8 × PD => 48 = 8 × PD => PD = 6 cm'
+              explanation: 'Option B: "Comprehending sarcasm requires an underlying model of human social conventions." -> Valid inference directly supported by "suggesting models lack social reality".',
+              equation: 'Keep: Logically entailed by text'
             },
             {
               step_number: 3,
-              explanation: 'Calculate full chord CD = CP + PD:',
-              equation: 'CD = 8 + 6 = 14 cm'
+              explanation: 'Option C: "Human adults understand sarcasm better than factual prose." -> Unsupported comparison.',
+              equation: 'Eliminate: Out of scope'
             }
           ],
-          final_answer: 'Length of chord CD is 14 cm.',
-          pro_tip: 'Always double check whether the question asks for the segment PD or the full chord length CD.'
+          final_answer: 'Option B is the valid inference.',
+          pro_tip: 'Students gravitate toward Option A because sarcasm is indeed difficult for AI, but "never" is an unsupported absolute claim.'
         }
       ],
       common_mistakes: [
         {
-          id: 'gm1',
-          mistake_title: 'Full Secant vs External Segment Slip',
-          error_trap: 'In PT² = PA × PB, using the interior chord segment AB instead of the full secant PB.',
-          correct_approach: 'PA is the external segment; PB is the entire secant length from external point P to the far circle boundary.',
-          prevention_rule: 'Write: PT² = External Segment × Total Secant Length.'
+          id: 'cm-cat-rc-1',
+          mistake_title: 'Falling for Extreme Absolute Quantifiers',
+          error_trap: 'Selecting options with absolute qualifiers like "never", "invariably", or "solely" when the passage uses guarded language.',
+          correct_approach: 'Match the valence and strength of the option directly against the author\'s degree of certainty.',
+          prevention_rule: 'Eliminate options containing extreme absolutes unless the text explicitly supports an absolute claim.'
+        },
+        {
+          id: 'cm-cat-rc-2',
+          mistake_title: 'Real-World Plausibility Trap (Out of Scope)',
+          error_trap: 'Choosing an option because it is factually or scientifically true in the real world, even though it cannot be deduced from the passage text.',
+          correct_approach: 'Treat the passage as a closed semantic universe. If the author didn\'t mention or entail it, it is wrong.',
+          prevention_rule: 'Ask: "Can I point to the explicit sentence that proves this statement?"'
         }
       ],
       pyq_references: [
         {
-          id: 'gpyq1',
-          exam: 'SSC CGL',
+          id: 'pyq-cat-rc-1',
+          exam: 'CAT',
           year: 2023,
-          tier_or_stage: 'Tier-I',
+          tier_or_stage: 'Slot 1',
           frequency_rating: 'very_high',
-          question_summary: 'Length of direct common tangent given radii 8 cm and 3 cm with centers 13 cm apart.'
+          question_summary: 'Philosophical passage on moral skepticism and the evolution of social norms.'
+        },
+        {
+          id: 'pyq-cat-rc-2',
+          exam: 'CAT',
+          year: 2022,
+          tier_or_stage: 'Slot 3',
+          frequency_rating: 'high',
+          question_summary: 'Economic history passage evaluating colonial trade monopolies in Southeast Asia.'
         }
       ],
       active_recall_checks: [
         {
-          id: 'gar1',
-          question: 'From an exterior point P, a tangent PT of length 12 cm is drawn to a circle. A secant PAB passes through the center. If PA = 8 cm, what is the length of chord AB?',
-          options: ['10 cm', '12 cm', '18 cm', '8 cm'],
-          correct_answer: '10 cm',
-          explanation: 'PT² = PA × PB => 144 = 8 × PB => PB = 18 cm. Chord AB = PB - PA = 18 - 8 = 10 cm.',
-          recall_hint: 'PT² = PA × PB gives the full secant PB. Subtract PA to find chord AB.'
+          id: 'ar-cat-rc-1',
+          question: 'What tone is described when an author neutrally details opposing theories without endorsing either?',
+          options: ['Dispassionate / Objective', 'Acerbic', 'Patronizing', 'Apologetic'],
+          correct_answer: 'Dispassionate / Objective',
+          explanation: 'A neutral, balanced evaluation without taking partisan sides represents an objective or dispassionate stance.',
+          recall_hint: 'Identify presence or absence of affective/emotive adjectives.'
+        },
+        {
+          id: 'ar-cat-rc-2',
+          question: 'In CAT VARC, how many RC passages are typically presented within the 24 questions?',
+          options: ['4 passages (16 questions)', '5 passages (20 questions)', '3 passages (12 questions)', '6 passages (18 questions)'],
+          correct_answer: '4 passages (16 questions)',
+          explanation: 'CAT VARC consistently features 4 passages with 4 questions each, totaling 16 RC questions alongside 8 VA questions.',
+          recall_hint: '4 × 4 = 16 out of 24 questions.'
         }
       ],
       recap_points: [
-        'Internal & External Chords: AP × PB = CP × PD.',
-        'Tangent-Secant: PT² = PA × PB.',
-        'DCT uses (R - r)²; TCT uses (R + r)²',
-        'Opposite angles in cyclic quadrilateral sum to 180°.'
+        'Focus on paragraph structure, thesis progression, and argumentative transitions rather than memorizing trivia.',
+        'Eliminate the 4 traps: Extreme, Out of Scope, Inverted Causality, and Distortion.',
+        'Budget 8-9 minutes per RC passage including question analysis to finish 4 passages within 34 minutes.',
+        'Leave 6-8 minutes for Verbal Ability questions (Para-jumbles, Odd Sentence Out, Summary).'
       ],
       recommended_sectional_test: {
-        id: 'test-ssc-cgl-tier1-mock1',
-        title: 'SSC CGL Quantitative Aptitude Tier-I Diagnostic Mock',
-        duration_minutes: 60
+        id: 'test-cat-mock-01',
+        title: 'CAT 2026 VARC Sectional Diagnostic',
+        duration_minutes: 40
       }
     };
-
-    insertTopicContent.run('topic-cgl-percentages', JSON.stringify(percentagesContent), now);
-    insertTopicContent.run('topic-cgl-geometry', JSON.stringify(geometryContent), now);
+    insertTopicContent.run('topic-cat-rc', JSON.stringify(catRcContent), now);
 
     // 5. Seed Dedicated Topic Tests and Questions
     const insertTest = db.prepare(`
@@ -593,19 +387,82 @@ export function seedLearningSystem(db: DatabaseSync, student: any, instituteAdmi
       ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     `);
 
+    // --- CAT 2026 TOPIC TESTS ---
+    // CAT Topic Test 1: Arithmetic (topic-cat-arithmetic)
+    const testCatArithId = 'test-topic-cat-arithmetic';
+    insertTest.run(
+      testCatArithId,
+      instituteAdmin.id,
+      'CAT Arithmetic Diagnostic Speed Drill',
+      'High-yield CAT arithmetic diagnostic evaluating multiplier speed, profit margins, and successive percentage shifts.',
+      'Quantitative Aptitude',
+      'sec-mba',
+      900, // 15 mins
+      'standard',
+      3.0,
+      1.0,
+      0.0,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      'topic_test',
+      'exam-cat-2026',
+      'subj-cat-qa',
+      'topic-cat-arithmetic',
+      'public',
+      0,
+      0.0,
+      now,
+      now
+    );
+
+    // CAT Topic Test 2: Reading Comprehension (topic-cat-rc)
+    const testCatRcId = 'test-topic-cat-rc';
+    insertTest.run(
+      testCatRcId,
+      instituteAdmin.id,
+      'CAT RC Critical Inference Sprint',
+      'Standard CAT passage analysis testing thesis extraction, inference deduction, and subtle author tone identification.',
+      'Verbal Ability & Reading Comprehension',
+      'sec-mba',
+      1200, // 20 mins
+      'standard',
+      3.0,
+      1.0,
+      0.0,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      'topic_test',
+      'exam-cat-2026',
+      'subj-cat-varc',
+      'topic-cat-rc',
+      'public',
+      0,
+      0.0,
+      now,
+      now
+    );
+
     // Topic Test 1: Percentages (5 Questions)
-    const testPercId = 'test-topic-cgl-percentages';
+    const testPercId = 'test-topic-cat-percentages';
     insertTest.run(
       testPercId,
       instituteAdmin.id,
-      'Topic Mastery Assessment: Percentages, Profit, Loss & Discount',
-      'High-yield 5-question TCS-pattern topic test assessing successive percentage shifts, marked price formulas, and false weight traps.',
+      'CAT Arithmetic: Percentages, Profit & Loss Topic Test',
+      'High-yield 5-question CAT-pattern topic test assessing successive percentage shifts, marked price formulas, and ratio multipliers.',
       'Quantitative Aptitude',
-      'sec-ssc',
-      600, // 10 minutes
+      'sec-mba',
+      900, // 15 minutes
       'standard',
-      2.0,
-      0.5,
+      3.0,
+      1.0,
       0.0,
       0,
       0,
@@ -614,9 +471,9 @@ export function seedLearningSystem(db: DatabaseSync, student: any, instituteAdmi
       1,
       1,
       'topic_test',
-      'exam-ssc-cgl-2026',
-      'subj-cgl-quant',
-      'topic-cgl-percentages',
+      'exam-cat-2026',
+      'subj-cat-qa',
+      'topic-cat-arithmetic',
       'public',
       0,
       0.0,
@@ -697,7 +554,7 @@ export function seedLearningSystem(db: DatabaseSync, student: any, instituteAdmi
         id, test_id, question_number, question_text, question_type,
         options_json, correct_answer, correct_marks, negative_marks, unanswered_marks,
         explanation, parsing_confidence, created_at, updated_at
-      ) VALUES (?, ?, ?, ?, 'single', ?, ?, 2.0, 0.5, 0.0, ?, 1.0, ?, ?)
+      ) VALUES (?, ?, ?, ?, 'single', ?, ?, 3.0, 1.0, 0.0, ?, 1.0, ?, ?)
     `);
 
     for (const q of percQuestions) {
@@ -705,18 +562,18 @@ export function seedLearningSystem(db: DatabaseSync, student: any, instituteAdmi
     }
 
     // Topic Test 2: Geometry (5 Questions)
-    const testGeomId = 'test-topic-cgl-geometry';
+    const testGeomId = 'test-topic-cat-geometry';
     insertTest.run(
       testGeomId,
       instituteAdmin.id,
-      'Topic Mastery Assessment: Circles & Geometry Theorems',
+      'CAT Geometry: Circles & Inscribed Triangles Topic Test',
       'Assesses intersecting chords, tangent-secant properties, direct common tangents, and cyclic quadrilateral theorems.',
       'Quantitative Aptitude',
-      'sec-ssc',
-      600,
+      'sec-mba',
+      900,
       'standard',
-      2.0,
-      0.5,
+      3.0,
+      1.0,
       0.0,
       0,
       0,
@@ -725,9 +582,9 @@ export function seedLearningSystem(db: DatabaseSync, student: any, instituteAdmi
       1,
       1,
       'topic_test',
-      'exam-ssc-cgl-2026',
-      'subj-cgl-quant',
-      'topic-cgl-geometry',
+      'exam-cat-2026',
+      'subj-cat-qa',
+      'topic-cat-geometry',
       'public',
       0,
       0.0,
@@ -809,18 +666,18 @@ export function seedLearningSystem(db: DatabaseSync, student: any, instituteAdmi
 
     // 6. Seed Diverse Test Types for Testing Engine
     // (A) Previous Year Paper
-    const pyqTestId = 'test-cgl-pyq-2023-s1';
+    const pyqTestId = 'test-cat-pyq-2023-s1';
     insertTest.run(
       pyqTestId,
       instituteAdmin.id,
-      'SSC CGL 2023 Tier-I Official Paper (14 July Shift 1)',
-      'Authentic previous year question paper conducted by TCS for SSC CGL Tier-I, featuring exact historical questions and negative marking.',
-      'Combined Tier-I',
-      'sec-ssc',
-      3600,
+      'CAT 2023 Official Paper (Slot 1 Diagnostic)',
+      'Authentic previous year question paper conducted by IIM Lucknow for CAT 2023, featuring exact questions, sectional timers, and scoring.',
+      'Management Entrance (CAT)',
+      'sec-mba',
+      7200,
       'standard',
-      2.0,
-      0.5,
+      3.0,
+      1.0,
       0.0,
       0,
       0,
@@ -829,7 +686,7 @@ export function seedLearningSystem(db: DatabaseSync, student: any, instituteAdmi
       1,
       1,
       'previous_year_paper',
-      'exam-ssc-cgl-2026',
+      'exam-cat-2026',
       null,
       null,
       'public',
@@ -899,18 +756,18 @@ export function seedLearningSystem(db: DatabaseSync, student: any, instituteAdmi
     }
 
     // (B) Sectional Drill: Quantitative Aptitude
-    const secQuantId = 'test-cgl-sec-quant-drill';
+    const secQuantId = 'test-cat-sec-qa-drill';
     insertTest.run(
       secQuantId,
       instituteAdmin.id,
-      'Quantitative Aptitude Tier-I Speed & Calculation Drill 01',
-      'Timed sectional assessment testing mental calculation speed, percentages, ratios, algebra, and circle theorems under 25 minutes.',
+      'CAT Quantitative Aptitude (QA) Sectional Sprint',
+      'Timed 40-minute sectional assessment testing mental calculation speed, percentages, ratios, algebra, and circle theorems.',
       'Quantitative Aptitude',
-      'sec-ssc',
-      1500, // 25 mins
+      'sec-mba',
+      2400, // 40 mins
       'standard',
-      2.0,
-      0.5,
+      3.0,
+      1.0,
       0.0,
       0,
       0,
@@ -919,8 +776,8 @@ export function seedLearningSystem(db: DatabaseSync, student: any, instituteAdmi
       1,
       1,
       'sectional_test',
-      'exam-ssc-cgl-2026',
-      'subj-cgl-quant',
+      'exam-cat-2026',
+      'subj-cat-qa',
       null,
       'public',
       0,
@@ -935,18 +792,18 @@ export function seedLearningSystem(db: DatabaseSync, student: any, instituteAdmi
     }
 
     // (C) Mixed Revision Test
-    const mixedTestId = 'test-cgl-mixed-rev-w2';
+    const mixedTestId = 'test-cat-mixed-rev-w2';
     insertTest.run(
       mixedTestId,
       instituteAdmin.id,
-      'Week 2 Cumulative Mixed Revision Sprint (Quant + Reasoning)',
-      'Interleaved active recall assessment combining arithmetic profit & loss with logical syllogisms and analogies.',
-      'Quant & Reasoning',
-      'sec-ssc',
-      1200, // 20 mins
+      'CAT Sectional Mixed Recall Sprint (QA + VARC)',
+      'Interleaved active recall assessment combining arithmetic profit & loss with critical verbal reasoning.',
+      'QA & VARC',
+      'sec-mba',
+      1800, // 30 mins
       'standard',
-      2.0,
-      0.5,
+      3.0,
+      1.0,
       0.0,
       0,
       0,
@@ -955,7 +812,7 @@ export function seedLearningSystem(db: DatabaseSync, student: any, instituteAdmi
       1,
       1,
       'mixed_revision_test',
-      'exam-ssc-cgl-2026',
+      'exam-cat-2026',
       null,
       null,
       'public',
@@ -971,19 +828,19 @@ export function seedLearningSystem(db: DatabaseSync, student: any, instituteAdmi
       insertQ.run(`q-mix-${i + 1}`, mixedTestId, i + 1, q.text, JSON.stringify(q.options), q.correct, q.explanation, now, now);
     }
 
-    // (D) Subject Test: English Language
-    const subjEngId = 'test-cgl-subj-english';
+    // (D) Subject Test: English Language / VARC
+    const subjEngId = 'test-cat-subj-varc';
     insertTest.run(
       subjEngId,
       instituteAdmin.id,
-      'English Comprehension & Grammar Subject Diagnostic Paper',
+      'CAT Verbal Ability & Reading Comprehension Diagnostic Paper',
       'Comprehensive sectional evaluating error spotting, correlative conjunctions, sentence improvement, idioms, and cloze passage logic.',
-      'English Comprehension',
-      'sec-ssc',
-      1200,
+      'Verbal Ability & Reading Comprehension',
+      'sec-mba',
+      2400, // 40 mins
       'standard',
-      2.0,
-      0.5,
+      3.0,
+      1.0,
       0.0,
       0,
       0,
@@ -992,8 +849,8 @@ export function seedLearningSystem(db: DatabaseSync, student: any, instituteAdmi
       1,
       1,
       'subject_test',
-      'exam-ssc-cgl-2026',
-      'subj-cgl-english',
+      'exam-cat-2026',
+      'subj-cat-varc',
       null,
       'public',
       0,
@@ -1037,16 +894,16 @@ export function seedLearningSystem(db: DatabaseSync, student: any, instituteAdmi
 
     // (E) Educator Test
     insertTest.run(
-      'test-cgl-faculty-marathon',
+      'test-cat-faculty-marathon',
       instituteAdmin.id,
-      'Faculty Special: High-Yield Geometry & Number Systems Marathon',
-      'Curated by Senior Faculty Dr. R. K. Sharma: Handpicked Tier-II tough questions testing non-obvious shortcut theorems.',
+      'Faculty Special: CAT Advanced Quant & Caselet Marathon',
+      'Curated by Senior Faculty: Handpicked advanced CAT questions testing non-obvious shortcut theorems.',
       'Quantitative Aptitude',
-      'sec-ssc',
-      1800,
+      'sec-mba',
+      2400,
       'standard',
-      2.0,
-      0.5,
+      3.0,
+      1.0,
       0.0,
       0,
       0,
@@ -1055,8 +912,8 @@ export function seedLearningSystem(db: DatabaseSync, student: any, instituteAdmi
       1,
       1,
       'educator_test',
-      'exam-ssc-cgl-2026',
-      'subj-cgl-quant',
+      'exam-cat-2026',
+      'subj-cat-qa',
       null,
       'public',
       0,
@@ -1067,16 +924,16 @@ export function seedLearningSystem(db: DatabaseSync, student: any, instituteAdmi
 
     // (F) Community Test
     insertTest.run(
-      'test-cgl-community-challenge',
+      'test-cat-community-challenge',
       instituteAdmin.id,
-      'Aspirants Weekly Open CBE Sprint Challenge',
-      'Community crowdsourced full-length mock paper curated and peer-reviewed by top-ranking SSC aspirants.',
-      'Combined Tier-I',
-      'sec-ssc',
-      3600,
+      'CAT Aspirants National Peer Challenge Mock',
+      'Community crowdsourced full-length mock paper curated and peer-reviewed by 99th percentile CAT aspirants.',
+      'Management Entrance (CAT)',
+      'sec-mba',
+      7200,
       'standard',
-      2.0,
-      0.5,
+      3.0,
+      1.0,
       0.0,
       0,
       0,
@@ -1085,7 +942,7 @@ export function seedLearningSystem(db: DatabaseSync, student: any, instituteAdmi
       1,
       1,
       'community_test',
-      'exam-ssc-cgl-2026',
+      'exam-cat-2026',
       null,
       null,
       'public',

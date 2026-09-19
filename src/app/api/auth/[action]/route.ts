@@ -95,26 +95,51 @@ export async function POST(
         return NextResponse.json({ error: 'Name, email, and password required' }, { status: 400 });
       }
 
+      if (password.length < 6) {
+        return NextResponse.json({ error: 'Password must be at least 6 characters' }, { status: 400 });
+      }
+
+      const cleanEmail = email.toLowerCase().trim();
       const existingStmt = db.prepare('SELECT id FROM users WHERE email = ?');
-      const existing = existingStmt.get(email.toLowerCase().trim());
+      const existing = existingStmt.get(cleanEmail);
       if (existing) {
-        return NextResponse.json({ error: 'User with this email already exists' }, { status: 409 });
+        return NextResponse.json({ error: 'An account with this email already exists. Please sign in.' }, { status: 409 });
       }
 
       const newId = crypto.randomUUID();
       const hashed = hashPassword(password);
       const now = new Date().toISOString();
-      const userRole: UserRole = role === 'admin' ? 'admin' : 'student';
+      // All candidate registrations are candidate / aspirant accounts
+      const userRole: UserRole = 'student';
 
       const insertStmt = db.prepare(
         'INSERT INTO users (id, name, email, password_hash, role, status, institute_name, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?)'
       );
-      insertStmt.run(newId, name.trim(), email.toLowerCase().trim(), hashed, userRole, 'active', institute_name || null, now);
+      insertStmt.run(newId, name.trim(), cleanEmail, hashed, userRole, 'active', institute_name || null, now);
+
+      // Auto-enroll new students into CAT 2026 and initialize onboarding profile
+      if (userRole === 'student') {
+        try {
+          db.prepare(`
+            INSERT OR IGNORE INTO user_exam_enrollments (id, user_id, exam_id, target_year, target_score, is_primary, enrolled_at)
+            VALUES (?, ?, 'exam-cat-2026', 2026, 105, 1, ?)
+          `).run(`enr-${newId}`, newId, now);
+
+          db.prepare(`
+            INSERT OR IGNORE INTO user_onboarding_profiles (
+              user_id, preferred_exam_id, preparation_stage, target_timeline, daily_study_hours,
+              strong_subjects_json, weak_subjects_json, diagnostic_test_status, completed_at, created_at
+            ) VALUES (?, 'exam-cat-2026', 'intermediate', '2026_cat', 4.0, '[]', '[]', 'pending', null, ?)
+          `).run(newId, now);
+        } catch (initErr) {
+          console.warn('[Register] Profile auto-init warning:', initErr);
+        }
+      }
 
       const sessionUser: AuthSessionUser = {
         id: newId,
         name: name.trim(),
-        email: email.toLowerCase().trim(),
+        email: cleanEmail,
         role: userRole,
         institute_name: institute_name || null,
       };
