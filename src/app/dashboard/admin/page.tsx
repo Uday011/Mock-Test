@@ -90,18 +90,86 @@ export default function AdminDashboardPage() {
   const [loadingTests, setLoadingTests] = useState(true);
   const [testSearch, setTestSearch] = useState('');
 
-  const fetchCurrentUser = async () => {
+  // Admin Auth Gate state
+  const [isCheckingAuth, setIsCheckingAuth] = useState(true);
+  const [authEmail, setAuthEmail] = useState('');
+  const [authPassword, setAuthPassword] = useState('');
+  const [authError, setAuthError] = useState<string | null>(null);
+  const [isAuthenticating, setIsAuthenticating] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+
+  const checkAdminAuthAndLoad = async () => {
+    setIsCheckingAuth(true);
+    setAuthError(null);
     try {
       const res = await fetch('/api/auth/me');
       const data = await res.json();
-      if (data.user) {
+      if (data.user && (data.user.role === 'admin' || data.user.role === 'superadmin')) {
         setCurrentUser(data.user);
-        if (data.user.role === 'student') {
-          // If a student tries to open the admin dashboard, inform or redirect
-        }
+        fetchStudents();
+        fetchTests();
+        fetchReviewQueue();
+        fetchEducators();
+      } else {
+        setCurrentUser(data.user || null);
+        setLoadingStudents(false);
+        setLoadingTests(false);
+        setLoadingReviewQueue(false);
+        setLoadingEducators(false);
       }
     } catch (e) {
       console.error(e);
+      setCurrentUser(null);
+      setLoadingStudents(false);
+      setLoadingTests(false);
+      setLoadingReviewQueue(false);
+      setLoadingEducators(false);
+    } finally {
+      setIsCheckingAuth(false);
+    }
+  };
+
+  const handleAdminLogin = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!authEmail.trim() || !authPassword) {
+      setAuthError('Please enter both Administrator email and password.');
+      return;
+    }
+    setIsAuthenticating(true);
+    setAuthError(null);
+    try {
+      const res = await fetch('/api/auth/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          email: authEmail.trim(),
+          password: authPassword,
+        }),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        setAuthError(data.error || 'Invalid credentials.');
+        setIsAuthenticating(false);
+        return;
+      }
+      if (!data.user || (data.user.role !== 'admin' && data.user.role !== 'superadmin')) {
+        setAuthError(
+          `Access Denied: Account (${data.user?.email || authEmail}) is assigned role '${data.user?.role || 'user'}' and does not possess Administrator privileges.`
+        );
+        setIsAuthenticating(false);
+        return;
+      }
+
+      setCurrentUser(data.user);
+      setAuthPassword('');
+      setIsAuthenticating(false);
+      fetchStudents();
+      fetchTests();
+      fetchReviewQueue();
+      fetchEducators();
+    } catch (err: any) {
+      setAuthError(err?.message || 'Authentication failed. Please try again.');
+      setIsAuthenticating(false);
     }
   };
 
@@ -226,11 +294,7 @@ export default function AdminDashboardPage() {
   const [showSavedBanner, setShowSavedBanner] = useState(false);
 
   useEffect(() => {
-    fetchCurrentUser();
-    fetchStudents();
-    fetchTests();
-    fetchReviewQueue();
-    fetchEducators();
+    checkAdminAuthAndLoad();
     if (typeof window !== 'undefined' && window.location.search.includes('saved=true')) {
       setShowSavedBanner(true);
     }
@@ -382,6 +446,144 @@ export default function AdminDashboardPage() {
     return `${mins} mins`;
   };
 
+  // 1. Loading state while checking active session
+  if (isCheckingAuth) {
+    return (
+      <div className="min-h-screen bg-[#FBFBFA] flex flex-col items-center justify-center p-4">
+        <div className="w-12 h-12 rounded-2xl bg-indigo-500/10 border border-indigo-500/20 flex items-center justify-center text-indigo-600 animate-pulse mb-3">
+          <ShieldCheck className="w-6 h-6" />
+        </div>
+        <p className="text-sm font-medium text-[#202124] tracking-tight">Verifying Administrator Privileges...</p>
+        <p className="text-xs text-[#787774] mt-1">Inspecting active credentials</p>
+      </div>
+    );
+  }
+
+  // 2. Authentication Gate: If not logged in as Admin/Superadmin
+  if (!currentUser || (currentUser.role !== 'admin' && currentUser.role !== 'superadmin')) {
+    return (
+      <div className="min-h-screen bg-[#FBFBFA] flex flex-col justify-center items-center px-4 py-12">
+        <div className="w-full max-w-md bg-white border border-[#E6E6E3] rounded-2xl p-6 sm:p-8 shadow-sm">
+          <div className="flex flex-col items-center text-center mb-6">
+            <div className="w-14 h-14 rounded-2xl bg-indigo-50 border border-indigo-100 flex items-center justify-center text-indigo-600 mb-4 shadow-sm">
+              <Building2 className="w-7 h-7" />
+            </div>
+            <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-semibold uppercase bg-indigo-50 text-indigo-700 border border-indigo-100 mb-2">
+              <ShieldCheck className="w-3.5 h-3.5" />
+              Institute Admin Portal
+            </div>
+            <h1 className="text-xl sm:text-2xl font-bold text-[#202124] tracking-tight">
+              Administrator Access Required
+            </h1>
+            <p className="text-xs sm:text-sm text-[#787774] mt-1.5 max-w-xs leading-relaxed">
+              Enter your coaching institute or academy administrator credentials to manage students and tests.
+            </p>
+          </div>
+
+          {currentUser && (
+            <div className="mb-5 p-3 rounded-lg bg-[#F7F7F5] border border-[#E6E6E3] text-xs text-[#37352F] flex items-center justify-between">
+              <div className="truncate pr-2">
+                <span className="text-[#787774]">Current session: </span>
+                <span className="font-semibold text-[#202124]">{currentUser.name || currentUser.email}</span>
+                <span className="ml-1.5 text-[10px] px-1.5 py-0.5 rounded bg-neutral-200 text-[#37352F] capitalize font-mono">
+                  {currentUser.role}
+                </span>
+              </div>
+              <span className="text-[10px] text-indigo-600 font-medium shrink-0">Elevation Required</span>
+            </div>
+          )}
+
+          {authError && (
+            <div className="mb-5 p-3.5 rounded-lg bg-red-50 border border-red-200 text-red-700 text-xs flex items-start gap-2.5">
+              <XCircle className="w-4 h-4 shrink-0 mt-0.5 text-red-500" />
+              <div className="flex-1 leading-relaxed">{authError}</div>
+            </div>
+          )}
+
+          <form onSubmit={handleAdminLogin} className="space-y-4">
+            <div>
+              <label className="block text-xs font-medium text-[#37352F] mb-1.5">
+                Administrator Email
+              </label>
+              <input
+                type="email"
+                value={authEmail}
+                onChange={(e) => setAuthEmail(e.target.value)}
+                placeholder="admin@examcraft.platform"
+                required
+                className="w-full px-3.5 py-2.5 bg-[#FBFBFA] border border-[#E6E6E3] rounded-lg text-sm text-[#202124] placeholder-[#9B9A97] focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-transparent transition-all"
+              />
+            </div>
+
+            <div>
+              <div className="flex items-center justify-between mb-1.5">
+                <label className="text-xs font-medium text-[#37352F]">
+                  Password
+                </label>
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="text-[11px] text-[#787774] hover:text-[#202124] transition-colors"
+                >
+                  {showPassword ? 'Hide' : 'Show'}
+                </button>
+              </div>
+              <input
+                type={showPassword ? 'text' : 'password'}
+                value={authPassword}
+                onChange={(e) => setAuthPassword(e.target.value)}
+                placeholder="••••••••••••"
+                required
+                className="w-full px-3.5 py-2.5 bg-[#FBFBFA] border border-[#E6E6E3] rounded-lg text-sm text-[#202124] placeholder-[#9B9A97] focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-transparent transition-all"
+              />
+            </div>
+
+            <div className="p-2.5 rounded-md bg-indigo-50/50 border border-indigo-100 text-[11px] text-indigo-800 flex flex-col sm:flex-row sm:items-center justify-between gap-1.5">
+              <span className="text-[#787774]">Demo Admin:</span>
+              <button
+                type="button"
+                onClick={() => {
+                  setAuthEmail('admin@examcraft.platform');
+                  setAuthPassword('demo1234');
+                }}
+                className="text-[10px] bg-indigo-50 hover:bg-indigo-100 border border-indigo-200 px-2 py-0.5 rounded text-indigo-700 font-mono transition-colors text-left"
+              >
+                admin@examcraft.platform / demo1234 (Autofill)
+              </button>
+            </div>
+
+            <button
+              type="submit"
+              disabled={isAuthenticating}
+              className="w-full py-2.5 px-4 bg-[#202124] hover:bg-[#201e1d] text-white font-semibold rounded-lg shadow-sm transition-all text-sm flex items-center justify-center gap-2 disabled:opacity-50 cursor-pointer"
+            >
+              {isAuthenticating ? (
+                <>
+                  <RefreshCw className="w-4 h-4 animate-spin" />
+                  Verifying...
+                </>
+              ) : (
+                <>
+                  <Key className="w-4 h-4" />
+                  Authenticate Administrator
+                </>
+              )}
+            </button>
+          </form>
+
+          <div className="mt-6 pt-5 border-t border-[#E6E6E3] text-center">
+            <Link
+              href="/dashboard"
+              className="text-xs text-[#787774] hover:text-[#202124] inline-flex items-center gap-1.5 transition-colors"
+            >
+              &larr; Return to Student Dashboard
+            </Link>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <AppShell
       breadcrumbs={[
@@ -448,6 +650,18 @@ export default function AdminDashboardPage() {
               <PlusCircle className="w-3.5 h-3.5 text-[#787774]" />
               Create Official Mock
             </Link>
+
+            <button
+              onClick={async () => {
+                await fetch('/api/auth/demo?role=student', { method: 'POST' });
+                window.location.href = '/dashboard';
+              }}
+              className="inline-flex items-center justify-center gap-1.5 px-3 py-1.5 min-h-[36px] bg-white hover:bg-[#F1F1EF] text-[#787774] hover:text-[#202124] font-medium rounded-md border border-[#E6E6E3] shadow-2xs transition-colors text-xs"
+              title="Lock administrator hub and return to student view"
+            >
+              <Key className="w-3.5 h-3.5" />
+              Lock Hub
+            </button>
           </div>
         </div>
 

@@ -133,3 +133,113 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ success: false, error: error.message }, { status: 500 });
   }
 }
+
+export async function PATCH(req: NextRequest) {
+  try {
+    const db = getDb();
+    seedInitialData();
+
+    let user = await getCurrentUser();
+    if (!user) {
+      user = getOrCreateDemoUser();
+    }
+
+    const body = await req.json();
+    const resourceId = body.id || body.resource_id;
+
+    if (!resourceId) {
+      return NextResponse.json({ success: false, error: 'Resource ID is required' }, { status: 400 });
+    }
+
+    const existing = db.prepare('SELECT * FROM learner_resources WHERE id = ?').get(resourceId) as any;
+    if (!existing) {
+      return NextResponse.json({ success: false, error: 'Resource not found' }, { status: 404 });
+    }
+
+    // Allow superadmin, admin, or creator of resource
+    if (user.role !== 'superadmin' && user.role !== 'admin' && existing.user_id !== user.id) {
+      return NextResponse.json({ success: false, error: 'Unauthorized to modify this resource' }, { status: 403 });
+    }
+
+    const title = body.title !== undefined ? body.title.trim() : existing.title;
+    const type = body.type !== undefined ? body.type : existing.type;
+    const subject_name = body.subject_name !== undefined ? body.subject_name.trim() : existing.subject_name;
+    const topic_name = body.topic_name !== undefined ? body.topic_name.trim() : existing.topic_name;
+    const source = body.source !== undefined ? body.source.trim() : existing.source;
+    const url = body.url !== undefined ? body.url.trim() : existing.url;
+    const notes = body.notes !== undefined ? body.notes : existing.notes;
+    const is_saved = body.is_saved !== undefined ? (body.is_saved ? 1 : 0) : existing.is_saved;
+
+    db.prepare(`
+      UPDATE learner_resources SET
+        title = ?,
+        type = ?,
+        subject_name = ?,
+        topic_name = ?,
+        source = ?,
+        url = ?,
+        notes = ?,
+        is_saved = ?
+      WHERE id = ?
+    `).run(
+      title,
+      type,
+      subject_name,
+      topic_name,
+      source,
+      url,
+      notes,
+      is_saved,
+      resourceId
+    );
+
+    const updated = db.prepare('SELECT * FROM learner_resources WHERE id = ?').get(resourceId);
+
+    return NextResponse.json({
+      success: true,
+      resource: updated,
+      message: 'Study resource updated successfully',
+    });
+  } catch (error: any) {
+    console.error('Failed to update learner resource:', error);
+    return NextResponse.json({ success: false, error: error.message }, { status: 500 });
+  }
+}
+
+export async function DELETE(req: NextRequest) {
+  try {
+    const db = getDb();
+    seedInitialData();
+
+    let user = await getCurrentUser();
+    if (!user) {
+      user = getOrCreateDemoUser();
+    }
+
+    const { searchParams } = new URL(req.url);
+    const id = searchParams.get('id');
+
+    if (!id) {
+      return NextResponse.json({ success: false, error: 'Resource ID is required' }, { status: 400 });
+    }
+
+    const existing = db.prepare('SELECT * FROM learner_resources WHERE id = ?').get(id) as any;
+    if (!existing) {
+      return NextResponse.json({ success: false, error: 'Resource not found' }, { status: 404 });
+    }
+
+    if (user.role !== 'superadmin' && user.role !== 'admin' && existing.user_id !== user.id) {
+      return NextResponse.json({ success: false, error: 'Unauthorized to delete this resource' }, { status: 403 });
+    }
+
+    db.prepare('DELETE FROM learner_resources WHERE id = ?').run(id);
+
+    return NextResponse.json({
+      success: true,
+      message: 'Study resource deleted successfully',
+    });
+  } catch (error: any) {
+    console.error('Failed to delete learner resource:', error);
+    return NextResponse.json({ success: false, error: error.message }, { status: 500 });
+  }
+}

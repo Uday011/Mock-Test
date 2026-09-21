@@ -20,6 +20,16 @@ export function middleware(req: NextRequest) {
     (prefix) => pathname === prefix || pathname.startsWith(`${prefix}/`)
   );
 
+  // Allow direct access to administration dashboards so their dedicated credential gates can challenge the user
+  if (
+    pathname === '/dashboard/superadmin' ||
+    pathname.startsWith('/dashboard/superadmin/') ||
+    pathname === '/dashboard/admin' ||
+    pathname.startsWith('/dashboard/admin/')
+  ) {
+    return NextResponse.next();
+  }
+
   if (isProtected && !token) {
     const loginUrl = new URL('/login', req.url);
     loginUrl.searchParams.set('redirect', pathname + search);

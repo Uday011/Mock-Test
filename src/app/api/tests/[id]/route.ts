@@ -132,6 +132,12 @@ export async function PATCH(
     const default_unanswered_marks = body.default_unanswered_marks !== undefined ? Number(body.default_unanswered_marks) : existingTest.default_unanswered_marks;
     const marking_scheme_type = body.marking_scheme_type !== undefined ? body.marking_scheme_type : existingTest.marking_scheme_type;
 
+    const status = body.status !== undefined ? body.status : (existingTest.status || 'published');
+    const difficulty = body.difficulty !== undefined ? body.difficulty : (existingTest.difficulty || 'medium');
+    const test_type = body.test_type !== undefined ? body.test_type : (existingTest.test_type || 'custom_practice');
+    const trust_label = body.trust_label !== undefined ? body.trust_label : (existingTest.trust_label || 'Platform Official');
+    const instructions = body.instructions !== undefined ? body.instructions : existingTest.instructions;
+
     const shuffle_questions = body.shuffle_questions !== undefined ? (body.shuffle_questions ? 1 : 0) : existingTest.shuffle_questions;
     const shuffle_options = body.shuffle_options !== undefined ? (body.shuffle_options ? 1 : 0) : existingTest.shuffle_options;
     const allow_navigation = body.allow_navigation !== undefined ? (body.allow_navigation ? 1 : 0) : existingTest.allow_navigation;
@@ -155,6 +161,11 @@ export async function PATCH(
         show_palette = ?,
         allow_review_marking = ?,
         show_immediate_results = ?,
+        status = ?,
+        difficulty = ?,
+        test_type = ?,
+        trust_label = ?,
+        instructions = ?,
         updated_at = ?
       WHERE id = ?
     `);
@@ -174,12 +185,17 @@ export async function PATCH(
       show_palette,
       allow_review_marking,
       show_immediate_results,
+      status,
+      difficulty,
+      test_type,
+      trust_label,
+      instructions,
       now,
       id
     );
 
     // If questions were also provided for update
-    if (Array.isArray(body.questions) && body.questions.length > 0) {
+    if (Array.isArray(body.questions)) {
       // Delete existing questions and replace with updated set
       const deleteOld = db.prepare('DELETE FROM questions WHERE test_id = ?');
       deleteOld.run(id);
@@ -195,7 +211,7 @@ export async function PATCH(
       for (let i = 0; i < body.questions.length; i++) {
         const q = body.questions[i];
         const qId = q.id || crypto.randomUUID();
-        const qNum = q.question_number || i + 1;
+        const qNum = i + 1;
         const opts = Array.isArray(q.options) ? q.options : [];
         const correct = (q.correct_answer || 'A').toUpperCase().trim();
 
