@@ -572,7 +572,7 @@ export function AppShell({
         </header>
 
         {/* Page Container */}
-        <main className="flex-1 max-w-6xl w-full mx-auto px-4 sm:px-8 lg:px-12 py-6 sm:py-8 pb-24 md:pb-10">
+        <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-5 pb-24 md:pb-10">
           {children}
         </main>
 
