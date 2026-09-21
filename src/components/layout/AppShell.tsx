@@ -702,16 +702,16 @@ export function AppShell({
                 </Link>
 
                 <Link
-                  href="/mistakes?tab=revision"
+                  href="/question-bank"
                   onClick={() => setMobileMoreSheetOpen(false)}
                   className="flex items-center gap-3 p-3 rounded-card border border-line bg-secondary/30 hover:bg-secondary transition-colors"
                 >
-                  <div className="w-8 h-8 rounded-full bg-coral/10 text-coral flex items-center justify-center">
-                    <Clock className="w-4 h-4" />
+                  <div className="w-8 h-8 rounded-full bg-accent/10 text-accent flex items-center justify-center">
+                    <Layers className="w-4 h-4" />
                   </div>
                   <div>
-                    <div className="text-xs font-semibold text-ink">Revision</div>
-                    <div className="text-[10px] text-ink-muted">Spaced Practice</div>
+                    <div className="text-xs font-semibold text-ink">Question Bank</div>
+                    <div className="text-[10px] text-ink-muted">Practice Repository</div>
                   </div>
                 </Link>
 
@@ -789,7 +789,7 @@ export function AppShell({
           {[
             { href: '/dashboard', label: 'Home', icon: LayoutDashboard, exact: true },
             { href: '/learn', label: 'Learn', icon: BookOpen, exact: false },
-            { href: '/question-bank', label: 'Practice', icon: Layers, exact: true },
+            { href: '/tests/create', label: 'Create Test', icon: PlusCircle, exact: false },
             { href: '/tests', label: 'Tests', icon: FileCheck, exact: false },
           ].map((item) => {
             const isActive = item.exact
@@ -814,13 +814,13 @@ export function AppShell({
           <button
             onClick={() => setMobileMoreSheetOpen(true)}
             className={`flex-1 flex flex-col items-center justify-center h-full min-h-[48px] py-1 rounded-btn text-[11px] transition-all active:scale-95 ${
-              mobileMoreSheetOpen || pathname === '/performance' || pathname === '/mistakes' || pathname === '/settings'
+              mobileMoreSheetOpen || pathname === '/performance' || pathname === '/mistakes' || pathname === '/settings' || pathname === '/question-bank'
                 ? 'text-accent font-semibold'
                 : 'text-ink-muted hover:text-ink'
             }`}
           >
             <div className={`p-1.5 rounded-full transition-colors ${
-              mobileMoreSheetOpen || pathname === '/performance' || pathname === '/mistakes' || pathname === '/settings'
+              mobileMoreSheetOpen || pathname === '/performance' || pathname === '/mistakes' || pathname === '/settings' || pathname === '/question-bank'
                 ? 'bg-accent/10 text-accent'
                 : ''
             }`}>
