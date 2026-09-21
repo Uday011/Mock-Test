@@ -27,6 +27,8 @@ import {
   BookMarked,
   Layers,
   HelpCircle,
+  Zap,
+  FileUp,
 } from 'lucide-react';
 import { AppShell } from '@/components/layout/AppShell';
 import { DailyWarmupModals } from '@/components/dashboard/DailyWarmupModals';
@@ -196,21 +198,394 @@ export default function ExamCraftDashboardPage() {
     <AppShell activeExamTitle="CAT 2026">
       <div className="w-full space-y-5 pb-16 select-none">
         
-        {/* ========================================================= */}
-        {/* MAIN DASHBOARD 2-COLUMN GRID (Matching Layout Exactly)    */}
-        {/* ========================================================= */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-5">
+        {/* ========================================================================= */}
+        {/* 1. MOBILE REFINED VIEW (< md): VALUE-FIRST 3-THUMB ARCHITECTURE          */}
+        {/* ========================================================================= */}
+        <div className="md:hidden space-y-4">
+          
+          {/* SCREEN 1A: COMMAND STRIP STATUS BAR */}
+          <div className="flex items-center justify-between px-1 pt-1">
+            <div>
+              <span className="text-[11px] text-ink-muted block font-normal">Good morning,</span>
+              <h1 className="text-xl font-bold text-ink tracking-tight">
+                {user?.name?.split(' ')[0] || 'Uday'}.
+              </h1>
+            </div>
+            <div className="flex items-center gap-2">
+              <div className="flex items-center gap-1 px-2.5 py-1 rounded-full bg-secondary border border-line text-[11px] font-semibold text-ink shadow-2xs">
+                <Flame className="w-3.5 h-3.5 text-[#E07A2B]" />
+                <span>8d</span>
+              </div>
+              <div className="flex items-center gap-1 px-2.5 py-1 rounded-full bg-secondary border border-line text-[11px] font-medium text-ink shadow-2xs">
+                <Clock className="w-3.5 h-3.5 text-accent" />
+                <span>{daysRemaining}d to CAT</span>
+              </div>
+            </div>
+          </div>
+
+          {/* SCREEN 1B: COMPACT WARM-UP (HORIZONTAL SNAP CAROUSEL) */}
+          <section className="rounded-hero border border-line bg-surface p-4 space-y-3 shadow-xs">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <div className="w-6 h-6 rounded-full bg-accent/15 text-accent flex items-center justify-center">
+                  <Brain className="w-3.5 h-3.5" />
+                </div>
+                <div>
+                  <h2 className="text-xs font-bold text-ink">Daily Warm-up</h2>
+                  <span className="text-[10px] text-ink-muted font-normal">15 mins logic activation</span>
+                </div>
+              </div>
+
+              <div className="flex items-center gap-2">
+                <span className="text-[10px] font-mono font-medium text-ink-muted">
+                  {completedWarmupCount}/3
+                </span>
+                <button
+                  onClick={handleContinueWarmup}
+                  className="px-2.5 py-1 rounded-full bg-accent text-white text-[10px] font-semibold hover:bg-accent/90 transition-colors flex items-center gap-1"
+                >
+                  <span>{completedWarmupCount === 3 ? 'Review' : 'Continue'}</span>
+                  <ArrowRight className="w-2.5 h-2.5" />
+                </button>
+              </div>
+            </div>
+
+            {/* Horizontal Snap Scroll Cards */}
+            <div className="flex gap-2.5 overflow-x-auto snap-x snap-mandatory scrollbar-none pb-1 -mx-1 px-1">
+              {/* Mobile Card 01: Read */}
+              <div className="w-[78vw] shrink-0 snap-start p-3.5 rounded-card border border-line bg-surface flex flex-col justify-between space-y-2.5 shadow-2xs">
+                <div className="space-y-1.5">
+                  <div className="flex items-center justify-between">
+                    <span className="text-[9px] font-bold px-1.5 py-0.2 rounded bg-accent/10 text-accent font-mono">
+                      01
+                    </span>
+                    {warmupState.read ? (
+                      <div className="w-4 h-4 rounded-full bg-accent/20 text-accent flex items-center justify-center">
+                        <Check className="w-2.5 h-2.5 stroke-[3]" />
+                      </div>
+                    ) : (
+                      <div className="w-4 h-4 rounded-full border border-line" />
+                    )}
+                  </div>
+                  <h3 className="text-xs font-bold text-ink">Read • AEON Essay</h3>
+                  <p className="text-[11px] text-ink leading-snug font-medium line-clamp-2">
+                    Why do humans struggle to make rational decisions?
+                  </p>
+                  <span className="text-[10px] text-ink-muted font-mono block">~7 mins • Inferences</span>
+                </div>
+                <button
+                  onClick={() => setActiveModal('read')}
+                  className="w-full py-1.5 rounded-btn bg-secondary border border-line text-ink text-[11px] font-semibold flex items-center justify-center gap-1"
+                >
+                  <span>Read Article</span>
+                  <ArrowRight className="w-3 h-3" />
+                </button>
+              </div>
+
+              {/* Mobile Card 02: Think (9x9 Sudoku) */}
+              <div className="w-[78vw] shrink-0 snap-start p-3.5 rounded-card border border-line bg-surface flex flex-col justify-between space-y-2.5 shadow-2xs">
+                <div className="space-y-1.5">
+                  <div className="flex items-center justify-between">
+                    <span className="text-[9px] font-bold px-1.5 py-0.2 rounded bg-[#FDF6EC] text-[#B7791F] font-mono">
+                      02
+                    </span>
+                    {warmupState.think ? (
+                      <div className="w-4 h-4 rounded-full bg-accent/20 text-accent flex items-center justify-center">
+                        <Check className="w-2.5 h-2.5 stroke-[3]" />
+                      </div>
+                    ) : (
+                      <div className="w-4 h-4 rounded-full border border-line" />
+                    )}
+                  </div>
+                  <h3 className="text-xs font-bold text-ink">Think • 9×9 Sudoku</h3>
+                  <p className="text-[11px] text-ink leading-snug font-medium line-clamp-2">
+                    Classical 9×9 Sudoku logic puzzle for CAT analytical activation.
+                  </p>
+                  <span className="text-[10px] text-ink-muted font-mono block">~5 mins • DILR Grid</span>
+                </div>
+                <button
+                  onClick={() => setActiveModal('think')}
+                  className="w-full py-1.5 rounded-btn bg-secondary border border-line text-ink text-[11px] font-semibold flex items-center justify-center gap-1"
+                >
+                  <span>Solve Sudoku</span>
+                  <ArrowRight className="w-3 h-3" />
+                </button>
+              </div>
+
+              {/* Mobile Card 03: Calculate */}
+              <div className="w-[78vw] shrink-0 snap-start p-3.5 rounded-card border border-line bg-surface flex flex-col justify-between space-y-2.5 shadow-2xs">
+                <div className="space-y-1.5">
+                  <div className="flex items-center justify-between">
+                    <span className="text-[9px] font-bold px-1.5 py-0.2 rounded bg-[#EDF7ED] text-[#1B5E20] font-mono">
+                      03
+                    </span>
+                    {warmupState.calculate ? (
+                      <div className="w-4 h-4 rounded-full bg-accent/20 text-accent flex items-center justify-center">
+                        <Check className="w-2.5 h-2.5 stroke-[3]" />
+                      </div>
+                    ) : (
+                      <div className="w-4 h-4 rounded-full border border-line" />
+                    )}
+                  </div>
+                  <h3 className="text-xs font-bold text-ink">Calculate • Smart Maths</h3>
+                  <p className="text-[11px] text-ink leading-snug font-medium line-clamp-2">
+                    5 speed drills on fractions, squares, ratios, and roots.
+                  </p>
+                  <span className="text-[10px] text-ink-muted font-mono block">~5 mins • 5 Qs Speed</span>
+                </div>
+                <button
+                  onClick={() => setActiveModal('calculate')}
+                  className="w-full py-1.5 rounded-btn bg-secondary border border-line text-ink text-[11px] font-semibold flex items-center justify-center gap-1"
+                >
+                  <span>Start Quiz</span>
+                  <ArrowRight className="w-3 h-3" />
+                </button>
+              </div>
+            </div>
+          </section>
+
+          {/* SCREEN 2A: TODAY'S CAT PLAN (PRIMARY ACTION HERO) */}
+          <section className="rounded-hero border border-line bg-surface p-4 space-y-3 shadow-xs">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <div className="w-6 h-6 rounded-full bg-secondary text-ink flex items-center justify-center">
+                  <ListTodo className="w-3.5 h-3.5" />
+                </div>
+                <div>
+                  <h2 className="text-xs font-bold text-ink">Today&apos;s Plan</h2>
+                  <span className="text-[10px] text-ink-muted font-normal">2h 25m total target</span>
+                </div>
+              </div>
+
+              <div className="flex items-center gap-2">
+                <span className="text-[10px] font-mono text-ink-muted">
+                  {completedPlanCount}/{planTasks.length}
+                </span>
+                <button
+                  onClick={() => {
+                    const firstIncomplete = planTasks.find((t) => !t.completed);
+                    if (firstIncomplete) router.push(firstIncomplete.href);
+                  }}
+                  className="px-2.5 py-1 rounded-full bg-secondary text-ink text-[10px] font-semibold border border-line flex items-center gap-1"
+                >
+                  <span>Start</span>
+                  <ArrowRight className="w-2.5 h-2.5" />
+                </button>
+              </div>
+            </div>
+
+            <div className="space-y-1.5 pt-0.5">
+              {planTasks.map((task) => (
+                <div
+                  key={task.id}
+                  onClick={() => handleToggleTask(task.id)}
+                  className="group flex items-center justify-between p-3 rounded-card border border-line bg-surface hover:bg-secondary/40 cursor-pointer transition-all shadow-2xs"
+                >
+                  <div className="flex items-center gap-2.5 min-w-0">
+                    <div className={`w-4 h-4 rounded-full border flex items-center justify-center shrink-0 transition-colors ${
+                      task.completed ? 'bg-accent border-accent text-white' : 'border-line bg-surface'
+                    }`}>
+                      {task.completed && <Check className="w-2.5 h-2.5 stroke-[3]" />}
+                    </div>
+
+                    <span className={`w-2 h-2 rounded-full shrink-0 ${task.dotColor}`} />
+
+                    <div className="flex items-center gap-1.5 min-w-0">
+                      <span className="text-xs font-bold text-ink shrink-0">
+                        {task.badge}
+                      </span>
+                      <span className={`text-xs truncate ${task.completed ? 'line-through text-ink-muted' : 'text-ink'}`}>
+                        {task.title}
+                      </span>
+                    </div>
+                  </div>
+
+                  <span className="text-[10px] font-mono text-ink-muted shrink-0 pl-2">
+                    {task.duration}
+                  </span>
+                </div>
+              ))}
+            </div>
+          </section>
+
+          {/* SCREEN 2B: PRIORITY FOCUS (DIRECT WEAK-AREA ACTION CARD) */}
+          <section className="rounded-hero border border-line bg-surface p-4 space-y-2.5 shadow-xs">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <div className="w-6 h-6 rounded-full bg-[#6E62E5]/15 text-[#6E62E5] flex items-center justify-center">
+                  <Target className="w-3.5 h-3.5" />
+                </div>
+                <h2 className="text-xs font-bold text-ink">Priority Focus Area</h2>
+              </div>
+              <span className="text-[10px] font-bold text-[#6E62E5] uppercase tracking-wider">
+                DILR
+              </span>
+            </div>
+
+            <div className="p-3 rounded-card bg-secondary/50 border border-line space-y-2">
+              <div className="flex items-center justify-between">
+                <div>
+                  <h3 className="text-xs font-bold text-ink">Linear & Circular Arrangements</h3>
+                  <p className="text-[11px] text-ink-muted">12 errors in last 30 questions</p>
+                </div>
+                <div className="text-right">
+                  <span className="text-[10px] text-ink-muted block uppercase font-medium">Accuracy</span>
+                  <span className="text-xs font-bold font-mono text-coral">54%</span>
+                </div>
+              </div>
+
+              <Link
+                href="/question-bank?section=DILR&topic=Arrangements"
+                className="w-full py-2.5 rounded-btn bg-accent text-white text-xs font-semibold hover:bg-accent/90 transition-colors flex items-center justify-center gap-1.5 shadow-xs"
+              >
+                <span>Practice Focus Area (10 Qs)</span>
+                <ArrowRight className="w-3.5 h-3.5" />
+              </Link>
+            </div>
+          </section>
+
+          {/* SCREEN 3A: PERFORMANCE SNAPSHOT CARD */}
+          <section className="rounded-hero border border-line bg-surface p-4 space-y-3 shadow-xs">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <div className="w-6 h-6 rounded-full bg-accent/10 text-accent flex items-center justify-center">
+                  <BarChart3 className="w-3.5 h-3.5" />
+                </div>
+                <h2 className="text-xs font-bold text-ink">Performance Snapshot</h2>
+              </div>
+              <Link
+                href="/performance"
+                className="text-[11px] text-accent font-medium hover:underline flex items-center gap-0.5"
+              >
+                <span>Full Analysis</span>
+                <ArrowRight className="w-2.5 h-2.5" />
+              </Link>
+            </div>
+
+            <div className="grid grid-cols-2 gap-2 text-xs">
+              <div className="p-2.5 rounded-card bg-secondary/40 border border-line">
+                <span className="text-[10px] text-ink-muted block uppercase font-semibold">Readiness Index</span>
+                <span className="text-base font-bold font-mono text-ink">{readinessIndex}%</span>
+                <span className="text-[10px] text-accent font-medium block">Competitive</span>
+              </div>
+              <div className="p-2.5 rounded-card bg-secondary/40 border border-line">
+                <span className="text-[10px] text-ink-muted block uppercase font-semibold">Predicted Percentile</span>
+                <span className="text-base font-bold font-mono text-accent">98.4 %ile</span>
+                <span className="text-[10px] text-ink-muted font-mono block">{predictedScore}m / 198m</span>
+              </div>
+            </div>
+
+            {/* Compact Sectional Bars */}
+            <div className="space-y-2 pt-1 border-t border-line">
+              <div className="space-y-1">
+                <div className="flex justify-between text-[11px]">
+                  <span className="text-ink font-medium">VARC</span>
+                  <span className="font-mono text-ink font-semibold">{varcAccuracy}%</span>
+                </div>
+                <div className="w-full bg-secondary rounded-full h-1.5 overflow-hidden">
+                  <div className="bg-[#3B82F6] h-1.5 rounded-full" style={{ width: `${varcAccuracy}%` }} />
+                </div>
+              </div>
+
+              <div className="space-y-1">
+                <div className="flex justify-between text-[11px]">
+                  <span className="text-ink font-medium">DILR</span>
+                  <span className="font-mono text-ink font-semibold">{dilrAccuracy}%</span>
+                </div>
+                <div className="w-full bg-secondary rounded-full h-1.5 overflow-hidden">
+                  <div className="bg-[#6E62E5] h-1.5 rounded-full" style={{ width: `${dilrAccuracy}%` }} />
+                </div>
+              </div>
+
+              <div className="space-y-1">
+                <div className="flex justify-between text-[11px]">
+                  <span className="text-ink font-medium">QA</span>
+                  <span className="font-mono text-ink font-semibold">{qaAccuracy}%</span>
+                </div>
+                <div className="w-full bg-secondary rounded-full h-1.5 overflow-hidden">
+                  <div className="bg-[#E07A2B] h-1.5 rounded-full" style={{ width: `${qaAccuracy}%` }} />
+                </div>
+              </div>
+            </div>
+          </section>
+
+          {/* SCREEN 3B: QUICK ACCESS 2x2 TILES */}
+          <section className="space-y-2">
+            <h2 className="text-xs font-bold text-ink uppercase tracking-wider px-1">
+              Quick Actions
+            </h2>
+            <div className="grid grid-cols-2 gap-2 text-xs">
+              <Link
+                href="/tests/create"
+                className="p-3 rounded-card border border-line bg-surface hover:bg-secondary flex flex-col justify-between space-y-2 transition-all shadow-2xs"
+              >
+                <div className="w-7 h-7 rounded-full bg-accent/10 text-accent flex items-center justify-center">
+                  <FileUp className="w-4 h-4" />
+                </div>
+                <div>
+                  <div className="font-bold text-ink text-xs">PDF to Mock</div>
+                  <div className="text-[10px] text-ink-muted">Instant AI Paper Convert</div>
+                </div>
+              </Link>
+
+              <Link
+                href="/tests"
+                className="p-3 rounded-card border border-line bg-surface hover:bg-secondary flex flex-col justify-between space-y-2 transition-all shadow-2xs"
+              >
+                <div className="w-7 h-7 rounded-full bg-blue-500/10 text-blue-600 flex items-center justify-center">
+                  <FileCheck className="w-4 h-4" />
+                </div>
+                <div>
+                  <div className="font-bold text-ink text-xs">Full Mock</div>
+                  <div className="text-[10px] text-ink-muted">Simulate CAT Slot</div>
+                </div>
+              </Link>
+
+              <Link
+                href="/question-bank"
+                className="p-3 rounded-card border border-line bg-surface hover:bg-secondary flex flex-col justify-between space-y-2 transition-all shadow-2xs"
+              >
+                <div className="w-7 h-7 rounded-full bg-purple-500/10 text-purple-600 flex items-center justify-center">
+                  <Target className="w-4 h-4" />
+                </div>
+                <div>
+                  <div className="font-bold text-ink text-xs">Practice Bank</div>
+                  <div className="text-[10px] text-ink-muted">Topic Diagnostic Drills</div>
+                </div>
+              </Link>
+
+              <Link
+                href="/mistakes"
+                className="p-3 rounded-card border border-line bg-surface hover:bg-secondary flex flex-col justify-between space-y-2 transition-all shadow-2xs"
+              >
+                <div className="w-7 h-7 rounded-full bg-coral/10 text-coral flex items-center justify-center">
+                  <BookMarked className="w-4 h-4" />
+                </div>
+                <div>
+                  <div className="font-bold text-ink text-xs">Error Notebook</div>
+                  <div className="text-[10px] text-ink-muted">Spaced Repetition</div>
+                </div>
+              </Link>
+            </div>
+          </section>
+
+        </div>
+
+        {/* ========================================================================= */}
+        {/* 2. DESKTOP VIEW (>= md): FULL 2-COLUMN GRID MATCHING REFERENCE IMAGE     */}
+        {/* ========================================================================= */}
+        <div className="hidden md:grid md:grid-cols-12 gap-5">
           
           {/* ======================================================= */}
           {/* LEFT COLUMN (Main: 8 Cols)                             */}
           {/* ======================================================= */}
-          <div className="lg:col-span-8 space-y-5">
+          <div className="md:col-span-8 space-y-5">
             
             {/* 1. HERO BANNER CARD (Greeting + Mountain Art) */}
             <div className="relative overflow-hidden rounded-hero border border-line bg-surface p-6 sm:p-7 min-h-[170px] flex flex-col justify-between shadow-xs">
               {/* Right Mountain Landscape Background with Gradient Mask */}
               <div 
-                className="absolute top-0 right-0 bottom-0 w-1/2 hidden sm:block bg-cover bg-center"
+                className="absolute top-0 right-0 bottom-0 w-1/2 bg-cover bg-center"
                 style={{
                   backgroundImage: `linear-gradient(to right, var(--color-surface, #ffffff) 0%, rgba(255,255,255,0.2) 25%, transparent 55%), linear-gradient(to bottom, rgba(0,0,0,0.05), rgba(0,0,0,0.4)), url('https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&w=1000&q=80')`,
                 }}
@@ -246,7 +621,7 @@ export default function ExamCraftDashboardPage() {
                     <Calendar className="w-3.5 h-3.5" />
                     <span>{daysRemaining} days left</span>
                   </div>
-                  <span className="hidden md:inline-block font-serif italic text-xs text-ink-muted ml-2">
+                  <span className="font-serif italic text-xs text-ink-muted ml-2">
                     Small steps compound.
                   </span>
                 </div>
@@ -272,7 +647,7 @@ export default function ExamCraftDashboardPage() {
                 </div>
 
                 <div className="flex items-center gap-3">
-                  <div className="hidden sm:flex items-center gap-2">
+                  <div className="flex items-center gap-2">
                     <span className="text-xs font-mono text-ink-muted">
                       {completedWarmupCount} / 3 completed
                     </span>
@@ -295,7 +670,7 @@ export default function ExamCraftDashboardPage() {
               </div>
 
               {/* 3 Activity Cards Grid */}
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-3.5 pt-1">
+              <div className="grid grid-cols-3 gap-3.5 pt-1">
                 {/* Card 01: Read */}
                 <div className="p-4 rounded-card border border-line bg-surface hover:border-line/80 flex flex-col justify-between space-y-3.5 shadow-2xs transition-all">
                   <div className="space-y-2">
@@ -322,7 +697,6 @@ export default function ExamCraftDashboardPage() {
                       <span>~ 7 min</span>
                     </div>
 
-                    {/* Article Thumbnail & Headline */}
                     <div className="space-y-1.5 pt-1">
                       <div className="h-16 rounded-lg bg-cover bg-center overflow-hidden border border-line"
                         style={{
@@ -334,7 +708,6 @@ export default function ExamCraftDashboardPage() {
                       </p>
                     </div>
 
-                    {/* Tags */}
                     <div className="flex items-center gap-1.5 pt-1">
                       <span className="text-[9px] px-1.5 py-0.5 rounded bg-secondary text-ink-muted font-medium">
                         Reading
@@ -383,7 +756,6 @@ export default function ExamCraftDashboardPage() {
                       <span>~ 5 min</span>
                     </div>
 
-                    {/* Sudoku Thumbnail & Headline */}
                     <div className="space-y-1.5 pt-1">
                       <div className="h-16 rounded-lg bg-cover bg-center overflow-hidden border border-line"
                         style={{
@@ -395,7 +767,6 @@ export default function ExamCraftDashboardPage() {
                       </p>
                     </div>
 
-                    {/* Tags */}
                     <div className="flex items-center gap-1.5 pt-1">
                       <span className="text-[9px] px-1.5 py-0.5 rounded bg-secondary text-ink-muted font-medium">
                         Logic
@@ -444,7 +815,6 @@ export default function ExamCraftDashboardPage() {
                       <span>~ 5 min</span>
                     </div>
 
-                    {/* Bullet list of features */}
                     <div className="space-y-1 pt-1 text-[11px] text-ink-muted leading-relaxed">
                       <div className="flex items-center gap-1.5">
                         <span className="w-1 h-1 rounded-full bg-[#1B5E20]" />
@@ -518,7 +888,6 @@ export default function ExamCraftDashboardPage() {
                     className="group flex items-center justify-between p-3.5 rounded-card border border-line bg-surface hover:border-line/80 cursor-pointer transition-all shadow-2xs"
                   >
                     <div className="flex items-center gap-3 min-w-0">
-                      {/* Checkbox toggle */}
                       <div className={`w-4 h-4 rounded-full border flex items-center justify-center transition-colors ${
                         task.completed ? 'bg-accent border-accent text-white' : 'border-line bg-surface'
                       }`}>
@@ -547,8 +916,7 @@ export default function ExamCraftDashboardPage() {
             </section>
 
             {/* 4. BOTTOM 3 ACTION CARDS */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-3.5">
-              {/* Card 1: Create a Custom Test */}
+            <div className="grid grid-cols-3 gap-3.5">
               <div className="p-4 rounded-card border border-line bg-surface flex flex-col justify-between space-y-3 shadow-2xs">
                 <div className="space-y-1.5">
                   <div className="w-8 h-8 rounded-full bg-accent/10 text-accent flex items-center justify-center">
@@ -568,7 +936,6 @@ export default function ExamCraftDashboardPage() {
                 </Link>
               </div>
 
-              {/* Card 2: Take a Mock */}
               <div className="p-4 rounded-card border border-line bg-surface flex flex-col justify-between space-y-3 shadow-2xs">
                 <div className="space-y-1.5">
                   <div className="w-8 h-8 rounded-full bg-coral/10 text-coral flex items-center justify-center">
@@ -588,7 +955,6 @@ export default function ExamCraftDashboardPage() {
                 </Link>
               </div>
 
-              {/* Card 3: Review Mistakes */}
               <div className="p-4 rounded-card border border-line bg-surface flex flex-col justify-between space-y-3 shadow-2xs">
                 <div className="space-y-1.5">
                   <div className="w-8 h-8 rounded-full bg-lavender/10 text-lavender flex items-center justify-center">
@@ -614,7 +980,7 @@ export default function ExamCraftDashboardPage() {
           {/* ======================================================= */}
           {/* RIGHT COLUMN (Sidebar: 4 Cols)                         */}
           {/* ======================================================= */}
-          <div className="lg:col-span-4 space-y-5">
+          <div className="md:col-span-4 space-y-5">
             
             {/* 1. YOUR PROGRESS CARD */}
             <section className="rounded-hero border border-line bg-surface p-5 space-y-4 shadow-xs">
@@ -634,7 +1000,6 @@ export default function ExamCraftDashboardPage() {
                 </Link>
               </div>
 
-              {/* Sectional Accuracy Progress Bars */}
               <div className="space-y-3 pt-1">
                 <div>
                   <div className="flex justify-between text-xs font-medium mb-1">
@@ -667,7 +1032,6 @@ export default function ExamCraftDashboardPage() {
                 </div>
               </div>
 
-              {/* Overall Practice Accuracy & Predicted Percentile Pill */}
               <div className="pt-2 border-t border-line flex items-center justify-between text-xs">
                 <span className="text-ink-muted">Overall Practice Accuracy</span>
                 <span className="font-bold font-mono text-ink">{accuracyRate}%</span>
@@ -694,7 +1058,6 @@ export default function ExamCraftDashboardPage() {
                     <span>8 day streak</span>
                   </div>
 
-                  {/* Days of week dots */}
                   <div className="flex items-center gap-1.5 text-[10px] font-mono">
                     {['M', 'T', 'W', 'T', 'F', 'S', 'S'].map((day, idx) => (
                       <div key={idx} className="flex flex-col items-center gap-1">
@@ -707,12 +1070,10 @@ export default function ExamCraftDashboardPage() {
                   </div>
                 </div>
 
-                {/* Mini Motivation Quote & Upward Curve */}
                 <div className="text-right max-w-[130px] space-y-1">
                   <p className="text-[11px] text-ink-muted leading-tight">
                     Consistency today creates freedom tomorrow.
                   </p>
-                  {/* Upward Line SVG */}
                   <svg className="w-20 h-6 ml-auto" viewBox="0 0 80 24">
                     <path
                       d="M 2 20 Q 25 18, 40 10 T 78 4"
@@ -760,7 +1121,6 @@ export default function ExamCraftDashboardPage() {
                 <ChevronRight className="w-4 h-4 text-ink-muted" />
               </div>
 
-              {/* Accuracy & Mistakes info */}
               <div className="grid grid-cols-2 gap-2 text-xs">
                 <div className="p-2.5 rounded-btn bg-secondary border border-line">
                   <span className="text-[10px] text-ink-muted block">Accuracy</span>
@@ -781,7 +1141,7 @@ export default function ExamCraftDashboardPage() {
               </Link>
             </section>
 
-            {/* 4. QUICK LINKS CARD (2-Column Grid of Pills) */}
+            {/* 4. QUICK LINKS CARD */}
             <section className="rounded-hero border border-line bg-surface p-5 space-y-3 shadow-xs">
               <h2 className="text-xs font-bold text-ink uppercase tracking-wider">
                 Quick Links
